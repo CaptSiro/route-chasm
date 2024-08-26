@@ -1,0 +1,128 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    background-color: #282828;
+}
+
+
+
+body {
+    width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1em;
+
+    font-family: monospace;
+}
+
+body :first-child {
+    padding-top: unset;
+}
+
+body > div {
+    width: 100%;
+
+    & > .tests {
+        margin-top: 4px;
+    }
+}
+
+.test {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &.failed {
+        padding-bottom: 2px;
+    }
+
+    &.passed {
+        flex-direction: row;
+        gap: 16px;
+    }
+
+    & > div {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+
+    .outcome {
+        padding: 4px 10px;
+    }
+
+    &.failed .outcome {
+        background-color: #e14831;
+    }
+
+    &.passed .outcome {
+        background-color: #75a47f;
+    }
+
+
+    .name:before,
+    .name:after {
+        content: '"';
+        color: #b7ba26;
+    }
+
+    .name {
+        color: #b7ba26;
+    }
+
+    .time,
+    .index {
+        color: #787878;
+    }
+
+    .expected {
+        color: #75a47f;
+    }
+
+    .actual,
+    .assertion-failed {
+        color: #e14831;
+    }
+}
+
+.file {
+    color: #faf0c5;
+    width: 100%;
+    padding-top: 16px;
+    user-select: none;
+
+    &:hover {
+        cursor: pointer;
+        color: #83a598;
+    }
+}
+
+.danger {
+    padding: 4px 10px;
+    background-color: #e14831;
+    width: fit-content;
+}
+
+.assertions {
+    color: #faf0c5;
+}
+
+.xdebug-var-dump {
+    background-color: #faf0c5;
+    padding: 4px;
+}
+
+.xdebug-var-dump {
+    background-color: #faf0c5;
+    padding: 4px;
+}

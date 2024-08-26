@@ -1,2 +1,2 @@
-# route-chasm
+# RouteChasm
 Successor of RoutePass, a PHP MVC Framework
