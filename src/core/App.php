@@ -64,6 +64,19 @@ class App {
         return "$this->src/$resource";
     }
 
+    public function getHome(): string {
+        $home = "";
+        $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
+
+        for ($i = 0; $i < strlen($dir); $i++) {
+            if (!(isset($_SERVER["DOCUMENT_ROOT"][$i]) && $_SERVER["DOCUMENT_ROOT"][$i] == $dir[$i])){
+                $home .= $dir[$i];
+            }
+        }
+
+        return $home;
+    }
+
     public function serve(?Request $request = null): void {
         $req = $request ?? $this->request;
         $this->router->call($request, $this->response);

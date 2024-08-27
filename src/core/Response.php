@@ -201,11 +201,11 @@ class Response {
      *
      *
      * @param string $url accepts same URLs as Location header.
-     * @param bool $doPrependHomeDirectory
+     * @param bool $doPrependHome
      * @return void
      */
-    public function redirect(string $url, bool $doPrependHomeDirectory = true): void {
-        $this->setHeader("Location", ($doPrependHomeDirectory ? $_SERVER["HOME_DIR"] : "") . $url); // todo App::getHomeDir()
+    public function redirect(string $url, bool $doPrependHome = true): void {
+        $this->setHeader("Location", ($doPrependHome ? App::getInstance()->getHome() : "") . $url);
         $this->flush();
     }
 }
