@@ -24,10 +24,7 @@ class Url {
             $_SERVER['HTTP_HOST'],
             $path,
             $_SERVER['QUERY_STRING'],
-            new StrictMap(
-                fn (string $name) => RoutePass::throwError(RoutePassError::PROP_NOT_FOUND, "Could not find '$name' in query"),
-                $_GET
-            )
+            new StrictMap(App::notDefinedCallback(), $_GET)
         );
     }
 
