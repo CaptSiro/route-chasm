@@ -8,6 +8,13 @@ use core\endpoints\Handler;
 use core\endpoints\Procedure;
 
 class Http {
+    // RouteChasm headers
+    public const HEADER_CONTENT_DESCRIPTION = "Content-Description";
+    public const HEADER_PREGMA = "Pregma";
+
+
+
+    // from standard https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers#authentication
     public const HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
     public const HEADER_AUTHORIZATION = "Authorization";
     public const HEADER_PROXY_AUTHENTICATE = "Proxy-Authenticate";

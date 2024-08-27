@@ -24,6 +24,7 @@ class App {
 
     private Router $router;
     private Request $request;
+    private Response $response;
     private string $src;
 
 
@@ -31,6 +32,7 @@ class App {
     private function __construct() {
         $this->router = new Router();
         $this->src = realpath(__DIR__ . "/..");
+
         $this->request = new Request(
             Url::fromRequest(),
             new StrictMap(self::notDefinedCallback(), []),
@@ -38,6 +40,8 @@ class App {
             new StrictMap(self::notDefinedCallback(), []),
             new StrictMap(self::notDefinedCallback(), [])
         );
+
+        $this->response = new Response();
     }
 
 
