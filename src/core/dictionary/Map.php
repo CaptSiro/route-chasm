@@ -20,7 +20,7 @@ class Map implements Dictionary {
     }
 
     function exists(string $name): bool {
-        return isset($this->maps[$name]);
+        return isset($this->map[$name]);
     }
 
     function load(array $array): void {
