@@ -95,7 +95,7 @@ class Router implements Traversable, Endpoint {
         return $found;
     }
 
-    function call(Request $request): void {
+    function call(Request $request, Response $response): void {
         foreach ($this->findPath($request->url->getPath()) as $found) {
             $request->param->push($found->matches);
 
@@ -105,15 +105,5 @@ class Router implements Traversable, Endpoint {
 
             $request->param->pop();
         }
-    }
-
-    public function serve(): void {
-        $this->call(new Request(
-            Url::fromRequest(),
-            new StrictMap(App::notDefinedCallback(), []),
-            new StrictMap(App::notDefinedCallback(), []),
-            new StrictMap(App::notDefinedCallback(), []),
-            new StrictMap(App::notDefinedCallback(), []),
-        ));
     }
 }

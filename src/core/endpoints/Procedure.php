@@ -4,6 +4,7 @@ namespace core\endpoints;
 
 use Closure;
 use core\Request;
+use core\Response;
 
 class Procedure implements Endpoint {
     use SimpleEndpoint;
@@ -16,7 +17,7 @@ class Procedure implements Endpoint {
 
 
 
-    function call(Request $request): void {
-        ($this->function)($request);
+    function call(Request $request, Response $response): void {
+        ($this->function)($request, $response);
     }
 }

@@ -33,7 +33,7 @@ class Component implements Render, Endpoint {
         return $this->render();
     }
 
-    function call(Request $request): void {
-        // todo Response.render($this)
+    function call(Request $request, Response $response): void {
+        $response->render($this);
     }
 }

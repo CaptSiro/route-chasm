@@ -3,6 +3,7 @@
 namespace core\endpoints;
 
 use core\Request;
+use core\Response;
 use patterns\Pattern;
 
 class Handler implements Endpoint {
@@ -72,13 +73,13 @@ class Handler implements Endpoint {
         return true;
     }
 
-    public function call(Request $request): void {
+    public function call(Request $request, Response $response): void {
         if ($request->httpMethod !== $this->httpMethod || !$this->checkGuards($request)) {
             return;
         }
 
         foreach ($this->handles as $handle) {
-            $handle->call($request);
+            $handle->call($request, $response);
         }
     }
 }
