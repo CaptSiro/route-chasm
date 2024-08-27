@@ -7,21 +7,25 @@ use core\dictionary\StrictMap;
 use core\dictionary\StrictStack;
 
 class Request {
-    public static function test(?Url $url = null): self {
-        return new self(
+    public static function test(?App $app = null, ?Url $url = null, ?string $httpMethod = "GET"): self {
+        $ret = new self(
+            $app ?? new App(),
             $url ?? Url::fromRequest(),
             new StrictMap(App::notDefinedCallback(), []),
             new StrictMap(App::notDefinedCallback(), []),
             new StrictMap(App::notDefinedCallback(), []),
             new StrictMap(App::notDefinedCallback(), []),
         );
+
+        $ret->httpMethod = $httpMethod;
+        return $ret;
     }
 
 
 
-    readonly public string $httpMethod;
+    public string $httpMethod;
 
-    readonly private array $headers;
+    private array $headers;
 
     public StrictDictionary|null $session;
 
@@ -32,6 +36,7 @@ class Request {
 
 
     public function __construct(
+        readonly protected App $app,
         readonly public Url $url,
         readonly public StrictDictionary $domain,
         readonly public StrictDictionary $files,
@@ -46,8 +51,12 @@ class Request {
 
 
 
-    public function getHeader(string $name) {
-        return $this->headers[$name];
+    public function getHeader(string $name): ?string {
+        return $this->headers[$name] ?? null;
+    }
+
+    public function setTestHeader(string $name, string $value): void {
+        $this->headers[$name] = $value;
     }
 
     public function hasSession(): bool {
@@ -65,5 +74,25 @@ class Request {
 
     public function set(string $name, mixed $value): void {
         $this->data->set($name, $value);
+    }
+
+    public function getResponseType(): string {
+        $matcher = $this->app->getResponseTypeMatcher();
+
+        $header = $this->getHeader(Http::HEADER_X_RESPONSE_TYPE);
+        if (!is_null($header)) {
+            return $matcher($header);
+        }
+
+        $query = $this->url->query->get("t") ?? $this->url->query->get("type");
+        if (!is_null($query)) {
+            return $matcher($query);
+        }
+
+        if ($this->httpMethod === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
+            return 'HTML';
+        }
+
+        return 'TEXT';
     }
 }

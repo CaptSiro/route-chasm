@@ -67,6 +67,11 @@ class Url {
      * @return string
      */
     public function getPath(): string {
+        $app = App::getInstance();
+        if ($app->options->get(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH)) {
+            return substr($this->path, strlen($app->getHome()));
+        }
+
         return $this->path;
     }
 
