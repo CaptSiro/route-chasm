@@ -100,7 +100,7 @@ class Router implements Traversable, Endpoint {
             $request->param->push($found->matches);
 
             foreach ($found->endpoints as $endpoint) {
-                $endpoint->call($request);
+                $endpoint->call($request, $response);
             }
 
             $request->param->pop();

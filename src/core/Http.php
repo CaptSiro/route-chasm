@@ -11,6 +11,7 @@ class Http {
     // RouteChasm headers
     public const HEADER_CONTENT_DESCRIPTION = "Content-Description";
     public const HEADER_PREGMA = "Pregma";
+    public const HEADER_X_RESPONSE_TYPE = "X-Response-Type";
 
 
 

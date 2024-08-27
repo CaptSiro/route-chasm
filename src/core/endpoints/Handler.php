@@ -4,6 +4,7 @@ namespace core\endpoints;
 
 use core\Request;
 use core\Response;
+use patterns\AnyString;
 use patterns\Pattern;
 
 class Handler implements Endpoint {
@@ -47,8 +48,8 @@ class Handler implements Endpoint {
         return $this;
     }
 
-    public function query(string $name, Pattern $pattern): self {
-        $this->queryGuards[$name] = $pattern;
+    public function query(string $name, ?Pattern $pattern = null): self {
+        $this->queryGuards[$name] = $pattern ?? AnyString::getInstance();
         return $this;
     }
 

@@ -70,6 +70,10 @@ class Node implements Traversable {
     }
 
     public function search(array $segments, int $current, MatchStack $stack, array &$out): void {
+        if ($stack->isEmpty()) {
+            $stack->push([], $this->endpoints);
+        }
+
         if (Segment::isLast($segments, $current)) {
             $stack->merge($params, $endpoints);
             $out[] = new FoundNode($params, $endpoints);

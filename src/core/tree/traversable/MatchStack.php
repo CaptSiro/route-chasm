@@ -13,7 +13,11 @@ class MatchStack {
 
 
 
-    function push(array $params, array $endpoints): void {
+    public function isEmpty(): bool {
+        return empty($this->stack);
+    }
+
+    public function push(array $params, array $endpoints): void {
         $item = [];
 
         if (!empty($params)) {
@@ -27,15 +31,11 @@ class MatchStack {
         $this->stack[] = $item;
     }
 
-
-
-    function pop(): void {
+    public function pop(): void {
         array_pop($this->stack);
     }
 
-
-
-    function merge(?array &$params, ?array &$endpoints): void {
+    public function merge(?array &$params, ?array &$endpoints): void {
         $params = $endpoints = [];
 
         foreach ($this->stack as $item) {

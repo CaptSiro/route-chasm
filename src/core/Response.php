@@ -2,6 +2,8 @@
 
 namespace core;
 
+use components\core\HttpError;
+
 class Response {
     // Informational
     public const CODE_CONTINUE = 100;
@@ -41,6 +43,7 @@ class Response {
     public const CODE_PAYLOAD_TOO_LARGE = 413;
     public const CODE_URI_TOO_LONG = 414;
     public const CODE_UNSUPPORTED_MEDIA_TYPE = 415;
+    public const CODE_IM_A_TEAPOT = 418;
 
     // Server Error
     public const CODE_INTERNAL_SERVER_ERROR = 500;
@@ -136,19 +139,6 @@ class Response {
     }
 
     /**
-     * Exits the execution with error code and message.
-     */
-    public function error(string $message, int $httpStatusCode = -1): void {
-        // todo different outputs per response type
-
-        if ($httpStatusCode !== -1) {
-            $this->setStatus($httpStatusCode);
-        }
-
-        $this->send($message);
-    }
-
-    /**
      * Exits the execution.
      *
      * Reads file and sends it contents to the user.
@@ -157,7 +147,7 @@ class Response {
      */
     public function readFile(string $file): void {
         if (!file_exists($file)) {
-            $this->error("RequestFile not found: $file", self::CODE_NOT_FOUND);
+            $this->render(new HttpError("RequestFile not found: $file", self::CODE_NOT_FOUND));
         }
 
         readfile($file);
