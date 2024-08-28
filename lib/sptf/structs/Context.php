@@ -5,8 +5,6 @@ namespace sptf\structs;
 use ErrorException;
 use sptf\interfaces\Assertion;
 
-require_once __DIR__ . "/../interfaces/Assertion.php";
-
 class Context {
     /** @var Assertion[] $assertions */
     static private array $assertions = [];

@@ -7,8 +7,6 @@ use JsonSerializable;
 use retval\exceptions\Exc;
 use retval\exceptions\NullPointerExc;
 
-require_once __DIR__ . "/exceptions/Exc.php";
-
 
 
 class Result implements JsonSerializable {
