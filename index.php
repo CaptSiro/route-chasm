@@ -2,6 +2,8 @@
 
 use components\core\HttpError;
 use core\App;
+use core\database\config\BasicConfig;
+use core\database\Database;
 use core\Http;
 use core\Response;
 use sptf\Sptf;
@@ -9,6 +11,13 @@ use sptf\Sptf;
 require_once __DIR__ ."/src/autoload.php";
 
 
+
+Database::configure(new BasicConfig(
+    "localhost",
+    "flashcards",
+    "root",
+    ""
+));
 
 $app = App::getInstance();
 $app->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
