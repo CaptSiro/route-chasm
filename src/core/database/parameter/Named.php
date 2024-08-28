@@ -45,6 +45,6 @@ class Named implements Param {
     }
 
     function stringify(): string {
-        return "[" . $this->name . "]: '" . $this->value . "' (" . $this->type . ")";
+        return "[" . $this->name . "]: '" . $this->value . "' (" . $this->getType() . ")";
     }
 }
