@@ -10,9 +10,7 @@ class StrictStack implements StrictDictionary {
 
 
 
-    public function __construct(
-        protected Closure $notDefinedFn
-    ) {
+    public function __construct() {
         $this->stack = [];
     }
 

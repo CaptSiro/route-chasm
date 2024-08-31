@@ -24,7 +24,7 @@ class Url {
             $_SERVER['HTTP_HOST'],
             $path,
             $_SERVER['QUERY_STRING'],
-            new StrictMap(App::notDefinedCallback(), $_GET)
+            new StrictMap($_GET)
         );
     }
 

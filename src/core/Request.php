@@ -45,7 +45,7 @@ class Request {
     ) {
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = apache_request_headers();
-        $this->param = new StrictStack(App::notDefinedCallback());
+        $this->param = new StrictStack();
         $this->data = new StrictMap();
     }
 
