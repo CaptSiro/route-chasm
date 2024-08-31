@@ -47,7 +47,8 @@ class Tokenizer {
             if ($char === "\0"
                 || $char === "["
                 || $char === "]"
-                || $char === "/") {
+                || $char === "/"
+                || $char === "*") {
                 return $literal;
             }
 
@@ -63,6 +64,7 @@ class Tokenizer {
 
             $token = match ($this->char) {
                 "\0" => new Token(TokenType::EOF, "\0"),
+                "*" => $this->any(),
                 "/" => new Token(TokenType::SLASH, "/"),
                 "[" => new Token(TokenType::BRACKET_L, "["),
                 "]" => new Token(TokenType::BRACKET_R, "]"),
@@ -76,5 +78,13 @@ class Tokenizer {
                 return;
             }
         }
+    }
+
+    protected function any(): Token {
+        if ($this->peek() === "*") {
+            return new Token(TokenType::ANY_TERMINATOR, "**");
+        }
+
+        return new Token(TokenType::ANY, "*");
     }
 }

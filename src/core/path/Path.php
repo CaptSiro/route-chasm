@@ -2,6 +2,7 @@
 
 namespace core\path;
 
+use BadFunctionCallException;
 use core\path\parser\Parser;
 use patterns\Pattern;
 
@@ -77,8 +78,14 @@ class Path {
     }
 
     public function param(string $name, Pattern $pattern): self {
+        $exists = false;
+
         foreach ($this->segments as $segment) {
-            $segment->setParam($name, $pattern);
+            $exists = $exists || $segment->setParam($name, $pattern);
+        }
+
+        if (!$exists) {
+            throw new BadFunctionCallException("Parameter [$name] is not present in path '$this'"); // todo custom exception
         }
 
         return $this;

@@ -2,6 +2,7 @@
 
 namespace core;
 
+use core\database\Table;
 use core\path\Path;
 use patterns\Number;
 use patterns\Pattern;

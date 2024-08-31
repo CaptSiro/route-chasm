@@ -1,9 +1,10 @@
 <?php
 
+use core\App;
 use core\Url;
 use sptf\Sptf;
 
-require_once __DIR__ ."/../utils/set-array.php";
+require_once __DIR__ ."/../../utils/RouteChasm/set-array.php";
 
 
 
@@ -20,6 +21,8 @@ Sptf::test('creates URL from server vars', function () {
         "nice" => "69420"
     ]);
 
+    App::getInstance()->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
+
     $url = Url::fromRequest();
 
     Sptf::expect($url->getHost())->toBe("poggy.localhost.com");
@@ -32,4 +35,5 @@ Sptf::test('creates URL from server vars', function () {
 
     $server_reset();
     $get_reset();
+    App::getInstance()->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 });

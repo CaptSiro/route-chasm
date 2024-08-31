@@ -29,6 +29,7 @@ class Part {
             PartType::DYNAMIC => is_null($pattern)
                 ? AnyString::getInstance()
                 : $pattern,
+            PartType::ANY => AnyString::getInstance(),
         };
     }
 
@@ -37,7 +38,8 @@ class Part {
     public function __toString(): string {
         return match ($this->type) {
             PartType::DYNAMIC => "[$this->literal]",
-            PartType::STATIC => $this->literal
+            PartType::ANY,
+            PartType::STATIC => $this->literal,
         };
     }
 }

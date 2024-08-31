@@ -2,10 +2,10 @@
 
 namespace tests\utils\RouteChasm;
 
+use core\database\Table;
 use core\Request;
 use core\Resource;
 use core\Singleton;
-use core\Table;
 
 class TestResource extends Resource {
     use Singleton;

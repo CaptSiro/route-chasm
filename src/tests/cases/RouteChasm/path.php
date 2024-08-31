@@ -195,3 +195,78 @@ Sptf::test("matching compound parts of segment", function () {
         false
     );
 });
+
+Sptf::test("should handle any token by it self", function () {
+    segmentShouldMatch(
+        Path::from("*"),
+        array_merge(
+            str_split(Strings::CHARS_NUMBERS() . Strings::CHARS_ALPHA() . Strings::CHARS_ALPHA_UPPER() . Strings::CHARS_SPECIALS()),
+            [
+                "a",
+                "0-a",
+                "123-a",
+                "1-foo",
+                "123-foo",
+                "123-foo_BAR",
+            ]
+        ),
+        true
+    );
+});
+
+Sptf::test("should handle any token prepended with static token", function () {
+    segmentShouldMatch(
+        Path::from("foo-*"),
+        [
+            "foo-a",
+            "foo-0-a",
+            "foo-123-a",
+            "foo-1-foo",
+            "foo-123-foo",
+            "foo-123-foo_BAR",
+        ],
+        true
+    );
+
+    segmentShouldMatch(
+        Path::from("foo-*"),
+        [
+            "a",
+            "0-a",
+            "123-a",
+            "1-foo",
+            "123-foo",
+            "123-foo_BAR",
+        ],
+        false
+    );
+});
+
+Sptf::test("should handle any token prepended with dynamic token", function () {
+    segmentShouldMatch(
+        Path::from("[id]-*")
+            ->param("id", Number::getInstance()),
+        array_merge(
+            array_map(fn($x) => "$x-any", str_split(Strings::CHARS_NUMBERS())),
+            [
+                "0-a",
+                "123-a",
+                "123-foo",
+                "123-foo_BAR",
+                "203-0-a",
+                "203-123-a",
+                "203-1-foo",
+                "203-123-foo",
+                "203-123-foo_BAR",
+            ]
+        ),
+        true
+    );
+
+    segmentShouldMatch(
+        Path::from("[id]-*")
+            ->param("id", Number::getInstance()),
+        str_split(Strings::CHARS_SPECIALS() . Strings::CHARS_ALPHA() . Strings::CHARS_ALPHA_UPPER()),
+        false
+    );
+});

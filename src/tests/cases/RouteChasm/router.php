@@ -4,14 +4,16 @@ use core\Http;
 use core\path\Path;
 use core\Request;
 use core\Resource;
+use core\Response;
 use core\Router;
+use core\tree\traversable\FoundNode;
 use core\utils\Arrays;
 use patterns\Ident;
 use patterns\Number;
 use sptf\Sptf;
 use tests\utils\RouteChasm\TestResource;
 
-require_once __DIR__ ."/../utils/bind.php";
+require_once __DIR__ ."/../../utils/RouteChasm/bind.php";
 $compare = fn($a, $b) => Arrays::equal($a, $b);
 
 
@@ -139,7 +141,7 @@ Sptf::test("find path for deeply nested dynamic Routers", function () {
 
     $request = Request::test();
     foreach ($r2->findPath("/@CaptSiro/post-420")[0]->endpoints as $endpoint) {
-        $endpoint->call($request);
+        $endpoint->call($request, new Response());
     }
 
     Sptf::expect($ret)
@@ -179,4 +181,67 @@ Sptf::test("get correct url path for Resource", function () {
 
     Sptf::expect($t1->getUrl(Resource::URL_READ))
         ->toBe("/a/b/[unique]");
+});
+
+Sptf::test("handle any terminated paths", function () {
+    $r0 = new Router();
+
+    $r0->use(
+        "/public/**",
+        fn() => 0
+    );
+
+    Sptf::expect(empty($r0->findPath("/public/css/styles.css")))
+        ->toBe(false);
+});
+
+
+
+/**
+ * @param array<FoundNode> $path
+ * @param $anyTerminatedCalled
+ */
+function shouldSetAnyTerminated(array $path, &$anyTerminatedCalled): void {
+    Sptf::expect(count($path))
+        ->toBe(2);
+
+    $anyTerminatedCalled = false;
+    foreach ($path[1]->endpoints as $endpoint) {
+        $endpoint->call(Request::test(), new Response());
+    }
+
+    Sptf::expect($anyTerminatedCalled)
+        ->toBe(true);
+}
+
+Sptf::test("any terminated paths are evaluated last", function () {
+    $anyTerminatedCalled = false;
+    $r0 = new Router();
+
+    $r0->use(
+        "/foo",
+        fn() => 0
+    );
+
+    $r0->use(
+        "/**",
+        function () use (&$anyTerminatedCalled) {
+            $anyTerminatedCalled = true;
+        }
+    );
+
+    $r0->use(
+        "/bar",
+        fn() => 0
+    );
+
+    shouldSetAnyTerminated(
+        $r0->findPath("/foo"),
+        $anyTerminatedCalled
+    );
+
+    shouldSetAnyTerminated(
+        $r0->findPath("/bar"),
+        $anyTerminatedCalled
+    );
 });

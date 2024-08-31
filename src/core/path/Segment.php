@@ -8,6 +8,9 @@ use patterns\Stream;
 
 class Segment {
     public const FIRST = -1;
+    public const FLAG_ANY_TERMINATED = 0b1;
+
+
 
     public static function next(array $segments, int $position): int {
         $count = count($segments);
@@ -65,14 +68,31 @@ class Segment {
 
     /** @var Part[] $parts */
     private array $parts;
+    private int $flags;
 
 
 
     public function __construct() {
         $this->parts = [];
+        $this->flags = 0;
     }
 
 
+
+    /**
+     * @return int
+     */
+    public function getFlags(): int {
+        return $this->flags;
+    }
+
+    public function setFlag(int $flag): void {
+        $this->flags |= $flag;
+    }
+
+    public function hasFlag(int $flag): bool {
+        return ($this->flags & $flag) !== 0;
+    }
 
     /**
      * @return array
@@ -99,18 +119,23 @@ class Segment {
         $this->parts[] = $part;
     }
 
-    public function setParam(string $name, Pattern $pattern): void {
+    public function setParam(string $name, Pattern $pattern): bool {
+        $hasSet = false;
+
         foreach ($this->parts as $part) {
             if ($part->type === PartType::DYNAMIC && $part->literal === $name) {
                 $part->pattern = $pattern;
+                $hasSet = true;
             }
         }
+
+        return $hasSet;
     }
 
     public function test(string $segment, ?array &$matches): bool {
         $matches = [];
         $count = count($this->parts);
-
+        
         if ($count === 1 && $this->parts[0]->type === PartType::STATIC) {
             return $segment === $this->parts[0]->literal;
         }
@@ -118,8 +143,8 @@ class Segment {
         $stream = new Stream($segment);
         foreach ($this->parts as $part) {
             $match = "";
-            $failed = !$part->pattern->matchPipeline($stream, $match);
-            if ($failed) {
+            $passed = $part->pattern->matchPipeline($stream, $match);
+            if (!$passed) {
                 return false;
             }
 

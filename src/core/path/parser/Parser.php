@@ -60,6 +60,18 @@ class Parser {
                     break;
                 }
 
+                case TokenType::ANY: {
+                    $segment->addPart(new Part(PartType::ANY, "*"));
+                    break;
+                }
+
+                case TokenType::ANY_TERMINATOR: {
+                    $segment->addPart(new Part(PartType::ANY, "**"));
+                    $segment->setFlag(Segment::FLAG_ANY_TERMINATED);
+                    $p->addSegment($segment);
+                    break 2;
+                }
+
                 case TokenType::BRACKET_R: throw new Exception("Unexpected token '$literal'");
                 case TokenType::ILLEGAL: throw new Exception("Illegal token '$literal'");
                 case TokenType::EOF: {
@@ -70,6 +82,7 @@ class Parser {
                     $p->addSegment($segment);
                     break 2;
                 }
+
             }
         }
 

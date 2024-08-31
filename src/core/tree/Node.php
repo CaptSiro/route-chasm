@@ -74,22 +74,25 @@ class Node implements Traversable {
             $stack->push([], $this->endpoints);
         }
 
-        if (Segment::isLast($segments, $current)) {
+        if ($this->segment?->hasFlag(Segment::FLAG_ANY_TERMINATED) || Segment::isLast($segments, $current)) {
             $stack->merge($params, $endpoints);
-            $out[] = new FoundNode($params, $endpoints);
+            $out[] = new FoundNode($params, $endpoints, $this->segment?->getFlags() ?? 0);
             return;
         }
 
         $next = Segment::next($segments, $current);
 
-        foreach ($this->nodes as $n) {
-            $hasPassed = $n->getNode()->getSegment()->test($segments[$current], $matches);
+        foreach ($this->nodes as $node) {
+            $segment = $node->getNode()->getSegment();
+            $hasPassed = $segment->test($segments[$current], $matches);
 
-            if ($hasPassed) {
-                $stack->push($matches, $n->getNode()->endpoints);
-                $n->search($segments, $next, $stack, $out);
-                $stack->pop();
+            if (!$hasPassed) {
+                continue;
             }
+
+            $stack->push($matches, $node->getNode()->endpoints);
+            $node->getNode()->search($segments, $next, $stack, $out);
+            $stack->pop();
         }
     }
 

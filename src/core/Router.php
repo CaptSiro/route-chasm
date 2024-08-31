@@ -3,7 +3,6 @@
 namespace core;
 
 use Closure;
-use core\dictionary\StrictMap;
 use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
 use core\endpoints\SimpleEndpoint;
@@ -80,6 +79,10 @@ class Router implements Traversable, Endpoint {
         $this->node->search($segments, $current, $stack, $out);
     }
 
+    /**
+     * @param string $path
+     * @return FoundNode[]
+     */
     public function findPath(string $path): array {
         $segments = explode('/', $path);
         /** @var array<FoundNode> $found */
@@ -91,6 +94,21 @@ class Router implements Traversable, Endpoint {
             new MatchStack(),
             $found
         );
+
+        // normalize path
+        $left = 0;
+        $right = count($found) - 1;
+
+        while ($left < $right) {
+            if (($found[$left]->flags & Segment::FLAG_ANY_TERMINATED) !== 0) {
+                $tmp = $found[$right];
+                $found[$right] = $found[$left];
+                $found[$left] = $tmp;
+                $right--;
+            }
+
+            $left++;
+        }
 
         return $found;
     }

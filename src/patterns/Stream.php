@@ -45,7 +45,7 @@ class Stream implements Seek, Pipeline {
     public function __toString(): string {
         return substr($this->resource, 0, $this->pointer)
             . "[> "
-            . $this->resource[$this->pointer]
+            . ($this->resource[$this->pointer] ?? "\\0")
             . " <]"
             . substr($this->resource, $this->pointer + 1);
     }
