@@ -7,7 +7,7 @@ use core\database\parameter\Param;
 
 class EmptyBuffer implements Buffer {
     function add(Param $value): Buffer {
-        throw new BadFunctionCallException("Cannot modify empty buffer");
+        throw new BufferMutationNotAllowedException();
     }
 
     function shift(): Param {
@@ -23,6 +23,6 @@ class EmptyBuffer implements Buffer {
     }
 
     function load(array $values): Buffer {
-        throw new BadFunctionCallException("Cannot modify empty buffer");
+        throw new BufferMutationNotAllowedException();
     }
 }

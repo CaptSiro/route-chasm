@@ -41,7 +41,7 @@ class StrictStack implements StrictDictionary {
     public function getStrict($name): mixed {
         $value = $this->get($name);
         if ($value === null) {
-            ($this->notDefinedFn)($name);
+            throw new NotDefinedException($name);
         }
 
         return $value;

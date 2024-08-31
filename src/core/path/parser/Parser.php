@@ -9,9 +9,6 @@ use core\path\Segment;
 use Exception;
 
 class Parser {
-    /**
-     * @throws Exception
-     */
     static function parse(string $path): Path {
         $p = new Path();
         $segment = new Segment();
@@ -25,15 +22,18 @@ class Parser {
 
             switch ($tokens[$pos]->type) {
                 case TokenType::BRACKET_L: {
-                    if (($pos + 2 > $count)
-                        || !($tokens[$pos + 1]->type === TokenType::IDENT && $tokens[$pos + 2]->type === TokenType::BRACKET_R)) {
-                        throw new Exception("Illegal token '$literal'");
+                    $identAndClosingBracketFollows = ($pos + 2 < $count)
+                        && $tokens[$pos + 1]->type === TokenType::IDENT
+                        && $tokens[$pos + 2]->type === TokenType::BRACKET_R;
+
+                    if (!$identAndClosingBracketFollows) {
+                        throw new PathParsingException("Illegal token '$literal'");
                     }
 
                     $ident = $tokens[$pos + 1]->literal;
 
                     if (!Ident::validate($ident)) {
-                        throw new Exception("'$ident' is not valid parameter name");
+                        throw new PathParsingException("'$ident' is not valid parameter name");
                     }
 
                     $segment->addPart(new Part(PartType::DYNAMIC, $ident));
@@ -48,7 +48,7 @@ class Parser {
 
                 case TokenType::SLASH: {
                     if (isset($tokens[$pos - 1]) && $tokens[$pos - 1]->type === TokenType::SLASH) {
-                        throw new Exception("Illegal token '$literal'");
+                        throw new PathParsingException("Illegal token '$literal'");
                     }
 
                     if (empty($segment->getParts())) {
@@ -72,8 +72,8 @@ class Parser {
                     break 2;
                 }
 
-                case TokenType::BRACKET_R: throw new Exception("Unexpected token '$literal'");
-                case TokenType::ILLEGAL: throw new Exception("Illegal token '$literal'");
+                case TokenType::BRACKET_R: throw new PathParsingException("Unexpected token '$literal'");
+                case TokenType::ILLEGAL: throw new PathParsingException("Illegal token '$literal'");
                 case TokenType::EOF: {
                     if (empty($segment->getParts())) {
                         break 2;

@@ -21,7 +21,7 @@ class Component implements Render, Endpoint {
         $source = $this->getSource($file);
 
         if (!file_exists($source)) {
-            (App::noTemplateFile())($source);
+            throw new DoesNotExistException("Could not locate template '$source'", $source);
         }
 
         ob_start();

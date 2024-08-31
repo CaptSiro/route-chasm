@@ -22,7 +22,7 @@ readonly class StaticBuffer implements Buffer {
 
 
     function add(Param $value): Buffer {
-        throw new BadFunctionCallException("Cannot modify static buffer");
+        throw new BufferMutationNotAllowedException();
     }
 
     function shift(): Param {
@@ -38,6 +38,6 @@ readonly class StaticBuffer implements Buffer {
     }
 
     function load(array $values): Buffer {
-        throw new BadFunctionCallException("Cannot modify static buffer");
+        throw new BufferMutationNotAllowedException();
     }
 }

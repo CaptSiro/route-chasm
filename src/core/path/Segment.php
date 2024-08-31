@@ -2,9 +2,9 @@
 
 namespace core\path;
 
-use Exception;
 use patterns\Pattern;
 use patterns\Stream;
+use RuntimeException;
 
 class Segment {
     public const FIRST = -1;
@@ -108,7 +108,7 @@ class Segment {
             }
 
             if (isset($reducer[$part->literal])) {
-                throw new Exception("Multiple definitions of '". $part->literal ."' dynamic part");
+                throw new RuntimeException("Multiple definitions of '". $part->literal ."' dynamic part");
             }
 
             $reducer[$part->literal] = $part;

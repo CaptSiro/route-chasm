@@ -3,7 +3,9 @@
 namespace core\path;
 
 use BadFunctionCallException;
+use core\DoesNotExistException;
 use core\path\parser\Parser;
+use Exception;
 use patterns\Pattern;
 
 class Path {
@@ -85,7 +87,7 @@ class Path {
         }
 
         if (!$exists) {
-            throw new BadFunctionCallException("Parameter [$name] is not present in path '$this'"); // todo custom exception
+            throw new DoesNotExistException("Parameter [$name] is not present in path '$this'", $name);
         }
 
         return $this;

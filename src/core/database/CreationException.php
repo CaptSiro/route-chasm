@@ -1,6 +1,6 @@
 <?php
 
-namespace core\database\exceptions;
+namespace core\database;
 
 use Exception;
 

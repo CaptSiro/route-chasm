@@ -17,17 +17,6 @@ class App {
 
 
 
-    public static function notDefinedCallback(): Closure {
-        return fn($reason) => throw new Exception($reason);
-    }
-
-    public static function noTemplateFile(): Closure {
-        return fn($file) => throw new Exception($file);
-    }
-
-
-
-
     private Router $router;
     private Request $request;
     private Response $response;
@@ -55,10 +44,10 @@ class App {
         $this->request = new Request(
             $this,
             Url::fromRequest(),
-            new StrictMap(self::notDefinedCallback(), []),
-            new StrictMap(self::notDefinedCallback(), []),
-            new StrictMap(self::notDefinedCallback(), []),
-            new StrictMap(self::notDefinedCallback(), [])
+            new StrictMap(),
+            new StrictMap(),
+            new StrictMap(),
+            new StrictMap()
         );
 
         $this->response = new Response();

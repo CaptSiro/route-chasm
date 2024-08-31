@@ -2,17 +2,12 @@
 
 namespace core\dictionary;
 
-use Closure;
-
 readonly class StrictMap implements StrictDictionary {
     private Map $map;
 
 
 
-    public function __construct(
-        private Closure $notDefinedFn,
-        array $array,
-    ) {
+    public function __construct(array $array = []) {
         $this->map = new Map($array);
     }
 
@@ -24,7 +19,7 @@ readonly class StrictMap implements StrictDictionary {
 
     function getStrict(string $name): mixed {
         if (!$this->exists($name)) {
-            ($this->notDefinedFn)($name);
+            throw new NotDefinedException($name);
         }
 
         return $this->map->get($name);

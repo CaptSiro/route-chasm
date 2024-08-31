@@ -11,10 +11,10 @@ class Request {
         $ret = new self(
             $app ?? new App(),
             $url ?? Url::fromRequest(),
-            new StrictMap(App::notDefinedCallback(), []),
-            new StrictMap(App::notDefinedCallback(), []),
-            new StrictMap(App::notDefinedCallback(), []),
-            new StrictMap(App::notDefinedCallback(), []),
+            new StrictMap(),
+            new StrictMap(),
+            new StrictMap(),
+            new StrictMap(),
         );
 
         $ret->httpMethod = $httpMethod;
@@ -46,7 +46,7 @@ class Request {
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = apache_request_headers();
         $this->param = new StrictStack(App::notDefinedCallback());
-        $this->data = new StrictMap(App::notDefinedCallback(), []);
+        $this->data = new StrictMap();
     }
 
 
@@ -65,7 +65,7 @@ class Request {
 
     public function startSession(): void {
         session_start();
-        $this->session = new StrictMap(App::notDefinedCallback(), $_SESSION);
+        $this->session = new StrictMap($_SESSION);
     }
 
     public function get(string $variable) {

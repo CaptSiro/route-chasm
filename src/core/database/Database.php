@@ -5,8 +5,6 @@ namespace core\database;
 use core\database\buffer\Buffer;
 use core\database\buffer\ParamBuffer;
 use core\database\config\Config;
-use core\database\exceptions\CreationException;
-use core\database\exceptions\MixedIndexingException;
 use core\database\query\Query;
 use core\Singleton;
 use http\Exception\InvalidArgumentException;
