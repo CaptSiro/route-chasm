@@ -98,24 +98,34 @@ class Sptf {
             $failed[] = $assertion->error();
         }
 
-        $hasPassed = empty($failed);
-        $header = new TestCaseHeader($hasPassed, $name, $time);
+        $outcome = TestOutcome::fromStats($passed, $failed);
+        $header = new TestCaseHeader($outcome, $name, $time);
 
-        $class = $hasPassed ? 'passed' : 'failed';
+        $class = strtolower($outcome->value);
         echo "<div class='test $class'>";
         echo $header->html();
 
-        if ($hasPassed) {
-            echo "<div class='assertions'>$passed assertions</div>";
-        } else {
-            foreach ($failed as $fail) {
-                echo $fail->html();
+        switch ($outcome) {
+            case TestOutcome::FAILED: {
+                foreach ($failed as $fail) {
+                    echo $fail->html();
+                }
+
+                break;
+            }
+            case TestOutcome::NONE: {
+                echo "<div class='warning'>No assertions</div>";
+                break;
+            }
+            case TestOutcome::PASSED: {
+                echo "<div class='assertions'>$passed assertions</div>";
+                break;
             }
         }
 
         echo "</div>";
 
-        if ((Context::getIsPrintingAllowed() || !$hasPassed) && $printed !== false) {
+        if ((Context::getIsPrintingAllowed() || $outcome !== TestOutcome::PASSED) && $printed !== false) {
             echo $printed;
         }
     }

@@ -41,11 +41,12 @@ body > div {
     flex-direction: column;
     width: 100%;
 
-    &.failed {
+    &.fail {
         padding-bottom: 2px;
     }
 
-    &.passed {
+    &.pass,
+    &.none {
         flex-direction: row;
         gap: 16px;
     }
@@ -61,12 +62,16 @@ body > div {
         padding: 4px 10px;
     }
 
-    &.failed .outcome {
+    &.fail .outcome {
         background-color: #e14831;
     }
 
-    &.passed .outcome {
+    &.pass .outcome {
         background-color: #75a47f;
+    }
+
+    &.none .outcome {
+        background-color: #d1bc2e;
     }
 
 
@@ -111,6 +116,10 @@ body > div {
     padding: 4px 10px;
     background-color: #e14831;
     width: fit-content;
+}
+
+.warning {
+    color: #d1bc2e;
 }
 
 .assertions {

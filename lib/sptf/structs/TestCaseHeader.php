@@ -3,16 +3,17 @@
 namespace sptf\structs;
 
 use sptf\interfaces\Html;
+use sptf\TestOutcome;
 
 readonly class TestCaseHeader implements Html {
     public function __construct(
-        protected bool $outcome,
+        protected TestOutcome $outcome,
         protected string $name,
         protected float $time
     ) {}
 
     public function html(): string {
-        $outcomeText = $this->outcome ? "PASS" : "FAIL";
+        $outcomeText = $this->outcome->value;
         $time = sprintf("%.02f s", $this->time);
 
         return "
