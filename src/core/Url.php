@@ -64,6 +64,8 @@ class Url {
     }
 
     /**
+     * If option for removing home from is set it will perform such action
+     * @see App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH
      * @return string
      */
     public function getPath(): string {
@@ -72,6 +74,15 @@ class Url {
             return substr($this->path, strlen($app->getHome()));
         }
 
+        return $this->path;
+    }
+
+    /**
+     * Ignores option for home removal
+     * @see App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH
+     * @return string
+     */
+    public function getRealPath(): string {
         return $this->path;
     }
 
