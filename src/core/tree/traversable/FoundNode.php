@@ -3,15 +3,17 @@
 namespace core\tree\traversable;
 
 use core\endpoints\Endpoint;
+use core\Flags;
 
-readonly class FoundNode {
+class FoundNode {
+    use Flags;
+
     /**
      * @param array<string, string> $matches
      * @param array<Endpoint> $endpoints
      */
     public function __construct(
-        public array $matches,
-        public array $endpoints,
-        public int $flags
+        public readonly array $matches,
+        public readonly array $endpoints,
     ) {}
 }

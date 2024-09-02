@@ -5,6 +5,7 @@ namespace core\tree;
 use core\endpoints\Endpoint;
 use core\path\Path;
 use core\path\Segment;
+use core\Request;
 use core\tree\traversable\FoundNode;
 use core\tree\traversable\MatchStack;
 use core\tree\traversable\Traversable;
@@ -76,7 +77,16 @@ class Node implements Traversable {
 
         if ($this->segment?->hasFlag(Segment::FLAG_ANY_TERMINATED) || Segment::isLast($segments, $current)) {
             $stack->merge($params, $endpoints);
-            $out[] = new FoundNode($params, $endpoints, $this->segment?->getFlags() ?? 0);
+
+            if (isset($params[Request::PARAM_ANY_TERMINATOR])) {
+                $steps = array_slice($segments, $current);
+                if (!empty($steps)) {
+                    $params[Request::PARAM_ANY_TERMINATOR] .= '/' .implode('/', $steps);
+                }
+            }
+
+            $out[] = (new FoundNode($params, $endpoints))
+                ->setFlag($this->segment?->getFlags() ?? 0);
             return;
         }
 

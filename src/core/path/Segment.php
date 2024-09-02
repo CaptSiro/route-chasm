@@ -2,13 +2,19 @@
 
 namespace core\path;
 
+use core\Flags;
 use patterns\Pattern;
 use patterns\Stream;
 use RuntimeException;
 
 class Segment {
-    public const FIRST = -1;
+    use Flags;
+
     public const FLAG_ANY_TERMINATED = 0b1;
+
+
+
+    public const FIRST = -1;
 
 
 
@@ -68,7 +74,6 @@ class Segment {
 
     /** @var Part[] $parts */
     private array $parts;
-    private int $flags;
 
 
 
@@ -78,21 +83,6 @@ class Segment {
     }
 
 
-
-    /**
-     * @return int
-     */
-    public function getFlags(): int {
-        return $this->flags;
-    }
-
-    public function setFlag(int $flag): void {
-        $this->flags |= $flag;
-    }
-
-    public function hasFlag(int $flag): bool {
-        return ($this->flags & $flag) !== 0;
-    }
 
     /**
      * @return array
@@ -148,7 +138,7 @@ class Segment {
                 return false;
             }
 
-            if ($part->type === PartType::DYNAMIC) {
+            if ($part->type !== PartType::STATIC) {
                 $matches[$part->literal] = $match;
             }
         }

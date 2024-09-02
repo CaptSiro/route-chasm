@@ -7,6 +7,11 @@ use core\dictionary\StrictMap;
 use core\dictionary\StrictStack;
 
 class Request {
+    public const PARAM_ANY = "*";
+    public const PARAM_ANY_TERMINATOR = "**";
+
+    
+    
     public static function test(?App $app = null, ?Url $url = null, ?string $httpMethod = "GET"): self {
         $ret = new self(
             $app ?? new App(),
