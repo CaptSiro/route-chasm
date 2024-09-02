@@ -8,10 +8,29 @@ use core\endpoints\Handler;
 use core\endpoints\Procedure;
 
 class Http {
+    public const METHOD_CONNECT = "CONNECT";
+    public const METHOD_DELETE = "DELETE";
+    public const METHOD_GET = "GET";
+    public const METHOD_HEAD = "HEAD";
+    public const METHOD_OPTIONS = "OPTIONS";
+    public const METHOD_PATCH = "PATCH";
+    public const METHOD_POST = "POST";
+    public const METHOD_PUT = "PUT";
+    public const METHOD_TRACE = "TRACE";
+
+
+
     // RouteChasm headers
     public const HEADER_CONTENT_DESCRIPTION = "Content-Description";
     public const HEADER_PREGMA = "Pregma";
     public const HEADER_X_RESPONSE_TYPE = "X-Response-Type";
+
+
+
+    const CORS_ORIGIN = self::HEADER_ACCESS_CONTROL_ALLOW_ORIGIN;
+    const CORS_HEADERS = self::HEADER_ACCESS_CONTROL_ALLOW_HEADERS;
+    const CORS_METHODS = self::HEADER_ACCESS_CONTROL_ALLOW_METHODS;
+    const CORS_CREDENTIALS = self::HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS;
 
 
 
@@ -187,47 +206,47 @@ class Http {
     }
 
     public static function connect(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("CONNECT"))
+        return (new Handler(self::METHOD_CONNECT))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function delete(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("DELETE"))
+        return (new Handler(self::METHOD_DELETE))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function get(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("GET"))
+        return (new Handler(self::METHOD_GET))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function head(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("HEAD"))
+        return (new Handler(self::METHOD_HEAD))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function options(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("OPTIONS"))
+        return (new Handler(self::METHOD_OPTIONS))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function patch(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("PATCH"))
+        return (new Handler(self::METHOD_PATCH))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function post(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("POST"))
+        return (new Handler(self::METHOD_POST))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function put(Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("PUT"))
+        return (new Handler(self::METHOD_PUT))
             ->setHandles(self::createHandles($endpoints));
     }
 
     public static function trace(Endpoint|Closure $enpoint, Endpoint|Closure ...$endpoints): Handler {
-        return (new Handler("TRACE"))
+        return (new Handler(self::METHOD_TRACE))
             ->setHandles(self::createHandles($endpoints));
     }
 }
