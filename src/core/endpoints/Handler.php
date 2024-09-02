@@ -2,6 +2,7 @@
 
 namespace core\endpoints;
 
+use core\path\Path;
 use core\Request;
 use core\Response;
 use patterns\AnyString;
@@ -24,6 +25,7 @@ class Handler implements Endpoint {
      * @var array<Pattern> $bodyGuards
      */
     private array $bodyGuards;
+    protected bool $isMiddleware;
 
 
 
@@ -32,6 +34,7 @@ class Handler implements Endpoint {
     ) {
         $this->queryGuards = [];
         $this->bodyGuards = [];
+        $this->isMiddleware = false;
     }
 
 
@@ -45,6 +48,11 @@ class Handler implements Endpoint {
 
     public function setHandles(array $handles): self {
         $this->handles = $handles;
+        return $this;
+    }
+
+    public function middleware(): self {
+        $this->isMiddleware = true;
         return $this;
     }
 
@@ -75,6 +83,10 @@ class Handler implements Endpoint {
     }
 
     public function call(Request $request, Response $response): void {
+        if (Path::depth($request->url->getPath()) !== Path::depth($this->getUrlPath()) && !$this->isMiddleware) {
+            return;
+        }
+
         if ($request->httpMethod !== $this->httpMethod || !$this->checkGuards($request)) {
             return;
         }

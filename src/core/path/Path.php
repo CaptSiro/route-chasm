@@ -2,10 +2,8 @@
 
 namespace core\path;
 
-use BadFunctionCallException;
 use core\DoesNotExistException;
 use core\path\parser\Parser;
-use Exception;
 use patterns\Pattern;
 
 class Path {
@@ -29,6 +27,21 @@ class Path {
         }
 
         return $p;
+    }
+
+    public static function depth(string $literal): int {
+        $literalLength = strlen($literal);
+        if ($literalLength === 0) {
+            return 0;
+        }
+
+        if ($literalLength === 1) {
+            return intval($literal !== "/");
+        }
+
+        $start = intval($literal[0] === '/');
+        $length = $literalLength - $start - intval($literal[$literalLength - 1] === '/');
+        return 1 + substr_count($literal, '/', $start, $length);
     }
 
     public static function compare(Path $a, Path $b): bool {
@@ -91,6 +104,26 @@ class Path {
         }
 
         return $this;
+    }
+
+    public function merge(Path|string $extension): self {
+        $clone = $this->clone();
+        $parsed = Path::from($extension);
+
+        $clone->params = array_merge($clone->params, $parsed->params);
+        $clone->segments = array_merge($clone->segments, $parsed->segments);
+
+        return $clone;
+    }
+
+    public function clone(): self {
+        $path = Path::from("$this");
+
+        foreach ($this->params as $name => $part) {
+            $path->param($name, clone $part->pattern);
+        }
+
+        return $path;
     }
 
     public function hasNext(): bool {
