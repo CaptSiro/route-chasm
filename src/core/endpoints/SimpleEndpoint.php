@@ -3,12 +3,10 @@
 namespace core\endpoints;
 
 use core\App;
-use core\path\Path;
 use core\tree\Node;
 use core\Url;
 
 trait SimpleEndpoint {
-    private Path $path;
     private ?Node $node = null;
 
 
