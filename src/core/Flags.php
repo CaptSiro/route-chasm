@@ -9,17 +9,26 @@ trait Flags {
         return $this->flags;
     }
 
+    /**
+     * To set more than one flag use the bitwise-or operator <code>|</code>
+     */
     public function setFlag(int $flags): self {
         $this->flags |= $flags;
         return $this;
     }
 
-    public function removeFlag(int $flag): self {
-        $this->flags &= ~$flag;
+    /**
+     * To remove more than one flag use the bitwise-or operator <code>|</code>
+     */
+    public function removeFlag(int $flags): self {
+        $this->flags &= ~$flags;
         return $this;
     }
 
-    public function hasFlag(int $flag): bool {
-        return ($this->flags & $flag) !== 0;
+    /**
+     * To check more than one flag use the bitwise-or operator <code>|</code>
+     */
+    public function hasFlag(int $flags): bool {
+        return ($this->flags & $flags) !== 0;
     }
 }
