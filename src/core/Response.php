@@ -6,6 +6,7 @@ use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPageContent;
 use core\http\Http;
 use core\http\HttpCode;
+use core\http\HttpHeader;
 
 class Response {
     protected array $headers;
@@ -117,11 +118,11 @@ class Response {
      */
     public function download(string $file): void {
         $this->setHeaders([
-            Http::HEADER_CONTENT_DESCRIPTION => "RequestFile Transfer",
-            Http::HEADER_CONTENT_TYPE => 'application/octet-stream',
-            Http::HEADER_CONTENT_DISPOSITION => "attachment; filename=" . basename($file),
-            Http::HEADER_PREGMA => "public",
-            Http::HEADER_CONTENT_LENGTH => filesize($file)
+            HttpHeader::CONTENT_DESCRIPTION => "RequestFile Transfer",
+            HttpHeader::CONTENT_TYPE => 'application/octet-stream',
+            HttpHeader::CONTENT_DISPOSITION => "attachment; filename=" . basename($file),
+            HttpHeader::PREGMA => "public",
+            HttpHeader::CONTENT_LENGTH => filesize($file)
         ]);
 
         $this->readFile($file);
@@ -158,7 +159,7 @@ class Response {
      * @return void
      */
     public function redirect(string $url, bool $doPrependHome = true): void {
-        $this->setHeader(Http::HEADER_LOCATION, ($doPrependHome ? App::getInstance()->getHome() : "") . $url);
+        $this->setHeader(HttpHeader::LOCATION, ($doPrependHome ? App::getInstance()->getHome() : "") . $url);
         $this->flush();
     }
 }
