@@ -2,6 +2,8 @@
 
 namespace patterns;
 
+use core\Pipeline;
+
 class Stream implements Seek, Pipeline {
     protected int $pointer;
     protected int $resourceLength;
@@ -17,9 +19,8 @@ class Stream implements Seek, Pipeline {
 
 
 
-    function next(): bool {
-        $this->resource[$this->pointer++];
-        return $this->isExhausted();
+    function next(): string {
+        return $this->resource[$this->pointer++];
     }
 
     function isExhausted(): bool {

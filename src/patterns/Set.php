@@ -2,6 +2,8 @@
 
 namespace patterns;
 
+use core\Pipeline;
+
 class Set implements Pattern {
     public function __construct(
         protected array $set

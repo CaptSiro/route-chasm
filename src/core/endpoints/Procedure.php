@@ -27,7 +27,7 @@ class Procedure implements Endpoint {
         return $this->isMiddleware;
     }
 
-    function call(Request $request, Response $response): void {
+    function execute(Request $request, Response $response): void {
         ($this->function)($request, $response);
     }
 }

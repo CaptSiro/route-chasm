@@ -1,22 +1,24 @@
 <?php
 
-namespace core\endpoints;
+namespace core\http;
 
+use core\endpoints\Endpoint;
+use core\endpoints\SimpleEndpoint;
 use core\path\Path;
 use core\Request;
 use core\Response;
 use patterns\AnyString;
 use patterns\Pattern;
 
-class Handler implements Endpoint {
+class HttpGate implements Endpoint {
     use SimpleEndpoint;
 
 
 
     /**
-     * @var array<Endpoint> $handles
+     * @var array<Endpoint> $endpoints
      */
-    private array $handles;
+    private array $endpoints;
     /**
      * @var array<Pattern> $queryGuards
      */
@@ -46,8 +48,8 @@ class Handler implements Endpoint {
         return $this->httpMethod;
     }
 
-    public function setHandles(array $handles): self {
-        $this->handles = $handles;
+    public function setEndpoints(array $endpoints): self {
+        $this->endpoints = $endpoints;
         return $this;
     }
 
@@ -82,21 +84,25 @@ class Handler implements Endpoint {
         return true;
     }
 
+    protected function checkHttpMethod(string $httpMethod): bool {
+        return $this->httpMethod === HttpMethod::ANY || $httpMethod === $this->httpMethod;
+    }
+
     public function isMiddleware(): bool {
         return $this->isMiddleware;
     }
 
-    public function call(Request $request, Response $response): void {
+    public function execute(Request $request, Response $response): void {
         if (Path::depth($request->url->getPath()) !== Path::depth($this->getUrlPath()) && !$this->isMiddleware) {
             return;
         }
 
-        if ($request->httpMethod !== $this->httpMethod || !$this->checkGuards($request)) {
+        if (!($this->checkHttpMethod($request->httpMethod) && $this->checkGuards($request))) {
             return;
         }
 
-        foreach ($this->handles as $handle) {
-            $handle->call($request, $response);
+        foreach ($this->endpoints as $endpoint) {
+            $endpoint->execute($request, $response);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace patterns;
 
+use core\Pipeline;
 use core\Singleton;
 
 class Ident implements Pattern {

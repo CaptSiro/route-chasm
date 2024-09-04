@@ -158,6 +158,6 @@ class App {
 
     public function serve(?Request $request = null): void {
         $req = $request ?? $this->request;
-        $this->router->call($req, $this->response);
+        $this->router->execute($req, $this->response);
     }
 }

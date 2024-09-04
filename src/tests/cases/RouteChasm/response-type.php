@@ -1,6 +1,7 @@
 <?php
 
-use core\Http;
+use core\http\Http;
+use core\http\HttpHeader;
 use core\Request;
 use sptf\Sptf;
 
@@ -23,9 +24,9 @@ Sptf::test("should detect response type from request", function () {
             q(Request::test(), 'type', ''),
             q(Request::test(), 'type', 't'),
             q(Request::test(), 'type', 'text'),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, ''),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, 't'),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, 'text'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, ''),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 't'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text'),
         ],
         'HTML' => [
             Request::test(),
@@ -33,16 +34,16 @@ Sptf::test("should detect response type from request", function () {
             q(Request::test(), 't', 'html'),
             q(Request::test(), 'type', 'h'),
             q(Request::test(), 'type', 'html'),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, 'h'),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, 'html'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'h'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'html'),
         ],
         'JSON' => [
             q(Request::test(), 't', 'j'),
             q(Request::test(), 't', 'json'),
             q(Request::test(), 'type', 'j'),
             q(Request::test(), 'type', 'json'),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, 'j'),
-            h(Request::test(), Http::HEADER_X_RESPONSE_TYPE, 'json'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'j'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'json'),
         ]
     ];
 

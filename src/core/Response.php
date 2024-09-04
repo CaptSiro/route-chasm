@@ -4,58 +4,10 @@ namespace core;
 
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPageContent;
+use core\http\Http;
+use core\http\HttpCode;
 
 class Response {
-    // Informational
-    public const CODE_CONTINUE = 100;
-    public const CODE_SWITCHING_PROTOCOLS = 101;
-
-    // Successful
-    public const CODE_OK = 200;
-    public const CODE_CREATED = 201;
-    public const CODE_ACCEPTED = 202;
-    public const CODE_NON_AUTHORITATIVE_INFORMATION = 203;
-    public const CODE_NO_CONTENT = 204;
-    public const CODE_RESET_CONTENT = 205;
-    public const CODE_PARTIAL_CONTENT = 206;
-
-    // Redirection
-    public const CODE_MULTIPLE_CHOICES = 300;
-    public const CODE_MOVED_PERMANENTLY = 301;
-    public const CODE_FOUND = 302;
-    public const CODE_SEE_OTHER = 303;
-    public const CODE_NOT_MODIFIED = 304;
-    public const CODE_USE_PROXY = 305;
-
-    // Client Error
-    public const CODE_BAD_REQUEST = 400;
-    public const CODE_UNAUTHORIZED = 401;
-    public const CODE_PAYMENT_REQUIRED = 402;
-    public const CODE_FORBIDDEN = 403;
-    public const CODE_NOT_FOUND = 404;
-    public const CODE_METHOD_NOT_ALLOWED = 405;
-    public const CODE_NOT_ACCEPTABLE = 406;
-    public const CODE_PROXY_AUTHENTICATION_REQUIRED = 407;
-    public const CODE_REQUEST_TIMEOUT = 408;
-    public const CODE_CONFLICT = 409;
-    public const CODE_GONE = 410;
-    public const CODE_LENGTH_REQUIRED = 411;
-    public const CODE_PRECONDITION_FAILED = 412;
-    public const CODE_PAYLOAD_TOO_LARGE = 413;
-    public const CODE_URI_TOO_LONG = 414;
-    public const CODE_UNSUPPORTED_MEDIA_TYPE = 415;
-    public const CODE_IM_A_TEAPOT = 418;
-
-    // Server Error
-    public const CODE_INTERNAL_SERVER_ERROR = 500;
-    public const CODE_NOT_IMPLEMENTED = 501;
-    public const CODE_BAD_GATEWAY = 502;
-    public const CODE_SERVICE_UNAVAILABLE = 503;
-    public const CODE_GATEWAY_TIMEOUT = 504;
-    public const CODE_HTTP_VERSION_NOT_SUPPORTED = 505;
-
-
-
     protected array $headers;
     protected bool $headersSent;
 
@@ -150,7 +102,7 @@ class Response {
      */
     public function readFile(string $file): void {
         if (!file_exists($file)) {
-            $this->render(new HttpError("RequestFile not found: $file", self::CODE_NOT_FOUND));
+            $this->render(new HttpError("RequestFile not found: $file", HttpCode::CE_NOT_FOUND));
         }
 
         $this->generateHeaders();
@@ -179,7 +131,7 @@ class Response {
         $this->generateHeaders();
 
         if ($render instanceof WebPageContent) {
-            $render->call(App::getInstance()->getRequest(), $this);
+            $render->execute(App::getInstance()->getRequest(), $this);
         } else {
             echo $render->render($template);
         }

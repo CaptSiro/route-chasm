@@ -7,17 +7,17 @@ use components\core\HttpError\HttpError;
 use core\endpoints\Directory;
 use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
-use core\endpoints\SimpleEndpoint;
+use core\http\Http;
+use core\http\HttpCode;
 use core\path\parser\Parser;
 use core\path\Path;
-use core\path\Segment;
+use core\path\UrlPath;
 use core\tree\Node;
-use core\tree\traversable\FoundNode;
-use core\tree\traversable\MatchStack;
-use core\tree\traversable\Traversable;
+use core\tree\SnapshotStack;
+use core\tree\Trail;
 
-class Router implements Traversable, Endpoint {
-    use SimpleEndpoint;
+class Router {
+    protected Node $node;
 
 
 
@@ -25,16 +25,15 @@ class Router implements Traversable, Endpoint {
         $this->node = new Node();
     }
 
-    /**
-     * @return Node
-     */
-    public function getNode(): Node {
-        return $this->node;
-    }
+
 
     /**
-     * @param Node $node
+     * @return array<Endpoint>
      */
+    public function getEndpoints(): array {
+        return $this->node->getEndpoints();
+    }
+
     public function setNode(Node $node): void {
         $node->copy($this->node, false);
         $this->node = $node;
@@ -42,35 +41,45 @@ class Router implements Traversable, Endpoint {
 
     public function getLeaf(Path $path): Node {
         $node = $this->node;
-        while ($path->hasNext()) {
-            $node = $node->create($path->next());
+
+        $path->rewind();
+        while (!$path->isExhausted()) {
+            $segment = $path->current();
+            $n = $node->findChild($segment);
+
+            if (is_null($n)) {
+                $n = new Node();
+                $n->setSegment($segment);
+                $node->addChild($n);
+            }
+
+            $node = $n;
+            $path->next();
         }
 
         return $node;
     }
 
-    function use(Path|string $path, Endpoint|Closure ...$endpoints): void {
+    public function use(Path|string $path, Endpoint|Closure ...$endpoints): void {
         $parsed = Path::from($path);
         $leaf = $this->getLeaf($parsed);
 
-        $e = [];
-        foreach ($endpoints as $x) {
-            if ($x instanceof Router) {
-                $x->setNode($leaf);
-                continue;
-            }
-
-            $e[] = $x instanceof Endpoint
-                ? $x
-                : new Procedure($x);
+        foreach ($endpoints as $endpoint) {
+            $leaf->addEndpoint($endpoint instanceof Endpoint
+                ? $endpoint
+                : new Procedure($endpoint));
         }
+    }
 
-        $leaf->assign($e);
+    public function bind(Path|string $path, Router $router): void {
+        $parsed = Path::from($path);
+        $leaf = $this->getLeaf($parsed);
+        $router->setNode($leaf);
     }
 
     public function expose(Path|string $path, Directory $directory): void {
         $parsed = Path::from($path);
-        $this->use($parsed, Http::any(fn(Request $request, Response $response) => $directory->call($request, $response)));
+        $this->use($parsed, Http::any(fn(Request $request, Response $response) => $directory->execute($request, $response)));
         $this->use($parsed->merge("/**"), $directory);
     }
 
@@ -83,65 +92,34 @@ class Router implements Traversable, Endpoint {
         $router->setNode($this->getLeaf($parsed));
     }
 
-    function search(array $segments, int $current, MatchStack $stack, array &$out): void {
-        $stack->push([], $this->getNode()->getEndpoints());
-        $this->node->search($segments, $current, $stack, $out);
-        $stack->pop();
+    public function findPath(string $path): ?Trail {
+        $snapshots = new SnapshotStack();
+
+        $snapshots->push([], $this->node->getEndpoints());
+        return $this->node->search(UrlPath::from($path), $snapshots);
     }
 
-    /**
-     * @param string $path
-     * @return FoundNode[]
-     */
-    public function findPath(string $path): array {
-        $segments = explode('/', $path);
-        /** @var array<FoundNode> $found */
-        $found = [];
-
-        $this->search(
-            $segments,
-            Segment::next($segments, Segment::FIRST),
-            new MatchStack(),
-            $found
-        );
-
-        // normalize path
-        $left = 0;
-        $right = count($found) - 1;
-
-        while ($left < $right) {
-            if ($found[$left]->hasFlag(Segment::FLAG_ANY_TERMINATED)) {
-                $tmp = $found[$right];
-                $found[$right] = $found[$left];
-                $found[$left] = $tmp;
-                $right--;
-            }
-
-            $left++;
-        }
-
-        return $found;
+    public function getUrlPath(): string {
+        return $this->node->getPathToSelf();
     }
 
     public function isMiddleware(): bool {
         return false;
     }
 
-    function call(Request $request, Response $response): void {
-        $path = $this->findPath($request->url->getPath());
-        foreach ($path as $found) {
-            $request->param->push($found->matches);
+    public function execute(Request $request, Response $response): void {
+        $trail = $this->findPath($request->url->getPath());
+        $request->param->push($trail->getParams());
 
-            foreach ($found->endpoints as $endpoint) {
-                $endpoint->call($request, $response);
-            }
-
-            $request->param->pop();
+        foreach ($trail->getEndpoints() as $endpoint) {
+            $endpoint->execute($request, $response);
         }
+
+        $request->param->pop();
 
         $response->render(new HttpError(
             "Called all responsible endpoints but none of them responded",
-            Response::CODE_NOT_IMPLEMENTED
+            HttpCode::SE_NOT_IMPLEMENTED
         ));
     }
 }

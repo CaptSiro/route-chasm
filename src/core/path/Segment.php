@@ -18,39 +18,6 @@ class Segment {
 
 
 
-    public static function next(array $segments, int $position): int {
-        $count = count($segments);
-
-        for ($i = $position + 1; $i < $count; $i++) {
-            if ($segments[$i] !== "") {
-                break;
-            }
-        }
-
-        return $i;
-    }
-
-    public static function isLast(array $segments, int $position): bool {
-        $count = count($segments);
-
-        if ($position >= $count) {
-            return true;
-        }
-
-        $right = $count - 1;
-        for (; $right >= 0; $right--) {
-            if ($segments[$right] !== "") {
-                break;
-            }
-        }
-
-        if ($position > $right) {
-            return true;
-        }
-
-        return false;
-    }
-
     public static function compare(Segment $a, Segment $b): bool {
         $partsA = $a->getParts();
         $partsB = $b->getParts();

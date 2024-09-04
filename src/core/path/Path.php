@@ -4,9 +4,10 @@ namespace core\path;
 
 use core\DoesNotExistException;
 use core\path\parser\Parser;
+use core\Pipeline;
 use patterns\Pattern;
 
-class Path {
+class Path implements Pipeline {
     public static function from(Path|string $literal): self {
         return $literal instanceof Path
             ? $literal
@@ -126,22 +127,23 @@ class Path {
         return $path;
     }
 
-    public function hasNext(): bool {
-        return isset($this->segments[$this->index]);
+    public function __toString(): string {
+        return implode('/', $this->segments);
     }
 
-    public function next(): Segment {
-        $this->index++;
-        return $this->segments[$this->index - 1];
+    public function next(): ?Segment {
+        return $this->segments[++$this->index] ?? null;
+    }
+
+    function current(): mixed {
+        return $this->segments[$this->index];
+    }
+
+    function isExhausted(): bool {
+        return $this->index >= count($this->segments);
     }
 
     public function rewind(): void {
         $this->index = 0;
-    }
-
-
-
-    public function __toString(): string {
-        return implode('/', $this->segments);
     }
 }

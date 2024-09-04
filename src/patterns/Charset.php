@@ -2,6 +2,8 @@
 
 namespace patterns;
 
+use core\Pipeline;
+
 class Charset implements Pattern {
     protected array $ranges;
     protected array $set;

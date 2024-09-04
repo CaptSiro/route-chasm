@@ -15,7 +15,7 @@ class WebPageContent extends Component {
 
 
 
-    public function call(Request $request, Response $response): void {
+    public function execute(Request $request, Response $response): void {
         $response->render(WebPage::getInstance());
     }
 }

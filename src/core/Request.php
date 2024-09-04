@@ -5,6 +5,8 @@ namespace core;
 use core\dictionary\StrictDictionary;
 use core\dictionary\StrictMap;
 use core\dictionary\StrictStack;
+use core\http\Http;
+use core\http\HttpHeader;
 
 class Request {
     public const PARAM_ANY = "*";
@@ -84,7 +86,7 @@ class Request {
     public function getResponseType(): string {
         $matcher = $this->app->getResponseTypeMatcher();
 
-        $header = $this->getHeader(Http::HEADER_X_RESPONSE_TYPE);
+        $header = $this->getHeader(HttpHeader::X_RESPONSE_TYPE);
         if (!is_null($header)) {
             return $matcher($header);
         }

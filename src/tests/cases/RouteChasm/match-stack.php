@@ -1,11 +1,11 @@
 <?php
 
-use core\tree\traversable\MatchStack;
+use core\tree\SnapshotStack;
 use core\utils\Arrays;
 use sptf\Sptf;
 
 Sptf::test("merges match arrays", function () {
-    $stack = new MatchStack();
+    $stack = new SnapshotStack();
 
     $stack->push([
         "greeting" => "hello",
@@ -17,8 +17,8 @@ Sptf::test("merges match arrays", function () {
         "id" => "69420",
     ], []);
 
-    $stack->merge($matches, $x);
-    Sptf::expect($matches)->toBe([
+    $trail = $stack->merge();
+    Sptf::expect($trail->getParams())->toBe([
         "greeting" => "hello",
         "name" => "John",
         "id" => "69420",

@@ -4,7 +4,8 @@ use components\core\HttpError\HttpError;
 use core\App;
 use core\database\config\BasicConfig;
 use core\database\Database;
-use core\Http;
+use core\http\Http;
+use core\http\HttpCode;
 use core\Request;
 use core\Response;
 use sptf\Sptf;
@@ -32,7 +33,7 @@ $router->expose("/public", (new \core\endpoints\Directory(__DIR__ . "/public"))
 
 $router->use(
     "/error",
-    new HttpError("I'm a teapot", Response::CODE_IM_A_TEAPOT)
+    new HttpError("I'm a teapot", HttpCode::CE_IM_A_TEAPOT)
 );
 
 $router->use(

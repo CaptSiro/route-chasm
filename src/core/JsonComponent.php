@@ -27,7 +27,7 @@ class JsonComponent implements Render, Endpoint, JsonSerializable {
         return null;
     }
 
-    function call(Request $request, Response $response): void {
+    function execute(Request $request, Response $response): void {
         $response->json($this);
     }
 

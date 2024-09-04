@@ -2,6 +2,8 @@
 
 namespace patterns;
 
+use core\Pipeline;
+
 class Exact implements Pattern {
     public function __construct(
         protected string $match

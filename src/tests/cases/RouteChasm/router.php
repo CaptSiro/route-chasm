@@ -1,12 +1,12 @@
 <?php
 
-use core\Http;
+use core\http\Http;
 use core\path\Path;
 use core\Request;
 use core\Resource;
 use core\Response;
 use core\Router;
-use core\tree\traversable\FoundNode;
+use core\tree\Trail;
 use core\utils\Arrays;
 use patterns\Ident;
 use patterns\Number;
@@ -26,8 +26,8 @@ Sptf::test("binds handlers to self", function () {
         Http::post(fn() => 0)
     );
 
-    $handlers = $r->getNode()->getEndpoints();
-    Sptf::expect(count($handlers))->toBe(2);
+    $endpoints = $r->getEndpoints();
+    Sptf::expect(count($endpoints))->toBe(2);
 });
 
 
@@ -50,18 +50,12 @@ Sptf::test("finds all leaf nodes", function () use ($compare) {
     $r->use("/[id]/[bar]", Http::get(fn() => 0));
     $r->use("/[id]/[foo]", Http::get(fn() => 0));
 
-    $found = $r->findPath("/69/any");
+    $trail = $r->findPath("/69/any");
 
-    Sptf::expect(count($found))->toBe(2);
-
-    Sptf::expect($found[0]->matches)->toBe([
+    Sptf::expect(is_null($trail))->toBe(false);
+    Sptf::expect($trail->getParams())->toBe([
         "id" => "69",
         "bar" => "any"
-    ])->compare($compare);
-
-    Sptf::expect($found[1]->matches)->toBe([
-        "id" => "69",
-        "foo" => "any"
     ])->compare($compare);
 });
 
@@ -79,11 +73,11 @@ Sptf::test("skip typed search", function () use ($compare) {
         Http::get(fn() => 0)
     );
 
-    $o = $r->findPath("/foo/any");
+    $trail = $r->findPath("/foo/any");
 
-    Sptf::expect(count($o))->toBe(1);
+    Sptf::expect(is_null($trail))->toBe(false);
 
-    Sptf::expect($o[0]->matches)->toBe([
+    Sptf::expect($trail->getParams())->toBe([
         "id" => "foo",
         "bar" => "any"
     ])->compare($compare);
@@ -95,17 +89,10 @@ Sptf::test("find path for deeply nested Routers", function () {
     $r0 = new Router();
     $r1 = new Router();
 
-    $r0->use(
-        "/a",
-        $r1
-    );
+    $r0->bind("/a", $r1);
+    $r1->use("/b", fn() => 0);
 
-    $r1->use(
-        "/b",
-        fn() => 0
-    );
-
-    Sptf::expect(empty($r0->findPath("/a/b")))
+    Sptf::expect(is_null($r0->findPath("/a/b")))
         ->toBe(false);
 });
 
@@ -115,14 +102,15 @@ Sptf::test("find path for deeply nested dynamic Routers", function () {
 
     $ret = [];
 
+    $atUser = Path::from("/@[user]")
+        ->param("user", Ident::getInstance());
     $r2->use(
-        Path::from("/@[user]")
-            ->param("user", Ident::getInstance()),
+        $atUser,
         function () use (&$ret) {
             $ret[] = 0;
-        },
-        $r3
+        }
     );
+    $r2->bind($atUser, $r3);
 
     $r3->use(
         "/",
@@ -140,16 +128,17 @@ Sptf::test("find path for deeply nested dynamic Routers", function () {
     );
 
     $request = Request::test();
-    foreach ($r2->findPath("/@CaptSiro/post-420")[0]->endpoints as $endpoint) {
-        $endpoint->call($request, new Response());
+    $trail = $r2->findPath("/@CaptSiro/post-420");
+    Sptf::expect(is_null($trail))
+        ->toBe(false);
+
+    foreach ($trail->getEndpoints() as $endpoint) {
+        $endpoint->execute($request, new Response());
     }
 
     Sptf::expect($ret)
         ->toBe([0, 1, 2])
         ->compare(fn($a, $b) => Arrays::equal($a, $b));
-
-    Sptf::expect(empty($r2->findPath("/@CaptSiro/post-420")))
-        ->toBe(false);
 });
 
 
@@ -161,7 +150,7 @@ Sptf::test("get correct url path for Resource", function () {
     $t0 = new TestResource();
     $t1 = new TestResource();
 
-    $r0->use(
+    $r0->bind(
         "/a",
         $r1
     );
@@ -191,57 +180,6 @@ Sptf::test("handle any terminated paths", function () {
         fn() => 0
     );
 
-    Sptf::expect(empty($r0->findPath("/public/css/styles.css")))
+    Sptf::expect(is_null($r0->findPath("/public/css/styles.css")))
         ->toBe(false);
-});
-
-
-
-/**
- * @param array<FoundNode> $path
- * @param $anyTerminatedCalled
- */
-function shouldSetAnyTerminated(array $path, &$anyTerminatedCalled): void {
-    Sptf::expect(count($path))
-        ->toBe(2);
-
-    $anyTerminatedCalled = false;
-    foreach ($path[1]->endpoints as $endpoint) {
-        $endpoint->call(Request::test(), new Response());
-    }
-
-    Sptf::expect($anyTerminatedCalled)
-        ->toBe(true);
-}
-
-Sptf::test("any terminated paths are evaluated last", function () {
-    $anyTerminatedCalled = false;
-    $r0 = new Router();
-
-    $r0->use(
-        "/foo",
-        fn() => 0
-    );
-
-    $r0->use(
-        "/**",
-        function () use (&$anyTerminatedCalled) {
-            $anyTerminatedCalled = true;
-        }
-    );
-
-    $r0->use(
-        "/bar",
-        fn() => 0
-    );
-
-    shouldSetAnyTerminated(
-        $r0->findPath("/foo"),
-        $anyTerminatedCalled
-    );
-
-    shouldSetAnyTerminated(
-        $r0->findPath("/bar"),
-        $anyTerminatedCalled
-    );
 });

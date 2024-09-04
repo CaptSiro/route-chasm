@@ -20,7 +20,7 @@ class ComponentStructure implements Render, Endpoint {
         return false;
     }
 
-    function call(Request $request, Response $response): void {
+    function execute(Request $request, Response $response): void {
         $response->render($this);
     }
 

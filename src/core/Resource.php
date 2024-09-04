@@ -3,6 +3,7 @@
 namespace core;
 
 use core\database\Table;
+use core\http\Http;
 use core\path\Path;
 use patterns\Number;
 use patterns\Pattern;
