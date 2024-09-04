@@ -1,4 +1,4 @@
-<?php /** @var \components\core\Head\Head $this */ ?>
+<?php /** @var \components\core\HtmlHead\HtmlHead $this */ ?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -9,4 +9,15 @@
     <?php endforeach; ?>
 
     <title><?= $this->title ?></title>
+
+    <?php foreach (\core\App::getInstance()->getStyles() as $style): ?>
+        <style>
+            <?php readfile($style) ?>
+        </style>
+    <?php endforeach; ?>
+    <?php foreach (\core\App::getInstance()->getScripts() as $script): ?>
+        <script>
+            <?php readfile($script) ?>
+        </script>
+    <?php endforeach; ?>
 </head>

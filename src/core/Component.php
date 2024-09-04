@@ -13,24 +13,27 @@ class Component implements Render, Endpoint {
 
 
     function render(?string $template = null): string {
-        $file = $template ?? basename(get_class($this));
+        $file = $template ?? $this->getSource(basename(get_class($this)) .".phtml");
+
         if (Files::extension($file) === null) {
             $file .= ".phtml";
         }
 
-        $source = $this->getSource($file);
-
-        if (!file_exists($source)) {
-            throw new DoesNotExistException("Could not locate template '$source'", $source);
+        if (!file_exists($file)) {
+            throw new DoesNotExistException("Could not locate template '$file'", $file);
         }
 
         ob_start();
-        require $source;
+        require $file;
         return ob_get_clean();
     }
 
     public function __toString(): string {
         return $this->render();
+    }
+
+    public function isMiddleware(): bool {
+        return false;
     }
 
     function call(Request $request, Response $response): void {

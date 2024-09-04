@@ -15,4 +15,18 @@ class Files {
 
         return null;
     }
+
+    public static function mimeType(string $path): string {
+        $extension = self::extension($path);
+
+        if ($extension === "css") {
+            return "text/css";
+        }
+
+        if ($extension === "js") {
+            return "text/js";
+        }
+
+        return mime_content_type($path);
+    }
 }

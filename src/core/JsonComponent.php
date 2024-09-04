@@ -19,6 +19,10 @@ class JsonComponent implements Render, Endpoint, JsonSerializable {
 
 
 
+    public function isMiddleware(): bool {
+        return false;
+    }
+
     public function json(): mixed {
         return null;
     }

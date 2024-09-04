@@ -16,6 +16,10 @@ class ComponentStructure implements Render, Endpoint {
 
 
 
+    public function isMiddleware(): bool {
+        return false;
+    }
+
     function call(Request $request, Response $response): void {
         $response->render($this);
     }

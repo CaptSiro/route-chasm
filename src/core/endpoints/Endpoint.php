@@ -8,11 +8,13 @@ use core\tree\Node;
 use core\Url;
 
 interface Endpoint {
-    function getNode(): Node;
+    public function getNode(): Node;
 
-    function setNode(Node $node);
+    public function setNode(Node $node);
 
-    function getUrl(): Url;
+    public function getUrl(): Url;
 
-    function call(Request $request, Response $response): void;
+    public function isMiddleware(): bool;
+
+    public function call(Request $request, Response $response): void;
 }

@@ -1,0 +1,17 @@
+<?php /** @var \components\core\Explorer\Explorer $this */ ?>
+<div class="explorer">
+    <h1><?= htmlspecialchars(basename($this->directory)) ?></h1>
+    <hr>
+    <ul class="explorer-list">
+        <?php foreach (scandir($this->directory) as $entry): ?>
+            <?php if ($entry === ".") continue; ?>
+            <?php if ($entry === ".." && !$this->isParentEntryAllowed) continue; ?>
+            <li class="explorer-item">
+                <a href="<?= "$this->url". urlencode($entry) ?>">
+                    <?= htmlspecialchars($entry) ?>
+                    <?php if (is_dir($this->directory ."/". $entry)): ?>/<?php endif; ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</div>

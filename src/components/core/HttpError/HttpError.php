@@ -1,25 +1,17 @@
 <?php
 
-namespace components\core;
+namespace components\core\HttpError;
 
-use components\core\CodeError\CodeError;
-use components\core\Head\Head;
-use components\core\WebPage\WebPage;
+use components\core\HtmlHead\HtmlHead;
+use components\core\WebPage\WebPageContent;
 use core\App;
-use core\ComponentStructure;
 
-class HttpError extends ComponentStructure {
+class HttpError extends WebPageContent {
     public function __construct(
-        protected readonly string $message,
-        protected readonly int $code,
+        protected string $message,
+        protected int $code
     ) {
-        parent::__construct(
-            new WebPage(
-                "en",
-                Head::def("Error - $message"),
-                new CodeError($this->message, $this->code)
-            )
-        );
+        parent::__construct(head: new HtmlHead("Error - $message"));
     }
 
 
@@ -35,7 +27,7 @@ class HttpError extends ComponentStructure {
             ->setStatus($this->code);
 
         return match ($type) {
-            'HTML' => $this->root->render(),
+            'HTML' => parent::render(),
             'JSON' => json_encode([
                 "isError" => true,
                 "message" => $this->message,

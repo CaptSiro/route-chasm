@@ -17,6 +17,7 @@ class Http {
     public const METHOD_POST = "POST";
     public const METHOD_PUT = "PUT";
     public const METHOD_TRACE = "TRACE";
+    public const METHOD_ANY = "ANY";
 
 
 
@@ -245,8 +246,13 @@ class Http {
             ->setHandles(self::createHandles($endpoints));
     }
 
-    public static function trace(Endpoint|Closure $enpoint, Endpoint|Closure ...$endpoints): Handler {
+    public static function trace(Endpoint|Closure ...$endpoints): Handler {
         return (new Handler(self::METHOD_TRACE))
+            ->setHandles(self::createHandles($endpoints));
+    }
+
+    public static function any(Endpoint|Closure ...$endpoints): Handler {
+        return (new Handler(self::METHOD_ANY))
             ->setHandles(self::createHandles($endpoints));
     }
 }

@@ -3,6 +3,8 @@
 namespace core;
 
 use Closure;
+use components\core\HttpError\HttpError;
+use core\endpoints\Directory;
 use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
 use core\endpoints\SimpleEndpoint;
@@ -66,6 +68,12 @@ class Router implements Traversable, Endpoint {
         $leaf->assign($e);
     }
 
+    public function expose(Path|string $path, Directory $directory): void {
+        $parsed = Path::from($path);
+        $this->use($parsed, Http::any(fn(Request $request, Response $response) => $directory->call($request, $response)));
+        $this->use($parsed->merge("/**"), $directory);
+    }
+
     public function resource(Path|string $path, Resource $resource): void {
         $parsed = $path instanceof Path
             ? $path
@@ -76,7 +84,9 @@ class Router implements Traversable, Endpoint {
     }
 
     function search(array $segments, int $current, MatchStack $stack, array &$out): void {
+        $stack->push([], $this->getNode()->getEndpoints());
         $this->node->search($segments, $current, $stack, $out);
+        $stack->pop();
     }
 
     /**
@@ -100,7 +110,7 @@ class Router implements Traversable, Endpoint {
         $right = count($found) - 1;
 
         while ($left < $right) {
-            if (($found[$left]->flags & Segment::FLAG_ANY_TERMINATED) !== 0) {
+            if ($found[$left]->hasFlag(Segment::FLAG_ANY_TERMINATED)) {
                 $tmp = $found[$right];
                 $found[$right] = $found[$left];
                 $found[$left] = $tmp;
@@ -113,8 +123,13 @@ class Router implements Traversable, Endpoint {
         return $found;
     }
 
+    public function isMiddleware(): bool {
+        return false;
+    }
+
     function call(Request $request, Response $response): void {
-        foreach ($this->findPath($request->url->getPath()) as $found) {
+        $path = $this->findPath($request->url->getPath());
+        foreach ($path as $found) {
             $request->param->push($found->matches);
 
             foreach ($found->endpoints as $endpoint) {
@@ -123,5 +138,10 @@ class Router implements Traversable, Endpoint {
 
             $request->param->pop();
         }
+
+        $response->render(new HttpError(
+            "Called all responsible endpoints but none of them responded",
+            Response::CODE_NOT_IMPLEMENTED
+        ));
     }
 }

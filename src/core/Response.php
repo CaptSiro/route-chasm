@@ -2,7 +2,8 @@
 
 namespace core;
 
-use components\core\HttpError;
+use components\core\HttpError\HttpError;
+use components\core\WebPage\WebPageContent;
 
 class Response {
     // Informational
@@ -55,12 +56,14 @@ class Response {
 
 
 
-    private array $headers;
+    protected array $headers;
+    protected bool $headersSent;
 
 
 
     public function __construct() {
         $this->headers = [];
+        $this->headersSent = false;
     }
 
 
@@ -75,12 +78,12 @@ class Response {
 
     /**
      * @param array ...$headers Single header is tuple of two strings, name and value. Example: <code>"Location: /"</code> would be
-     * <code>["Location", "/"]</code>
+     * <code>["Location" => "/"]</code>
      * @return void
      */
-    public function setAllHeaders(array ...$headers): void {
-        foreach ($headers as $header) {
-            $this->headers[$header[0]] = $header[1];
+    public function setHeaders(array $headers): void {
+        foreach ($headers as $header => $value) {
+            $this->headers[$header] = $value;
         }
     }
 
@@ -97,6 +100,12 @@ class Response {
     }
 
     public function generateHeaders(): void {
+        if ($this->headersSent) {
+            return;
+        }
+
+        $this->headersSent = true;
+
         foreach ($this->headers as $header => $value) {
             header("$header: $value");
         }
@@ -107,15 +116,7 @@ class Response {
      */
     public function flush(): void {
         $this->generateHeaders();
-        exit();
-    }
-
-    /**
-     * Alias for flush function
-     * @see Response::flush()
-     */
-    public function end(): void {
-        $this->flush();
+        exit;
     }
 
     /**
@@ -124,8 +125,9 @@ class Response {
      * Sends string data to user.
      */
     public function send($text): void {
+        $this->generateHeaders();
         echo $text;
-        $this->flush();
+        exit;
     }
 
     /**
@@ -134,8 +136,9 @@ class Response {
      * Parses object into JSON text representation and sends it to the user.
      */
     public function json($data, $flags = 0, $depth = 512): void {
+        $this->generateHeaders();
         echo json_encode($data, $flags, $depth);
-        $this->flush();
+        exit;
     }
 
     /**
@@ -150,8 +153,9 @@ class Response {
             $this->render(new HttpError("RequestFile not found: $file", self::CODE_NOT_FOUND));
         }
 
+        $this->generateHeaders();
         readfile($file);
-        $this->flush();
+        exit;
     }
 
     /**
@@ -160,24 +164,31 @@ class Response {
      * Checks for valid file path and sets headers to download it.
      */
     public function download(string $file): void {
-        $this->setAllHeaders(
-            [Http::HEADER_CONTENT_DESCRIPTION, "RequestFile Transfer"],
-            [Http::HEADER_CONTENT_TYPE, 'application/octet-stream'],
-            [Http::HEADER_CONTENT_DISPOSITION, "attachment; filename=" . basename($file)],
-            [Http::HEADER_PREGMA, "public"],
-            [Http::HEADER_CONTENT_LENGTH, filesize($file)]
-        );
+        $this->setHeaders([
+            Http::HEADER_CONTENT_DESCRIPTION => "RequestFile Transfer",
+            Http::HEADER_CONTENT_TYPE => 'application/octet-stream',
+            Http::HEADER_CONTENT_DISPOSITION => "attachment; filename=" . basename($file),
+            Http::HEADER_PREGMA => "public",
+            Http::HEADER_CONTENT_LENGTH => filesize($file)
+        ]);
 
         $this->readFile($file);
     }
 
     public function render(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
-        echo $render->render($template);
+        $this->generateHeaders();
+
+        if ($render instanceof WebPageContent) {
+            $render->call(App::getInstance()->getRequest(), $this);
+        } else {
+            echo $render->render($template);
+        }
+
         if (!$doFlushResponse) {
             return;
         }
 
-        $this->flush();
+        exit;
     }
 
     /**
@@ -195,7 +206,7 @@ class Response {
      * @return void
      */
     public function redirect(string $url, bool $doPrependHome = true): void {
-        $this->setHeader("Location", ($doPrependHome ? App::getInstance()->getHome() : "") . $url);
+        $this->setHeader(Http::HEADER_LOCATION, ($doPrependHome ? App::getInstance()->getHome() : "") . $url);
         $this->flush();
     }
 }

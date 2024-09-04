@@ -12,10 +12,20 @@ class Procedure implements Endpoint {
 
 
     public function __construct(
-        private readonly Closure $function
+        protected readonly Closure $function,
+        protected bool $isMiddleware = false
     ) {}
 
 
+
+    public function middleware(): self {
+        $this->isMiddleware = true;
+        return $this;
+    }
+
+    public function isMiddleware(): bool {
+        return $this->isMiddleware;
+    }
 
     function call(Request $request, Response $response): void {
         ($this->function)($request, $response);

@@ -82,6 +82,10 @@ class Handler implements Endpoint {
         return true;
     }
 
+    public function isMiddleware(): bool {
+        return $this->isMiddleware;
+    }
+
     public function call(Request $request, Response $response): void {
         if (Path::depth($request->url->getPath()) !== Path::depth($this->getUrlPath()) && !$this->isMiddleware) {
             return;

@@ -5,12 +5,15 @@ namespace core;
 use Closure;
 use core\dictionary\Map;
 use core\dictionary\StrictMap;
+use dotenv\Env;
 use Exception;
 
 class App {
     use Singleton;
 
 
+
+    public const ENV = __DIR__ ."/../../.env";
 
     public const OPTION_DO_REMOVE_HOME_FROM_URL_PATH = "do_remove_home_from_url_path";
     public const OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET = "always_return_html_for_http_get";
@@ -23,6 +26,12 @@ class App {
     private string $src;
     private Closure $responseTypeMatcher;
     public readonly Map $options;
+    protected ?Env $env;
+
+    /** @var array<string> $styles */
+    protected array $styles;
+    /** @var array<string> $scripts */
+    protected array $scripts;
 
 
 
@@ -51,6 +60,13 @@ class App {
         );
 
         $this->response = new Response();
+
+        $this->env = file_exists(self::ENV)
+            ? Env::fromFile(self::ENV)
+            : null;
+
+        $this->styles = [];
+        $this->scripts = [];
     }
 
 
@@ -105,6 +121,39 @@ class App {
         }
 
         return $home;
+    }
+
+    public function getEnv(): ?Env {
+        return $this->env;
+    }
+
+    public function require(Module $module): self {
+        $module->load($this);
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getScripts(): array {
+        return $this->scripts;
+    }
+
+    public function import(string $scriptFile): self {
+        $this->scripts[] = $scriptFile;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStyles(): array {
+        return $this->styles;
+    }
+
+    public function link(string $cssFile): self {
+        $this->styles[] = $cssFile;
+        return $this;
     }
 
     public function serve(?Request $request = null): void {

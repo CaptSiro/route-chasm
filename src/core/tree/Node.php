@@ -71,11 +71,8 @@ class Node implements Traversable {
     }
 
     public function search(array $segments, int $current, MatchStack $stack, array &$out): void {
-        if ($stack->isEmpty()) {
-            $stack->push([], $this->endpoints);
-        }
-
         if ($this->segment?->hasFlag(Segment::FLAG_ANY_TERMINATED) || Segment::isLast($segments, $current)) {
+            var_dump("adding /$this->segment");
             $stack->merge($params, $endpoints);
 
             if (isset($params[Request::PARAM_ANY_TERMINATOR])) {
@@ -95,13 +92,16 @@ class Node implements Traversable {
         foreach ($this->nodes as $node) {
             $segment = $node->getNode()->getSegment();
             $hasPassed = $segment->test($segments[$current], $matches);
+            var_dump("has passed /$segment: ". json_encode($hasPassed));
 
             if (!$hasPassed) {
                 continue;
             }
 
+            var_dump("push for /$segment");
             $stack->push($matches, $node->getNode()->endpoints);
             $node->getNode()->search($segments, $next, $stack, $out);
+            var_dump("pop for $segment");
             $stack->pop();
         }
     }

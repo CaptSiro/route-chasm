@@ -1,10 +1,11 @@
 <?php
 
-use components\core\HttpError;
+use components\core\HttpError\HttpError;
 use core\App;
 use core\database\config\BasicConfig;
 use core\database\Database;
 use core\Http;
+use core\Request;
 use core\Response;
 use sptf\Sptf;
 
@@ -26,6 +27,9 @@ $router = $app->getMainRouter();
 
 
 
+$router->expose("/public", (new \core\endpoints\Directory(__DIR__ . "/public"))
+    ->setFlag(\core\endpoints\Directory::FLAG_LIST_DIRECTORIES));
+
 $router->use(
     "/error",
     new HttpError("I'm a teapot", Response::CODE_IM_A_TEAPOT)
@@ -33,8 +37,10 @@ $router->use(
 
 $router->use(
     "/",
-    Http::get(fn() => Sptf::testDirectory(__DIR__ . "/src/tests/cases"))
-        ->query("_test")
+    Http::get(
+        fn() => Sptf::testDirectory(__DIR__ . "/src/tests/cases"),
+        fn(Request $request, Response $response) => $response->flush()
+    )->query("_test")
 );
 
 
