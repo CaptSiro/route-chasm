@@ -46,4 +46,5 @@ $router->use(
 
 
 
+echo $router->map();
 $app->serve();

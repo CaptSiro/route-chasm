@@ -39,7 +39,7 @@ class Router {
         $this->node = $node;
     }
 
-    public function getLeaf(Path $path): Node {
+    protected function getLeaf(Path $path): Node {
         $node = $this->node;
 
         $path->rewind();
@@ -121,5 +121,9 @@ class Router {
             "Called all responsible endpoints but none of them responded",
             HttpCode::SE_NOT_IMPLEMENTED
         ));
+    }
+
+    public function map(): string {
+        return "<pre>". strtr("$this->node", ['\n' => '<br>']) ."</pre>";
     }
 }

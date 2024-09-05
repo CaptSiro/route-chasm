@@ -13,6 +13,7 @@ class Component implements Render, Endpoint {
 
 
     function render(?string $template = null): string {
+        var_dump(array_map(fn($x) => "$x[file]:$x[line]", debug_backtrace()));
         $file = $template ?? $this->getSource(basename(get_class($this)) .".phtml");
 
         if (Files::extension($file) === null) {

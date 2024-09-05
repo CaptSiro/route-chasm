@@ -32,7 +32,7 @@ class HttpGate implements Endpoint {
 
 
     public function __construct(
-        private readonly string $httpMethod
+        protected readonly string $httpMethod
     ) {
         $this->queryGuards = [];
         $this->bodyGuards = [];
@@ -104,5 +104,9 @@ class HttpGate implements Endpoint {
         foreach ($this->endpoints as $endpoint) {
             $endpoint->execute($request, $response);
         }
+    }
+
+    public function __toString(): string {
+        return "HTTP ". $this->httpMethod;
     }
 }

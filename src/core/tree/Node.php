@@ -5,6 +5,7 @@ namespace core\tree;
 use core\endpoints\Endpoint;
 use core\path\Segment;
 use core\path\UrlPath;
+use core\Render;
 use core\Request;
 
 class Node {
@@ -149,5 +150,20 @@ class Node {
         }
 
         return '/'. implode('/', array_reverse($segments));
+    }
+
+    public function toString(int $depth): string {
+        $endpoints = array_map(fn($x) => $x instanceof Render ? basename(get_class($x)) : "$x", $this->endpoints);
+        $string = str_repeat(' ', $depth) ."/$this->segment ". implode(', ', $endpoints) .'\n';
+
+        foreach ($this->children as $child) {
+            $string .= $child->toString($depth + 4);
+        }
+
+        return $string;
+    }
+
+    public function __toString(): string {
+        return $this->toString(0);
     }
 }

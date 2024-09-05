@@ -8,14 +8,18 @@ use core\Request;
 use core\Response;
 
 class WebPageContent extends Component {
+    protected WebPage $page;
+
+
+
     public function __construct(?string $language = null, ?HtmlHead $head = null) {
-        $page = WebPage::getInstance(language: $language, head: $head);
-        $page->setContent($this);
+        $this->page = new WebPage(language: $language, head: $head);
+        $this->page->setContent($this);
     }
 
 
 
     public function execute(Request $request, Response $response): void {
-        $response->render(WebPage::getInstance());
+        $response->render($this->page);
     }
 }

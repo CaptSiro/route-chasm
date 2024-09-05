@@ -20,8 +20,8 @@ class Url {
         }
 
         return new self(
-            $_SERVER['REQUEST_SCHEME'],
-            $_SERVER['HTTP_HOST'],
+            $_SERVER['REQUEST_SCHEME'] ?? "http",
+            $_SERVER['HTTP_HOST'] ?? "localhost",
             $path,
             $_SERVER['QUERY_STRING'],
             new StrictMap($_GET)

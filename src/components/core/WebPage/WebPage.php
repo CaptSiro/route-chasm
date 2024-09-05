@@ -9,10 +9,6 @@ use core\Render;
 use core\Singleton;
 
 class WebPage extends Component {
-    use Singleton;
-
-
-
     public function __construct(
         protected ?string $language = null,
         protected ?Head $head = null,

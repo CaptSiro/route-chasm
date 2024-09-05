@@ -17,4 +17,6 @@ interface Endpoint {
     public function isMiddleware(): bool;
 
     public function execute(Request $request, Response $response): void;
+
+    public function __toString(): string;
 }
