@@ -3,10 +3,10 @@
 namespace core;
 
 use Closure;
+use core\config\Config;
 use core\dictionary\Map;
 use core\dictionary\StrictMap;
 use dotenv\Env;
-use Exception;
 
 class App {
     use Singleton;
@@ -32,6 +32,7 @@ class App {
     protected array $styles;
     /** @var array<string> $scripts */
     protected array $scripts;
+    protected ?Config $config;
 
 
 
@@ -64,6 +65,8 @@ class App {
         $this->env = file_exists(self::ENV)
             ? Env::fromFile(self::ENV)
             : null;
+
+        $this->config = null;
 
         $this->styles = [];
         $this->scripts = [];
@@ -125,6 +128,20 @@ class App {
 
     public function getEnv(): ?Env {
         return $this->env;
+    }
+
+    /**
+     * @return Config|null
+     */
+    public function getConfig(): ?Config {
+        return $this->config;
+    }
+
+    /**
+     * @param Config $config
+     */
+    public function setConfig(Config $config): void {
+        $this->config = $config;
     }
 
     public function require(Module $module): self {

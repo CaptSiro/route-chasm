@@ -2,7 +2,7 @@
 
 namespace core\database\config;
 
-readonly class BasicConfig implements Config {
+readonly class BasicDatabaseConfig implements DatabaseConfig {
     public function __construct(
         protected string $host,
         protected string $databaseName,

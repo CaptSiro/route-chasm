@@ -2,8 +2,7 @@
 
 use components\core\HttpError\HttpError;
 use core\App;
-use core\database\config\BasicConfig;
-use core\database\Database;
+use core\config\EnvConfig;
 use core\http\Http;
 use core\http\HttpCode;
 use core\Request;
@@ -14,14 +13,9 @@ require_once __DIR__ ."/src/autoload.php";
 
 
 
-Database::configure(new BasicConfig(
-    "localhost",
-    "flashcards",
-    "root",
-    ""
-));
-
 $app = App::getInstance();
+$config = new EnvConfig($app->getEnv());
+$app->setConfig($config);
 $app->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 
 $router = $app->getMainRouter();

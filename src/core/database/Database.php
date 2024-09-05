@@ -2,9 +2,10 @@
 
 namespace core\database;
 
+use core\App;
 use core\database\buffer\Buffer;
 use core\database\buffer\ParamBuffer;
-use core\database\config\Config;
+use core\database\config\DatabaseConfig;
 use core\database\query\Query;
 use core\Singleton;
 use http\Exception\InvalidArgumentException;
@@ -23,9 +24,9 @@ class Database {
         "NULL" => PDO::PARAM_NULL,
     ];
 
-    protected static Config $config;
+    protected static ?DatabaseConfig $config;
 
-    public static function configure(Config $config): void {
+    public static function configure(DatabaseConfig $config): void {
         self::$config = $config;
     }
 
@@ -106,7 +107,12 @@ class Database {
      */
     public function __construct() {
         if (!isset(self::$config)) {
-            throw new CreationException("Must set config object before creating connection to database. Use Database::configure() with custom object that implements Config or use BasicConfig class.");
+            self::$config = App::getInstance()
+                ->getConfig();
+
+            if (is_null(self::$config)) {
+                throw new CreationException("Must set config object before creating connection to database. Either use App::setConfig or directly call Database::configure");
+            }
         }
 
         $connectionString = "mysql:host=" . self::$config->getDatabaseHost()
