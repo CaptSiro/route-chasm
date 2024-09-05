@@ -8,12 +8,16 @@ use core\path\UrlPath;
 use core\Request;
 
 class Node {
-    private ?Segment $segment;
+    protected ?Segment $segment;
+
     /** @var Node[] $children */
-    private array $children;
+    protected array $children;
+    protected int $insert;
+
     /** @var Endpoint[] $endpoints */
-    private array $endpoints;
-    private ?Node $parent;
+    protected array $endpoints;
+
+    protected ?Node $parent;
 
 
 
@@ -22,6 +26,7 @@ class Node {
         $this->children = [];
         $this->parent = null;
         $this->segment = null;
+        $this->insert = 0;
     }
 
 
@@ -95,9 +100,24 @@ class Node {
         return null;
     }
 
+    /**
+     * @return array<Node>
+     */
+    public function getChildren(): array {
+        return $this->children;
+    }
+
     public function addChild(Node $node): self {
         $node->parent = $this;
-        $this->children[] = $node;
+
+        $isAnyTerminated = $node->segment->hasFlag(Segment::FLAG_ANY_TERMINATED);
+        if ($this->insert === count($this->children) && !$isAnyTerminated) {
+            $this->children[] = $node;
+        } else {
+            array_splice($this->children, $this->insert, 0, [$node]);
+        }
+
+        $this->insert += intval(!$isAnyTerminated);
 
         return $this;
     }

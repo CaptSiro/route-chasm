@@ -67,16 +67,14 @@ class Path implements Pipeline {
 
 
     /** @var Segment[] $segments */
-    private array $segments;
-    /** @var array<string, Part> $params */
-    private array $params;
-    private int $index = 0;
+    protected array $segments;
+    private int $index;
 
 
 
     public function __construct() {
         $this->segments = [];
-        $this->params = [];
+        $this->index = 0;
     }
 
 
@@ -90,7 +88,16 @@ class Path implements Pipeline {
 
     public function addSegment(Segment $section): void {
         $this->segments[] = $section;
-        $section->getParams($this->params);
+    }
+
+    public function getParams(): array {
+        $params = [];
+
+        foreach ($this->segments as $segment) {
+            $segment->getParams($params);
+        }
+
+        return $params;
     }
 
     public function param(string $name, Pattern $pattern): self {
@@ -111,7 +118,6 @@ class Path implements Pipeline {
         $clone = $this->clone();
         $parsed = Path::from($extension);
 
-        $clone->params = array_merge($clone->params, $parsed->params);
         $clone->segments = array_merge($clone->segments, $parsed->segments);
 
         return $clone;
@@ -120,7 +126,7 @@ class Path implements Pipeline {
     public function clone(): self {
         $path = Path::from("$this");
 
-        foreach ($this->params as $name => $part) {
+        foreach ($this->getParams() as $name => $part) {
             $path->param($name, clone $part->pattern);
         }
 
@@ -135,11 +141,11 @@ class Path implements Pipeline {
         return $this->segments[++$this->index] ?? null;
     }
 
-    function current(): mixed {
+    public function current(): mixed {
         return $this->segments[$this->index];
     }
 
-    function isExhausted(): bool {
+    public function isExhausted(): bool {
         return $this->index >= count($this->segments);
     }
 

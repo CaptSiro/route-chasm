@@ -32,7 +32,7 @@ class Request {
 
     public string $httpMethod;
 
-    private array $headers;
+    private ?array $headers;
 
     public StrictDictionary|null $session;
 
@@ -51,7 +51,7 @@ class Request {
         readonly public StrictDictionary $cookies,
     ) {
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
-        $this->headers = apache_request_headers();
+        $this->headers = null;
         $this->param = new StrictStack();
         $this->data = new StrictMap();
     }
@@ -59,10 +59,18 @@ class Request {
 
 
     public function getHeader(string $name): ?string {
+        if ($this->headers === null) {
+            $this->headers = apache_request_headers();
+        }
+
         return $this->headers[$name] ?? null;
     }
 
     public function setTestHeader(string $name, string $value): void {
+        if ($this->headers === null) {
+            $this->headers = apache_request_headers();
+        }
+
         $this->headers[$name] = $value;
     }
 
