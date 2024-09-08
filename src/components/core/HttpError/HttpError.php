@@ -5,6 +5,7 @@ namespace components\core\HttpError;
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPageContent;
 use core\App;
+use core\Response;
 
 class HttpError extends WebPageContent {
     public function __construct(
@@ -27,8 +28,8 @@ class HttpError extends WebPageContent {
             ->setStatus($this->code);
 
         return match ($type) {
-            'HTML' => parent::render(),
-            'JSON' => json_encode([
+            Response::TYPE_HTML => parent::render(),
+            Response::TYPE_JSON => json_encode([
                 "isError" => true,
                 "message" => $this->message,
                 "code" => $this->code

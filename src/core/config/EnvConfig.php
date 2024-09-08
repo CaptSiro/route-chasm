@@ -44,7 +44,7 @@ class EnvConfig implements Config {
     }
 
     public function getDatabaseCharset(): string {
-        return $this->env->get("DATABASE_HOST") ?? "UTF8";
+        return $this->env->get("DATABASE_CHARSET") ?? "UTF8";
     }
 
     public function getDatabaseUser(): string {

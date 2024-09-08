@@ -6,4 +6,6 @@ interface Column {
     public function transform(mixed $value): mixed;
 
     public function isVirtual(): bool;
+
+    public function isAutoCreated(): bool;
 }

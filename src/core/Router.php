@@ -34,9 +34,14 @@ class Router {
         return $this->node->getEndpoints();
     }
 
-    public function setNode(Node $node): void {
+    public function getInstanceId(): int {
+        return $this->node->getInstanceId();
+    }
+
+    public function setNode(Node $node, Node $parent): void {
         $node->copy($this->node, false);
         $this->node = $node;
+        $this->node->setParent($parent);
     }
 
     protected function getLeaf(Path $path): Node {
@@ -74,7 +79,10 @@ class Router {
     public function bind(Path|string $path, Router $router): void {
         $parsed = Path::from($path);
         $leaf = $this->getLeaf($parsed);
-        $router->setNode($leaf);
+        $router->setNode($leaf, $parsed->getDepth() === 0
+            ? $this->node
+            : $leaf->getParent()
+        );
     }
 
     public function expose(Path|string $path, Directory $directory): void {
@@ -84,12 +92,7 @@ class Router {
     }
 
     public function resource(Path|string $path, Resource $resource): void {
-        $parsed = $path instanceof Path
-            ? $path
-            : Parser::parse($path);
-
-        $router = $resource->getRouter();
-        $router->setNode($this->getLeaf($parsed));
+        $this->bind($path, $resource->getRouter());
     }
 
     public function findPath(string $path): ?Trail {
@@ -109,6 +112,14 @@ class Router {
 
     public function execute(Request $request, Response $response): void {
         $trail = $this->findPath($request->url->getPath());
+        if (is_null($trail)) {
+            $response->render(new HttpError(
+                "Resource not found",
+                HttpCode::CE_NOT_FOUND
+            ));
+            return;
+        }
+
         $request->param->push($trail->getParams());
 
         foreach ($trail->getEndpoints() as $endpoint) {

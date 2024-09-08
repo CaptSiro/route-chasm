@@ -7,4 +7,8 @@ trait Source {
         return App::getInstance()
             ->getSource(dirname(get_class($this)) ."/$path");
     }
+
+    public function getClass(): string {
+        return basename(get_class($this));
+    }
 }

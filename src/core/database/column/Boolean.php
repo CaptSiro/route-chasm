@@ -16,4 +16,8 @@ class Boolean implements Column {
     public function isVirtual(): bool {
         return false;
     }
+
+    public function isAutoCreated(): bool {
+        return false;
+    }
 }

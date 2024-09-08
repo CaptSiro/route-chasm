@@ -1,11 +1,13 @@
 <?php
 
 use components\core\HttpError\HttpError;
+use components\resources\Cards\Cards;
 use core\App;
 use core\config\EnvConfig;
 use core\http\Http;
 use core\http\HttpCode;
 use core\Request;
+use core\Resource;
 use core\Response;
 use sptf\Sptf;
 
@@ -17,6 +19,7 @@ $app = App::getInstance();
 $config = new EnvConfig($app->getEnv());
 $app->setConfig($config);
 $app->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
+$app->options->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 
 $router = $app->getMainRouter();
 
@@ -37,6 +40,14 @@ $router->use(
         fn(Request $request, Response $response) => $response->flush()
     )->query("_test")
 );
+
+$router->resource("/cards", Cards::getInstance());
+$router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
+$router->use("/test", function (Request $request, Response $response) {
+    var_dump(Cards::getInstance()
+        ->getRouter()
+        ->getInstanceId());
+});
 
 
 

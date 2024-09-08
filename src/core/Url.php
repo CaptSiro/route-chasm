@@ -5,6 +5,10 @@ namespace core;
 use core\dictionary\StrictMap;
 
 class Url {
+    public static function set(string $url, string $parameter, string $value): string {
+        return str_replace("[$parameter]", $value, $url);
+    }
+
     public static function fromRequest(): self {
         $path = $_SERVER['REQUEST_URI'];
         $hostStart = strpos($path, $_SERVER['HTTP_HOST']);

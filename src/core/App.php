@@ -16,6 +16,7 @@ class App {
     public const ENV = __DIR__ ."/../../.env";
 
     public const OPTION_DO_REMOVE_HOME_FROM_URL_PATH = "do_remove_home_from_url_path";
+    public const OPTION_DO_ADD_HOME_TO_URL_PATH = "do_add_home_to_url_path";
     public const OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET = "always_return_html_for_http_get";
 
 
@@ -40,15 +41,16 @@ class App {
         $this->src = realpath(__DIR__ . "/..");
         $this->options = new Map([
             App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH => false,
+            App::OPTION_DO_ADD_HOME_TO_URL_PATH => false,
             App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET => true,
         ]);
 
         $this->router = new Router();
 
         $this->responseTypeMatcher = fn(string $type) => match ($type) {
-            'j', 'json' => 'JSON',
-            'h', 'html' => 'HTML',
-            default => 'TEXT'
+            'j', 'json' => Response::TYPE_JSON,
+            'h', 'html' => Response::TYPE_HTML,
+            default => Response::TYPE_TEXT
         };
 
         $this->request = new Request(
@@ -124,6 +126,24 @@ class App {
         }
 
         return $home;
+    }
+
+    public function prependHome(string $path): string {
+        $doAddHome = $this->options->get(self::OPTION_DO_ADD_HOME_TO_URL_PATH, false);
+
+        if (!$doAddHome) {
+            return $path;
+        }
+
+        $home = $this->getHome();
+
+        if ($home === "") {
+            return $path;
+        }
+
+        $prependSlash = !str_starts_with($path, '/');
+
+        return ($prependSlash ? '/' : '') . $home . ($prependSlash ? '/' : '') . $path;
     }
 
     public function getEnv(): ?Env {

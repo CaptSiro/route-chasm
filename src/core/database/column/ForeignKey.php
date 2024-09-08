@@ -30,4 +30,8 @@ class ForeignKey implements Column {
     public function getAlias(): string {
         return $this->alias;
     }
+
+    public function isAutoCreated(): bool {
+        return false;
+    }
 }

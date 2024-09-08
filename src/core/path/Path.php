@@ -79,6 +79,10 @@ class Path implements Pipeline {
 
 
 
+    public function getDepth(): int {
+        return count($this->segments);
+    }
+
     /**
      * @return Segment[]
      */

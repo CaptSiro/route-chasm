@@ -3,8 +3,11 @@
 namespace core\dictionary;
 
 interface Dictionary {
-    function exists(string $name): bool;
-    function set(string $name, mixed $value): void;
-    function get(string $name, mixed $or = null): mixed;
-    function load(array $array): void;
+    public function exists(string $name): bool;
+
+    public function set(string $name, mixed $value): void;
+
+    public function get(string $name, mixed $or = null): mixed;
+
+    public function load(array $array): void;
 }

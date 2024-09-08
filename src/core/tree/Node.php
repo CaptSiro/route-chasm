@@ -3,12 +3,17 @@
 namespace core\tree;
 
 use core\endpoints\Endpoint;
+use core\InstanceCounter;
 use core\path\Segment;
 use core\path\UrlPath;
 use core\Render;
 use core\Request;
 
 class Node {
+    use InstanceCounter;
+
+
+
     protected ?Segment $segment;
 
     /** @var Node[] $children */
@@ -28,11 +33,16 @@ class Node {
         $this->parent = null;
         $this->segment = null;
         $this->insert = 0;
+        $this->instanceId = self::createInstanceId();
     }
 
 
 
     public function copy(Node $from, bool $doCopySegment): void {
+        foreach ($from->endpoints as $endpoint) {
+            $endpoint->setNode($this);
+        }
+
         $this->endpoints = array_merge($this->endpoints, $from->endpoints);
         $start = count($this->children);
         $this->children = array_merge($this->children, $from->children);
@@ -48,6 +58,10 @@ class Node {
 
     public function getParent(): ?Node {
         return $this->parent;
+    }
+
+    public function setParent(?Node $parent): void {
+        $this->parent = $parent;
     }
 
     public function getSegment(): ?Segment {

@@ -5,11 +5,14 @@ namespace core\database;
 use core\database\buffer\StaticBuffer;
 use core\database\column\Column;
 use core\database\column\ForeignKey;
+use core\database\column\PrimaryKey;
 use core\database\parameter\Primitive;
 use core\database\query\Query;
+use core\dictionary\Dictionary;
 use core\Init;
+use JsonSerializable;
 
-abstract class Table extends Init {
+abstract class Table extends Init implements JsonSerializable {
     abstract public static function getTable(): string;
 
     /**
@@ -19,10 +22,21 @@ abstract class Table extends Init {
 
 
 
+    protected static ?string $idColumn = null;
+
     public static function init(): void {}
 
     public static function getIdColumn(): string {
-        return 'id';
+        if (is_null(static::$idColumn)) {
+            foreach (static::getColumns() as $name => $column) {
+                if ($column instanceof PrimaryKey) {
+                    static::$idColumn = $name;
+                    break;
+                }
+            }
+        }
+
+        return static::$idColumn;
     }
 
     public static function getColumnEnumString(bool $includeIdColumn = true): string {
@@ -49,6 +63,11 @@ abstract class Table extends Init {
         return $string;
     }
 
+    public static function isColumnValid(string $column): bool {
+        $columns = static::getColumns();
+        return isset($columns[$column]) && !$columns[$column]->isVirtual();
+    }
+
 
 
     public static function foreignKey(string $alias): ForeignKey {
@@ -61,7 +80,7 @@ abstract class Table extends Init {
             ->fetch(Query::from($sql, $additional), static::class);
     }
 
-    public static function fetchAll(?string $additional = null) {
+    public static function fetchAll(string|Query|null $additional = null) {
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable(). "`";
         return Database::getInstance()
             ->fetchAll(Query::from($sql, $additional), static::class);
@@ -81,6 +100,10 @@ abstract class Table extends Init {
                 ."` WHERE `". static::getIdColumn() ."` = $_id",
                 static::class
             );
+    }
+
+    public static function fromUnique(string $unique): ?self {
+        return static::fromId((int) $unique);
     }
 
     public static function fromRow(array|false $row): ?self {
@@ -119,8 +142,29 @@ abstract class Table extends Init {
     }
 
     public function set(array $data): self {
+        $columns = static::getColumns();
+
         foreach ($data as $column => $value) {
+            if (!static::isColumnValid($column) || $column === static::getIdColumn()) {
+                continue;
+            }
+
             $this->data[$column] = $value;
+            $this->updated[] = $column;
+        }
+
+        return $this;
+    }
+
+    public function setDictionary(Dictionary $dictionary): self {
+        $columns = static::getColumns();
+
+        foreach ($columns as $column => $definition) {
+            if (!static::isColumnValid($column) || $column === static::getIdColumn() || !$dictionary->exists($column)) {
+                continue;
+            }
+
+            $this->data[$column] = $dictionary->get($column);
             $this->updated[] = $column;
         }
 
@@ -165,7 +209,7 @@ abstract class Table extends Init {
         $first = true;
 
         foreach (static::getColumns() as $name => $definition) {
-            if ($definition->isVirtual()) {
+            if ($definition->isVirtual() || $name === static::getIdColumn()) {
                 continue;
             }
 
@@ -197,5 +241,9 @@ abstract class Table extends Init {
         }
 
         return $this->id = $this->data[static::getIdColumn()] ?? 0;
+    }
+
+    public function jsonSerialize(): mixed {
+        return $this->data;
     }
 }

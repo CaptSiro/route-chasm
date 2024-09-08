@@ -105,9 +105,9 @@ class Request {
         }
 
         if ($this->httpMethod === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
-            return 'HTML';
+            return Response::TYPE_HTML;
         }
 
-        return 'TEXT';
+        return Response::TYPE_TEXT;
     }
 }

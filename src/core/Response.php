@@ -4,11 +4,16 @@ namespace core;
 
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPageContent;
-use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 
 class Response {
+    public const TYPE_TEXT = "TEXT";
+    public const TYPE_JSON = "JSON";
+    public const TYPE_HTML = "HTML";
+
+
+
     protected array $headers;
     protected bool $headersSent;
 

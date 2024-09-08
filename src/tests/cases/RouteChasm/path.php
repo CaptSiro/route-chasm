@@ -33,6 +33,25 @@ Sptf::test("should return correct depth", function () {
 
 
 
+Sptf::test("should return correct depth (parsed path)", function () {
+    $paths = [
+        "" => 0,
+        "/" => 0,
+        "foo" => 1,
+        "/foo" => 1,
+        "foo/bar" => 2,
+        "/foo/bar" => 2,
+        "/@[foo]/[bar]/fizz" => 3,
+    ];
+
+    foreach ($paths as $path => $depth) {
+        Sptf::expect(Path::from($path)->getDepth())
+            ->toBe($depth);
+    }
+});
+
+
+
 Sptf::test("Path::fromLiteral must match \$path->__toString output", function () {
     $arg = "card/[id]-[name]";
     Sptf::expect((string) Path::from($arg))->toBe($arg);
