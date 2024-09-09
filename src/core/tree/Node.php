@@ -83,13 +83,14 @@ class Node {
         if ($this->segment?->hasFlag(Segment::FLAG_ANY_TERMINATED) || $path->isExhausted()) {
             $trail = $stack->merge()
                 ->setFlag($this->segment?->getFlags() ?? 0);
-            $params = $trail->getParams();
+            $terminator = $trail->getParam(Request::PARAM_ANY_TERMINATOR);
 
-            if (isset($params[Request::PARAM_ANY_TERMINATOR])) {
-                $steps = $path->getRemaining();
+            if (!is_null($terminator)) {
+                $remaining = $path->getRemaining();
 
-                if (!empty($steps)) {
-                    $params[Request::PARAM_ANY_TERMINATOR] .= '/' .implode('/', $steps);
+                if (!empty($remaining)) {
+                    $terminator .= '/' .implode('/', $remaining);
+                    $trail->setParam(Request::PARAM_ANY_TERMINATOR, $terminator);
                 }
             }
 

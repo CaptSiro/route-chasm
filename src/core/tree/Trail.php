@@ -28,6 +28,14 @@ class Trail {
         return $this->params;
     }
 
+    public function getParam(string $name): ?string {
+        return $this->params[$name] ?? null;
+    }
+
+    public function setParam(string $name, string $value): void {
+        $this->params[$name] = $value;
+    }
+
     /**
      * @return array
      */

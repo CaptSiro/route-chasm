@@ -9,6 +9,7 @@ use core\App;
 class Explorer extends WebPageContent {
     public function __construct(
         protected string $directory,
+        protected string $label,
         protected string $url,
         protected bool $isParentEntryAllowed = true
     ) {
@@ -19,6 +20,6 @@ class Explorer extends WebPageContent {
             $this->url .= "/";
         }
 
-        parent::__construct(head: new HtmlHead("Explorer - $this->directory"));
+        parent::__construct(head: new HtmlHead("Explorer - $this->label"));
     }
 }

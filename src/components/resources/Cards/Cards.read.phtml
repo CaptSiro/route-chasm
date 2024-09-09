@@ -1,0 +1,8 @@
+<?php /** @var \components\core\Resource\Read $this */ ?>
+<a href="<?= \components\resources\Cards\Cards::getInstance()->getUrl() ?>">Cards</a>
+
+<div class="card">
+    <?php $card = $this->model /** @var \tables\Card $card */ ?>
+    <p>Question:&nbsp;<?= $card->question ?></p>
+    <p>Answer:&nbsp;<?= $card->answer ?></p>
+</div>

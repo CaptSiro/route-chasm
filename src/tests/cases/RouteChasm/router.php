@@ -1,5 +1,6 @@
 <?php
 
+use core\App;
 use core\http\Http;
 use core\path\Path;
 use core\Request;
@@ -165,11 +166,20 @@ Sptf::test("get correct url path for Resource", function () {
         $t1
     );
 
+    App::getInstance()
+        ->options
+        ->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, false);
+
     Sptf::expect($t0->getUrl(Resource::URL_READ))
         ->toBe("/[unique]");
 
     Sptf::expect($t1->getUrl(Resource::URL_READ))
         ->toBe("/a/b/[unique]");
+
+
+    App::getInstance()
+        ->options
+        ->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 });
 
 Sptf::test("handle any terminated paths", function () {

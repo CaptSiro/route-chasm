@@ -10,11 +10,7 @@ use core\Singleton;
 class TestResource extends Resource {
     use Singleton;
 
-    protected function fromUnique(string $unique): Table {
-        return new TestTable();
-    }
-
-    protected function fromRequestData(Request $request): Table {
-        return new TestTable();
+    protected function getTable(): string {
+        return "";
     }
 }

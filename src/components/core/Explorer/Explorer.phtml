@@ -1,6 +1,6 @@
 <?php /** @var \components\core\Explorer\Explorer $this */ ?>
 <div class="explorer">
-    <h1><?= htmlspecialchars(basename($this->directory)) ?></h1>
+    <h1><?= htmlspecialchars($this->label) ?></h1>
     <hr>
     <ul class="explorer-list">
         <?php foreach (scandir($this->directory) as $entry): ?>
