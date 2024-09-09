@@ -7,7 +7,7 @@
             <?php if ($entry === ".") continue; ?>
             <?php if ($entry === ".." && !$this->isParentEntryAllowed) continue; ?>
             <li class="explorer-item">
-                <a href="<?= "$this->url". urlencode($entry) ?>">
+                <a href="<?= $this->url . urlencode($entry) ?>">
                     <?= htmlspecialchars($entry) ?>
                     <?php if (is_dir($this->directory ."/". $entry)): ?>/<?php endif; ?>
                 </a>

@@ -68,6 +68,7 @@ class Directory implements Endpoint {
                     if ($this->hasFlag(self::FLAG_LIST_DIRECTORIES)) {
                         $response->render(new Explorer(
                             $path,
+                            basename($this->directory) .'/'. $remaining,
                             $request->url->getRealPath(),
                             $this->directory !== $path
                         ));
