@@ -8,6 +8,7 @@ use components\core\Resource\Read;
 use core\database\Table;
 use core\http\Http;
 use core\path\Path;
+use core\url\UrlBuilder;
 use InvalidArgumentException;
 use patterns\Number;
 use patterns\Pattern;
@@ -16,6 +17,8 @@ abstract class Resource {
     use Source;
 
 
+
+    public const PARAM_UNIQUE = "unique";
 
     public const URL_INDEX = "index";
     public const URL_CREATE = "create";
@@ -40,7 +43,7 @@ abstract class Resource {
             Path::from("/[unique]")
                 ->param("unique", $this->getUniquePattern()),
 
-            fn(Request $request) => $request->set("model", $this->fromUnique($request->param->getStrict("unique"))),
+            fn(Request $request) => $request->set("model", $this->fromUnique($request->param->getStrict(self::PARAM_UNIQUE))),
 
             Http::get(fn(Request $request, Response $response) => $response->render($this->read($request->get("model")))),
             Http::put(fn(Request $request, Response $response) => $response->render($this->update($request->get("model")))),
@@ -64,11 +67,11 @@ abstract class Resource {
         return $this->router;
     }
 
-    public function getUrl(?string $type = null): string {
+    public function getUrl(?string $type = null): UrlBuilder {
         $path = App::getInstance()
             ->prependHome($this->router->getUrlPath());
 
-        return match ($type) {
+        return new UrlBuilder(path: match ($type) {
             null,
             self::URL_INDEX,
             self::URL_CREATE => $path,
@@ -76,15 +79,15 @@ abstract class Resource {
             self::URL_UPDATE,
             self::URL_DELETE,
             self::URL_READ => $this->appendUniqueIdent($path),
-        };
+        });
     }
 
     private function appendUniqueIdent($path): string {
         if (str_ends_with($path, "/")) {
-            return $path ."[unique]";
+            return $path ."[". self::PARAM_UNIQUE .']';
         }
 
-        return $path ."/[unique]";
+        return $path ."/[". self::PARAM_UNIQUE .']';
     }
 
     public function index(?array $models = null): Render {
@@ -128,7 +131,7 @@ abstract class Resource {
         }
 
         $class = $this->getClass();
-        $read = new Read("$class - ". $request->param->get("unique"), $model);
+        $read = new Read("$class - ". $request->param->get(self::PARAM_UNIQUE), $model);
         $read->setTemplate($this->getSource("$class.read.phtml"));
         return $read;
     }

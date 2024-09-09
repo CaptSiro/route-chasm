@@ -25,8 +25,7 @@ class UrlBuilder {
         $this->params = [];
 
         if (preg_match_all(Url::PARAM_REGEX, $this->path, $matches)) {
-            array_unshift($matches);
-            $this->params = array_fill_keys(array_values($matches), null);
+            $this->params = array_fill_keys(array_values($matches[1]), null);
         }
     }
 
@@ -113,5 +112,16 @@ class UrlBuilder {
             : '';
 
         return $scheme . $path . $query . $fragment;
+    }
+
+    public function __toString(): string {
+        return $this->build();
+    }
+
+    public function clean(): self {
+        $this->query = [];
+        $this->fragment = [];
+        $this->params = array_fill_keys(array_keys($this->params), null);
+        return $this;
     }
 }

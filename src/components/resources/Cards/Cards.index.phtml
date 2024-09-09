@@ -1,9 +1,15 @@
-<?php /** @var \components\core\Resource\Index $this */ ?>
-<div class="cards">
-    <?php $base = \components\resources\Cards\Cards::getInstance()->getUrl(\core\Resource::URL_READ) ?>
+<?php /** @var Index $this */
+
+use components\core\Resource\Index;
+use components\resources\Cards\Cards;
+use core\Resource;
+use tables\Card;
+
+?><div class="cards">
+    <?php $base = Cards::getInstance()->getUrl(Resource::URL_READ) ?>
     <?php foreach ($this->models as $model): ?>
-        <?php /** @var \tables\Card $model */ ?>
-        <a href="<?= \core\url\Url::set($base, "unique", $model->getId()) ?>">
+        <?php /** @var Card $model */ ?>
+        <a href="<?= Cards::getInstance()->createUrl($model, $base) ?>">
             <div class="card">
                 <span class="question"><?= $model->question ?></span>
                 <span class="answer"><?= $model->answer ?></span>
