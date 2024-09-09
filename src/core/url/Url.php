@@ -1,10 +1,13 @@
 <?php
 
-namespace core;
+namespace core\url;
 
+use core\App;
 use core\dictionary\StrictMap;
 
 class Url {
+    public const PARAM_REGEX = "/\[([^\]]+)\]/";
+
     public static function set(string $url, string $parameter, string $value): string {
         return str_replace("[$parameter]", $value, $url);
     }

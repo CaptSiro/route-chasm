@@ -5,9 +5,9 @@ namespace core\tree;
 use core\endpoints\Endpoint;
 use core\InstanceCounter;
 use core\path\Segment;
-use core\path\UrlPath;
 use core\Render;
 use core\Request;
+use core\url\UrlPath;
 
 class Node {
     use InstanceCounter;

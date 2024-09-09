@@ -3,7 +3,7 @@
     <?php $base = \components\resources\Cards\Cards::getInstance()->getUrl(\core\Resource::URL_READ) ?>
     <?php foreach ($this->models as $model): ?>
         <?php /** @var \tables\Card $model */ ?>
-        <a href="<?= \core\Url::set($base, "unique", $model->getId()) ?>">
+        <a href="<?= \core\url\Url::set($base, "unique", $model->getId()) ?>">
             <div class="card">
                 <span class="question"><?= $model->question ?></span>
                 <span class="answer"><?= $model->answer ?></span>

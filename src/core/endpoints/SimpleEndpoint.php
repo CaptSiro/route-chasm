@@ -4,7 +4,7 @@ namespace core\endpoints;
 
 use core\App;
 use core\tree\Node;
-use core\Url;
+use core\url\Url;
 
 trait SimpleEndpoint {
     private ?Node $node = null;

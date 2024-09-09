@@ -5,8 +5,8 @@ namespace core;
 use core\dictionary\StrictDictionary;
 use core\dictionary\StrictMap;
 use core\dictionary\StrictStack;
-use core\http\Http;
 use core\http\HttpHeader;
+use core\url\Url;
 
 class Request {
     public const PARAM_ANY = "*";

@@ -9,12 +9,11 @@ use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
 use core\http\Http;
 use core\http\HttpCode;
-use core\path\parser\Parser;
 use core\path\Path;
-use core\path\UrlPath;
 use core\tree\Node;
 use core\tree\SnapshotStack;
 use core\tree\Trail;
+use core\url\UrlPath;
 
 class Router {
     protected Node $node;

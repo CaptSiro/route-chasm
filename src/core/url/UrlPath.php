@@ -1,6 +1,6 @@
 <?php
 
-namespace core\path;
+namespace core\url;
 
 use core\Pipeline;
 

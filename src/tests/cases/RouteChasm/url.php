@@ -1,7 +1,7 @@
 <?php
 
 use core\App;
-use core\Url;
+use core\url\Url;
 use sptf\Sptf;
 
 require_once __DIR__ ."/../../utils/RouteChasm/set-array.php";

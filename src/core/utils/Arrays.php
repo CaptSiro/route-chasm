@@ -32,4 +32,22 @@ class Arrays {
 
         return $n === $c;
     }
+
+    public static function urlEncode(array $array): string {
+        $first = true;
+        $buffer = "";
+
+        foreach ($array as $name => $value) {
+            if (is_null($value)) {
+                $buffer .= ($first ? '' : '&') . urlencode($name);
+                $first = false;
+                continue;
+            }
+
+            $buffer = ($first ? '' : '&') . urlencode($name) .'='. urlencode($value);
+            $first = false;
+        }
+
+        return $buffer;
+    }
 }

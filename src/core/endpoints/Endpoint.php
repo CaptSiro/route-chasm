@@ -5,7 +5,7 @@ namespace core\endpoints;
 use core\Request;
 use core\Response;
 use core\tree\Node;
-use core\Url;
+use core\url\Url;
 
 interface Endpoint {
     public function getNode(): Node;
