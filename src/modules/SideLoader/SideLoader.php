@@ -4,6 +4,8 @@ namespace modules\SideLoader;
 
 use components\core\HttpError\HttpError;
 use core\App;
+use core\cache\Cache;
+use core\cache\LazyFileCache;
 use core\Flags;
 use core\http\Cors;
 use core\http\Http;
@@ -29,7 +31,7 @@ class SideLoader implements Module, Render {
     use Singleton;
 
     public const FILE_SEPARATOR = ',';
-    public const FILE_CACHE = 'cache.json';
+    public const FILE_CACHE = 'cache';
     public const DIRECTORY_MERGED = 'merged';
     public const HEADER_X_REQUIRE = 'X-Require';
     public const FLAG_LOADED = 1;
@@ -41,23 +43,14 @@ class SideLoader implements Module, Render {
      * @var array<string, FileImporter> $fileImporters
      */
     protected array $fileImporters;
-    protected array $cache;
-    protected bool $cacheUpdated;
+    protected Cache $cache;
     protected Router $router;
 
 
 
     public function __construct() {
         $this->files = [];
-
-        $cacheFile = $this->getSource(self::FILE_CACHE);
-        if (!file_exists($cacheFile)) {
-            $this->cache = [];
-        } else {
-            $this->cache = json_decode(file_get_contents($cacheFile), associative: true);
-        }
-
-        $this->cacheUpdated = false;
+        $this->cache = new LazyFileCache($this->getSource(self::FILE_CACHE));
 
         $javascript = new FileImporter();
         $this->addImporter(
@@ -95,11 +88,11 @@ class SideLoader implements Module, Render {
 
                 $files = $request->url->query->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
-                    if (!isset($this->cache[$files])) {
+                    if (!$this->cache->has($files)) {
                         $response->render(new HttpError("File not found (file hash: '$files')", HttpCode::CE_NOT_FOUND));
                     }
 
-                    $response->readFile($this->cache[$files]);
+                    $response->readFile($this->cache->get($files));
                 }
 
                 $source = $this->getMergedFiles($files);
@@ -144,14 +137,7 @@ class SideLoader implements Module, Render {
             $response->setHeader(self::HEADER_X_REQUIRE, $require);
         });
 
-        $loader->on(App::EVENT_SHUTDOWN, function () {
-            if ($this->cacheUpdated) {
-                file_put_contents(
-                    $this->getSource(self::FILE_CACHE),
-                    json_encode($this->cache)
-                );
-            }
-        });
+        $loader->on(App::EVENT_SHUTDOWN, fn() => $this->cache->save());
 
         $loader
             ->getMainRouter()
@@ -189,13 +175,12 @@ class SideLoader implements Module, Render {
                 continue;
             }
 
-            $base64Hash = dechex($hash);
-            if (!isset($this->cache[$base64Hash])) {
-                $this->cache[$base64Hash] = $real;
-                $this->cacheUpdated = true;
+            $hex = dechex($hash);
+            if (!$this->cache->has($hex)) {
+                $this->cache->set($hex, $real);
             }
 
-            $hashed .= ($first ? '' : self::FILE_SEPARATOR) . $base64Hash;
+            $hashed .= ($first ? '' : self::FILE_SEPARATOR) . $hex;
             $first = false;
         }
 
@@ -205,8 +190,8 @@ class SideLoader implements Module, Render {
     public function getMergedFiles(string $merged): string {
         $this->accessibleAfterLoad();
 
-        if (isset($this->cache[$merged])) {
-            return $this->cache[$merged];
+        if ($this->cache->has($merged)) {
+            return $this->cache->get($merged);
         }
 
         $directory = $this->getSource('merged');
@@ -220,7 +205,7 @@ class SideLoader implements Module, Render {
         $file = fopen($source, 'w');
 
         foreach (explode(self::FILE_SEPARATOR, $merged) as $hash) {
-            if (!isset($this->cache[$hash])) {
+            if (!$this->cache->has($hash)) {
                 fclose($file);
                 unlink($source);
 
@@ -232,12 +217,11 @@ class SideLoader implements Module, Render {
                     ));
             }
 
-            fwrite($file, file_get_contents($this->cache[$hash]));
+            fwrite($file, file_get_contents($this->cache->get($hash)));
         }
 
         fclose($file);
-        $this->cache[$merged] = realpath($source);
-        $this->cacheUpdated = true;
+        $this->cache->set($merged, realpath($source));
         return $source;
     }
 
