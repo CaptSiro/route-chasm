@@ -9,8 +9,12 @@ use core\dictionary\StrictMap;
 use core\url\Url;
 use dotenv\Env;
 
-class App {
+class App implements Loader {
     use Singleton;
+
+
+
+    public const EVENT_SHUTDOWN = self::class .':shutdown';
 
 
 
@@ -29,12 +33,8 @@ class App {
     private Closure $responseTypeMatcher;
     public readonly Map $options;
     protected ?Env $env;
-
-    /** @var array<string> $styles */
-    protected array $styles;
-    /** @var array<string> $scripts */
-    protected array $scripts;
     protected ?Config $config;
+    protected array $listeners;
 
 
 
@@ -70,9 +70,6 @@ class App {
             : null;
 
         $this->config = null;
-
-        $this->styles = [];
-        $this->scripts = [];
     }
 
 
@@ -170,32 +167,27 @@ class App {
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getScripts(): array {
-        return $this->scripts;
-    }
-
-    public function import(string $scriptFile): self {
-        $this->scripts[] = $scriptFile;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getStyles(): array {
-        return $this->styles;
-    }
-
-    public function link(string $cssFile): self {
-        $this->styles[] = $cssFile;
-        return $this;
-    }
-
     public function serve(?Request $request = null): void {
         $req = $request ?? $this->request;
         $this->router->execute($req, $this->response);
+    }
+
+    public function on(string $event, Closure $function): void {
+        if (!isset($this->listeners[$event])) {
+            $this->listeners[$event] = [$function];
+            return;
+        }
+
+        $this->listeners[$event][] = $function;
+    }
+
+    public function dispatch(string $event, mixed $context): void {
+        if (!isset($this->listeners[$event])) {
+            return;
+        }
+
+        foreach ($this->listeners[$event] as $listener) {
+            $listener($context);
+        }
     }
 }

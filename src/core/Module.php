@@ -3,5 +3,5 @@
 namespace core;
 
 interface Module {
-    public function load(App $app): void;
+    public function load(Loader $loader): void;
 }

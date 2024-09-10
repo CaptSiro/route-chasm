@@ -1,2 +1,5 @@
 .idea
 .env
+
+**/SideLoader/merged/
+**/SideLoader/cache*

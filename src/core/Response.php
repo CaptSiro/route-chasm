@@ -12,6 +12,8 @@ class Response {
     public const TYPE_JSON = "JSON";
     public const TYPE_HTML = "HTML";
 
+    public const EVENT_HEADERS_GENERATION = self::class .':headers-generation';
+
 
 
     protected array $headers;
@@ -63,10 +65,16 @@ class Response {
         }
 
         $this->headersSent = true;
+        App::getInstance()->dispatch(self::EVENT_HEADERS_GENERATION, $this);
 
         foreach ($this->headers as $header => $value) {
             header("$header: $value");
         }
+    }
+
+    protected function exit(): void {
+        App::getInstance()->dispatch(App::EVENT_SHUTDOWN, $this);
+        exit;
     }
 
     /**
@@ -74,7 +82,7 @@ class Response {
      */
     public function flush(): void {
         $this->generateHeaders();
-        exit;
+        $this->exit();
     }
 
     /**
@@ -85,7 +93,7 @@ class Response {
     public function send($text): void {
         $this->generateHeaders();
         echo $text;
-        exit;
+        $this->exit();
     }
 
     /**
@@ -96,7 +104,7 @@ class Response {
     public function json($data, $flags = 0, $depth = 512): void {
         $this->generateHeaders();
         echo json_encode($data, $flags, $depth);
-        exit;
+        $this->exit();
     }
 
     /**
@@ -113,7 +121,7 @@ class Response {
 
         $this->generateHeaders();
         readfile($file);
-        exit;
+        $this->exit();
     }
 
     /**
@@ -146,7 +154,7 @@ class Response {
             return;
         }
 
-        exit;
+        $this->exit();
     }
 
     /**

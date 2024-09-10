@@ -29,4 +29,14 @@ class Files {
 
         return mime_content_type($path);
     }
+
+    public static function hashPath(string $file, string &$real = null): int|false {
+        $real = realpath($file);
+
+        if ($real === false) {
+            return false;
+        }
+
+        return (Strings::hashAscii($real) << 16) ^ filectime($file);
+    }
 }

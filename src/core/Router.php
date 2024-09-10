@@ -101,6 +101,11 @@ class Router {
         return $this->node->search(UrlPath::from($path), $snapshots);
     }
 
+    /**
+     * Home is not automatically prepended
+     * @see App::prependHome
+     * @return string
+     */
     public function getUrlPath(): string {
         return $this->node->getPathToSelf();
     }

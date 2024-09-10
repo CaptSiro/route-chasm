@@ -27,7 +27,12 @@ trait TemplateRenderer {
         return ob_get_clean();
     }
 
-    public function setTemplate(?string $template): void {
+    public function setTemplate(?string $template): self {
         $this->template = $template;
+        return $this;
+    }
+
+    public function __toString(): string {
+        return $this->render();
     }
 }

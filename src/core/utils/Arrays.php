@@ -44,7 +44,7 @@ class Arrays {
                 continue;
             }
 
-            $buffer = ($first ? '' : '&') . urlencode($name) .'='. urlencode($value);
+            $buffer .= ($first ? '' : '&') . urlencode($name) .'='. urlencode($value);
             $first = false;
         }
 

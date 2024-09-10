@@ -3,7 +3,7 @@
 namespace core\http;
 
 class HttpHeader {
-// RouteChasm headers
+    // RouteChasm headers
     public const CONTENT_DESCRIPTION = "Content-Description";
     public const PREGMA = "Pregma";
     public const X_RESPONSE_TYPE = "X-Response-Type";

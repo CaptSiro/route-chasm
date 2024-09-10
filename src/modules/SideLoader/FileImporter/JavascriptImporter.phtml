@@ -1,0 +1,10 @@
+<?php /** @var FileImporter $this */
+
+use modules\SideLoader\FileImporter\FileImporter;
+use modules\SideLoader\Javascript;
+use modules\SideLoader\SideLoader;
+
+?><script
+    src="<?= SideLoader::getInstance()->createImportUrl(Javascript::FILE_TYPE, $this->files) ?>"
+    defer
+></script>

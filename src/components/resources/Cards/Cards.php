@@ -8,6 +8,9 @@ use core\Render;
 use core\Resource;
 use core\Singleton;
 use core\url\UrlBuilder;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
+use modules\SideLoader\SideLoader;
 use tables\Card;
 
 class Cards extends Resource {
@@ -16,8 +19,9 @@ class Cards extends Resource {
 
 
     public function __construct() {
-        App::getInstance()
-            ->link(__DIR__ ."/cards.css");
+        Css::import(__DIR__ ."/cards.css");
+        Css::import(__DIR__ ."/dark.css");
+        Javascript::import(__DIR__ .'/cards.js');
         parent::__construct();
     }
 

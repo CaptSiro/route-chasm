@@ -9,6 +9,7 @@ use core\http\HttpCode;
 use core\Request;
 use core\Resource;
 use core\Response;
+use modules\SideLoader\SideLoader;
 use sptf\Sptf;
 
 require_once __DIR__ ."/src/autoload.php";
@@ -20,6 +21,8 @@ $config = new EnvConfig($app->getEnv());
 $app->setConfig($config);
 $app->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 $app->options->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
+
+$app->require(SideLoader::getInstance());
 
 $router = $app->getMainRouter();
 

@@ -1,0 +1,11 @@
+<?php /** @var FileImporter $this */
+
+use modules\SideLoader\Css;
+use modules\SideLoader\FileImporter\FileImporter;
+use modules\SideLoader\SideLoader;
+
+?>
+<link
+    rel="stylesheet"
+    href="<?= SideLoader::getInstance()->createImportUrl(Css::FILE_TYPE, $this->files) ?>"
+>
