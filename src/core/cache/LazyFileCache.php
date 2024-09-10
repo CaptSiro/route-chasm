@@ -63,6 +63,12 @@ class LazyFileCache implements Cache {
         return $this;
     }
 
+    public function delete(string $variable): Cache {
+        $this->load();
+        unset($this->internal[$variable]);
+        return $this;
+    }
+
     public function save(): Cache {
         if (!$this->isLoaded) {
             return $this;

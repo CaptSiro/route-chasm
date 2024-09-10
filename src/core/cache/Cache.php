@@ -9,5 +9,7 @@ interface Cache {
 
     public function set(string $variable, string $value): self;
 
+    public function delete(string $variable): self;
+
     public function save(): self;
 }
