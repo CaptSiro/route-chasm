@@ -6,6 +6,8 @@ use Closure;
 use core\config\Config;
 use core\dictionary\Map;
 use core\dictionary\StrictMap;
+use core\module\Loader;
+use core\module\Module;
 use core\url\Url;
 use dotenv\Env;
 use modules\SideLoader\SideLoader;

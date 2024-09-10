@@ -1,6 +1,6 @@
 <?php
 
-namespace core;
+namespace core\module;
 
 interface Module {
     public function load(Loader $loader): void;

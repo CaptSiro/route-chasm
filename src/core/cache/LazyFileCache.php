@@ -32,7 +32,7 @@ class LazyFileCache implements Cache {
 
         $fp = fopen($this->file, 'r');
         if ($fp === false) {
-            throw new FileAccessException();
+            throw new FileAccessException($this->file);
         }
 
         while (($line = fgets($fp)) !== false) {
@@ -80,7 +80,7 @@ class LazyFileCache implements Cache {
 
         $fp = fopen($this->file, 'w');
         if ($fp === false) {
-            throw new FileAccessException();
+            throw new FileAccessException($this->file);
         }
 
         foreach ($this->internal as $variable => $value) {

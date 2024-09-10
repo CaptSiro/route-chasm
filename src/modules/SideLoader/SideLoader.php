@@ -6,13 +6,13 @@ use components\core\HttpError\HttpError;
 use core\App;
 use core\cache\Cache;
 use core\cache\LazyFileCache;
-use core\Flags;
 use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
-use core\Loader;
-use core\Module;
+use core\module\AvailableAfterLoad;
+use core\module\Loader;
+use core\module\Module;
 use core\Render;
 use core\Request;
 use core\Response;
@@ -26,15 +26,14 @@ use modules\SideLoader\FileImporter\FileImporter;
 use patterns\Ident;
 
 class SideLoader implements Module, Render {
+    use AvailableAfterLoad;
     use TemplateRenderer;
-    use Flags;
     use Singleton;
 
     public const FILE_SEPARATOR = ',';
     public const FILE_CACHE = 'cache';
     public const DIRECTORY_MERGED = 'merged';
     public const HEADER_X_REQUIRE = 'X-Require';
-    public const FLAG_LOADED = 1;
 
 
 
@@ -143,24 +142,7 @@ class SideLoader implements Module, Render {
             ->getMainRouter()
             ->bind('/import', $this->router);
 
-        $this->setFlag(self::FLAG_LOADED);
-    }
-
-    public function isLoaded(): bool {
-        return $this->hasFlag(self::FLAG_LOADED);
-    }
-
-    protected function accessibleAfterLoad(): void {
-        if ($this->hasFlag(self::FLAG_LOADED)) {
-            return;
-        }
-
-        App::getInstance()
-            ->getResponse()
-            ->render(new HttpError(
-                "Module SideLoader is not accessible before module is properly loaded",
-                HttpCode::SE_INTERNAL_SERVER_ERROR
-            ));
+        $this->markLoaded();
     }
 
     public function merge(array $files): string {

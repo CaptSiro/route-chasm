@@ -1,8 +1,9 @@
 <?php
 
-namespace core;
+namespace core\module;
 
 use Closure;
+use core\Router;
 
 interface Loader {
     public function on(string $event, Closure $function): void;
