@@ -4,6 +4,7 @@ namespace modules\SideLoader;
 
 use components\core\HttpError\HttpError;
 use core\App;
+use core\Flags;
 use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
@@ -24,12 +25,14 @@ use patterns\Ident;
 
 class SideLoader implements Module, Render {
     use TemplateRenderer;
+    use Flags;
     use Singleton;
 
     public const FILE_SEPARATOR = ',';
     public const FILE_CACHE = 'cache.json';
     public const DIRECTORY_MERGED = 'merged';
     public const HEADER_X_REQUIRE = 'X-Require';
+    public const FLAG_LOADED = 1;
 
 
 
@@ -45,6 +48,8 @@ class SideLoader implements Module, Render {
 
 
     public function __construct() {
+        $this->files = [];
+
         $cacheFile = $this->getSource(self::FILE_CACHE);
         if (!file_exists($cacheFile)) {
             $this->cache = [];
@@ -151,9 +156,30 @@ class SideLoader implements Module, Render {
         $loader
             ->getMainRouter()
             ->bind('/import', $this->router);
+
+        $this->setFlag(self::FLAG_LOADED);
+    }
+
+    public function isLoaded(): bool {
+        return $this->hasFlag(self::FLAG_LOADED);
+    }
+
+    protected function accessibleAfterLoad(): void {
+        if ($this->hasFlag(self::FLAG_LOADED)) {
+            return;
+        }
+
+        App::getInstance()
+            ->getResponse()
+            ->render(new HttpError(
+                "Module SideLoader is not accessible before module is properly loaded",
+                HttpCode::SE_INTERNAL_SERVER_ERROR
+            ));
     }
 
     public function merge(array $files): string {
+        $this->accessibleAfterLoad();
+
         $hashed = '';
         $first = true;
 
@@ -163,7 +189,7 @@ class SideLoader implements Module, Render {
                 continue;
             }
 
-            $base64Hash = Strings::encodeBase64Safe($hash);
+            $base64Hash = dechex($hash);
             if (!isset($this->cache[$base64Hash])) {
                 $this->cache[$base64Hash] = $real;
                 $this->cacheUpdated = true;
@@ -177,6 +203,8 @@ class SideLoader implements Module, Render {
     }
 
     public function getMergedFiles(string $merged): string {
+        $this->accessibleAfterLoad();
+
         if (isset($this->cache[$merged])) {
             return $this->cache[$merged];
         }
@@ -186,7 +214,7 @@ class SideLoader implements Module, Render {
             mkdir($directory);
         }
 
-        $mergedFile = Strings::encodeBase64Safe((Strings::hashAscii($directory .'/'. $merged) << 16) ^ time());
+        $mergedFile = dechex((Strings::hashAscii($directory .'/'. $merged) << 16) ^ time());
 
         $source = $this->getSource("merged/$mergedFile");
         $file = fopen($source, 'w');
@@ -214,16 +242,20 @@ class SideLoader implements Module, Render {
     }
 
     public function createImportUrl(string $type, array $files): string {
+        $this->accessibleAfterLoad();
+
         $path = App::getInstance()
             ->prependHome($this->router->getUrlPath());
 
         return (new UrlBuilder(path: $path))
-            ->setQuery('type', $type) // todo investigate
+            ->setQuery('type', $type)
             ->setQuery('files', $this->merge($files))
             ->build();
     }
 
     public function import(string $type, string $file): void {
+        $this->accessibleAfterLoad();
+
         if (!isset($this->files[$type])) {
             $this->files[$type] = [$file];
             return;

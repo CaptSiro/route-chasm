@@ -8,9 +8,19 @@ use core\dictionary\Map;
 use core\dictionary\StrictMap;
 use core\url\Url;
 use dotenv\Env;
+use modules\SideLoader\SideLoader;
 
 class App implements Loader {
-    use Singleton;
+    private static ?self $instance = null;
+
+    public static function getInstance(): self {
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+            self::$instance->requireDefaultModules();
+        }
+
+        return self::$instance;
+    }
 
 
 
@@ -23,6 +33,17 @@ class App implements Loader {
     public const OPTION_DO_REMOVE_HOME_FROM_URL_PATH = "do_remove_home_from_url_path";
     public const OPTION_DO_ADD_HOME_TO_URL_PATH = "do_add_home_to_url_path";
     public const OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET = "always_return_html_for_http_get";
+    public const OPTION_DO_NOT_AUTOLOAD = 'do_not_autoload';
+
+    protected const DEFAULT_MODULES = [
+        SideLoader::class
+    ];
+
+
+
+    public static function createOptionDoNotAutoload(string $moduleClass): string {
+        return self::OPTION_DO_NOT_AUTOLOAD ."_$moduleClass";
+    }
 
 
 
@@ -35,10 +56,13 @@ class App implements Loader {
     protected ?Env $env;
     protected ?Config $config;
     protected array $listeners;
+    protected bool $defaultModulesLoaded;
 
 
 
     public function __construct() {
+        $this->defaultModulesLoaded = false;
+
         $this->src = realpath(__DIR__ . "/..");
         $this->options = new Map([
             App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH => false,
@@ -165,6 +189,22 @@ class App implements Loader {
     public function require(Module $module): self {
         $module->load($this);
         return $this;
+    }
+
+    protected function requireDefaultModules(): void {
+        if ($this->defaultModulesLoaded) {
+            return;
+        }
+
+        $this->defaultModulesLoaded = true;
+
+        foreach (self::DEFAULT_MODULES as $module) {
+            if ($this->options->exists(self::createOptionDoNotAutoload($module))) {
+                continue;
+            }
+
+            $this->require(call_user_func("$module::getInstance"));
+        }
     }
 
     public function serve(?Request $request = null): void {

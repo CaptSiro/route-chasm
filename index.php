@@ -22,8 +22,6 @@ $app->setConfig($config);
 $app->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 $app->options->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 
-$app->require(SideLoader::getInstance());
-
 $router = $app->getMainRouter();
 
 
