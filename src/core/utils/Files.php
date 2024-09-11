@@ -39,4 +39,22 @@ class Files {
 
         return (Strings::hashAscii($real) << 16) ^ filectime($file);
     }
+
+    /**
+     * @param string $directory
+     * @return array<string>
+     */
+    public static function fromDirectory(string $directory): array {
+        $files = [];
+
+        foreach (scandir($directory) as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+
+            $files[] = "$directory/$entry";
+        }
+
+        return $files;
+    }
 }

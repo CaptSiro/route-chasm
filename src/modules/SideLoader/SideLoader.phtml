@@ -1,5 +1,0 @@
-<?php /** @var \modules\SideLoader\SideLoader $this */ ?>
-<?php foreach ($this->files as $type => $files): ?>
-    <?php if (!isset($this->fileImporters[$type])) continue; ?>
-    <?= $this->fileImporters[$type]->setFiles($files) ?>
-<?php endforeach; ?>

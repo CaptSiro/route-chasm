@@ -1,5 +1,8 @@
-<?php /** @var \components\core\HtmlHead\HtmlHead $this */
+<?php /** @var HtmlHead $this */
 
+use components\core\HtmlHead\HtmlHead;
+use components\core\JsCore\JsCore;
+use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader; ?>
 <head>
     <meta charset="UTF-8">
@@ -12,5 +15,8 @@ use modules\SideLoader\SideLoader; ?>
 
     <title><?= $this->title ?></title>
 
+    <?= new JsCore() ?>
+    <?= Jsml::getInstance() ?>
+    <?= SideLoader::getApi() ?>
     <?= SideLoader::getInstance() ?>
 </head>

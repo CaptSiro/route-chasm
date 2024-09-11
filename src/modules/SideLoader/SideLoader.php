@@ -4,36 +4,53 @@ namespace modules\SideLoader;
 
 use components\core\HttpError\HttpError;
 use core\App;
+use core\BufferTransform;
 use core\cache\Cache;
 use core\cache\LazyFileCache;
 use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
-use core\module\AvailableAfterLoad;
+use core\module\DefaultModule;
 use core\module\Loader;
-use core\module\Module;
 use core\Render;
 use core\Request;
 use core\Response;
 use core\Router;
 use core\Singleton;
+use core\Source;
+use core\Template;
 use core\TemplateRenderer;
 use core\url\UrlBuilder;
 use core\utils\Files;
 use core\utils\Strings;
+use modules\SideLoader\Api\Api;
 use modules\SideLoader\FileImporter\FileImporter;
 use patterns\Ident;
 
-class SideLoader implements Module, Render {
-    use AvailableAfterLoad;
-    use TemplateRenderer;
+class SideLoader extends DefaultModule implements Render {
+    use Source;
     use Singleton;
 
     public const FILE_SEPARATOR = ',';
     public const FILE_CACHE = 'cache';
     public const DIRECTORY_MERGED = 'merged';
     public const HEADER_X_REQUIRE = 'X-Require';
+
+    /**
+     * If <code>FORCE_QUERY</code> is present in url query the default response type checking is ignored and
+     * <code>HEADER_X_REQUIRE</code> will always be set on response
+     */
+    public const FORCE_QUERY = 's';
+    public const TEMPLATE_PLACEHOLDER = '<!-- side-loader -->';
+
+
+
+    public static function getApi(): Render {
+        $instance = self::getInstance();
+        $instance->accessibleAfterLoad();
+        return new Api(App::getInstance()->prependHome($instance->router->getUrlPath()));
+    }
 
 
 
@@ -44,6 +61,7 @@ class SideLoader implements Module, Render {
     protected array $fileImporters;
     protected Cache $cache;
     protected Router $router;
+    protected bool $hasBeenRendered;
 
 
 
@@ -68,6 +86,72 @@ class SideLoader implements Module, Render {
         );
 
         $this->router = new Router();
+        $this->hasBeenRendered = false;
+    }
+
+
+
+    public function addImporter(string $fileType, FileImporter $importer): void {
+        $this->fileImporters[$fileType] = $importer;
+    }
+
+    public function doSendRequireHeader(Request $request): bool {
+        return $request->getResponseType() !== Response::TYPE_HTML
+            || $request->url->query->exists(self::FORCE_QUERY);
+    }
+
+    public function load(Loader $loader): void {
+        $loader->on(Response::EVENT_OB_TRANSFORM, function (BufferTransform $buffer) {
+            if (!$this->hasBeenRendered) {
+                return;
+            }
+
+            $replacement = '';
+
+            foreach ($this->files as $type => $files) {
+                if (!isset($this->fileImporters[$type])) {
+                    continue;
+                }
+
+                $replacement .= $this->fileImporters[$type]
+                    ->setFiles($files)
+                    ->render();
+            }
+
+            $buffer->setContents(
+                str_replace(self::TEMPLATE_PLACEHOLDER, $replacement, $buffer->getContents())
+            );
+        });
+
+        $loader->on(Response::EVENT_HEADERS_GENERATION, function (Response $response) {
+            if ($response->hasHeader(self::HEADER_X_REQUIRE)) {
+                return;
+            }
+
+            if (!$this->doSendRequireHeader(App::getInstance()->getRequest())) {
+                return;
+            }
+
+            $require = '';
+
+            foreach ($this->files as $type => $files) {
+                $hashed = $this->merge($files);
+                if ($hashed === '') {
+                    continue;
+                }
+
+                $require .= "$type($hashed)";
+            }
+
+            if ($require === '') {
+                return;
+            }
+
+            $response->setHeader(self::HEADER_X_REQUIRE, $require);
+        });
+
+        $loader->on(App::EVENT_SHUTDOWN, fn() => $this->cache->save());
+
         $this->router->use(
             '/',
             Http::get(function (Request $request, Response $response) {
@@ -100,43 +184,6 @@ class SideLoader implements Module, Render {
                 ->query('type', Ident::getInstance())
                 ->query('files')
         );
-    }
-
-
-
-    public function addImporter(string $fileType, FileImporter $importer): void {
-        $this->fileImporters[$fileType] = $importer;
-    }
-
-    public function load(Loader $loader): void {
-        $loader->on(Response::EVENT_HEADERS_GENERATION, function (Response $response) {
-            if ($response->hasHeader(self::HEADER_X_REQUIRE)) {
-                return;
-            }
-
-            $type = App::getInstance()
-                ->getRequest()
-                ->getResponseType();
-
-            if ($type === Response::TYPE_HTML) {
-                return;
-            }
-
-            $require = '';
-
-            foreach ($this->files as $type => $files) {
-                $hashed = $this->merge($files);
-                if ($hashed === '') {
-                    continue;
-                }
-
-                $require .= "$type($hashed)";
-            }
-
-            $response->setHeader(self::HEADER_X_REQUIRE, $require);
-        });
-
-        $loader->on(App::EVENT_SHUTDOWN, fn() => $this->cache->save());
 
         $loader
             ->getMainRouter()
@@ -228,5 +275,14 @@ class SideLoader implements Module, Render {
         }
 
         $this->files[$type][] = $file;
+    }
+
+    function render(?string $template = null): string {
+        $this->hasBeenRendered = true;
+        return self::TEMPLATE_PLACEHOLDER;
+    }
+
+    public function __toString(): string {
+        return $this->render();
     }
 }

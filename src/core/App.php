@@ -10,6 +10,7 @@ use core\module\Loader;
 use core\module\Module;
 use core\url\Url;
 use dotenv\Env;
+use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
 
 class App implements Loader {
@@ -26,6 +27,9 @@ class App implements Loader {
 
 
 
+    /**
+     * @see App
+     */
     public const EVENT_SHUTDOWN = self::class .':shutdown';
 
 
@@ -38,7 +42,8 @@ class App implements Loader {
     public const OPTION_DO_NOT_AUTOLOAD = 'do_not_autoload';
 
     protected const DEFAULT_MODULES = [
-        SideLoader::class
+        SideLoader::class,
+        Jsml::class
     ];
 
 

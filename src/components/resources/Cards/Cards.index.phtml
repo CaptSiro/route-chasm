@@ -2,10 +2,17 @@
 
 use components\core\Resource\Index;
 use components\resources\Cards\Cards;
+use core\App;
 use core\Resource;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
 use tables\Card;
 
-?><div class="cards">
+?>
+<?php Css::import(Cards::getInstance()->getSource('cards.css')) ?>
+<?php Javascript::import(Cards::getInstance()->getSource('cards.js')); ?>
+<button x-get="<?= App::getInstance()->prependHome('/ping') ?>" x-swap="outer">Ping</button>
+<div class="cards">
     <?php $base = Cards::getInstance()->getUrl(Resource::URL_READ) ?>
     <?php foreach ($this->models as $model): ?>
         <?php /** @var Card $model */ ?>

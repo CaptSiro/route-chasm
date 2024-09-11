@@ -1,1 +1,5 @@
-console.log("foo")
+import module from "./bar.js";
+
+
+
+module('foo.js');

@@ -12,7 +12,16 @@ class Response {
     public const TYPE_JSON = "JSON";
     public const TYPE_HTML = "HTML";
 
+    /**
+     * @see Response
+     */
     public const EVENT_HEADERS_GENERATION = self::class .':headers-generation';
+
+    /**
+     * @see BufferTransform
+     * @see Response::render()
+     */
+    public const EVENT_OB_TRANSFORM = self::class .':ob-transform';
 
 
 
@@ -90,7 +99,7 @@ class Response {
      *
      * Sends string data to user.
      */
-    public function send($text): void {
+    public function send(string $text): void {
         $this->generateHeaders();
         echo $text;
         $this->exit();
@@ -141,14 +150,32 @@ class Response {
         $this->readFile($file);
     }
 
+    /**
+     * Render object is rendered with given template to back buffer. Buffer contents may be transformed after rendering
+     * is completed with <code>EVENT_OB_TRANSFORM</code> event listeners. <code>EVENT_OB_TRANSFORM</code> is able to
+     * transform only data rendered from Render object. All data printed to output buffers prior to executing
+     * Render::render() are not accessible to transform
+     *
+     * @param Render $render
+     * @param string|null $template
+     * @param bool $doFlushResponse
+     * @return void
+     * @see Response::EVENT_OB_TRANSFORM
+     */
     public function render(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
-        $this->generateHeaders();
+        ob_start();
 
         if ($render instanceof WebPageContent) {
             $render->execute(App::getInstance()->getRequest(), $this);
         } else {
             echo $render->render($template);
         }
+
+        $this->generateHeaders();
+
+        $buffer = new BufferTransform(ob_get_clean());
+        App::getInstance()->dispatch(self::EVENT_OB_TRANSFORM, $buffer);
+        echo $buffer->getContents();
 
         if (!$doFlushResponse) {
             return;

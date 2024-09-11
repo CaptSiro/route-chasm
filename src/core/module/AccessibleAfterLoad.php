@@ -7,16 +7,14 @@ use core\App;
 use core\Flags;
 use core\http\HttpCode;
 
-trait AvailableAfterLoad {
+trait AccessibleAfterLoad {
     use Flags;
-
-
 
     public const FLAG_LOADED = 1;
 
 
 
-    public function markLoaded(): void {
+    protected function markLoaded(): void {
         $this->setFlag(self::FLAG_LOADED);
     }
 
