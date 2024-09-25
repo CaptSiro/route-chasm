@@ -170,12 +170,11 @@ Sptf::test("get correct url path for Resource", function () {
         ->options
         ->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, false);
 
-    Sptf::expect($t0->getUrl(Resource::URL_READ))
+    Sptf::expect($t0->getUrl(Resource::URL_READ)->build())
         ->toBe("/[unique]");
 
-    Sptf::expect($t1->getUrl(Resource::URL_READ))
+    Sptf::expect($t1->getUrl(Resource::URL_READ)->build())
         ->toBe("/a/b/[unique]");
-
 
     App::getInstance()
         ->options
