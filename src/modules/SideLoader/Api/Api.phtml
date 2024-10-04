@@ -17,6 +17,10 @@
             return "<?= addslashes(\modules\SideLoader\SideLoader::HEADER_X_REQUIRE) ?>";
         }
 
+        static getImporterClass() {
+            return "<?= addslashes(\modules\SideLoader\SideLoader::IMPORTER_CSS_CLASS) ?>";
+        }
+
         /**
          * @param {string} type
          * @param {Require} fn

@@ -4,7 +4,8 @@ use modules\SideLoader\FileImporter\FileImporter;
 use modules\SideLoader\Javascript;
 use modules\SideLoader\SideLoader;
 
+$sideLoader = SideLoader::getInstance();
 ?><script
-    src="<?= SideLoader::getInstance()->createImportUrl(Javascript::FILE_TYPE, $this->files) ?>"
+    <?= SideLoader::getInstance()->createSourceAttribute(Javascript::FILE_TYPE, $this->files) ?>
     defer
 ></script>

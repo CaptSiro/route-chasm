@@ -4,8 +4,9 @@ use modules\SideLoader\Css;
 use modules\SideLoader\FileImporter\FileImporter;
 use modules\SideLoader\SideLoader;
 
+$sideLoader = SideLoader::getInstance();
 ?>
 <link
     rel="stylesheet"
-    href="<?= SideLoader::getInstance()->createImportUrl(Css::FILE_TYPE, $this->files) ?>"
+    <?= SideLoader::getInstance()->createSourceAttribute(Css::FILE_TYPE, $this->files, 'href') ?>
 >

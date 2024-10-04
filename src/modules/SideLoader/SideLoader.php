@@ -36,6 +36,7 @@ class SideLoader extends DefaultModule implements Render {
     public const FILE_CACHE = 'cache';
     public const DIRECTORY_MERGED = 'merged';
     public const HEADER_X_REQUIRE = 'X-Require';
+    public const IMPORTER_CSS_CLASS = 'side-loader-importer';
 
     /**
      * If <code>FORCE_QUERY</code> is present in url query the default response type checking is ignored and
@@ -216,6 +217,27 @@ class SideLoader extends DefaultModule implements Render {
         return $hashed;
     }
 
+    public function hashPaths(array $files): string {
+        $first = true;
+        $buffer = "";
+
+        foreach ($files as $file) {
+            $hash = Files::hashPath($file);
+            if ($hash === false) {
+                continue;
+            }
+
+            if (!$first) {
+                $buffer .= ',';
+            }
+
+            $first = false;
+            $buffer .= dechex($hash);
+        }
+
+        return $buffer;
+    }
+
     public function getMergedFiles(string $merged): string {
         $this->accessibleAfterLoad();
 
@@ -264,6 +286,17 @@ class SideLoader extends DefaultModule implements Render {
             ->setQuery('type', $type)
             ->setQuery('files', $this->merge($files))
             ->build();
+    }
+
+    public function createSourceAttribute(string $type, array $files, string $attribute = 'src'): string {
+        $class = self::IMPORTER_CSS_CLASS;
+        $url = $this->createImportUrl($type, $files);
+        $files = $this->hashPaths($files);
+
+        return 'class="'. $class
+            .'" data-type="' . $type
+            . '" data-files="'. $files
+            .'" '. $attribute .'="'. $url .'"';
     }
 
     public function import(string $type, string $file): void {

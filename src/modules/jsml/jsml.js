@@ -216,6 +216,9 @@ const jsml = jsmlInit();
 
 
 window.addEventListener('load', () => {
+    /** @type {Map<string, Set<string>>} */
+    const imported = new Map();
+
     SideLoader.addImporter('js', (files, type) => {
         const script = jsml.script();
         script.src = SideLoader.createImportUrl(type, files);
@@ -228,6 +231,18 @@ window.addEventListener('load', () => {
         link.href = SideLoader.createImportUrl(type, files);
         document.head.append(link);
     });
+
+    for (const importer of document.querySelectorAll("." + SideLoader.getImporterClass())) {
+        const type = importer.dataset.type;
+        if (!imported.has(type)) {
+            imported.set(type, new Set());
+        }
+
+        const set = imported.get(type);
+        for (const file of String(importer.dataset.files).split(',')) {
+            set.add(file);
+        }
+    }
 
     /**
      * @param {string} name
@@ -269,9 +284,6 @@ window.addEventListener('load', () => {
     }
 
     const REQUIRE_HEADER_PARSE_REGEX = /(\w+)\(([0-9a-f,]+)\)/g;
-
-    /** @type {Map<string, Set<string>>} */
-    const imported = new Map();
 
     /**
      * @param {string} content

@@ -7,6 +7,7 @@ use modules\SideLoader\SideLoader;
 ?>
 <?php if (SideLoader::getInstance()->isLoaded()): ?>
     <script
-        src="<?= SideLoader::getInstance()->createImportUrl(Javascript::FILE_TYPE, $this->getSourceFiles()) ?>"
+        <?= SideLoader::getInstance()
+            ->createSourceAttribute(Javascript::FILE_TYPE, $this->getSourceFiles()) ?>
     ></script>
 <?php endif; ?>
