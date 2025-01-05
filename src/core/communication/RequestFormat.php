@@ -3,7 +3,6 @@
 namespace core\communication;
 
 
-use core\App;
 use core\dictionary\Dictionary;
 use core\http\HttpHeader;
 use core\Request;
@@ -22,19 +21,22 @@ class RequestFormat implements Format {
     }
 
     public function getIdentifier(Request $request): string {
-        $header = $request->getHeader(HttpHeader::X_RESPONSE_TYPE);
-
+        $header = $request->getHeader(HttpHeader::X_REQUEST_TYPE);
         if (!is_null($header)) {
-            return $this->match($header);
+            return $this->matcher->matchQuery($header);
         }
 
         $queryParam = $this->getTypeFromQuery($request->getUrl()->getQuery());
         if (!is_null($queryParam)) {
-            return $this->match($queryParam);
+            return $this->matcher->matchQuery($queryParam);
         }
 
-        if ($request->getHttpMethod() === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
-            return self::IDENT_HTML;
+        $contentType = $request->getHeader(HttpHeader::CONTENT_TYPE);
+        if (!is_null($contentType)) {
+            $position = strpos($contentType, ';');
+            return $this->matcher->matchContentType($position === false
+                ? $contentType
+                : substr($contentType, 0, $position));
         }
 
         return self::IDENT_DEFAULT;

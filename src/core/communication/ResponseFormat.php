@@ -2,7 +2,9 @@
 
 namespace core\communication;
 
+use core\App;
 use core\dictionary\Dictionary;
+use core\http\HttpHeader;
 use core\Request;
 
 class ResponseFormat implements Format {
@@ -19,6 +21,21 @@ class ResponseFormat implements Format {
     }
 
     public function getIdentifier(Request $request): string {
+        $header = $request->getHeader(HttpHeader::X_RESPONSE_TYPE);
 
+        if (!is_null($header)) {
+            return $this->matcher->matchQuery($header);
+        }
+
+        $queryParam = $this->getTypeFromQuery($request->getUrl()->getQuery());
+        if (!is_null($queryParam)) {
+            return $this->matcher->matchQuery($queryParam);
+        }
+
+        if ($request->getHttpMethod() === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
+            return self::IDENT_HTML;
+        }
+
+        return self::IDENT_DEFAULT;
     }
 }
