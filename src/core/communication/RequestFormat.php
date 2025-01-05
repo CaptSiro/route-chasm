@@ -1,0 +1,42 @@
+<?php
+
+namespace core\communication;
+
+
+use core\App;
+use core\dictionary\Dictionary;
+use core\http\HttpHeader;
+use core\Request;
+
+class RequestFormat implements Format {
+    use BaseFormat;
+
+    public const QUERY_PARAMETER = "q";
+    public const QUERY_PARAMETER_LONG = "request-format";
+
+
+
+    public function getTypeFromQuery(Dictionary $dictionary): ?string {
+        return $dictionary->get(self::QUERY_PARAMETER)
+            ?? $dictionary->get(self::QUERY_PARAMETER_LONG);
+    }
+
+    public function getIdentifier(Request $request): string {
+        $header = $request->getHeader(HttpHeader::X_RESPONSE_TYPE);
+
+        if (!is_null($header)) {
+            return $this->match($header);
+        }
+
+        $queryParam = $this->getTypeFromQuery($request->getUrl()->getQuery());
+        if (!is_null($queryParam)) {
+            return $this->match($queryParam);
+        }
+
+        if ($request->getHttpMethod() === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
+            return self::IDENT_HTML;
+        }
+
+        return self::IDENT_DEFAULT;
+    }
+}
