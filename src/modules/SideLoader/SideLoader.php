@@ -7,6 +7,7 @@ use core\App;
 use core\BufferTransform;
 use core\cache\Cache;
 use core\cache\LazyFileCache;
+use core\communication\Format;
 use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
@@ -19,8 +20,6 @@ use core\Response;
 use core\Router;
 use core\Singleton;
 use core\Source;
-use core\Template;
-use core\TemplateRenderer;
 use core\url\UrlBuilder;
 use core\utils\Files;
 use core\utils\Strings;
@@ -42,7 +41,7 @@ class SideLoader extends DefaultModule implements Render {
      * If <code>FORCE_QUERY</code> is present in url query the default response type checking is ignored and
      * <code>HEADER_X_REQUIRE</code> will always be set on response
      */
-    public const FORCE_QUERY = 's';
+    public const QUERY_FORCE = 's';
     public const TEMPLATE_PLACEHOLDER = '<!-- side-loader -->';
 
 
@@ -97,8 +96,12 @@ class SideLoader extends DefaultModule implements Render {
     }
 
     public function doSendRequireHeader(Request $request): bool {
-        return $request->getResponseType() !== Response::TYPE_HTML
-            || $request->url->query->exists(self::FORCE_QUERY);
+        $type = App::getInstance()
+            ->getResponse()
+            ->getFormat($request);
+
+        return $type !== Format::IDENT_HTML
+            || $request->getUrl()->getQuery()->exists(self::QUERY_FORCE);
     }
 
     public function load(Loader $loader): void {
@@ -156,7 +159,7 @@ class SideLoader extends DefaultModule implements Render {
         $this->router->use(
             '/',
             Http::get(function (Request $request, Response $response) {
-                $type = $request->url->query->getStrict('type');
+                $type = $request->getUrl()->getQuery()->getStrict('type');
                 if (!isset($this->fileImporters[$type])) {
                     $response->render(new HttpError(
                         "There is not known file importer for type '$type'",
@@ -170,7 +173,7 @@ class SideLoader extends DefaultModule implements Render {
                     HttpHeader::CONTENT_TYPE => $this->fileImporters[$type]->getFileType()
                 ]);
 
-                $files = $request->url->query->getStrict('files');
+                $files = $request->getUrl()->getQuery()->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
                     if (!$this->cache->has($files)) {
                         $response->render(new HttpError("File not found (file hash: '$files')", HttpCode::CE_NOT_FOUND));

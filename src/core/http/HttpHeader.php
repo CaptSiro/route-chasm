@@ -7,6 +7,7 @@ class HttpHeader {
     public const CONTENT_DESCRIPTION = "Content-Description";
     public const PREGMA = "Pregma";
     public const X_RESPONSE_TYPE = "X-Response-Type";
+    public const X_REQUEST_TYPE = "X-Request-Type";
 
 
 

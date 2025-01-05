@@ -70,13 +70,13 @@ class HttpGate implements Endpoint {
 
     protected function checkGuards(Request $request): bool {
         foreach ($this->bodyGuards as $guard => $pattern) {
-            if (!$pattern->match($request->body->get($guard))) {
+            if (!$pattern->match($request->getBody()->get($guard))) {
                 return false;
             }
         }
 
         foreach ($this->queryGuards as $guard => $pattern) {
-            if (!$pattern->match($request->url->query->get($guard))) {
+            if (!$pattern->match($request->getUrl()->getQuery()->get($guard))) {
                 return false;
             }
         }
@@ -93,7 +93,7 @@ class HttpGate implements Endpoint {
     }
 
     public function execute(Request $request, Response $response): void {
-        if (Path::depth($request->url->getPath()) !== Path::depth($this->getUrlPath()) && !$this->isMiddleware) {
+        if (Path::depth($request->getUrl()->getPath()) !== Path::depth($this->getUrlPath()) && !$this->isMiddleware) {
             return;
         }
 

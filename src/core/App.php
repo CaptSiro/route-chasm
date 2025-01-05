@@ -3,12 +3,16 @@
 namespace core;
 
 use Closure;
+use core\communication\FormatMatcher;
+use core\communication\RequestFormat;
+use core\communication\ResponseFormat;
 use core\config\Config;
 use core\dictionary\Map;
 use core\dictionary\StrictMap;
 use core\module\Loader;
 use core\module\Module;
 use core\url\Url;
+use core\utils\Strings;
 use dotenv\Env;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
@@ -58,12 +62,13 @@ class App implements Loader {
     private Request $request;
     private Response $response;
     private string $src;
-    private Closure $responseTypeMatcher;
+    private FormatMatcher $matcher;
     public readonly Map $options;
     protected ?Env $env;
     protected ?Config $config;
     protected array $listeners;
     protected bool $defaultModulesLoaded;
+    protected ?string $home;
 
 
 
@@ -78,15 +83,23 @@ class App implements Loader {
         ]);
 
         $this->router = new Router();
+        $this->matcher = new FormatMatcher();
+        $this->initCommunication();
 
-        $this->responseTypeMatcher = fn(string $type) => match ($type) {
-            'j', 'json' => Response::TYPE_JSON,
-            'h', 'html' => Response::TYPE_HTML,
-            default => Response::TYPE_TEXT
-        };
+        $this->env = file_exists(self::ENV)
+            ? Env::fromFile(self::ENV)
+            : null;
 
+        $this->config = null;
+        $this->home = null;
+    }
+
+
+
+    private function initCommunication(): void {
         $this->request = new Request(
             $this,
+            (new RequestFormat())->setFormatMatcher($this->matcher),
             Url::fromRequest(),
             new StrictMap(),
             new StrictMap(),
@@ -94,48 +107,28 @@ class App implements Loader {
             new StrictMap()
         );
 
-        $this->response = new Response();
-
-        $this->env = file_exists(self::ENV)
-            ? Env::fromFile(self::ENV)
-            : null;
-
-        $this->config = null;
+        $this->response = new Response(
+            (new ResponseFormat())->setFormatMatcher($this->matcher),
+        );
     }
 
-
-
-    /**
-     * @return Closure
-     */
-    public function getResponseTypeMatcher(): Closure {
-        return $this->responseTypeMatcher;
+    public function setMatcher(FormatMatcher $matcher): void {
+        $this->matcher = $matcher;
+        $this->initCommunication();
     }
 
-    /**
-     * @param Closure $responseTypeMatcher
-     */
-    public function setResponseTypeMatcher(Closure $responseTypeMatcher): void {
-        $this->responseTypeMatcher = $responseTypeMatcher;
+    public function getOptions(): Map {
+        return $this->options;
     }
 
-    /**
-     * @return Router
-     */
     public function getMainRouter(): Router {
         return $this->router;
     }
 
-    /**
-     * @return Request
-     */
     public function getRequest(): Request {
         return $this->request;
     }
 
-    /**
-     * @return Response
-     */
     public function getResponse(): Response {
         return $this->response;
     }
@@ -145,6 +138,10 @@ class App implements Loader {
     }
 
     public function getHome(): string {
+        if (!is_null($this->home)) {
+            return $this->home;
+        }
+
         $home = "";
         $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
 
@@ -154,6 +151,7 @@ class App implements Loader {
             }
         }
 
+        $this->home = $home;
         return $home;
     }
 
@@ -165,14 +163,11 @@ class App implements Loader {
         }
 
         $home = $this->getHome();
-
         if ($home === "") {
             return $path;
         }
 
-        $prependSlash = !str_starts_with($path, '/');
-
-        return ($prependSlash ? '/' : '') . $home . ($prependSlash ? '/' : '') . $path;
+        return Strings::prepend('/', $home) . Strings::prepend('/', $path);
     }
 
     public function getEnv(): ?Env {

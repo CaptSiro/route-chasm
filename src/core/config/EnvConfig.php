@@ -21,7 +21,7 @@ class EnvConfig implements Config {
             App::getInstance()
                 ->getResponse()
                 ->render(new HttpError(
-                    "Enviroment variable $property is not defined and it is required",
+                    "Environment variable '$property' is not defined and it is required",
                     HttpCode::SE_INTERNAL_SERVER_ERROR
                 ));
         }

@@ -4,14 +4,11 @@ namespace core;
 
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPageContent;
+use core\communication\LimitedFormat;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 
 class Response {
-    public const TYPE_TEXT = "TEXT";
-    public const TYPE_JSON = "JSON";
-    public const TYPE_HTML = "HTML";
-
     /**
      * @see Response
      */
@@ -30,12 +27,18 @@ class Response {
 
 
 
-    public function __construct() {
+    public function __construct(
+        readonly protected LimitedFormat $format
+    ) {
         $this->headers = [];
         $this->headersSent = false;
     }
 
 
+
+    public function getFormat(?Request $request = null): string {
+        return $this->format->getIdentifier($request ?? App::getInstance()->getRequest());
+    }
 
     public function hasHeader(string $header): bool {
         return isset($this->headers[$header]);
@@ -159,14 +162,16 @@ class Response {
      * @param Render $render
      * @param string|null $template
      * @param bool $doFlushResponse
+     * @param bool $forceRender When <code>$render</code> is type of <code>WebPageContent</code> it calls render
+     * function instead of page render function
      * @return void
      * @see Response::EVENT_OB_TRANSFORM
      */
-    public function render(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
+    public function render(Render $render, ?string $template = null, bool $doFlushResponse = true, bool $forceRender = false): void {
         ob_start();
 
-        if ($render instanceof WebPageContent) {
-            $render->execute(App::getInstance()->getRequest(), $this);
+        if ($render instanceof WebPageContent && !$forceRender) {
+            $render->renderPage($this);
         } else {
             echo $render->render($template);
         }

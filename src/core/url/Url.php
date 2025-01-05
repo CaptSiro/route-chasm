@@ -3,13 +3,73 @@
 namespace core\url;
 
 use core\App;
+use core\dictionary\StrictDictionary;
 use core\dictionary\StrictMap;
+use core\utils\Strings;
 
 class Url {
     public const PARAM_REGEX = "/\[([^\]]+)\]/";
+    public const SEPARATOR_PROTOCOL = '://';
+    public const SEPARATOR_PATH = '/';
+
+
 
     public static function set(string $url, string $parameter, string $value): string {
         return str_replace("[$parameter]", $value, $url);
+    }
+
+    public static function parseQuery(string $literal): StrictDictionary {
+        $map = new StrictMap();
+
+        foreach (explode('&', $literal) as $name => $value) {
+            $map->set($name, $value);
+        }
+
+        return $map;
+    }
+
+    public static function from(string $fullyQualifiedUrl): Url {
+        $protocol = Strings::split($fullyQualifiedUrl, self::SEPARATOR_PROTOCOL, $rest) ?? 'http';
+        $host = Strings::split($rest, '/', $rest)
+            ?? App::getInstance()
+                ->getRequest()
+                ->getUrl()
+                ->host;
+        $path = Strings::split($rest, '?', $query);
+        $queryDictionary = self::parseQuery($query);
+
+
+        return new Url(
+            $protocol,
+            $host,
+            '/'. $path,
+            $query,
+            $queryDictionary
+        );
+    }
+
+    public static function relative(
+        string $path,
+        ?string $protocol = null,
+        ?string $host = null,
+        ?string $query = null
+    ): Url {
+        $request = App::getInstance()
+            ->getRequest();
+
+        if (str_starts_with($path, './') || str_starts_with($path, '../')) {
+            $path = $request->getUrl()->getPath() .'/'. $path;
+        }
+
+        return new Url(
+            $protocol ?? $request->getUrl()->protocol,
+            $host ?? $request->getUrl()->host,
+            $path,
+            $query ?? '',
+            $query === null
+                ? new StrictMap()
+                : self::parseQuery($query)
+        );
     }
 
     public static function fromRequest(): self {
@@ -42,10 +102,14 @@ class Url {
         private readonly string $host,
         private string $path,
         private readonly string $queryString,
-        public readonly StrictMap $query
+        private readonly StrictDictionary $query
     ) {}
 
 
+
+    public function getQuery(): StrictDictionary {
+        return $this->query;
+    }
 
     public function full(): string {
         return $this->protocol ."://". $this->host . $this->path ."?". $this->queryString;
@@ -63,9 +127,6 @@ class Url {
         return str_contains($this->path, "[$param]");
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): string {
         return $this->host;
     }
@@ -77,7 +138,7 @@ class Url {
      */
     public function getPath(): string {
         $app = App::getInstance();
-        if ($app->options->get(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH)) {
+        if ($app->getOptions()->get(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH)) {
             return substr($this->path, strlen($app->getHome()));
         }
 

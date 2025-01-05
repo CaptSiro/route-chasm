@@ -19,7 +19,11 @@ class WebPageContent extends Component {
 
 
 
-    public function execute(Request $request, Response $response): void {
+    public function renderPage(Response $response): void {
         $response->render($this->page);
+    }
+
+    public function execute(Request $request, Response $response): void {
+        $this->renderPage($response);
     }
 }

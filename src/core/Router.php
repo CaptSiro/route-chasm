@@ -84,10 +84,10 @@ class Router {
         );
     }
 
-    public function expose(Path|string $path, Directory $directory): void {
+    public function expose(Path|string $path, Endpoint $endpoint): void {
         $parsed = Path::from($path);
-        $this->use($parsed, Http::any(fn(Request $request, Response $response) => $directory->execute($request, $response)));
-        $this->use($parsed->merge("/**"), $directory);
+        $this->use($parsed, Http::any(fn(Request $request, Response $response) => $endpoint->execute($request, $response)));
+        $this->use($parsed->merge("/**"), $endpoint);
     }
 
     public function resource(Path|string $path, Resource $resource): void {
@@ -115,7 +115,7 @@ class Router {
     }
 
     public function execute(Request $request, Response $response): void {
-        $trail = $this->findPath($request->url->getPath());
+        $trail = $this->findPath($request->getUrl()->getPath());
         if (is_null($trail)) {
             $response->render(new HttpError(
                 "Resource not found",

@@ -1,4 +1,4 @@
 <?php /** @var \components\core\HttpError\HttpError $this */ ?>
 <h1>
-    <code><?= $this->code ?></code>:&nbsp;<?= $this->message ?>
+    <code><?= $this->code ?></code>:&nbsp;<?= htmlspecialchars($this->message) ?>
 </h1>

@@ -6,7 +6,7 @@ use core\Request;
 use sptf\Sptf;
 
 function q(Request $request, string $name, string $value): Request {
-    $request->url->query->set($name, $value);
+    $request->getUrl()->getQuery()->set($name, $value);
     return $request;
 }
 
@@ -50,7 +50,7 @@ Sptf::test("should detect response type from request", function () {
     foreach ($requests as $type => $arr) {
         foreach ($arr as $request) {
             /** @var Request $request */
-            Sptf::expect($request->getResponseType())
+            Sptf::expect($request->getFormat())
                 ->toBe($type);
         }
     }

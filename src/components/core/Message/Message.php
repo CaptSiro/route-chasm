@@ -5,6 +5,7 @@ namespace components\core\Message;
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPageContent;
 use core\App;
+use core\communication\Format;
 use core\Response;
 
 class Message extends WebPageContent {
@@ -17,13 +18,9 @@ class Message extends WebPageContent {
 
 
     public function render(?string $template = null): string {
-        $type = App::getInstance()
-            ->getRequest()
-            ->getResponseType();
-
-        return match ($type) {
-            Response::TYPE_HTML => parent::render(),
-            Response::TYPE_JSON => json_encode([
+        return match (App::getInstance()->getResponse()->getFormat()) {
+            Format::IDENT_HTML => parent::render(),
+            Format::IDENT_JSON => json_encode([
                 "isError" => false,
                 "message" => $this->message
             ]),

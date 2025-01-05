@@ -82,4 +82,23 @@ class Strings extends Init {
             '='
         ));
     }
+
+    public static function split(string $haystack, string $needle, ?string &$rest): ?string {
+        $pos = strpos($haystack, $needle);
+        if ($pos === false) {
+            $rest = $haystack;
+            return null;
+        }
+
+        $rest = substr($haystack, $pos + strlen($needle));
+        return substr($haystack, 0, $pos);
+    }
+
+    public static function prepend(string $start, string $subject, bool $skipIfPresent = true): string {
+        if ($skipIfPresent && str_starts_with($subject, $start)) {
+            return $subject;
+        }
+
+        return $start . $subject;
+    }
 }

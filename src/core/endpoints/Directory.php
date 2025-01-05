@@ -69,7 +69,7 @@ class Directory implements Endpoint {
                         $response->render(new Explorer(
                             $path,
                             basename($this->directory) .'/'. $remaining,
-                            $request->url->getRealPath(),
+                            $request->getUrl()->getRealPath(),
                             $this->directory !== $path
                         ));
                     }
@@ -86,7 +86,7 @@ class Directory implements Endpoint {
                     HttpHeader::CONTENT_TYPE => Files::mimeType($path)
                 ]);
 
-                if (Files::extension($path) === "php" && $request->url->query->exists("x")) {
+                if (Files::extension($path) === "php" && $request->getUrl()->getQuery()->exists("x")) {
                     $response->generateHeaders();
                     require $path;
                     $response->flush();

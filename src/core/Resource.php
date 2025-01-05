@@ -5,6 +5,7 @@ namespace core;
 use components\core\Message\Message;
 use components\core\Resource\Index;
 use components\core\Resource\Read;
+use core\communication\Format;
 use core\database\Table;
 use core\http\Http;
 use core\path\Path;
@@ -93,10 +94,7 @@ abstract class Resource {
     public function index(?array $models = null): Render {
         $models ??= call_user_func($this->getTable() ."::fetchAll");
 
-        $responseType = App::getInstance()
-            ->getRequest()
-            ->getResponseType();
-        if ($responseType === Response::TYPE_JSON) {
+        if (App::getInstance()->getResponse()->getFormat() === Format::IDENT_JSON) {
             return new JsonComponent($models);
         }
 
@@ -115,7 +113,7 @@ abstract class Resource {
         }
 
         $model
-            ->setDictionary($request->body)
+            ->setDictionary($request->getBody())
             ->save();
 
         return new Message("Created");
@@ -123,22 +121,22 @@ abstract class Resource {
 
 
     public function read(Table $model): Render {
-        $request = App::getInstance()->getRequest();
-        $type = $request->getResponseType();
+        $app = App::getInstance();
+        $request = $app->getRequest();
 
-        if ($type === Response::TYPE_JSON) {
+        if ($app->getResponse()->getFormat($request) === Format::IDENT_JSON) {
             return new JsonComponent($model);
         }
 
         $class = $this->getClass();
-        $read = new Read("$class - ". $request->param->get(self::PARAM_UNIQUE), $model);
+        $read = new Read("$class - ". $request->getParam()->get(self::PARAM_UNIQUE), $model);
         $read->setTemplate($this->getSource("$class.read.phtml"));
         return $read;
     }
 
     public function update(Table $model): Render {
         $model
-            ->setDictionary(App::getInstance()->getRequest()->body)
+            ->setDictionary(App::getInstance()->getRequest()->getBody())
             ->save();
 
         return new Message("Updated");

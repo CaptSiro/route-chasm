@@ -50,4 +50,26 @@ class Arrays {
 
         return $buffer;
     }
+
+    public static function htmlEncode(array $array): string {
+        $first = true;
+        $buffer = "";
+
+        foreach ($array as $name => $value) {
+            if (is_null($value) || $value === false) {
+                continue;
+            }
+
+            if ($value === true) {
+                $buffer .= ($first ? '' : ' ') . htmlspecialchars($name);
+                $first = false;
+                continue;
+            }
+
+            $buffer .= ($first ? '' : ' ') . htmlspecialchars($name) .'="'. htmlspecialchars($value) .'"';
+            $first = false;
+        }
+
+        return $buffer;
+    }
 }

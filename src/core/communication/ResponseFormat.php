@@ -32,7 +32,7 @@ class ResponseFormat implements Format {
             return $this->matcher->matchQuery($queryParam);
         }
 
-        if ($request->getHttpMethod() === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
+        if ($request->getHttpMethod() === "GET" && App::getInstance()->getOptions()->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
             return self::IDENT_HTML;
         }
 

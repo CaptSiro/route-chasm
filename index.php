@@ -1,13 +1,18 @@
 <?php
 
 use components\core\HttpError\HttpError;
+use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
 use core\App;
 use core\config\EnvConfig;
 use core\http\Http;
 use core\http\HttpCode;
+use core\http\HttpMethod;
 use core\Request;
 use core\Response;
+use modules\forms\controls\Submit\Submit;
+use modules\forms\controls\Text;
+use modules\forms\Form;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
 
@@ -18,8 +23,8 @@ require_once __DIR__ ."/src/autoload.php";
 $app = App::getInstance();
 $config = new EnvConfig($app->getEnv());
 $app->setConfig($config);
-$app->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
-$app->options->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
+$app->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
+$app->getOptions()->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 
 $router = $app->getMainRouter();
 
@@ -36,7 +41,9 @@ $router->use(
 $router->use(
     '/ping',
     fn() => Javascript::import(Cards::getInstance()->getSource('ping.js')),
-    fn(Request $request, Response $response) => $response->send('<h2 style="color: whitesmoke" x-swap="outer" x-get="'. App::getInstance()->prependHome('/dong?s') .'">pong</h2>')
+    fn(Request $request, Response $response) => $response->send(
+        '<h2 style="color: whitesmoke" x-swap="outer" x-get="'. App::getInstance()->prependHome('/dong?s') .'">pong</h2>'
+    )
 );
 $router->use(
     '/dong',
@@ -50,6 +57,22 @@ $router->use(
         fn(Request $request, Response $response) => $response->flush()
     )->query("_test")
 );
+
+
+
+$form = (new Form(HttpMethod::DELETE))
+    ->add(new Text("Name", "Name", "CaptSiro"))
+    ->add(Form::note("Submitting form you are giving us consent to get all your money"))
+    ->add(Form::hr())
+    ->add(new Submit());
+$router->use("/form",
+    Http::get(new WebPage(content: $form)),
+    Http::delete(function(Request $request, Response $response) {
+        $response->send($request->getFormat());
+    })
+);
+
+
 
 $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));

@@ -3,9 +3,8 @@
 namespace core\communication;
 
 use core\dictionary\Dictionary;
-use core\Request;
 
-interface Format {
+interface Format extends LimitedFormat {
     public const IDENT_TEXT = "text/plain";
     public const IDENT_XML = "application/xml";
     public const IDENT_JSON = "application/json";
@@ -15,7 +14,6 @@ interface Format {
 
 
 
-    public function setFormatMatcher(FormatMatcher $matcher): void;
+    public function setFormatMatcher(FormatMatcher $matcher): self;
     public function getTypeFromQuery(Dictionary $dictionary): ?string;
-    public function getIdentifier(Request $request): string;
 }

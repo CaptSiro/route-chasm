@@ -12,7 +12,7 @@ trait SimpleEndpoint {
 
 
     public function getUrl(): Url {
-        $base = clone App::getInstance()->getRequest()->url;
+        $base = clone App::getInstance()->getRequest()->getUrl();
         $base->setPath($this->getUrlPath());
         return $base;
     }

@@ -2,10 +2,12 @@
 
 namespace core;
 
+use core\communication\FormatMatcher;
+use core\communication\LimitedFormat;
+use core\communication\RequestFormat;
 use core\dictionary\StrictDictionary;
 use core\dictionary\StrictMap;
 use core\dictionary\StrictStack;
-use core\http\HttpHeader;
 use core\url\Url;
 
 class Request {
@@ -15,8 +17,12 @@ class Request {
     
     
     public static function test(?App $app = null, ?Url $url = null, ?string $httpMethod = "GET"): self {
+        $format = new RequestFormat();
+        $format->setFormatMatcher(new FormatMatcher());
+
         $ret = new self(
             $app ?? new App(),
+            $format,
             $url ?? Url::fromRequest(),
             new StrictMap(),
             new StrictMap(),
@@ -44,11 +50,12 @@ class Request {
 
     public function __construct(
         readonly protected App $app,
-        readonly public Url $url,
-        readonly public StrictDictionary $domain,
-        readonly public StrictDictionary $files,
-        readonly public StrictDictionary $body,
-        readonly public StrictDictionary $cookies,
+        readonly private LimitedFormat $format,
+        readonly private Url $url,
+        readonly private StrictDictionary $body,
+        readonly private StrictDictionary $files,
+        readonly private StrictDictionary $cookies,
+        readonly private StrictDictionary $domain,
     ) {
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
@@ -57,6 +64,46 @@ class Request {
     }
 
 
+
+    public function getFormat(): string {
+        return $this->format->getIdentifier($this);
+    }
+
+    public function getUrl(): Url {
+        return $this->url;
+    }
+
+    public function getBody(): StrictDictionary {
+        return $this->body;
+    }
+
+    public function getFiles(): StrictDictionary {
+        return $this->files;
+    }
+
+    public function getDomain(): StrictDictionary {
+        return $this->domain;
+    }
+
+    public function getHeaders(): ?array {
+        return $this->headers;
+    }
+
+    public function getHttpMethod(): string {
+        return $this->httpMethod;
+    }
+
+    public function getCookies(): StrictDictionary {
+        return $this->cookies;
+    }
+
+    public function getParam(): StrictStack {
+        return $this->param;
+    }
+
+    public function getSession(): ?StrictDictionary {
+        return $this->session;
+    }
 
     public function getHeader(string $name): ?string {
         if ($this->headers === null) {
@@ -91,23 +138,15 @@ class Request {
         $this->data->set($name, $value);
     }
 
-    public function getResponseType(): string {
-        $matcher = $this->app->getResponseTypeMatcher();
-
-        $header = $this->getHeader(HttpHeader::X_RESPONSE_TYPE);
-        if (!is_null($header)) {
-            return $matcher($header);
-        }
-
-        $query = $this->url->query->get("t") ?? $this->url->query->get("type");
-        if (!is_null($query)) {
-            return $matcher($query);
-        }
-
-        if ($this->httpMethod === "GET" && App::getInstance()->options->get(App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET)) {
-            return Response::TYPE_HTML;
-        }
-
-        return Response::TYPE_TEXT;
+    public function __debugInfo(): ?array {
+        return [
+            'httpMethod' => $this->httpMethod,
+            'headers' => $this->headers,
+            'url' => $this->url->full(),
+            'body' => $this->body,
+            'files' => $this->files,
+            'cookies' => $this->cookies,
+            'domain' => $this->domain
+        ];
     }
 }

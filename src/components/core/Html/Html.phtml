@@ -1,0 +1,11 @@
+<?php /** @var Html $this */
+
+use components\core\Html\Html;
+use core\Render;
+use core\utils\Arrays;
+
+// Render html <tag attributes>content</tag>
+?>
+<<?= $this->tag ?> <?= Arrays::htmlEncode($this->attributes) ?>><?php if (!is_null($this->content)): ?>
+<?= $this->content instanceof Render ? $this->content->render() : $this->content ?>
+<?php endif; ?><?php if ($this->doCloseTag): ?></<?= $this->tag ?>><?php endif; ?>

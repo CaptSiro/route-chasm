@@ -1,0 +1,16 @@
+<?php /** @var Input $this */
+
+use modules\forms\controls\Input\Input;
+
+?>
+<?php $id = $this->getId() ?>
+<div class="form-control <?= $this->cssClass ?>">
+    <label for="<?= $id ?>"><?= $this->label ?></label>
+    <input
+        type="<?= $this->type ?>"
+        value="<?= $this->value ?>"
+        name="<?= $this->name ?>"
+        id="<?= $id ?>"
+        <?= $this->getAttributes() ?>
+    >
+</div>

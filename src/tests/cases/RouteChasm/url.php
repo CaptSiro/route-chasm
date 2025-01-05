@@ -21,7 +21,7 @@ Sptf::test('creates URL from server vars', function () {
         "nice" => "69420"
     ]);
 
-    App::getInstance()->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
+    App::getInstance()->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
 
     $url = Url::fromRequest();
 
@@ -30,10 +30,36 @@ Sptf::test('creates URL from server vars', function () {
     Sptf::expect($url->getQueryString())->toBe("q=1234&nice=69420");
     Sptf::expect($url->getProtocol())->toBe("http");
 
-    Sptf::expect($url->query->get("q"))->toBe("1234");
-    Sptf::expect($url->query->get("nice"))->toBe("69420");
+    Sptf::expect($url->getQuery()->get("q"))->toBe("1234");
+    Sptf::expect($url->getQuery()->get("nice"))->toBe("69420");
 
     $server_reset();
     $get_reset();
-    App::getInstance()->options->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
+    App::getInstance()->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
+});
+
+
+
+Sptf::test('parse fully qualified URL', function () {
+    App::getInstance()
+        ->getOptions()
+        ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
+
+    $url = Url::from('http://localhost/nocoma?ping=pong&foo=bar');
+
+    Sptf::expect($url->getProtocol())
+        ->toBe('http');
+
+    Sptf::expect($url->getHost())
+        ->toBe('localhost');
+
+    Sptf::expect($url->getPath())
+        ->toBe('/nocoma');
+
+    Sptf::expect($url->getQueryString())
+        ->toBe('ping=pong&foo=bar');
+
+    App::getInstance()
+        ->getOptions()
+        ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 });
