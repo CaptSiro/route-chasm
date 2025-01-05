@@ -1,6 +1,8 @@
 <?php
 
 use core\App;
+use core\communication\FormatMatcher;
+use core\communication\RequestFormat;
 use core\http\Http;
 use core\path\Path;
 use core\Request;
@@ -134,7 +136,7 @@ Sptf::test("find path for deeply nested dynamic Routers", function () {
         ->toBe(false);
 
     foreach ($trail->getEndpoints() as $endpoint) {
-        $endpoint->execute($request, new Response());
+        $endpoint->execute($request, new Response((new RequestFormat())->setFormatMatcher(new FormatMatcher())));
     }
 
     Sptf::expect($ret)

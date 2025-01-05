@@ -1,8 +1,13 @@
 <?php
 
+use core\communication\Format;
+use core\communication\FormatMatcher;
+use core\communication\RequestFormat;
+use core\communication\ResponseFormat;
 use core\http\Http;
 use core\http\HttpHeader;
 use core\Request;
+use core\Response;
 use sptf\Sptf;
 
 function q(Request $request, string $name, string $value): Request {
@@ -17,40 +22,42 @@ function h(Request $request, string $header, string $value): Request {
 
 Sptf::test("should detect response type from request", function () {
     $requests = [
-        'TEXT' => [
-            q(Request::test(), 't', ''),
-            q(Request::test(), 't', 't'),
-            q(Request::test(), 't', 'text'),
-            q(Request::test(), 'type', ''),
-            q(Request::test(), 'type', 't'),
-            q(Request::test(), 'type', 'text'),
+        Format::IDENT_TEXT => [
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, ''),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 't'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'text'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, ''),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 't'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'text'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, ''),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 't'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text'),
         ],
-        'HTML' => [
+        Format::IDENT_HTML => [
             Request::test(),
-            q(Request::test(), 't', 'h'),
-            q(Request::test(), 't', 'html'),
-            q(Request::test(), 'type', 'h'),
-            q(Request::test(), 'type', 'html'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'h'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'html'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'h'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'html'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'h'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'html'),
         ],
-        'JSON' => [
-            q(Request::test(), 't', 'j'),
-            q(Request::test(), 't', 'json'),
-            q(Request::test(), 'type', 'j'),
-            q(Request::test(), 'type', 'json'),
+        Format::IDENT_JSON => [
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'j'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'json'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'j'),
+            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'json'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'j'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'json'),
         ]
     ];
 
+    $response = new Response((new ResponseFormat())->setFormatMatcher(new FormatMatcher()));
+
     foreach ($requests as $type => $arr) {
         foreach ($arr as $request) {
             /** @var Request $request */
-            Sptf::expect($request->getFormat())
+            Sptf::expect($response->getFormat($request))
                 ->toBe($type);
         }
     }
