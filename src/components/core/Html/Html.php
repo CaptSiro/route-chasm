@@ -2,8 +2,8 @@
 
 namespace components\core\Html;
 
-use core\Render;
-use core\TemplateRenderer;
+use core\view\Render;
+use core\view\TemplateRenderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 

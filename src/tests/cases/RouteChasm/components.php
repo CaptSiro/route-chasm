@@ -1,6 +1,6 @@
 <?php
 
-use core\JsonComponent;
+use core\view\JsonComponent;
 use sptf\Sptf;
 use tests\utils\RouteChasm\TestComponent\TestComponent;
 

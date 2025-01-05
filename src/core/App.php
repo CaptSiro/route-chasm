@@ -4,7 +4,9 @@ namespace core;
 
 use Closure;
 use core\communication\FormatMatcher;
+use core\communication\Request;
 use core\communication\RequestFormat;
+use core\communication\Response;
 use core\communication\ResponseFormat;
 use core\config\Config;
 use core\dictionary\Map;
@@ -63,7 +65,7 @@ class App implements Loader {
     private Response $response;
     private string $src;
     private FormatMatcher $matcher;
-    public readonly Map $options;
+    private readonly Map $options;
     protected ?Env $env;
     protected ?Config $config;
     protected array $listeners;

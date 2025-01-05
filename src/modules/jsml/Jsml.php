@@ -3,9 +3,9 @@
 namespace modules\jsml;
 
 use core\module\DefaultModule;
-use core\Render;
 use core\Singleton;
-use core\TemplateRenderer;
+use core\view\Render;
+use core\view\TemplateRenderer;
 
 class Jsml extends DefaultModule implements Render {
     use TemplateRenderer;

@@ -4,13 +4,13 @@ namespace core\endpoints;
 
 use components\core\Explorer\Explorer;
 use components\core\HttpError\HttpError;
+use core\communication\Request;
+use core\communication\Response;
 use core\Flags;
 use core\http\Cors;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\Request;
-use core\Response;
 use core\utils\Files;
 
 class Directory implements Endpoint {

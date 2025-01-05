@@ -2,12 +2,10 @@
 
 use core\communication\Format;
 use core\communication\FormatMatcher;
-use core\communication\RequestFormat;
+use core\communication\Request;
+use core\communication\Response;
 use core\communication\ResponseFormat;
-use core\http\Http;
 use core\http\HttpHeader;
-use core\Request;
-use core\Response;
 use sptf\Sptf;
 
 function q(Request $request, string $name, string $value): Request {

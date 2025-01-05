@@ -2,8 +2,8 @@
 
 namespace core\endpoints;
 
-use core\Request;
-use core\Response;
+use core\communication\Request;
+use core\communication\Response;
 use core\tree\Node;
 use core\url\Url;
 

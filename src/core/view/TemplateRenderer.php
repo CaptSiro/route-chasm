@@ -1,7 +1,9 @@
 <?php
 
-namespace core;
+namespace core\view;
 
+use core\DoesNotExistException;
+use core\Source;
 use core\utils\Files;
 
 trait TemplateRenderer {

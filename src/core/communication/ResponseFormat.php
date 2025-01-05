@@ -5,7 +5,6 @@ namespace core\communication;
 use core\App;
 use core\dictionary\Dictionary;
 use core\http\HttpHeader;
-use core\Request;
 
 class ResponseFormat implements Format {
     use BaseFormat;

@@ -6,7 +6,6 @@ use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPageContent;
 use core\App;
 use core\communication\Format;
-use core\Response;
 
 class Message extends WebPageContent {
     public function __construct(

@@ -3,9 +3,9 @@
 namespace components\core\WebPage;
 
 use components\core\HtmlHead\HtmlHead;
-use core\Component;
-use core\Request;
-use core\Response;
+use core\communication\Request;
+use core\communication\Response;
+use core\view\Component;
 
 class WebPageContent extends Component {
     protected WebPage $page;

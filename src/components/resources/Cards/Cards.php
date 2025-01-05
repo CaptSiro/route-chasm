@@ -3,10 +3,10 @@
 namespace components\resources\Cards;
 
 use core\database\parameter\Primitive;
-use core\Render;
 use core\Resource;
 use core\Singleton;
 use core\url\UrlBuilder;
+use core\view\Render;
 use tables\Card;
 
 class Cards extends Resource {

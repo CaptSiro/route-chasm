@@ -2,8 +2,8 @@
 
 namespace modules\SideLoader\FileImporter;
 
-use core\Render;
-use core\TemplateRenderer;
+use core\view\Render;
+use core\view\TemplateRenderer;
 
 class FileImporter implements Render {
     use TemplateRenderer;

@@ -2,7 +2,7 @@
 
 namespace tests\utils\RouteChasm\TestComponent;
 
-use core\Component;
+use core\view\Component;
 
 class TestComponent extends Component {
     public function __construct(

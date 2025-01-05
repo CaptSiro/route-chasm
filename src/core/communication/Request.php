@@ -1,10 +1,8 @@
 <?php
 
-namespace core;
+namespace core\communication;
 
-use core\communication\FormatMatcher;
-use core\communication\LimitedFormat;
-use core\communication\RequestFormat;
+use core\App;
 use core\dictionary\StrictDictionary;
 use core\dictionary\StrictMap;
 use core\dictionary\StrictStack;

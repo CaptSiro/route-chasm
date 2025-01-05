@@ -2,9 +2,9 @@
 
 namespace modules\forms\controls\Input;
 
-use core\Render;
-use core\TemplateRenderer;
 use core\utils\Arrays;
+use core\view\Render;
+use core\view\TemplateRenderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 

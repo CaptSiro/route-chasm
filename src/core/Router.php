@@ -4,7 +4,8 @@ namespace core;
 
 use Closure;
 use components\core\HttpError\HttpError;
-use core\endpoints\Directory;
+use core\communication\Request;
+use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
 use core\http\Http;

@@ -2,14 +2,13 @@
 
 use core\App;
 use core\communication\FormatMatcher;
+use core\communication\Request;
 use core\communication\RequestFormat;
+use core\communication\Response;
 use core\http\Http;
 use core\path\Path;
-use core\Request;
 use core\Resource;
-use core\Response;
 use core\Router;
-use core\tree\Trail;
 use core\utils\Arrays;
 use patterns\Ident;
 use patterns\Number;

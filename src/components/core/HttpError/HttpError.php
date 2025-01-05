@@ -8,8 +8,6 @@ use components\core\WebPage\WebPageRenderCondition;
 use core\App;
 use core\communication\Format;
 use core\http\HttpHeader;
-use core\Request;
-use core\Response;
 
 class HttpError extends WebPageContent {
     use WebPageRenderCondition;

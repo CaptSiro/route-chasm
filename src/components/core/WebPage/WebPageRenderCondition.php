@@ -5,8 +5,8 @@ namespace components\core\WebPage;
 use Closure;
 use core\App;
 use core\communication\Format;
-use core\Request;
-use core\Response;
+use core\communication\Request;
+use core\communication\Response;
 
 trait WebPageRenderCondition {
     private Closure $condition;

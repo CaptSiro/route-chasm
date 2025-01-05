@@ -3,7 +3,7 @@
 namespace modules\forms;
 
 use components\core\Html\Html;
-use core\Component;
+use core\view\Component;
 use modules\forms\controls\Control;
 use retval\Result;
 

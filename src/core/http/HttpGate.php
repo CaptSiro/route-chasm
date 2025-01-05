@@ -2,11 +2,11 @@
 
 namespace core\http;
 
+use core\communication\Request;
+use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 use core\path\Path;
-use core\Request;
-use core\Response;
 use patterns\AnyString;
 use patterns\Pattern;
 

@@ -4,9 +4,8 @@ namespace components\core\WebPage;
 
 use components\core\HtmlHead\HtmlHead;
 use core\App;
-use core\Component;
-use core\Render;
-use core\Singleton;
+use core\view\Component;
+use core\view\Render;
 
 class WebPage extends Component {
     public function __construct(

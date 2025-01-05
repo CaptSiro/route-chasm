@@ -1,6 +1,6 @@
 <?php
 
-namespace core;
+namespace core\view;
 
 class BufferTransform {
     public function __construct(

@@ -2,8 +2,8 @@
 
 namespace components\core\JsCore;
 
-use core\Render;
-use core\TemplateRenderer;
+use core\view\Render;
+use core\view\TemplateRenderer;
 
 class JsCore implements Render {
     use TemplateRenderer;

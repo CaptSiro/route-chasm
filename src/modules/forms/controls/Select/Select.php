@@ -2,7 +2,7 @@
 
 namespace modules\forms\controls\Select;
 
-use core\TemplateRenderer;
+use core\view\TemplateRenderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 

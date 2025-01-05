@@ -4,7 +4,7 @@ namespace components\core\HtmlHead;
 
 use components\core\WebPage\Head;
 use core\App;
-use core\Component;
+use core\view\Component;
 
 class HtmlHead extends Component implements Head {
     protected array $meta;

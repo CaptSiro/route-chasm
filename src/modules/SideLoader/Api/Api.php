@@ -2,8 +2,8 @@
 
 namespace modules\SideLoader\Api;
 
-use core\Render;
-use core\TemplateRenderer;
+use core\view\Render;
+use core\view\TemplateRenderer;
 
 class Api implements Render {
     use TemplateRenderer;

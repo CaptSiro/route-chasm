@@ -2,12 +2,12 @@
 
 namespace core\tree;
 
+use core\communication\Request;
 use core\endpoints\Endpoint;
 use core\InstanceCounter;
 use core\path\Segment;
-use core\Render;
-use core\Request;
 use core\url\UrlPath;
+use core\view\Render;
 
 class Node {
     use InstanceCounter;

@@ -1,12 +1,14 @@
 <?php
 
-namespace core;
+namespace core\communication;
 
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPageContent;
-use core\communication\LimitedFormat;
+use core\App;
 use core\http\HttpCode;
 use core\http\HttpHeader;
+use core\view\BufferTransform;
+use core\view\Render;
 
 class Response {
     /**
