@@ -2,8 +2,10 @@
 
 namespace core\endpoints;
 
+use Closure;
 use components\core\Explorer\Explorer;
 use components\core\HttpError\HttpError;
+use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\Flags;
@@ -19,6 +21,54 @@ class Directory implements Endpoint {
 
     public const FLAG_LIST_DIRECTORIES = 0b1;
 
+    public static function showExplorer(): Closure {
+        return function (self $directory, string $path) {
+            $app = App::getInstance();
+            $remaining = urldecode($app->getRequest()->getParam()->get(Request::PARAM_ANY_TERMINATOR, ""));
+
+            $app->getResponse()
+                ->render(new Explorer(
+                    $path,
+                    basename($directory->getDirectory()) .'/'. $remaining,
+                    $app->getRequest()->getUrl()->getRealPath(),
+                    $directory->getDirectory() !== $path
+                ));
+        };
+    }
+
+    /**
+     * @param string[] $defaults
+     * @return Closure
+     */
+    public static function showDefaultFile(array $defaults = ['index.html']): Closure {
+        return function (self $directory, string $path) use ($defaults) {
+            foreach ($defaults as $file) {
+                if (!file_exists($path .'/'. $file)) {
+                    continue;
+                }
+
+                $app = App::getInstance();
+                $directory->serveFile($path .'/'. $file, $app->getRequest(), $app->getResponse());
+            }
+
+            App::getInstance()->getResponse()->render(new HttpError(
+                "Resource is not accessible",
+                HttpCode::CE_FORBIDDEN
+            ));
+        };
+    }
+
+    public static function notAccessible(int $code = HttpCode::CE_FORBIDDEN): Closure {
+        return function (self $directory, string $path) use ($code) {
+            App::getInstance()->getResponse()->render(new HttpError(
+                "Resource is not accessible",
+                $code
+            ));
+        };
+    }
+
+    private Closure $onDirectory;
+
 
 
     public function __construct(
@@ -28,6 +78,15 @@ class Directory implements Endpoint {
     }
 
 
+
+    public function getDirectory(): string {
+        return $this->directory;
+    }
+
+    public function onDirectory(Closure $onDirectory): self {
+        $this->onDirectory = $onDirectory;
+        return $this;
+    }
 
     public function isMiddleware(): bool {
         return false;
@@ -40,7 +99,7 @@ class Directory implements Endpoint {
                     Cors::METHODS => "GET",
                     Cors::HEADERS => strtolower(HttpHeader::ACCESS_CONTROL_ALLOW_ORIGIN),
                     Cors::CREDENTIALS => "true",
-                    Cors::ORIGIN => "*"
+                    Cors::ORIGIN => "*",
                 ]);
 
                 $response->flush();
@@ -48,7 +107,7 @@ class Directory implements Endpoint {
             }
 
             case HttpMethod::GET: {
-                $remaining = urldecode($request->param->get(Request::PARAM_ANY_TERMINATOR, ""));
+                $remaining = urldecode($request->getParam()->get(Request::PARAM_ANY_TERMINATOR, ""));
                 $path = realpath($this->directory .'/'. $remaining);
 
                 if ($path === false) {
@@ -65,34 +124,18 @@ class Directory implements Endpoint {
                 }
 
                 if (is_dir($path)) {
-                    if ($this->hasFlag(self::FLAG_LIST_DIRECTORIES)) {
-                        $response->render(new Explorer(
-                            $path,
-                            basename($this->directory) .'/'. $remaining,
-                            $request->getUrl()->getRealPath(),
-                            $this->directory !== $path
-                        ));
+                    if (!is_null($this->onDirectory)) {
+                        ($this->onDirectory)($this, $path);
                     }
 
                     $response->render(new HttpError(
-                        "Request references directory",
-                        HttpCode::CE_BAD_REQUEST
+                        "Resource is not accessible",
+                        HttpCode::CE_FORBIDDEN
                     ));
                     break;
                 }
 
-                $response->setHeaders([
-                    Cors::ORIGIN => "*",
-                    HttpHeader::CONTENT_TYPE => Files::mimeType($path)
-                ]);
-
-                if (Files::extension($path) === "php" && $request->getUrl()->getQuery()->exists("x")) {
-                    $response->generateHeaders();
-                    require $path;
-                    $response->flush();
-                }
-
-                $response->readFile($path);
+                $this->serveFile($path, $request, $response);
             }
 
             default: {
@@ -103,5 +146,20 @@ class Directory implements Endpoint {
                 break;
             }
         }
+    }
+
+    public function serveFile(string $path, Request $request, Response $response): void {
+        $response->setHeaders([
+            Cors::ORIGIN => "*",
+            HttpHeader::CONTENT_TYPE => Files::mimeType($path),
+        ]);
+
+        if (Files::extension($path) === "php" && $request->getUrl()->getQuery()->exists("x")) {
+            $response->generateHeaders();
+            require $path;
+            $response->flush();
+        }
+
+        $response->readFile($path);
     }
 }

@@ -5,6 +5,7 @@ namespace components\core\Explorer;
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPageContent;
 use core\App;
+use modules\SideLoader\Css;
 
 class Explorer extends WebPageContent {
     public function __construct(
@@ -13,8 +14,7 @@ class Explorer extends WebPageContent {
         protected string $url,
         protected bool $isParentEntryAllowed = true
     ) {
-        App::getInstance()
-            ->link(__DIR__ ."/Explorer.css");
+        Css::import($this->getSource("Explorer.css"));
 
         if (!str_ends_with($this->url, "/")) {
             $this->url .= "/";

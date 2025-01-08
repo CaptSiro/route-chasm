@@ -31,7 +31,7 @@ $router = $app->getMainRouter();
 
 
 $router->expose("/public", (new \core\endpoints\Directory(__DIR__ . "/public"))
-    ->setFlag(\core\endpoints\Directory::FLAG_LIST_DIRECTORIES));
+    ->onDirectory(\core\endpoints\Directory::showExplorer()));
 
 $router->use(
     "/error",
