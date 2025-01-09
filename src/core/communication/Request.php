@@ -2,10 +2,13 @@
 
 namespace core\communication;
 
+use components\core\HttpError\HttpError;
 use core\App;
-use core\dictionary\StrictDictionary;
-use core\dictionary\StrictMap;
-use core\dictionary\StrictStack;
+use core\collection\Dictionary;
+use core\collection\StrictDictionary;
+use core\collection\StrictMap;
+use core\collection\StrictStack;
+use core\http\HttpHeader;
 use core\url\Url;
 
 class Request {
@@ -38,11 +41,17 @@ class Request {
 
     private ?array $headers;
 
-    public StrictDictionary|null $session;
+    private StrictDictionary|null $session;
 
-    public StrictStack $param;
+    private StrictStack $param;
 
     readonly protected StrictMap $data;
+    readonly protected StrictDictionary $body;
+    readonly protected StrictDictionary $files;
+
+
+
+    private bool $isBodyParsed = false;
 
 
 
@@ -50,8 +59,6 @@ class Request {
         readonly protected App $app,
         readonly private LimitedFormat $format,
         readonly private Url $url,
-        readonly private StrictDictionary $body,
-        readonly private StrictDictionary $files,
         readonly private StrictDictionary $cookies,
         readonly private StrictDictionary $domain,
     ) {
@@ -71,11 +78,29 @@ class Request {
         return $this->url;
     }
 
+    public function getBodyRaw(): string {
+        return file_get_contents('php://input');
+    }
+
     public function getBody(): StrictDictionary {
+        if (!$this->isBodyParsed) {
+            $parsed = App::getInstance()->parseBody($this);
+            $this->body = $parsed->body;
+            $this->files = $parsed->files;
+            $this->isBodyParsed = true;
+        }
+
         return $this->body;
     }
 
     public function getFiles(): StrictDictionary {
+        if (!$this->isBodyParsed) {
+            $parsed = App::getInstance()->parseBody($this);
+            $this->body = $parsed->body;
+            $this->files = $parsed->files;
+            $this->isBodyParsed = true;
+        }
+
         return $this->files;
     }
 
@@ -136,7 +161,28 @@ class Request {
         $this->data->set($name, $value);
     }
 
+    public function isMultipart(): bool {
+        $header = $this->getHeader(HttpHeader::CONTENT_TYPE);
+        if (is_null($header)) {
+            return false;
+        }
+
+        return str_starts_with($header, 'multipart/form-data');
+    }
+
     public function __debugInfo(): ?array {
+        if (!$this->isBodyParsed) {
+            return [
+                'httpMethod' => $this->httpMethod,
+                'headers' => $this->headers,
+                'url' => $this->url->full(),
+                'body' => '*not-parsed*',
+                'files' => $this->files,
+                'cookies' => $this->cookies,
+                'domain' => $this->domain
+            ];
+        }
+
         return [
             'httpMethod' => $this->httpMethod,
             'headers' => $this->headers,

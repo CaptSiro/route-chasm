@@ -10,8 +10,10 @@ use core\config\EnvConfig;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use modules\forms\controls\File;
 use modules\forms\controls\Submit\Submit;
 use modules\forms\controls\Text;
+use modules\forms\controls\TextArea\TextArea;
 use modules\forms\Form;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
@@ -60,15 +62,19 @@ $router->use(
 
 
 
+$text = "My text 
+with line";
 $form = (new Form(HttpMethod::DELETE))
     ->add(new Text("Name", "Name", "CaptSiro"))
+    ->add(new TextArea("Area", "Description", $text))
+    ->add((new File("Image", 'Image'))->addAttribute('multiple'))
     ->add(Form::note("Submitting form you are giving us consent to get all your money"))
     ->add(Form::hr())
     ->add(new Submit());
 $router->use("/form",
     Http::get(new WebPage(content: $form)),
     Http::delete(function(Request $request, Response $response) {
-        $response->send($request->getFormat());
+        $response->json($request->getBody());
     })
 );
 

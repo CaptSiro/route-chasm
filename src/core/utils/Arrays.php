@@ -5,6 +5,20 @@ namespace core\utils;
 use Generator;
 
 class Arrays {
+    public static function append(array &$array, $key, $value): void {
+        if (!isset($array[$key])) {
+            $array[$key] = $value;
+            return;
+        }
+
+        if (is_array($array[$key])) {
+            $array[$key][] = $value;
+            return;
+        }
+
+        $array[$key] = [$array[$key], $value];
+    }
+
     public static function reversed(array $array): Generator {
         $keys = array_keys($array);
 

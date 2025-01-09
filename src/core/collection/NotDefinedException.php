@@ -1,6 +1,6 @@
 <?php
 
-namespace core\dictionary;
+namespace core\collection;
 
 use RuntimeException;
 

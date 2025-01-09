@@ -2,6 +2,8 @@
 
 namespace core\http;
 
+use core\communication\Request;
+
 class HttpHeader {
     // RouteChasm headers
     public const CONTENT_DESCRIPTION = "Content-Description";

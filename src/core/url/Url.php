@@ -3,8 +3,8 @@
 namespace core\url;
 
 use core\App;
-use core\dictionary\StrictDictionary;
-use core\dictionary\StrictMap;
+use core\collection\StrictDictionary;
+use core\collection\StrictMap;
 use core\utils\Strings;
 
 class Url {

@@ -2,17 +2,15 @@
 
 namespace modules\forms\controls\Input;
 
-use core\utils\Arrays;
+use core\Attributes;
+use core\CssClass;
 use core\view\Render;
 use core\view\TemplateRenderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
 class Input implements Render, Control {
-    use TemplateRenderer, FormControl;
-
-    protected array $attributes;
-    protected string $cssClass;
+    use TemplateRenderer, FormControl, CssClass, Attributes;
 
 
 
@@ -22,22 +20,11 @@ class Input implements Render, Control {
         protected string $label,
         protected ?string $value = null,
     ) {
-        $this->cssClass = "";
         $this->attributes = [];
         $this->setTemplate(self::getStaticSource("Input.phtml"));
     }
 
 
-
-    public function addCssClass(string $class): self {
-        if ($this->cssClass === "") {
-            $this->cssClass = $class;
-            return $this;
-        }
-
-        $this->cssClass .= ' '. $class;
-        return $this;
-    }
 
     public function getFieldName(): ?string {
         return $this->name;
@@ -49,19 +36,6 @@ class Input implements Render, Control {
         }
 
         return $this->context->createId($this->name);
-    }
-
-    public function addAttribute(string $name, mixed $value): self {
-        $this->attributes[$name] = $value;
-        return $this;
-    }
-
-    public function getAttributes(): string {
-        return Arrays::htmlEncode($this->attributes);
-    }
-
-    public function getAttribute(string $name): mixed {
-        return $this->attributes[$name] ?? null;
     }
 
     public function pattern(string $pattern): self {

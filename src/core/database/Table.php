@@ -8,7 +8,7 @@ use core\database\column\ForeignKey;
 use core\database\column\PrimaryKey;
 use core\database\parameter\Primitive;
 use core\database\query\Query;
-use core\dictionary\Dictionary;
+use core\collection\Dictionary;
 use core\Init;
 use JsonSerializable;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\dictionary;
+namespace core\collection;
 
 interface StrictDictionary extends Dictionary {
     /**

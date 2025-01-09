@@ -48,7 +48,7 @@ abstract class Resource {
             Path::from("/[unique]")
                 ->param("unique", $this->getUniquePattern()),
 
-            fn(Request $request) => $request->set("model", $this->fromUnique($request->param->getStrict(self::PARAM_UNIQUE))),
+            fn(Request $request) => $request->set("model", $this->fromUnique($request->getParam()->getStrict(self::PARAM_UNIQUE))),
 
             Http::get(fn(Request $request, Response $response) => $response->render($this->read($request->get("model")))),
             Http::put(fn(Request $request, Response $response) => $response->render($this->update($request->get("model")))),

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\dictionary;
+namespace core\collection;
 
 interface Dictionary {
     public function exists(string $name): bool;

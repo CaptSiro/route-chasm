@@ -101,4 +101,59 @@ class Strings extends Init {
 
         return $start . $subject;
     }
+
+    public static function parseUrlEncoded(string $string): array {
+        $array = [];
+        $length = strlen($string);
+        $name = "";
+        $value = "";
+        $isValueTarget = false;
+
+        for ($i = 0; $i < $length; $i++) {
+            if ($string[$i] === '=') {
+                $isValueTarget = true;
+                continue;
+            }
+
+            if ($string[$i] == "&") {
+                $array[$name] = urldecode($value);
+                $name = "";
+                $value = "";
+                $isValueTarget = false;
+                continue;
+            }
+
+            if ($isValueTarget) {
+                $value .= $string[$i];
+                continue;
+            }
+
+            $name .= $string[$i];
+        }
+
+        return $array;
+    }
+
+    public static function toBytes(string $formattedBytes): ?int {
+        $units = ['B', 'K', 'M', 'G', 'T', 'P'];
+        $unitsExtended = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+        $number = (int) preg_replace("/[^0-9]+/", "", $formattedBytes);
+        $suffix = preg_replace("/[^a-zA-Z]+/", "", $formattedBytes);
+
+        if(is_numeric($suffix[0])) {
+            return preg_replace('/\D/', '', $formattedBytes);
+        }
+
+        $exponent = array_flip($units)[$suffix] ?? null;
+        if ($exponent === null) {
+            $exponent = array_flip($unitsExtended)[$suffix] ?? null;
+        }
+
+        if ($exponent === null) {
+            return null;
+        }
+
+        return $number * (1024 ** $exponent);
+    }
 }

@@ -1,8 +1,13 @@
 <?php
 
-namespace core\dictionary;
+namespace core\collection;
 
-class Map implements Dictionary {
+use core\Flags;
+use JsonSerializable;
+
+class Map implements Dictionary, JsonSerializable {
+    use Flags;
+
     private array $map;
 
 
@@ -29,5 +34,9 @@ class Map implements Dictionary {
 
     function clear(): void {
         $this->map = [];
+    }
+
+    public function jsonSerialize(): array {
+        return $this->map;
     }
 }

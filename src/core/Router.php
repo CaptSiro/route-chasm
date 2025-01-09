@@ -125,13 +125,13 @@ class Router {
             return;
         }
 
-        $request->param->push($trail->getParams());
+        $request->getParam()->push($trail->getParams());
 
         foreach ($trail->getEndpoints() as $endpoint) {
             $endpoint->execute($request, $response);
         }
 
-        $request->param->pop();
+        $request->getParam()->pop();
 
         $response->render(new HttpError(
             "Called all responsible endpoints but none of them responded",

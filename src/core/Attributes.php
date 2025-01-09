@@ -5,10 +5,10 @@ namespace core;
 use core\utils\Arrays;
 
 trait Attributes {
-    protected array $attributes;
+    protected array $attributes = [];
 
-    public function addAttribute(string $name, mixed $value): self {
-        $this->attributes[$name] = $value;
+    public function addAttribute(string $name, mixed $value = null): self {
+        $this->attributes[$name] = $value ?? $name;
         return $this;
     }
 

@@ -3,7 +3,7 @@
 namespace core\communication;
 
 
-use core\dictionary\Dictionary;
+use core\collection\Dictionary;
 use core\http\HttpHeader;
 
 class RequestFormat implements Format {

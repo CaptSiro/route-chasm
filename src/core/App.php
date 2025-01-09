@@ -3,14 +3,22 @@
 namespace core;
 
 use Closure;
+use components\core\HttpError\HttpError;
+use core\collection\StrictDictionary;
 use core\communication\FormatMatcher;
+use core\communication\parser\FormBodyParser;
+use core\communication\parser\JsonBodyParser;
+use core\communication\parser\RequestBody;
+use core\communication\parser\RequestBodyParser;
+use core\communication\parser\TextBodyParser;
 use core\communication\Request;
 use core\communication\RequestFormat;
 use core\communication\Response;
 use core\communication\ResponseFormat;
 use core\config\Config;
-use core\dictionary\Map;
-use core\dictionary\StrictMap;
+use core\collection\Map;
+use core\collection\StrictMap;
+use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
 use core\url\Url;
@@ -66,6 +74,10 @@ class App implements Loader {
     private string $src;
     private FormatMatcher $matcher;
     private readonly Map $options;
+    /**
+     * @var RequestBodyParser[]
+     */
+    private array $bodyParsers;
     protected ?Env $env;
     protected ?Config $config;
     protected array $listeners;
@@ -94,6 +106,12 @@ class App implements Loader {
 
         $this->config = null;
         $this->home = null;
+
+        $this->bodyParsers = [
+            JsonBodyParser::getInstance(),
+            FormBodyParser::getInstance(),
+            TextBodyParser::getInstance()
+        ];
     }
 
 
@@ -105,8 +123,6 @@ class App implements Loader {
             Url::fromRequest(),
             new StrictMap(),
             new StrictMap(),
-            new StrictMap(),
-            new StrictMap()
         );
 
         $this->response = new Response(
@@ -117,6 +133,25 @@ class App implements Loader {
     public function setMatcher(FormatMatcher $matcher): void {
         $this->matcher = $matcher;
         $this->initCommunication();
+    }
+
+    public function addBodyParser(RequestBodyParser $parser): void {
+        $this->bodyParsers[] = $parser;
+    }
+
+    public function parseBody(Request $request): RequestBody {
+        foreach ($this->bodyParsers as $parser) {
+            if ($parser->supports($request->getFormat())) {
+                return $parser->parse($request);
+            }
+        }
+
+        $this->response->render(new HttpError(
+            "Request body could not be parsed. Format '" .$request->getFormat(). "' is not supported.",
+            HttpCode::SE_INTERNAL_SERVER_ERROR
+        ));
+
+        exit;
     }
 
     public function getOptions(): Map {

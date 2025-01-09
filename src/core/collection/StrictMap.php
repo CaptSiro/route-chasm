@@ -1,8 +1,10 @@
 <?php
 
-namespace core\dictionary;
+namespace core\collection;
 
-readonly class StrictMap implements StrictDictionary {
+use JsonSerializable;
+
+readonly class StrictMap implements StrictDictionary, JsonSerializable {
     private Map $map;
 
 
@@ -35,5 +37,13 @@ readonly class StrictMap implements StrictDictionary {
 
     function set(string $name, mixed $value): void {
         $this->map->set($name, $value);
+    }
+
+    public function getMap(): Map {
+        return $this->map;
+    }
+
+    public function jsonSerialize(): Map {
+        return $this->map;
     }
 }
