@@ -2,12 +2,11 @@
 
 namespace modules\forms\controls\Submit;
 
-use core\view\Render;
 use core\view\TemplateRenderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
-class Submit implements Render, Control {
+class Submit implements Control {
     use TemplateRenderer, FormControl;
 
 

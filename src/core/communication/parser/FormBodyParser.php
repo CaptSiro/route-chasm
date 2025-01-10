@@ -115,11 +115,8 @@ class FormBodyParser implements RequestBodyParser {
     public function parse(Request $request): RequestBody {
         $body = new StrictMap();
 
-        self::parseMultipart($request);
-
         if ($request->isMultipart()) {
-            $body->load($_POST);
-            return new RequestBody($body, new StrictMap());
+            return self::parseMultipart($request);
         }
 
         $body->load(Strings::parseUrlEncoded($request->getBodyRaw()));

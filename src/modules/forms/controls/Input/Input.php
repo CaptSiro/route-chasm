@@ -4,12 +4,11 @@ namespace modules\forms\controls\Input;
 
 use core\Attributes;
 use core\CssClass;
-use core\view\Render;
 use core\view\TemplateRenderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
-class Input implements Render, Control {
+class Input implements Control {
     use TemplateRenderer, FormControl, CssClass, Attributes;
 
 

@@ -1,11 +1,14 @@
 <?php /** @var Form $this */
 
 use modules\forms\Form;
+use modules\SideLoader\Css;
 use modules\SideLoader\Javascript;
 
 ?>
 <?php Javascript::import($this->getSource("form.js")); ?>
+<?php Css::import($this->getSource("form.css")); ?>
 <form
+    class="form"
     data-method="<?= $this->method ?>"
     <?php if (!is_null($this->action)): ?>
         action="<?= $this->action ?>"

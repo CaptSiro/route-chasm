@@ -1,0 +1,209 @@
+:root {
+    --form-container-0: #ffffff;
+    --form-container-1: #e9eaee;
+    --form-container-2: #dddfe1;
+    --form-container-3: #ced1d3;
+    --form-container-4: #b8bcbe;
+    --form-text-0: black;
+    --form-text-1: #171717;
+    --form-text-2: #2e2e2e;
+    --form-accent-0: #ff9567;
+    --form-accent-1: #e6865d;
+    --form-accent-2: #cc7752;
+    --form-accent-3: #b36848;
+
+    --form-border-radius: 8px;
+    --form-gap: 16px;
+}
+
+.form {
+    display: flex;
+    overflow: auto;
+    flex-direction: column;
+    padding: 32px;
+    background-color: var(--form-container-0);
+    color: var(--form-text-0);
+    border-radius: var(--form-border-radius);
+    gap: var(--form-gap);
+}
+
+.form.hide {
+    display: none;
+}
+
+.form-control {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    gap: var(--form-gap);
+}
+
+.radio-container,
+.checkbox-container {
+    font-family: Helvetica, sans-serif;
+    font-size: 1em;
+    line-height: 1.1;
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: 0.5em;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    position: relative;
+
+    appearance: none;
+    background-color: var(--form-container-2);
+    margin: 0 !important;
+
+    font: inherit;
+    color: var(--form-text-0);
+    width: 1.15em;
+    height: 1.15em;
+    border: 2px solid var(--form-container-3);
+    border-radius: 0.15em !important;
+    transform: translateY(-0.075em);
+    transition: background-color 100ms linear;
+}
+
+input[type="radio"] {
+    border-radius: 50% !important;
+}
+
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+    background-color: var(--form-accent-0);
+    border-color: var(--form-accent-3);
+    transition: background-color 150ms linear;
+}
+
+input[type=radio]:focus,
+input[type=checkbox]:focus {
+    outline: 2px solid var(--form-accent-1);
+}
+
+
+input[type="radio"]:after {
+    content: "";
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    background-color: var(--form-container-0);
+}
+
+
+input {
+    border-radius: var(--form-border-radius);
+    border: unset;
+    padding: 8px;
+    margin-top: 4px;
+    background-color: var(--form-container-2);
+    color: var(--form-text-0);
+    border: 2px solid var(--form-container-3);
+
+    transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+input:not([type=checkbox]):focus {
+    outline: 2px solid var(--form-accent-1);
+    background-color: var(--form-container-0);
+    color: var(--form-text-0);
+}
+
+input.invalid {
+    background-color: #f3919f;
+    border-color: #f13854;
+    color: black;
+}
+
+.form textarea {
+    border-radius: var(--form-border-radius);
+    background-color: var(--form-container-2);
+    color: var(--form-text-0);
+    border: 2px solid var(--form-container-3);
+    resize: none;
+
+    padding: 8px;
+    margin-top: 8px;
+
+    transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+.form textarea:focus {
+    outline: 2px solid var(--form-accent-1);
+    background-color: var(--form-container-0);
+    color: var(--form-text-0);
+}
+
+.form button {
+    padding: 0.5em 1em;
+    margin: 0 auto;
+    font-size: 1em;
+    border-radius: var(--form-border-radius);
+    color: var(--form-text-0);
+    background-color: var(--form-container-2);
+    border: 2px solid var(--form-container-3);
+}
+
+.form button:hover {
+    outline: 2px solid var(--form-accent-0);
+    background-color: var(--form-container-0);
+    cursor: pointer;
+}
+
+.form button.link {
+    all: unset;
+    color: var(--form-text-2);
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.form button.link:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.form .chained-inputs > * {
+    margin: 2px;
+}
+
+
+.form .h-line {
+    width: 100%;
+    height: 1px;
+    margin: 10px 0;
+    background-color: var(--form-container-4);
+}
+
+.form .divider {
+    width: 100%;
+    height: 50px;
+}
+
+.form .wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+}
+
+.form .wrapper.row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form .wrapper:first-child {
+    margin-top: unset;
+}
+
+.form .wrapper:last-child {
+    margin-bottom: unset;
+}

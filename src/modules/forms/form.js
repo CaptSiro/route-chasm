@@ -10,10 +10,11 @@ async function submitForm(form) {
             for (const file of input.files) {
                 data.append(input.name, file);
             }
-        } else {
-            data.append(input.name, input.value);
+
+            continue;
         }
 
+        data.append(input.name, input.value);
         json[input.name] = input.value;
     }
 

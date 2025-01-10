@@ -1,0 +1,12 @@
+<?php /** @var \modules\forms\controls\Checkbox\Checkbox $this */?>
+<?php $id = $this->getId() ?>
+<label class="checkbox-container <?= $this->cssClass ?>" for="<?= $id ?>">
+    <input
+        type="checkbox"
+        value="<?= $this->value ?>"
+        name="<?= $this->name ?>"
+        id="<?= $id ?>"
+        <?= $this->getHtmlAttributes() ?>
+    >
+    <span><?= $this->label ?></span>
+</label>
