@@ -12,10 +12,12 @@ use core\http\HttpCode;
 use core\http\HttpMethod;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\controls\File;
+use modules\forms\controls\MultiSubmit\MultiSubmit;
 use modules\forms\controls\Submit\Submit;
 use modules\forms\controls\Text;
 use modules\forms\controls\TextArea\TextArea;
 use modules\forms\Form;
+use modules\forms\FormAction;
 use modules\forms\layout\Row\Row;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
@@ -76,7 +78,11 @@ $form = (new Form(HttpMethod::DELETE))
     ->add(new Checkbox('Read', 'I have read TOS'))
     ->add(Form::note("Submitting form you are giving us consent to get all your money"))
     ->add(Form::hr())
-    ->add(new Submit());
+    ->add(new MultiSubmit([
+        new FormAction(FormAction::TYPE_RESET, 'Reset'),
+        new FormAction(FormAction::TYPE_SUBMIT, 'Delete', 'delete'),
+        FormAction::submit(),
+    ]));
 $router->use("/form",
     Http::get(new WebPage(content: $form)),
     Http::delete(function(Request $request, Response $response) {

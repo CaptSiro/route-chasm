@@ -37,6 +37,14 @@
     flex-direction: column;
 }
 
+.form-actions {
+    width: 100%;
+    display: flex;
+    gap: var(--form-gap);
+    justify-content: end;
+    align-items: end;
+}
+
 .form-row {
     display: flex;
     gap: var(--form-gap);
@@ -144,7 +152,6 @@ input.invalid {
 
 .form button {
     padding: 0.5em 1em;
-    margin: 0 auto;
     font-size: 1em;
     border-radius: var(--form-border-radius);
     color: var(--form-text-0);

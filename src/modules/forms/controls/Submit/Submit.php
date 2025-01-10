@@ -9,8 +9,6 @@ use modules\forms\controls\FormControl;
 class Submit implements Control {
     use TemplateRenderer, FormControl;
 
-
-
     public function __construct(
         protected string $label = "Submit"
     ) {}
