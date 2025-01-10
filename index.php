@@ -3,6 +3,7 @@
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
+use components\Test;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -82,11 +83,6 @@ $router->use("/form",
 
 $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
-$router->use("/test", function (Request $request, Response $response) {
-    var_dump(Cards::getInstance()
-        ->getRouter()
-        ->getInstanceId());
-});
 
 
 

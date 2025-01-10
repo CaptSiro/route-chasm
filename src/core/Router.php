@@ -126,8 +126,14 @@ class Router {
         }
 
         $request->getParam()->push($trail->getParams());
+        $method = $request->getUrl()->getQuery()->get('x');
 
         foreach ($trail->getEndpoints() as $endpoint) {
+            if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
+                call_user_func_array([$endpoint, $method], [$request, $response]);
+                continue;
+            }
+
             $endpoint->execute($request, $response);
         }
 
