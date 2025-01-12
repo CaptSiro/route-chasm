@@ -11,9 +11,8 @@ use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
 use modules\forms\controls\Checkbox\Checkbox;
-use modules\forms\controls\File;
+use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
-use modules\forms\controls\Submit\Submit;
 use modules\forms\controls\Text;
 use modules\forms\controls\TextArea\TextArea;
 use modules\forms\Form;
@@ -74,7 +73,8 @@ with line";
 $form = (new Form(HttpMethod::DELETE))
     ->add($userRow)
     ->add(new TextArea("Area", "Description", $text))
-    ->add((new File("Image", 'Image'))->addAttribute('multiple'))
+    ->add((new File("Image", 'Image', ['champs.txt', 'docs.pdf']))
+        ->addAttribute('multiple'))
     ->add(new Checkbox('Read', 'I have read TOS'))
     ->add(Form::note("Submitting form you are giving us consent to get all your money"))
     ->add(Form::hr())
@@ -94,6 +94,8 @@ $router->use("/form",
 
 $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
+
+$router->use("");
 
 
 

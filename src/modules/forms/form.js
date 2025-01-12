@@ -32,3 +32,65 @@ async function submitForm(form) {
 
     console.log(await jsonResponse.text());
 }
+
+
+
+/**
+ * @param {HTMLElement} container
+ */
+function form_file(container) {
+    const input = container.querySelector('input')
+    const loadedFiles = container.querySelector('.form-files');
+
+    loadedFiles.addEventListener('click', event => {
+        event.preventDefault();
+    });
+
+    const showFiles = () => {
+        loadedFiles.textContent = "";
+
+        for (const file of input.files) {
+            loadedFiles.append(Tag(file.name, true, (tag, event) => {
+                const name = tag.querySelector('span').textContent;
+                const transfer = new DataTransfer();
+
+                for (const f of input.files) {
+                    if (f.name !== name) {
+                        transfer.items.add(f);
+                    }
+                }
+
+                input.files = transfer.files;
+                event.preventDefault();
+            }));
+        }
+    }
+
+    container.addEventListener('drop', event => {
+        input.files = event.dataTransfer.files;
+        showFiles();
+        event.preventDefault();
+    });
+
+    container.addEventListener('dragover', event => {
+        event.preventDefault();
+    });
+
+    container.querySelectorAll('& > *').forEach(e => {
+        e.addEventListener('drop', event => {
+            event.preventDefault();
+        });
+    });
+
+    input.addEventListener('change', () => {
+        showFiles();
+    });
+
+    for (const file of loadedFiles.children) {
+        const remove = file.querySelector('button');
+        remove.addEventListener('click', event => {
+            file.remove();
+            event.preventDefault();
+        });
+    }
+}

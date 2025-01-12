@@ -1,7 +1,7 @@
 /**
  * @typedef {Impulse<any> | HTMLElement | Node | string | undefined} ContentItem
  *
- * @typedef {ContentItem | ArrayLike<ContentItem> | HTMLCollection} Content
+ * @typedef {ContentItem | ArrayLike<ContentItem> | ContentItem[] | HTMLCollection} Content
  *
  * @typedef {{
  *     [key: string]: ((event: Event) => any) | Impulse<any> | any
@@ -212,6 +212,37 @@ function jsmlInit() {
 }
 
 const jsml = jsmlInit();
+const _ = undefined;
+
+
+
+/**
+ *
+ * @param {string} label
+ * @param {boolean} isRemovable
+ * @param {(element: HTMLElementTagNameMap["div"], event: Event) => boolean} onRemove Return false to cancel removing
+ * @return {HTMLDivElement}
+ * @constructor
+ */
+function Tag(label, isRemovable = true, onRemove = () => true) {
+    const tag = jsml.div({ class: 'tag' }, jsml.span(_, label));
+    if (!isRemovable) {
+        return tag;
+    }
+
+    const onClick = event => {
+        if (onRemove(tag, event) === false) {
+            return;
+        }
+
+        tag.remove();
+    }
+
+    const button = jsml.button({ onClick }, '✕');
+    tag.append(button);
+
+    return tag;
+}
 
 
 
@@ -253,12 +284,15 @@ window.addEventListener('load', () => {
     }
     
     const HTTP_METHODS = ["CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE"]
+    const HTTP_METHODS_ATTR = HTTP_METHODS.map(xAttr);
     const X_TARGET = 'x-target';
     const X_EVENT = 'x-event';
     const X_DATA = 'x-data';
     const X_SWAP = 'x-swap';
+    const X_INIT = 'x-init';
     
-    const attributes = [X_TARGET, X_SWAP, X_EVENT].concat(HTTP_METHODS.map(xAttr));
+    const attributes = [X_TARGET, X_EVENT, X_SWAP, X_INIT].concat(HTTP_METHODS_ATTR);
+    const needProcessing = [X_INIT].concat(HTTP_METHODS_ATTR);
 
     /**
      * @typedef {{ httpMethod: string, url: string }} AjaxInfo
@@ -339,10 +373,31 @@ window.addEventListener('load', () => {
         });
     }
 
+    function init(element, functionName) {
+        let context = window;
+
+        for (const part of functionName.split('.')) {
+            context = context[part.trim()];
+
+            if (context === undefined) {
+                return;
+            }
+        }
+
+        if (typeof context === 'function') {
+            context(element);
+        }
+    }
+
     /**
      * @param {HTMLElement} element
      */
     function process(element) {
+        const functionName = element.getAttribute(X_INIT);
+        if (functionName !== null) {
+            init(element, functionName);
+        }
+
         const ajaxInfo = getAjaxInfo(element);
         if (ajaxInfo === undefined) {
             return;
@@ -396,8 +451,8 @@ window.addEventListener('load', () => {
         });
     }
 
-    const selector = HTTP_METHODS
-        .map(x => '[' + xAttr(x) + ']')
+    const selector = needProcessing
+        .map(x => '[' + x + ']')
         .join(',');
 
     for (const element of document.querySelectorAll(selector)) {

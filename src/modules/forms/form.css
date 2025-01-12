@@ -13,7 +13,9 @@
     --form-accent-3: #b36848;
 
     --form-border-radius: 8px;
+    --form-border-radius-smaller: 4px;
     --form-gap: 16px;
+    --form-gap-smaller: 8px;
 }
 
 .form {
@@ -117,6 +119,57 @@ input {
     border: 2px solid var(--form-container-3);
 
     transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+.form-file {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--form-gap);
+
+    min-height: 4em;
+
+    border-radius: var(--form-border-radius);
+    border: unset;
+    padding: 8px;
+    margin-top: 4px;
+    background-color: var(--form-container-2);
+    color: var(--form-text-0);
+    border: 2px solid var(--form-container-3);
+}
+
+.form-files {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: end;
+}
+
+.form-files > div {
+    padding: 4px 8px;
+    border-radius: var(--form-border-radius-smaller);
+    background-color: var(--form-container-0);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--form-gap);
+}
+
+.form-files > div > button {
+    background-color: transparent;
+    padding: unset;
+    border: unset;
+    color: crimson;
+}
+
+.form-files > div > button:hover {
+    background-color: transparent;
+    padding: unset;
+    border: unset;
+    color: crimson;
+    outline: unset;
 }
 
 input:not([type=checkbox]):focus {
