@@ -1,7 +1,7 @@
 <?php /** @var HtmlHead $this */
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\JsCore\JsCore;
+use components\core\FrontEndCore\FrontEndCore;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader; ?>
 <head>
@@ -15,7 +15,7 @@ use modules\SideLoader\SideLoader; ?>
 
     <title><?= $this->title ?></title>
 
-    <?= new JsCore() ?>
+    <?= new FrontEndCore() ?>
     <?= Jsml::getInstance() ?>
     <?= SideLoader::getApi() ?>
     <?= SideLoader::getInstance() ?>

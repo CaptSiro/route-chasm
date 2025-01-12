@@ -15,6 +15,21 @@ trait Source {
             ->getSource(dirname(get_class($this)) ."/$path");
     }
 
+    public function getSources(string $directory = ''): array {
+        $dir = $this->getSource($directory);
+        $sources = [];
+
+        foreach (scandir($dir) as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $sources[] = $dir .'/'. $file;
+        }
+
+        return $sources;
+    }
+
     public function getClass(): string {
         return basename(get_class($this));
     }

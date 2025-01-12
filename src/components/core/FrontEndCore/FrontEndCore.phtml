@@ -1,0 +1,20 @@
+<?php /** @var FrontEndCore $this */
+
+use components\core\FrontEndCore\FrontEndCore;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
+use modules\SideLoader\SideLoader;
+
+?>
+<?php if (SideLoader::getInstance()->isLoaded()): ?>
+    <script
+        <?= SideLoader::getInstance()
+            ->createSourceAttribute(Javascript::FILE_TYPE, $this->getSources('js')) ?>
+    ></script>
+
+    <link
+        rel="stylesheet"
+        <?= SideLoader::getInstance()
+            ->createSourceAttribute(Css::FILE_TYPE, $this->getSources('css'), 'href') ?>
+    >
+<?php endif; ?>
