@@ -9,6 +9,14 @@ use modules\forms\controls\Control;
 use retval\Result;
 
 class Form extends Component {
+    private static ?Form $form = null;
+
+    public static function rendering(): ?Form {
+        return self::$form;
+    }
+
+
+
     public static function ns(string $class): string {
         return strtr(strtolower($class), "\\", "-");
     }
@@ -63,11 +71,6 @@ class Form extends Component {
 
     public function add(Render $control): self {
         $this->elements[] = $control;
-
-        if ($control instanceof Control) {
-            $control->bind($this);
-        }
-
         return $this;
     }
 
@@ -79,28 +82,13 @@ class Form extends Component {
         return $this->namespace ."__". $name;
     }
 
-    public function validate(array $values): Result {
-        $reason = "";
-        $valid = [];
+    public function render(?string $template = null): string {
+        $last = self::$form;
+        self::$form = $this;
 
-        foreach ($this->elements as $control) {
-            if (!($control instanceof Control)) {
-                continue;
-            }
+        $ret = parent::render($template);
 
-            $name = $control->getFieldName();
-            if (is_null($name)) {
-                continue;
-            }
-
-            $isValid = $control->validate($values[$name] ?? null, $reason);
-            if ($isValid === false) {
-                return Result::fail(new InvalidFormSubmissionExc($reason));
-            }
-
-            $valid[$name] = $values[$name];
-        }
-
-        return Result::success($valid);
+        self::$form = $last;
+        return $ret;
     }
 }

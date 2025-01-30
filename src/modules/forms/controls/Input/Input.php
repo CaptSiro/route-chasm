@@ -29,14 +29,6 @@ class Input implements Control {
         return $this->name;
     }
 
-    public function getId(): string {
-        if (is_null($this->context)) {
-            return $this->name;
-        }
-
-        return $this->context->createId($this->name);
-    }
-
     public function pattern(string $pattern): self {
         $this->addAttribute("pattern", $pattern);
         return $this;
@@ -45,24 +37,5 @@ class Input implements Control {
     public function required(): self {
         $this->addAttribute("required", true);
         return $this;
-    }
-
-    public function validate(?string $input, string &$reason): bool {
-        if (is_null($input)) {
-            if ($this->getAttribute("required") === true) {
-                $reason = "Field $this->label is required";
-                return false;
-            }
-
-            $input = "";
-        }
-
-        $pattern = $this->getAttribute("pattern");
-        if (!is_null($pattern) && !preg_match($pattern, $input)) {
-            $reason = "Field $this->label has invalid value";
-            return false;
-        }
-
-        return true;
     }
 }
