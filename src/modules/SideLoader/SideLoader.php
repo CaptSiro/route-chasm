@@ -15,6 +15,7 @@ use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\module\DefaultModule;
 use core\module\Loader;
+use core\patterns\Ident;
 use core\Router;
 use core\Singleton;
 use core\Source;
@@ -25,7 +26,6 @@ use core\view\BufferTransform;
 use core\view\Render;
 use modules\SideLoader\Api\Api;
 use modules\SideLoader\FileImporter\FileImporter;
-use patterns\Ident;
 
 class SideLoader extends DefaultModule implements Render {
     use Source;
