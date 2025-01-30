@@ -6,10 +6,10 @@ use core\path\parser\Tokenizer;
 use core\path\parser\TokenType;
 use core\path\PartType;
 use core\path\Path;
+use core\patterns\Charset;
+use core\patterns\Ident;
+use core\patterns\Number;
 use core\utils\Strings;
-use patterns\Charset;
-use patterns\Ident;
-use patterns\Number;
 use sptf\Sptf;
 
 

@@ -1,14 +1,14 @@
 <?php
 
+use core\patterns\AnyString;
+use core\patterns\Base64;
+use core\patterns\Charset;
+use core\patterns\Exact;
+use core\patterns\Ident;
+use core\patterns\Number;
+use core\patterns\Pattern;
+use core\patterns\Stream;
 use core\utils\Strings;
-use patterns\AnyString;
-use patterns\Base64;
-use patterns\Charset;
-use patterns\Exact;
-use patterns\Ident;
-use patterns\Number;
-use patterns\Pattern;
-use patterns\Stream;
 use sptf\Sptf;
 
 

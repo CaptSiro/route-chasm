@@ -4,8 +4,8 @@ namespace core\path;
 
 use core\DoesNotExistException;
 use core\path\parser\Parser;
+use core\patterns\Pattern;
 use core\Pipeline;
-use patterns\Pattern;
 
 class Path implements Pipeline {
     public static function from(Path|string $literal): self {

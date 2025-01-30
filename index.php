@@ -3,6 +3,7 @@
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
+use components\Tabs\Tabs;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -13,10 +14,11 @@ use core\http\HttpMethod;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
-use modules\forms\controls\Text;
+use modules\forms\controls\TextField;
 use modules\forms\controls\TextArea\TextArea;
 use modules\forms\Form;
 use modules\forms\FormAction;
+use modules\forms\layout\Column\Column;
 use modules\forms\layout\Row\Row;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
@@ -63,25 +65,29 @@ $router->use(
     )->query("_test")
 );
 
+$userRow = (new Row(.50))
+    ->add(new TextField('Name', 'Name', 'Tonda'))
+    ->add(new TextField('Surname', 'Surname', 'Maly'));
 
-
-$userRow = (new Row(2))
-    ->add(new Text('Name', 'Name', 'Tonda'))
-    ->add(new Text('Surname', 'Surname', 'Maly'));
-$text = "My text 
-with line";
-$form = (new Form(HttpMethod::DELETE))
+$c0 = (new Column())
     ->add($userRow)
-    ->add(new TextArea("Area", "Description", $text))
+    ->add(Form::hr())
     ->add((new File("Image", 'Image', ['champs.txt', 'docs.pdf']))
-        ->addAttribute('multiple'))
+        ->addAttribute('multiple'));
+$c1 = (new Column())
+    ->add(new TextArea("Area", "Description"))
     ->add(new Checkbox('Read', 'I have read TOS'))
     ->add(Form::note("Submitting form you are giving us consent to get all your money"))
-    ->add(Form::hr())
     ->add(new MultiSubmit([
         new FormAction(FormAction::TYPE_RESET, 'Reset'),
         new FormAction(FormAction::TYPE_SUBMIT, 'Delete', 'delete'),
         FormAction::submit(),
+    ]));
+
+$form = (new Form(HttpMethod::DELETE))
+    ->add(new Tabs([
+        "User" => $c0,
+        "Description" => $c1
     ]));
 $router->use("/form",
     Http::get(new WebPage(content: $form)),
@@ -94,8 +100,6 @@ $router->use("/form",
 
 $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
-
-$router->use("");
 
 
 

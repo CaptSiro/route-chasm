@@ -7,8 +7,8 @@ use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 use core\path\Path;
-use patterns\AnyString;
-use patterns\Pattern;
+use core\patterns\AnyString;
+use core\patterns\Pattern;
 
 class HttpGate implements Endpoint {
     use SimpleEndpoint;

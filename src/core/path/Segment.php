@@ -3,8 +3,8 @@
 namespace core\path;
 
 use core\Flags;
-use patterns\Pattern;
-use patterns\Stream;
+use core\patterns\Pattern;
+use core\patterns\Stream;
 use RuntimeException;
 
 class Segment {

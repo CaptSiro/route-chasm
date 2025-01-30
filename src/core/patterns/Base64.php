@@ -1,11 +1,11 @@
 <?php
 
-namespace patterns;
+namespace core\patterns;
 
 use core\Pipeline;
 use core\Singleton;
 
-class Number implements Pattern {
+class Base64 implements Pattern {
     use Singleton;
 
 
@@ -14,7 +14,11 @@ class Number implements Pattern {
 
     public function __construct() {
         $this->charset = (new Charset())
-            ->addRange('0', '9');
+            ->addRange('0', '9')
+            ->addRange('A', 'Z')
+            ->addRange('a', 'z')
+            ->add('_')
+            ->add('-');
     }
 
 
@@ -23,7 +27,7 @@ class Number implements Pattern {
         return $this->charset->match($value);
     }
 
-    public function matchPipeline(Pipeline $pipeline, ?string &$match): bool {
+    function matchPipeline(Pipeline $pipeline, ?string &$match): bool {
         return $this->charset->matchPipeline($pipeline, $match);
     }
 }

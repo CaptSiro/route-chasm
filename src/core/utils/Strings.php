@@ -3,7 +3,7 @@
 namespace core\utils;
 
 use core\Init;
-use patterns\Charset;
+use core\patterns\Charset;
 
 class Strings extends Init {
     protected static string $charsAlpha;

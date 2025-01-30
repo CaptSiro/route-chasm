@@ -4,9 +4,9 @@ namespace core\path;
 
 
 
-use patterns\AnyString;
-use patterns\Exact;
-use patterns\Pattern;
+use core\patterns\AnyString;
+use core\patterns\Exact;
+use core\patterns\Pattern;
 
 class Part {
     static function compare(Part $a, Part $b): bool {

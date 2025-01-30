@@ -1,6 +1,6 @@
 <?php
 
-namespace patterns;
+namespace core\patterns;
 
 use core\Pipeline;
 

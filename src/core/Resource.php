@@ -11,12 +11,12 @@ use core\communication\Response;
 use core\database\Table;
 use core\http\Http;
 use core\path\Path;
+use core\patterns\Number;
+use core\patterns\Pattern;
 use core\url\UrlBuilder;
 use core\view\JsonComponent;
 use core\view\Render;
 use InvalidArgumentException;
-use patterns\Number;
-use patterns\Pattern;
 
 abstract class Resource {
     use Source;

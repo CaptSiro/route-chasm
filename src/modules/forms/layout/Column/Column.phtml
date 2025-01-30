@@ -1,0 +1,6 @@
+<?php /** @var \modules\forms\layout\Column\Column $this */ ?>
+<div class="form-column" <?= $this->getStyle() ?>>
+    <?php foreach ($this->children as $child): ?>
+        <?= $child->render() ?>
+    <?php endforeach; ?>
+</div>

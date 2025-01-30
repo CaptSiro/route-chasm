@@ -1,0 +1,44 @@
+:root {
+    --tabs-accent-0: #ff9567;
+    --tabs-accent-1: #e6865d;
+    --tabs-accent-2: #cc7752;
+}
+
+.tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.tabs .labels {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: auto;
+}
+
+.tabs .labels .label {
+    padding: 8px;
+    text-wrap: nowrap;
+}
+
+.tabs .labels .label:hover {
+    background-color: var(--tabs-accent-0) !important;
+    cursor: pointer;
+}
+
+.tabs .labels .label.selected {
+    background-color: var(--tabs-accent-2);
+}
+
+.tabs .wrapper {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.tabs .wrapper:not(.selected) {
+    display: none;
+}

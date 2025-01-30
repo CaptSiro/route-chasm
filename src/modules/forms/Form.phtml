@@ -15,7 +15,7 @@ use modules\SideLoader\Javascript;
     <?php endif; ?>
     onsubmit="submitForm(this); return false"
 >
-    <?php foreach ($this->controls as $control): ?>
+    <?php foreach ($this->elements as $control): ?>
         <?= $control->render() ?>
     <?php endforeach; ?>
 </form>

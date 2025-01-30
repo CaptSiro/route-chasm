@@ -1,14 +1,13 @@
 <?php
 
-namespace modules\forms\layout\Row;
+namespace modules\forms\layout\Column;
 
+use core\view\Render;
 use core\view\TemplateRenderer;
-use modules\forms\controls\Control;
-use modules\forms\controls\FormControl;
 use modules\forms\layout\DynamicLayout;
 
-class Row implements Control {
-    use TemplateRenderer, FormControl, DynamicLayout;
+class Column implements Render {
+    use TemplateRenderer, DynamicLayout;
 
     public function __construct(float $widthPercentage = 1) {
         $this->widthPercentage = $widthPercentage;

@@ -1,6 +1,6 @@
 <?php
 
-namespace patterns;
+namespace core\patterns;
 
 interface Seek {
     function seek(int $offset): void;

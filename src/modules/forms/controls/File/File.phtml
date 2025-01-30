@@ -10,12 +10,12 @@
         <?= $this->getHtmlAttributes() ?>
     >
 
-    <div class="form-files">
+    <span class="form-files">
         <?php foreach ($this->files as $file): ?>
             <div class="tag">
                 <span><?= $file ?></span>
                 <button>✕</button>
             </div>
         <?php endforeach; ?>
-    </div>
+    </span>
 </label>

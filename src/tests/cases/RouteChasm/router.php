@@ -7,11 +7,11 @@ use core\communication\RequestFormat;
 use core\communication\Response;
 use core\http\Http;
 use core\path\Path;
+use core\patterns\Ident;
+use core\patterns\Number;
 use core\Resource;
 use core\Router;
 use core\utils\Arrays;
-use patterns\Ident;
-use patterns\Number;
 use sptf\Sptf;
 use tests\utils\RouteChasm\TestResource;
 

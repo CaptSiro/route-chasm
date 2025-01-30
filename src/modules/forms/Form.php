@@ -4,6 +4,7 @@ namespace modules\forms;
 
 use components\core\Html\Html;
 use core\view\Component;
+use core\view\Render;
 use modules\forms\controls\Control;
 use retval\Result;
 
@@ -31,8 +32,8 @@ class Form extends Component {
 
 
 
-    /** @var array<Control> */
-    protected array $controls;
+    /** @var array<Render> */
+    protected array $elements;
 
 
 
@@ -46,7 +47,7 @@ class Form extends Component {
         protected readonly ?string $action = null,
         protected ?string $namespace = null,
     ) {
-        $this->controls = [];
+        $this->elements = [];
     }
 
 
@@ -60,9 +61,13 @@ class Form extends Component {
         return $this;
     }
 
-    public function add(Control $control): self {
-        $this->controls[] = $control;
-        $control->bind($this);
+    public function add(Render $control): self {
+        $this->elements[] = $control;
+
+        if ($control instanceof Control) {
+            $control->bind($this);
+        }
+
         return $this;
     }
 
@@ -78,7 +83,11 @@ class Form extends Component {
         $reason = "";
         $valid = [];
 
-        foreach ($this->controls as $control) {
+        foreach ($this->elements as $control) {
+            if (!($control instanceof Control)) {
+                continue;
+            }
+
             $name = $control->getFieldName();
             if (is_null($name)) {
                 continue;
