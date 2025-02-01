@@ -1,5 +1,6 @@
 <?php
 
+use components\Accordion\Accordion;
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
@@ -65,12 +66,15 @@ $router->use(
     )->query("_test")
 );
 
-$userRow = (new Row(.50))
-    ->add(new TextField('Name', 'Name', 'Tonda'))
-    ->add(new TextField('Surname', 'Surname', 'Maly'));
+$user = new Accordion(
+    'User info',
+    (new Row(.50))
+        ->add(new TextField('Name', 'Name', 'Tonda'))
+        ->add(new TextField('Surname', 'Surname', 'Maly'))
+);
 
 $c0 = (new Column())
-    ->add($userRow)
+    ->add($user)
     ->add(Form::hr())
     ->add((new File("Image", 'Image', ['champs.txt', 'docs.pdf']))
         ->addAttribute('multiple'));

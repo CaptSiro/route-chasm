@@ -47,7 +47,11 @@
     align-items: end;
 }
 
-.form-row {
+.form hr {
+    width: 100%;
+}
+
+.form-column {
     display: flex;
     flex-direction: column;
     gap: var(--form-gap);

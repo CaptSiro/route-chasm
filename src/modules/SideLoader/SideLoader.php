@@ -139,7 +139,7 @@ class SideLoader extends DefaultModule implements Render {
             $require = '';
 
             foreach ($this->files as $type => $files) {
-                $hashed = $this->merge($files);
+                $hashed = $this->joinHashed($files);
                 if ($hashed === '') {
                     continue;
                 }
@@ -176,14 +176,22 @@ class SideLoader extends DefaultModule implements Render {
                 $files = $request->getUrl()->getQuery()->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
                     if (!$this->cache->has($files)) {
-                        $response->render(new HttpError("File not found (file hash: '$files')", HttpCode::CE_NOT_FOUND));
+                        $response->render(new HttpError(
+                            "File not found (file hash: '$files')",
+                            HttpCode::CE_NOT_FOUND
+                        ));
                     }
 
                     $response->readFile($this->cache->get($files));
                 }
 
-                $source = $this->getMergedFiles($files);
-                $response->readFile($source);
+                foreach (explode(self::FILE_SEPARATOR, $files) as $hash) {
+                    if ($this->cache->has($hash)) {
+                        $response->readFile($this->cache->get($hash), doFlush: false);
+                    }
+                }
+
+                $response->flush();
             })
                 ->query('type', Ident::getInstance())
                 ->query('files')
@@ -196,7 +204,7 @@ class SideLoader extends DefaultModule implements Render {
         $this->markLoaded();
     }
 
-    public function merge(array $files): string {
+    public function joinHashed(array $files): string {
         $this->accessibleAfterLoad();
 
         $hashed = '';
@@ -213,7 +221,11 @@ class SideLoader extends DefaultModule implements Render {
                 $this->cache->set($hex, $real);
             }
 
-            $hashed .= ($first ? '' : self::FILE_SEPARATOR) . $hex;
+            if (!$first) {
+                $hashed .= self::FILE_SEPARATOR;
+            }
+
+            $hashed .= $hex;
             $first = false;
         }
 
@@ -287,7 +299,7 @@ class SideLoader extends DefaultModule implements Render {
 
         return (new UrlBuilder(path: $path))
             ->setQuery('type', $type)
-            ->setQuery('files', $this->merge($files))
+            ->setQuery('files', $this->joinHashed($files))
             ->build();
     }
 

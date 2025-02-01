@@ -1,0 +1,23 @@
+<?php /** @var Accordion $this */
+
+use components\Accordion\Accordion;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
+
+Css::import($this->getSource('accordion.css'));
+Javascript::import($this->getSource('accordion.js'));
+
+?>
+<div
+    class="accordion"
+    x-init="accordion"
+    data-is-expanded="<?= $this->isExpanded ?>"
+>
+    <div class="title">
+        <?= $this->title ?>
+    </div>
+
+    <div class="content">
+        <?= $this->content ?>
+    </div>
+</div>

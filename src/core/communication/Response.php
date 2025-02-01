@@ -128,14 +128,17 @@ class Response {
      *
      * **This function does not download the file on user's end. It only sends file's contents.**
      */
-    public function readFile(string $file): void {
+    public function readFile(string $file, bool $doFlush = true): void {
         if (!file_exists($file)) {
             $this->render(new HttpError("RequestFile not found: $file", HttpCode::CE_NOT_FOUND));
         }
 
         $this->generateHeaders();
         readfile($file);
-        $this->exit();
+
+        if ($doFlush) {
+            $this->exit();
+        }
     }
 
     /**

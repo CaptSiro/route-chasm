@@ -1,0 +1,35 @@
+:root {
+    --accordion-accent-0: #ff9567;
+    --accordion-accent-1: #e6865d;
+    --accordion-accent-2: #cc7752;
+}
+
+.accordion .title {
+    cursor: pointer;
+    padding: 16px;
+    width: 100%;
+    border: none;
+}
+
+.accordion.expanded .title {
+    background-color: var(--accordion-accent-2);
+}
+
+.accordion .title:hover {
+    background-color: var(--accordion-accent-0) !important;
+}
+
+.accordion .content {
+    padding: 0 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 250ms ease-out;
+}
+
+.accordion .content > :first-child {
+    padding-top: 16px;
+}
+
+.accordion .content > :last-child {
+    padding-bottom: 16px;
+}

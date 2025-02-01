@@ -2,16 +2,16 @@
 
 namespace modules\forms\layout;
 
-use modules\forms\controls\Control;
+use core\view\Render;
 
 trait DynamicLayout {
     /**
-     * @var Control[] $children
+     * @var Render[] $children
      */
     private array $children;
     private float $widthPercentage;
 
-    public function add(Control $control): self {
+    public function add(Render $control): self {
         $this->children[] = $control;
         return $this;
     }
