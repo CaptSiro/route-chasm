@@ -1,18 +1,17 @@
 :root {
-    --accordion-accent-0: #ff9567;
-    --accordion-accent-1: #e6865d;
-    --accordion-accent-2: #cc7752;
+    --accordion-accent-0: var(--accent-0);
+    --accordion-accent-1: var(--accent-1);
+    --accordion-container-1: var(--container-1);
 }
 
 .accordion .title {
     cursor: pointer;
     padding: 16px;
-    width: 100%;
     border: none;
 }
 
 .accordion.expanded .title {
-    background-color: var(--accordion-accent-2);
+    background-color: var(--accordion-accent-1);
 }
 
 .accordion .title:hover {
@@ -20,6 +19,7 @@
 }
 
 .accordion .content {
+    background-color: var(--accordion-container-1);
     padding: 0 16px;
     max-height: 0;
     overflow: hidden;

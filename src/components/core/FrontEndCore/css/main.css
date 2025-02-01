@@ -1,3 +1,23 @@
+:root {
+    --container-0: #ffffff;
+    --container-1: #e9eaee;
+    --container-2: #dddfe1;
+    --container-3: #ced1d3;
+    --container-4: #b8bcbe;
+    --text-0: black;
+    --text-1: #171717;
+    --text-2: #2e2e2e;
+    --accent-0: #ff9567;
+    --accent-1: #e6865d;
+    --accent-2: #cc7752;
+    --accent-3: #b36848;
+
+    --border-radius: 8px;
+    --border-radius-smaller: 4px;
+    --gap: 16px;
+    --gap-smaller: 8px;
+}
+
 .hide {
     display: none;
 }

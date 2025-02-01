@@ -23,7 +23,7 @@ use modules\SideLoader\Javascript;
 
     <?php $i = 0; foreach ($this->tabs as $label => $render): ?>
         <div
-            class="wrapper <?= $this->isSelected($label, $i) ? 'selected' : '' ?>"
+            class="tabs__wrapper <?= $this->isSelected($label, $i) ? 'selected' : '' ?>"
             data-label="<?= $label // todo escape ?>"
         >
             <?= $render->render() ?>

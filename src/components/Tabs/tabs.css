@@ -1,7 +1,7 @@
 :root {
-    --tabs-accent-0: #ff9567;
-    --tabs-accent-1: #e6865d;
-    --tabs-accent-2: #cc7752;
+    --tabs-accent-0: var(--accent-0);
+    --tabs-accent-1: var(--accent-1);
+    --tabs-container-1: var(--container-1);
 }
 
 .tabs {
@@ -30,15 +30,17 @@
 }
 
 .tabs .labels .label.selected {
-    background-color: var(--tabs-accent-2);
+    background-color: var(--tabs-accent-1);
 }
 
-.tabs .wrapper {
+.tabs .tabs__wrapper {
+    background-color: var(--tabs-container-1);
+    padding: 8px;
     display: block;
     width: 100%;
     height: 100%;
 }
 
-.tabs .wrapper:not(.selected) {
+.tabs .tabs__wrapper:not(.selected) {
     display: none;
 }

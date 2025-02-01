@@ -1,6 +1,6 @@
 function tabs(element) {
     const labels = $$(".label", element);
-    const wrappers = $$(".wrapper", element);
+    const wrappers = $$(".tabs__wrapper", element);
     const elements = Array.from(labels).concat(Array.from(wrappers));
 
     for (const label of labels) {

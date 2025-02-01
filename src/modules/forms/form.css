@@ -1,21 +1,18 @@
 :root {
-    --form-container-0: #ffffff;
-    --form-container-1: #e9eaee;
-    --form-container-2: #dddfe1;
-    --form-container-3: #ced1d3;
-    --form-container-4: #b8bcbe;
-    --form-text-0: black;
-    --form-text-1: #171717;
-    --form-text-2: #2e2e2e;
-    --form-accent-0: #ff9567;
-    --form-accent-1: #e6865d;
-    --form-accent-2: #cc7752;
-    --form-accent-3: #b36848;
+    --form-container-0: var(--container-0);
+    --form-container-2: var(--container-2);
+    --form-container-3: var(--container-3);
+    --form-container-4: var(--container-4);
+    --form-text-0: var(--text-0);
+    --form-text-2: var(--text-2);
+    --form-accent-0: var(--accent-0);
+    --form-accent-1: var(--accent-1);
+    --form-accent-3: var(--accent-3);
 
-    --form-border-radius: 8px;
-    --form-border-radius-smaller: 4px;
-    --form-gap: 16px;
-    --form-gap-smaller: 8px;
+    --form-border-radius: var(--border-radius);
+    --form-border-radius-smaller: var(--gap-smaller);
+    --form-gap: var(--gap);
+    --form-gap-smaller: var(--gap-smaller);
 }
 
 .form {
