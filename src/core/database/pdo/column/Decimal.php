@@ -1,16 +1,16 @@
 <?php
 
-namespace core\database\column;
+namespace core\database\pdo\column;
 
 use core\Singleton;
 
-class Text implements Column {
+class Decimal implements Column {
     use Singleton;
 
 
 
     public function transform(mixed $value): mixed {
-        return (string) $value;
+        return floatval($value);
     }
 
     public function isVirtual(): bool {

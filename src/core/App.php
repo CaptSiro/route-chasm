@@ -4,7 +4,6 @@ namespace core;
 
 use Closure;
 use components\core\HttpError\HttpError;
-use core\collection\StrictDictionary;
 use core\communication\FormatMatcher;
 use core\communication\parser\FormBodyParser;
 use core\communication\parser\JsonBodyParser;
@@ -18,6 +17,9 @@ use core\communication\ResponseFormat;
 use core\config\Config;
 use core\collection\Map;
 use core\collection\StrictMap;
+use core\database\Database;
+use core\database\pdo\config\PdoConfig;
+use core\database\pdo\PdoDatabase;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
@@ -223,6 +225,10 @@ class App implements Loader {
      */
     public function setConfig(Config $config): void {
         $this->config = $config;
+    }
+
+    public function getDefaultDatabase(?PdoConfig $config = null): Database {
+        return PdoDatabase::getInstance($config);
     }
 
     public function require(Module $module): self {

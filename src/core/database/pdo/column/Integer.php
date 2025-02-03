@@ -1,16 +1,22 @@
 <?php
 
-namespace core\database\column;
+namespace core\database\pdo\column;
 
 use core\Singleton;
 
-class Decimal implements Column {
+class Integer implements Column {
     use Singleton;
 
 
 
+    public function __construct(
+        protected bool $isAutoIncrement
+    ) {}
+
+
+
     public function transform(mixed $value): mixed {
-        return floatval($value);
+        return intval($value);
     }
 
     public function isVirtual(): bool {
@@ -18,6 +24,6 @@ class Decimal implements Column {
     }
 
     public function isAutoCreated(): bool {
-        return false;
+        return $this->isAutoIncrement;
     }
 }

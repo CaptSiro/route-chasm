@@ -4,6 +4,7 @@ namespace core\database\query;
 
 use core\database\buffer\Buffer;
 use core\database\buffer\EmptyBuffer;
+use core\database\buffer\ParamBuffer;
 
 class Query {
     public static function build(): QueryBuilder {
@@ -22,6 +23,22 @@ class Query {
         }
 
         return $base . $additional;
+    }
+
+    public static function unwrapLiteral(string|self $query): string {
+        if ($query instanceof Query) {
+            return $query->getLiteral();
+        }
+
+        return $query;
+    }
+
+    public static function unwrapBuffer(string|self $query): Buffer {
+        if ($query instanceof Query) {
+            return $query->getParams();
+        }
+
+        return ParamBuffer::getInstance();
     }
 
 

@@ -2,13 +2,14 @@
 
 namespace core\database;
 
-use core\database\buffer\StaticBuffer;
-use core\database\column\Column;
-use core\database\column\ForeignKey;
-use core\database\column\PrimaryKey;
-use core\database\parameter\Primitive;
-use core\database\query\Query;
+use core\App;
 use core\collection\Dictionary;
+use core\database\buffer\StaticBuffer;
+use core\database\pdo\column\Column;
+use core\database\pdo\column\ForeignKey;
+use core\database\pdo\column\PrimaryKey;
+use core\database\pdo\parameter\PdoPrimitiveParam;
+use core\database\query\Query;
 use core\Init;
 use JsonSerializable;
 
@@ -22,9 +23,20 @@ abstract class Table extends Init implements JsonSerializable {
 
 
 
+    protected static Database $database;
     protected static ?string $idColumn = null;
 
-    public static function init(): void {}
+    /**
+     * Function that is called when class is loaded. Initialize table name, table columns, and database connection
+     *
+     * <code>Table::init()</code> function gets default database connection from <code>App</code>
+     *
+     * @return void
+     */
+    public static function init(): void {
+        self::$database = App::getInstance()
+            ->getDefaultDatabase();
+    }
 
     public static function getIdColumn(): string {
         if (is_null(static::$idColumn)) {
@@ -76,13 +88,13 @@ abstract class Table extends Init implements JsonSerializable {
 
     public static function fetch(string|Query|null $additional = null): self {
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable(). "`";
-        return Database::getInstance()
+        return self::$database
             ->fetch(Query::from($sql, $additional), static::class);
     }
 
     public static function fetchAll(string|Query|null $additional = null) {
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable(). "`";
-        return Database::getInstance()
+        return self::$database
             ->fetchAll(Query::from($sql, $additional), static::class);
     }
 
@@ -93,8 +105,8 @@ abstract class Table extends Init implements JsonSerializable {
             return new static();
         }
 
-        $_id = new Primitive($id);
-        return Database::getInstance()
+        $_id = new PdoPrimitiveParam($id);
+        return self::$database
             ->fetch(
                 "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable()
                 ."` WHERE `". static::getIdColumn() ."` = $_id",
@@ -198,7 +210,7 @@ abstract class Table extends Init implements JsonSerializable {
 
         $sql .= ' WHERE `'. static::getIdColumn() .'` = '. $this->getId();
 
-        Database::getInstance()
+        self::$database
             ->run(new Query($sql, StaticBuffer::from($params)));
     }
 
@@ -225,13 +237,13 @@ abstract class Table extends Init implements JsonSerializable {
         }
 
         $sql = 'INSERT INTO `'. static::getTable() ."` (". implode(', ', $columns) .") VALUES (". $values .")";
-        Database::getInstance()
+        self::$database
             ->run(new Query($sql, StaticBuffer::from($params)));
     }
 
     public function delete(): void {
-        $_id = new Primitive($this->getId());
-        Database::getInstance()
+        $_id = new PdoPrimitiveParam($this->getId());
+        self::$database
             ->run("DELETE FROM `". static::getTable() ."` WHERE `". static::getIdColumn() ."` = $_id");
     }
 

@@ -2,8 +2,8 @@
 
 namespace tables;
 
-use core\database\column\PrimaryKey;
-use core\database\column\Text;
+use core\database\pdo\column\PrimaryKey;
+use core\database\pdo\column\Text;
 use core\database\Table;
 
 /**

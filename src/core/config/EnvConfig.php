@@ -4,6 +4,7 @@ namespace core\config;
 
 use components\core\HttpError\HttpError;
 use core\App;
+use core\database\pdo\config\BasicPdoConfig;
 use core\http\HttpCode;
 use dotenv\Env;
 
@@ -31,27 +32,14 @@ class EnvConfig implements Config {
 
 
 
-    public function getDatabaseHost(): string {
-        return $this->getOrDie("DATABASE_HOST");
-    }
-
-    public function getDatabasePort(): string {
-        return $this->env->get("DATABASE_PORT") ?? "3306";
-    }
-
-    public function getDatabaseName(): string {
-        return $this->getOrDie("DATABASE_NAME");
-    }
-
-    public function getDatabaseCharset(): string {
-        return $this->env->get("DATABASE_CHARSET") ?? "UTF8";
-    }
-
-    public function getDatabaseUser(): string {
-        return $this->getOrDie("DATABASE_USER");
-    }
-
-    public function getDatabasePassword(): string {
-        return $this->getOrDie("DATABASE_PASSWORD");
+    public function getPdoConfig(): BasicPdoConfig {
+        return new BasicPdoConfig(
+            $this->getOrDie("DATABASE_HOST"),
+            $this->getOrDie("DATABASE_NAME"),
+            $this->getOrDie("DATABASE_USER"),
+            $this->getOrDie("DATABASE_PASSWORD"),
+            $this->env->get("DATABASE_PORT") ?? "3306",
+            $this->env->get("DATABASE_CHARSET") ?? "UTF8",
+        );
     }
 }

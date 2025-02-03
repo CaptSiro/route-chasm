@@ -2,7 +2,7 @@
 
 namespace core\database\buffer;
 
-use core\database\parameter\Param;
+use core\database\Param;
 
 trait BufferDefault {
     /**

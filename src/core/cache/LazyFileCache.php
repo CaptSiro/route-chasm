@@ -83,11 +83,18 @@ class LazyFileCache implements Cache {
             throw new FileAccessException($this->file);
         }
 
-        foreach ($this->internal as $variable => $value) {
-            fputs($fp, $variable .'='. $value . PHP_EOL);
-        }
-
+        fwrite($fp, $this->asString());
         fclose($fp);
         return $this;
+    }
+
+    public function asString(): string {
+        $buffer = '';
+
+        foreach ($this->internal as $variable => $value) {
+            $buffer .= $variable .'='. $value . PHP_EOL;
+        }
+
+        return $buffer;
     }
 }

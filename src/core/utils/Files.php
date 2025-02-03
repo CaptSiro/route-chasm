@@ -37,7 +37,7 @@ class Files {
             return false;
         }
 
-        return (Strings::hashAscii($real) << 16) ^ filemtime($file);
+        return Strings::hashAscii($real);
     }
 
     /**

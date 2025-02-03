@@ -2,15 +2,14 @@
 
 namespace core\database\buffer;
 
-use BadFunctionCallException;
-use core\database\parameter\Param;
-use core\database\parameter\Primitive;
+use core\database\Param;
+use core\database\pdo\parameter\PdoPrimitiveParam;
 
 readonly class StaticBuffer implements Buffer {
-    public const PARAM_IDENT = Primitive::IDENT;
+    public const PARAM_IDENT = PdoPrimitiveParam::IDENT;
 
     public static function from(array $values): self {
-        return new self(array_map(fn($x) => new Primitive($x), $values));
+        return new self(array_map(fn($x) => new PdoPrimitiveParam($x), $values));
     }
 
 

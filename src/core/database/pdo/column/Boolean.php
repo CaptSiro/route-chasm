@@ -1,6 +1,6 @@
 <?php
 
-namespace core\database\column;
+namespace core\database\pdo\column;
 
 use core\Singleton;
 

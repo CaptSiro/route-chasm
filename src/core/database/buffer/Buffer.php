@@ -2,7 +2,7 @@
 
 namespace core\database\buffer;
 
-use core\database\parameter\Param;
+use core\database\Param;
 
 interface Buffer {
     function add(Param $value): self;

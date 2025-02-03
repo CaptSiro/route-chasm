@@ -2,8 +2,8 @@
 
 namespace core\config;
 
-use core\database\config\DatabaseConfig;
+use core\database\pdo\config\PdoConfig;
 
-interface Config extends DatabaseConfig {
-
+interface Config {
+    public function getPdoConfig(): PdoConfig;
 }

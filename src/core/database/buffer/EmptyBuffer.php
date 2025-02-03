@@ -3,7 +3,7 @@
 namespace core\database\buffer;
 
 use BadFunctionCallException;
-use core\database\parameter\Param;
+use core\database\Param;
 
 class EmptyBuffer implements Buffer {
     function add(Param $value): Buffer {

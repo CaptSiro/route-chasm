@@ -12,4 +12,6 @@ interface Cache {
     public function delete(string $variable): self;
 
     public function save(): self;
+
+    public function asString(): string;
 }

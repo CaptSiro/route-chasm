@@ -2,7 +2,7 @@
 
 namespace components\resources\Cards;
 
-use core\database\parameter\Primitive;
+use core\database\pdo\parameter\PdoPrimitiveParam;
 use core\Resource;
 use core\Singleton;
 use core\url\UrlBuilder;
@@ -25,7 +25,7 @@ class Cards extends Resource {
     }
 
     public function index(?array $models = null): Render {
-        $id = new Primitive(18);
+        $id = new PdoPrimitiveParam(18);
         return parent::index(Card::fetchAll());
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\database\column;
+namespace core\database\pdo\column;
 
 class PrimaryKey implements Column {
     public function __construct(

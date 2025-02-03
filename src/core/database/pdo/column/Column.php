@@ -1,6 +1,6 @@
 <?php
 
-namespace core\database\column;
+namespace core\database\pdo\column;
 
 interface Column {
     public function transform(mixed $value): mixed;

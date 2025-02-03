@@ -176,6 +176,7 @@ class SideLoader extends DefaultModule implements Render {
                 $files = $request->getUrl()->getQuery()->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
                     if (!$this->cache->has($files)) {
+                        $response->setHeader('X-Debug', $this->cache->asString());
                         $response->render(new HttpError(
                             "File not found (file hash: '$files')",
                             HttpCode::CE_NOT_FOUND

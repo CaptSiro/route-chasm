@@ -68,7 +68,7 @@ class Strings extends Init {
             $hash = (int) (31 * $hash + ord($string[$i]));
         }
 
-        return $hash;
+        return $hash >> 16;
     }
 
     public static function encodeBase64Safe(string $data): string {

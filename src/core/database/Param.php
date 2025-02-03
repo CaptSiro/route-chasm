@@ -1,6 +1,6 @@
 <?php
 
-namespace core\database\parameter;
+namespace core\database;
 
 interface Param {
     /**
