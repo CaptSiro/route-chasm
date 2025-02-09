@@ -74,7 +74,7 @@ input[type="checkbox"] {
     position: relative;
 
     appearance: none;
-    background-color: var(--form-container-2);
+    background-color: var(--form-container-0);
     margin: 0 !important;
 
     font: inherit;
@@ -121,7 +121,7 @@ input {
     border: unset;
     padding: 8px;
     margin-top: 4px;
-    background-color: var(--form-container-2);
+    background-color: var(--form-container-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
 
@@ -141,7 +141,7 @@ input {
     border: unset;
     padding: 8px;
     margin-top: 4px;
-    background-color: var(--form-container-2);
+    background-color: var(--form-container-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
 }
@@ -193,7 +193,7 @@ input.invalid {
 
 .form textarea {
     border-radius: var(--form-border-radius);
-    background-color: var(--form-container-2);
+    background-color: var(--form-container-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
     resize: none;
@@ -215,7 +215,7 @@ input.invalid {
     font-size: 1em;
     border-radius: var(--form-border-radius);
     color: var(--form-text-0);
-    background-color: var(--form-container-2);
+    background-color: var(--form-container-0);
     border: 2px solid var(--form-container-3);
 }
 
