@@ -8,14 +8,14 @@ use core\database\pdo\config\PdoConfig;
 use core\database\query\Query;
 use core\database\SideEffect;
 use core\database\Table;
-use core\Singleton;
+use core\MultiSingleton;
 use http\Exception\InvalidArgumentException;
 use PDO;
 use PDOStatement;
 use stdClass;
 
 class PdoDatabase implements Database {
-    use Singleton;
+    use MultiSingleton;
 
     public const TYPE_TABLE = [
         "boolean" => PDO::PARAM_BOOL,

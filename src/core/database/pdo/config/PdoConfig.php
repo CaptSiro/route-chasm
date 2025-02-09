@@ -2,7 +2,9 @@
 
 namespace core\database\pdo\config;
 
-interface PdoConfig {
+use JsonSerializable;
+
+interface PdoConfig extends JsonSerializable {
     public function getConnectionString(): string;
 
     /**

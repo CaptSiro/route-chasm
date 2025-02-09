@@ -26,4 +26,8 @@ readonly class BasicPdoConfig implements PdoConfig {
     public function getDatabasePassword(): string {
         return $this->password;
     }
+
+    public function jsonSerialize(): string {
+        return $this->user .' '. $this->getConnectionString();
+    }
 }
