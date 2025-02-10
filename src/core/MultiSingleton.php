@@ -20,6 +20,6 @@ trait MultiSingleton {
             self::$instances[$key] = new self(...$args);
         }
 
-        return self::$instance[$key];
+        return self::$instances[$key];
     }
 }

@@ -116,6 +116,8 @@ class Response {
      * Parses object into JSON text representation and sends it to the user.
      */
     public function json($data, $flags = 0, $depth = 512): void {
+        $this->setHeader(HttpHeader::CONTENT_TYPE, 'application/json');
+
         $this->generateHeaders();
         echo json_encode($data, $flags, $depth);
         $this->exit();
@@ -130,7 +132,10 @@ class Response {
      */
     public function readFile(string $file, bool $doFlush = true): void {
         if (!file_exists($file)) {
-            $this->render(new HttpError("RequestFile not found: $file", HttpCode::CE_NOT_FOUND));
+            $this->error(
+                "RequestFile not found: $file",
+                HttpCode::CE_NOT_FOUND
+            );
         }
 
         $this->generateHeaders();
@@ -192,6 +197,18 @@ class Response {
         }
 
         $this->exit();
+    }
+
+    public function error(string $message, int $httpCode, ?string $template = null): void {
+        $this->render(
+            new HttpError(
+                $message,
+                $httpCode,
+                1
+            ),
+            $template,
+            forceRender: true
+        );
     }
 
     /**

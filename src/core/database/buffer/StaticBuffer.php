@@ -5,7 +5,7 @@ namespace core\database\buffer;
 use core\database\Param;
 use core\database\pdo\parameter\PdoPrimitiveParam;
 
-readonly class StaticBuffer implements Buffer {
+class StaticBuffer implements Buffer {
     public const PARAM_IDENT = PdoPrimitiveParam::IDENT;
 
     public static function from(array $values): self {

@@ -51,19 +51,23 @@ class Directory implements Endpoint {
                 $directory->serveFile($path .'/'. $file, $app->getRequest(), $app->getResponse());
             }
 
-            App::getInstance()->getResponse()->render(new HttpError(
-                "Resource is not accessible",
-                HttpCode::CE_FORBIDDEN
-            ));
+            App::getInstance()
+                ->getResponse()
+                ->error(
+                    "Resource is not accessible",
+                    HttpCode::CE_FORBIDDEN
+                );
         };
     }
 
     public static function notAccessible(int $code = HttpCode::CE_FORBIDDEN): Closure {
         return function (self $directory, string $path) use ($code) {
-            App::getInstance()->getResponse()->render(new HttpError(
-                "Resource is not accessible",
-                $code
-            ));
+            App::getInstance()
+                ->getResponse()
+                ->error(
+                    "Resource is not accessible",
+                    $code
+                );
         };
     }
 
@@ -111,15 +115,18 @@ class Directory implements Endpoint {
                 $path = realpath($this->directory .'/'. $remaining);
 
                 if ($path === false) {
-                    $response->render(new HttpError("File not found", HttpCode::CE_NOT_FOUND));
+                    $response->error(
+                        "File not found",
+                        HttpCode::CE_NOT_FOUND
+                    );
                     break;
                 }
 
                 if (!str_contains($path, $this->directory)) {
-                    $response->render(new HttpError(
+                    $response->render(
                         "Request references outside of given scope",
                         HttpCode::CE_BAD_REQUEST
-                    ));
+                    );
                     break;
                 }
 
@@ -128,10 +135,10 @@ class Directory implements Endpoint {
                         ($this->onDirectory)($this, $path);
                     }
 
-                    $response->render(new HttpError(
+                    $response->error(
                         "Resource is not accessible",
                         HttpCode::CE_FORBIDDEN
-                    ));
+                    );
                     break;
                 }
 
@@ -139,10 +146,10 @@ class Directory implements Endpoint {
             }
 
             default: {
-                $response->render(new HttpError(
+                $response->error(
                     "HTTP method $request->httpMethod is not allowed",
                     HttpCode::CE_METHOD_NOT_ALLOWED
-                ));
+                );
                 break;
             }
         }

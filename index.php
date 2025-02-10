@@ -8,6 +8,7 @@ use components\Tabs\Tabs;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\config\AppConfig;
 use core\config\EnvConfig;
 use core\http\Http;
 use core\http\HttpCode;
@@ -23,14 +24,15 @@ use modules\forms\layout\Column\Column;
 use modules\forms\layout\Row\Row;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
+use tables\core\ModuleDefinition;
 
 require_once __DIR__ ."/src/autoload.php";
 
 
+AppConfig::getInstance()
+    ->set(new EnvConfig(App::getEnvStatic()));
 
 $app = App::getInstance();
-$config = new EnvConfig($app->getEnv());
-$app->setConfig($config);
 $app->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 $app->getOptions()->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 
@@ -104,6 +106,10 @@ $router->use("/form",
 
 $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
+
+
+
+$router->use('/modules', fn(Request $request, Response $response) => $response->json(ModuleDefinition::fetchAll()));
 
 
 

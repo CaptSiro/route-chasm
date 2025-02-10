@@ -11,6 +11,10 @@ class Query {
         return new QueryBuilder();
     }
 
+    public static function raw(string $sql, array $parameters = []) {
+        // todo
+    }
+
     public static function from(string $base, string|Query|null $additional): self|string {
         if (is_null($additional)) {
             return new Query($base, new EmptyBuffer());

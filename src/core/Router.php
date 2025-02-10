@@ -118,10 +118,10 @@ class Router {
     public function execute(Request $request, Response $response): void {
         $trail = $this->findPath($request->getUrl()->getPath());
         if (is_null($trail)) {
-            $response->render(new HttpError(
+            $response->error(
                 "Resource not found",
                 HttpCode::CE_NOT_FOUND
-            ));
+            );
             return;
         }
 
@@ -139,10 +139,10 @@ class Router {
 
         $request->getParam()->pop();
 
-        $response->render(new HttpError(
+        $response->error(
             "Called all responsible endpoints but none of them responded",
             HttpCode::SE_NOT_IMPLEMENTED
-        ));
+        );
     }
 
     public function map(): string {

@@ -177,7 +177,7 @@ class Request {
                 'headers' => $this->headers,
                 'url' => $this->url->full(),
                 'body' => '*not-parsed*',
-                'files' => $this->files,
+                'files' => '*not-parsed*',
                 'cookies' => $this->cookies,
                 'domain' => $this->domain
             ];

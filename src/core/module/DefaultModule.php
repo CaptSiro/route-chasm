@@ -2,7 +2,7 @@
 
 namespace core\module;
 
-class DefaultModule implements Module {
+abstract class DefaultModule implements Module {
     use AccessibleAfterLoad;
 
     public function load(Loader $loader): void {

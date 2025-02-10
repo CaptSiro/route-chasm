@@ -3,13 +3,28 @@
 namespace modules\jsml;
 
 use core\module\DefaultModule;
+use core\module\ModuleInfo;
 use core\Singleton;
+use core\utils\Arrays;
 use core\view\Render;
 use core\view\TemplateRenderer;
 
 class Jsml extends DefaultModule implements Render {
     use TemplateRenderer;
     use Singleton;
+
+
+
+    public const VERSIONS = ['v1'];
+
+    public function getInfo(): ModuleInfo {
+        return new ModuleInfo(
+            'route-chasm-core:jsml',
+            Arrays::last(self::VERSIONS)
+        );
+    }
+
+    public function migrate(string $fromVersion): void {}
 
 
 

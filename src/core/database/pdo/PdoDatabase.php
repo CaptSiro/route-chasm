@@ -25,7 +25,7 @@ class PdoDatabase implements Database {
         "NULL" => PDO::PARAM_NULL,
     ];
 
-    protected static ?PdoConfig $config;
+    protected static ?PdoConfig $config = null;
 
     public static function configure(PdoConfig $config): void {
         self::$config = $config;
@@ -139,33 +139,35 @@ class PdoDatabase implements Database {
      * Fetch a single row.
      *
      * @param string|Query $query
-     * @param string $class
-     * @return Table
+     * @param string|null $class
+     * @return Table|null
      * @throws MixedIndexingException
      */
-    public function fetch(string|Query $query, string $class): ?Table {
+    public function fetch(string|Query $query, ?string $class = null): ?Table {
         $stmt = $this->connection->prepare(Query::unwrapLiteral($query));
 
         self::bind($stmt, $query);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        if (!method_exists($class, "fromRow")) {
-            throw new InvalidArgumentException("Provided class '$class' must have implementation of static function: 'fromRow'");
+        $row = $stmt->fetch();
+
+        if (is_null($class) || !method_exists($class, "fromRow")) {
+            return $row;
         }
 
-        return call_user_func("$class::fromRow", $stmt->fetch());
+        return call_user_func("$class::fromRow", $row);
     }
 
     /**
      * Fetch multiple rows.
      *
      * @param string|Query $query
-     * @param string $class
+     * @param string|null $class
      * @return ?array
      * @throws MixedIndexingException
      */
-    public function fetchAll(string|Query $query, string $class = stdClass::class): ?array {
+    public function fetchAll(string|Query $query, ?string $class = null): ?array {
         $stmt = $this->connection->prepare(Query::unwrapLiteral($query));
 
         self::bind($stmt, $query);
@@ -177,10 +179,17 @@ class PdoDatabase implements Database {
             return null;
         }
 
-        if (!method_exists($class, "fromRow")) {
-            throw new InvalidArgumentException("Provided class '$class' must have implementation of static function: 'fromRow'");
+        if (is_null($class) || !method_exists($class, "fromRow")) {
+            return $rows;
         }
 
-        return array_map(fn($x) => call_user_func("$class::fromRow", $x), $rows);
+        $idColumn = call_user_func("$class::getIdColumn");
+        $ret = [];
+
+        foreach ($rows as $row) {
+            $ret[$row[$idColumn]] = call_user_func("$class::fromRow", $row);
+        }
+
+        return $ret;
     }
 }

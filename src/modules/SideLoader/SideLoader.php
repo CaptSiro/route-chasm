@@ -9,17 +9,23 @@ use core\cache\LazyFileCache;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
+use core\database\Database;
+use core\database\pdo\PdoDatabase;
+use core\fs\Glob;
 use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
+use core\module\DatabaseMigration;
 use core\module\DefaultModule;
 use core\module\Loader;
+use core\module\ModuleInfo;
 use core\patterns\Ident;
 use core\Router;
 use core\Singleton;
 use core\Source;
 use core\url\UrlBuilder;
+use core\utils\Arrays;
 use core\utils\Files;
 use core\utils\Strings;
 use core\view\BufferTransform;
@@ -87,6 +93,31 @@ class SideLoader extends DefaultModule implements Render {
 
         $this->router = new Router();
         $this->hasBeenRendered = false;
+    }
+
+
+
+    public const VERSIONS = ['v1'];
+
+    public function getInfo(): ModuleInfo {
+        return new ModuleInfo(
+            'route-chasm-core:side-loader',
+            Arrays::last(self::VERSIONS)
+        );
+    }
+
+    public function migrate(string $fromVersion): void {
+        $database = new DatabaseMigration(
+            PdoDatabase::getInstance(),
+            self::VERSIONS,
+            new Glob(
+                $this->getSource('sql'),
+                '.sql',
+                true
+            )
+        );
+
+        $database->migrateDatabase($fromVersion, Arrays::last(self::VERSIONS));
     }
 
 
@@ -161,10 +192,10 @@ class SideLoader extends DefaultModule implements Render {
             Http::get(function (Request $request, Response $response) {
                 $type = $request->getUrl()->getQuery()->getStrict('type');
                 if (!isset($this->fileImporters[$type])) {
-                    $response->render(new HttpError(
+                    $response->error(
                         "There is not known file importer for type '$type'",
                         HttpCode::CE_BAD_REQUEST
-                    ));
+                    );
                     return;
                 }
 
@@ -177,10 +208,10 @@ class SideLoader extends DefaultModule implements Render {
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
                     if (!$this->cache->has($files)) {
                         $response->setHeader('X-Debug', $this->cache->asString());
-                        $response->render(new HttpError(
+                        $response->error(
                             "File not found (file hash: '$files')",
                             HttpCode::CE_NOT_FOUND
-                        ));
+                        );
                     }
 
                     $response->readFile($this->cache->get($files));
@@ -278,10 +309,10 @@ class SideLoader extends DefaultModule implements Render {
 
                 App::getInstance()
                     ->getResponse()
-                    ->render(new HttpError(
+                    ->error(
                         "File not found (file hash: '$hash')",
                         HttpCode::CE_NOT_FOUND
-                    ));
+                    );
             }
 
             fwrite($file, file_get_contents($this->cache->get($hash)));

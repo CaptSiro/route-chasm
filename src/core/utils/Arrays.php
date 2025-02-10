@@ -5,6 +5,10 @@ namespace core\utils;
 use Generator;
 
 class Arrays {
+    public static function last(array $array): mixed {
+        return $array[array_key_last($array)];
+    }
+
     public static function append(array &$array, $key, $value): void {
         if (!isset($array[$key])) {
             $array[$key] = $value;

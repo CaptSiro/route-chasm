@@ -14,6 +14,7 @@ use core\communication\Request;
 use core\communication\RequestFormat;
 use core\communication\Response;
 use core\communication\ResponseFormat;
+use core\config\AppConfig;
 use core\config\Config;
 use core\collection\Map;
 use core\collection\StrictMap;
@@ -28,6 +29,7 @@ use core\utils\Strings;
 use dotenv\Env;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
+use tables\core\ModuleDefinition;
 
 class App implements Loader {
     private static ?self $instance = null;
@@ -57,12 +59,17 @@ class App implements Loader {
     public const OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET = "always_return_html_for_http_get";
     public const OPTION_DO_NOT_AUTOLOAD = 'do_not_autoload';
 
-    protected const DEFAULT_MODULES = [
-        SideLoader::class,
-        Jsml::class
-    ];
 
 
+    /**
+     * @return array<Module>
+     */
+    protected static function getDefaultModules(): array {
+        return [
+            SideLoader::getInstance(),
+            Jsml::getInstance()
+        ];
+    }
 
     public static function createOptionDoNotAutoload(string $moduleClass): string {
         return self::OPTION_DO_NOT_AUTOLOAD ."_$moduleClass";
@@ -81,9 +88,9 @@ class App implements Loader {
      */
     private array $bodyParsers;
     protected ?Env $env;
-    protected ?Config $config;
     protected array $listeners;
     protected bool $defaultModulesLoaded;
+    protected array $modules;
     protected ?string $home;
 
 
@@ -102,11 +109,8 @@ class App implements Loader {
         $this->matcher = new FormatMatcher();
         $this->initCommunication();
 
-        $this->env = file_exists(self::ENV)
-            ? Env::fromFile(self::ENV)
-            : null;
+        $this->env = self::getEnvStatic();
 
-        $this->config = null;
         $this->home = null;
 
         $this->bodyParsers = [
@@ -148,10 +152,10 @@ class App implements Loader {
             }
         }
 
-        $this->response->render(new HttpError(
+        $this->response->error(
             "Request body could not be parsed. Format '" .$request->getFormat(). "' is not supported.",
             HttpCode::SE_INTERNAL_SERVER_ERROR
-        ));
+        );
 
         exit;
     }
@@ -209,22 +213,19 @@ class App implements Loader {
         return Strings::prepend('/', $home) . Strings::prepend('/', $path);
     }
 
+    public static function getEnvStatic(): ?Env {
+        return file_exists(self::ENV)
+            ? Env::fromFile(self::ENV)
+            : null;
+    }
+
     public function getEnv(): ?Env {
         return $this->env;
     }
 
-    /**
-     * @return Config|null
-     */
-    public function getConfig(): ?Config {
-        return $this->config;
-    }
-
-    /**
-     * @param Config $config
-     */
-    public function setConfig(Config $config): void {
-        $this->config = $config;
+    public static function getConfig(): ?Config {
+        return AppConfig::getInstance()
+            ->get();
     }
 
     public function getDefaultDatabase(?PdoConfig $config = null): Database {
@@ -232,6 +233,35 @@ class App implements Loader {
     }
 
     public function require(Module $module): self {
+        if (!isset($this->modules)) {
+            $this->modules = ModuleDefinition::fetchAll();
+        }
+
+        $info = $module->getInfo();
+        $migrateFrom = null;
+        $doSaveVersion = false;
+
+        if (!isset($this->modules[$info->identifier])) {
+            $this->modules[$info->identifier] = ModuleDefinition::createFromInfo($info);
+            $migrateFrom = '';
+        } else {
+            $definition = $this->modules[$info->identifier];
+            if ($definition->version !== $info->version) {
+                $migrateFrom = $definition->version;
+                $doSaveVersion = true;
+            }
+        }
+
+        if (!is_null($migrateFrom)) {
+            $module->migrate($migrateFrom);
+
+            if ($doSaveVersion) {
+                $definition = $this->modules[$info->identifier];
+                $definition->version = $info->version;
+                $definition->save();
+            }
+        }
+
         $module->load($this);
         return $this;
     }
@@ -243,12 +273,12 @@ class App implements Loader {
 
         $this->defaultModulesLoaded = true;
 
-        foreach (self::DEFAULT_MODULES as $module) {
-            if ($this->options->exists(self::createOptionDoNotAutoload($module))) {
+        foreach (self::getDefaultModules() as $module) {
+            if ($this->options->exists(self::createOptionDoNotAutoload(get_class($module)))) {
                 continue;
             }
 
-            $this->require(call_user_func("$module::getInstance"));
+            $this->require($module);
         }
     }
 

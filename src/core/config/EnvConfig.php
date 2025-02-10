@@ -21,10 +21,10 @@ class EnvConfig implements Config {
         if ($value === null) {
             App::getInstance()
                 ->getResponse()
-                ->render(new HttpError(
+                ->error(
                     "Environment variable '$property' is not defined and it is required",
                     HttpCode::SE_INTERNAL_SERVER_ERROR
-                ));
+                );
         }
 
         return $value;

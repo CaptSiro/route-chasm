@@ -24,7 +24,10 @@ class FormBodyParser implements RequestBodyParser {
         if ($position === false) {
             App::getInstance()
                 ->getResponse()
-                ->render(new HttpError("Invalid request (boundary not found)", HttpCode::CE_BAD_REQUEST));
+                ->error(
+                    "Invalid request (boundary not found)",
+                    HttpCode::CE_BAD_REQUEST
+                );
         }
 
         $boundary = substr($content, 0, $position);

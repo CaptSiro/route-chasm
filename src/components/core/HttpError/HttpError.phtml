@@ -2,3 +2,11 @@
 <h1>
     <code><?= $this->code ?></code>:&nbsp;<?= htmlspecialchars($this->message) ?>
 </h1>
+
+<div class="trace">
+    <?php foreach ($this->getStackTrace() as $entry): ?>
+        <div>
+            <code><?= $this->getEntryClass($entry) ?><?= $entry['function'] ?>(...) in <?= $entry['file'] ?>:<?= $entry['line'] ?></code>
+        </div>
+    <?php endforeach; ?>
+</div>

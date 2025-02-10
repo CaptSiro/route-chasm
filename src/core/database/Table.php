@@ -14,6 +14,11 @@ use core\Init;
 use JsonSerializable;
 
 abstract class Table extends Init implements JsonSerializable {
+    public const ORIGIN_CODE = 'code';
+    public const ORIGIN_DATABASE = 'database';
+
+
+
     abstract public static function getTable(): string;
 
     /**
@@ -86,13 +91,17 @@ abstract class Table extends Init implements JsonSerializable {
         return new ForeignKey(static::class, $alias);
     }
 
-    public static function fetch(string|Query|null $additional = null): self {
+    public static function fetch(string|Query|null $additional = null): static {
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable(). "`";
         return self::$database
             ->fetch(Query::from($sql, $additional), static::class);
     }
 
-    public static function fetchAll(string|Query|null $additional = null) {
+    /**
+     * @param string|Query|null $additional
+     * @return array<static>|null
+     */
+    public static function fetchAll(string|Query|null $additional = null): ?array {
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable(). "`";
         return self::$database
             ->fetchAll(Query::from($sql, $additional), static::class);
@@ -125,18 +134,25 @@ abstract class Table extends Init implements JsonSerializable {
 
         $self = new static();
         $self->data = $row;
+        $self->setOrigin(self::ORIGIN_DATABASE);
         return $self;
     }
 
 
 
 
-    private array $data = [];
     /**
      * @var array<string> $updated
      */
     private array $updated = [];
-    private int $id;
+    private string $origin = self::ORIGIN_CODE;
+    private mixed $id = null;
+
+
+
+    public function __construct(
+        private array $data = []
+    ) {}
 
 
 
@@ -153,11 +169,20 @@ abstract class Table extends Init implements JsonSerializable {
         return $column->transform($this->data[$name]);
     }
 
-    public function set(array $data): self {
+    public function __set(string $column, mixed $value): void {
+        if (!static::isColumnValid($column)) {
+            return;
+        }
+
+        $this->data[$column] = $value;
+        $this->updated[] = $column;
+    }
+
+    public function set(array $data): static {
         $columns = static::getColumns();
 
         foreach ($data as $column => $value) {
-            if (!static::isColumnValid($column) || $column === static::getIdColumn()) {
+            if (!static::isColumnValid($column)) {
                 continue;
             }
 
@@ -168,11 +193,20 @@ abstract class Table extends Init implements JsonSerializable {
         return $this;
     }
 
-    public function setDictionary(Dictionary $dictionary): self {
+    public function setOrigin(string $origin): static {
+        $this->origin = $origin;
+        return $this;
+    }
+
+    public function isFromDatabase(): bool {
+        return $this->origin === self::ORIGIN_DATABASE;
+    }
+
+    public function setDictionary(Dictionary $dictionary): static {
         $columns = static::getColumns();
 
         foreach ($columns as $column => $definition) {
-            if (!static::isColumnValid($column) || $column === static::getIdColumn() || !$dictionary->exists($column)) {
+            if (!static::isColumnValid($column) || !$dictionary->exists($column)) {
                 continue;
             }
 
@@ -188,7 +222,7 @@ abstract class Table extends Init implements JsonSerializable {
             return;
         }
 
-        if ($this->getId() === 0) {
+        if (!$this->isFromDatabase()) {
             $this->insert();
             return;
         }
@@ -198,6 +232,10 @@ abstract class Table extends Init implements JsonSerializable {
         $first = true;
 
         foreach (array_unique($this->updated) as $column) {
+            if ($column === self::$idColumn) {
+                continue;
+            }
+
             if (!$first) {
                 $sql .= ', ';
             }
@@ -221,7 +259,7 @@ abstract class Table extends Init implements JsonSerializable {
         $first = true;
 
         foreach (static::getColumns() as $name => $definition) {
-            if ($definition->isVirtual() || $name === static::getIdColumn()) {
+            if ($definition->isVirtual()) {
                 continue;
             }
 
@@ -252,7 +290,7 @@ abstract class Table extends Init implements JsonSerializable {
             return $this->id;
         }
 
-        return $this->id = $this->data[static::getIdColumn()] ?? 0;
+        return $this->id = $this->data[static::getIdColumn()] ?? null;
     }
 
     public function jsonSerialize(): mixed {
