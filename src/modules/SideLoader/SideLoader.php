@@ -2,7 +2,6 @@
 
 namespace modules\SideLoader;
 
-use components\core\HttpError\HttpError;
 use core\App;
 use core\cache\Cache;
 use core\cache\LazyFileCache;

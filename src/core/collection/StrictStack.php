@@ -2,7 +2,6 @@
 
 namespace core\collection;
 
-use Closure;
 use core\utils\Arrays;
 
 class StrictStack implements StrictDictionary {

@@ -6,7 +6,8 @@ use Closure;
 use JsonSerializable;
 
 class ResultSet implements JsonSerializable {
-    private $success, $failures;
+    private ?array $failures;
+    private ?array $success;
 
 
 

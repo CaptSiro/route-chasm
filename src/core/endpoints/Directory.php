@@ -4,7 +4,6 @@ namespace core\endpoints;
 
 use Closure;
 use components\core\Explorer\Explorer;
-use components\core\HttpError\HttpError;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -61,7 +60,7 @@ class Directory implements Endpoint {
     }
 
     public static function notAccessible(int $code = HttpCode::CE_FORBIDDEN): Closure {
-        return function (self $directory, string $path) use ($code) {
+        return function () use ($code) {
             App::getInstance()
                 ->getResponse()
                 ->error(
@@ -123,7 +122,7 @@ class Directory implements Endpoint {
                 }
 
                 if (!str_contains($path, $this->directory)) {
-                    $response->render(
+                    $response->error(
                         "Request references outside of given scope",
                         HttpCode::CE_BAD_REQUEST
                     );
@@ -139,6 +138,7 @@ class Directory implements Endpoint {
                         "Resource is not accessible",
                         HttpCode::CE_FORBIDDEN
                     );
+
                     break;
                 }
 

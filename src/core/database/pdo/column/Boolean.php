@@ -9,7 +9,7 @@ class Boolean implements Column {
 
 
 
-    public function transform(mixed $value): mixed {
+    public function transform(mixed $value): bool {
         return boolval($value);
     }
 

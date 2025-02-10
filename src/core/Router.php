@@ -3,7 +3,6 @@
 namespace core;
 
 use Closure;
-use components\core\HttpError\HttpError;
 use core\communication\Request;
 use core\communication\Response;
 use core\endpoints\Endpoint;

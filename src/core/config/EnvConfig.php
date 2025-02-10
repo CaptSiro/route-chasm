@@ -2,7 +2,6 @@
 
 namespace core\config;
 
-use components\core\HttpError\HttpError;
 use core\App;
 use core\database\pdo\config\BasicPdoConfig;
 use core\http\HttpCode;

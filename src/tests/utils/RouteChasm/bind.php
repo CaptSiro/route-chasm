@@ -1,8 +1,6 @@
 <?php
 
 use core\http\Http;
-use core\http\HttpGate;
-use core\path\parser\Parser;
 use core\Router;
 use sptf\Sptf;
 

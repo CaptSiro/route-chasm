@@ -2,9 +2,7 @@
 
 namespace core\communication;
 
-use components\core\HttpError\HttpError;
 use core\App;
-use core\collection\Dictionary;
 use core\collection\StrictDictionary;
 use core\collection\StrictMap;
 use core\collection\StrictStack;
@@ -25,8 +23,6 @@ class Request {
             $app ?? new App(),
             $format,
             $url ?? Url::fromRequest(),
-            new StrictMap(),
-            new StrictMap(),
             new StrictMap(),
             new StrictMap(),
         );

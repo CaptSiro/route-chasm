@@ -5,8 +5,6 @@ namespace modules\forms;
 use components\core\Html\Html;
 use core\view\Component;
 use core\view\Render;
-use modules\forms\controls\Control;
-use retval\Result;
 
 class Form extends Component {
     private static ?Form $form = null;

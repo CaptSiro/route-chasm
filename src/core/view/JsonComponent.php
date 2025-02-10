@@ -25,7 +25,7 @@ class JsonComponent implements Render, Endpoint, JsonSerializable {
         return false;
     }
 
-    public function json(): mixed {
+    public function json(): null {
         return null;
     }
 

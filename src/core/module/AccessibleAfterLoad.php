@@ -2,7 +2,6 @@
 
 namespace core\module;
 
-use components\core\HttpError\HttpError;
 use core\App;
 use core\Flags;
 use core\http\HttpCode;

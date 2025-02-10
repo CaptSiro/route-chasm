@@ -4,7 +4,6 @@ namespace components\core\Explorer;
 
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPageContent;
-use core\App;
 use modules\SideLoader\Css;
 
 class Explorer extends WebPageContent {

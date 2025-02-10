@@ -6,7 +6,6 @@ use core\path\Part;
 use core\path\PartType;
 use core\path\Path;
 use core\path\Segment;
-use Exception;
 
 class Parser {
     static function parse(string $path): Path {

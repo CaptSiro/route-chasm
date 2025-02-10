@@ -293,7 +293,7 @@ abstract class Table extends Init implements JsonSerializable {
         return $this->id = $this->data[static::getIdColumn()] ?? null;
     }
 
-    public function jsonSerialize(): mixed {
+    public function jsonSerialize(): array {
         return $this->data;
     }
 }

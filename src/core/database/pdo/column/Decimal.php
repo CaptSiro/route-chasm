@@ -9,7 +9,7 @@ class Decimal implements Column {
 
 
 
-    public function transform(mixed $value): mixed {
+    public function transform(mixed $value): float {
         return floatval($value);
     }
 

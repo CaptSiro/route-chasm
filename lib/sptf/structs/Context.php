@@ -82,7 +82,11 @@ class Context {
         self::$assertions = [];
         self::$start = microtime(true);
 
-        set_error_handler(function($severity, $message, $file, $line) {
+        set_error_handler(
+        /**
+         * @throws ErrorException
+         */
+        function($severity, $message, $file, $line) {
             if (0 === error_reporting()) {
                 return false;
             }

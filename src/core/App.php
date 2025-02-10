@@ -3,7 +3,6 @@
 namespace core;
 
 use Closure;
-use components\core\HttpError\HttpError;
 use core\communication\FormatMatcher;
 use core\communication\parser\FormBodyParser;
 use core\communication\parser\JsonBodyParser;

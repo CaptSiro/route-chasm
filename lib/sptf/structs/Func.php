@@ -43,7 +43,7 @@ class Func {
 
 
 
-    function reset() {
+    function reset(): void {
         $this->invokeCount = 0;
         $this->hasThrown = false;
     }

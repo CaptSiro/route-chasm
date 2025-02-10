@@ -9,7 +9,6 @@ use core\database\query\Query;
 use core\database\SideEffect;
 use core\database\Table;
 use core\MultiSingleton;
-use http\Exception\InvalidArgumentException;
 use PDO;
 use PDOStatement;
 use stdClass;

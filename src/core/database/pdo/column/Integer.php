@@ -15,7 +15,7 @@ class Integer implements Column {
 
 
 
-    public function transform(mixed $value): mixed {
+    public function transform(mixed $value): int {
         return intval($value);
     }
 

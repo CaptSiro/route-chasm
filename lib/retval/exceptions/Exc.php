@@ -6,8 +6,8 @@ use JsonSerializable;
 use retval\Trace;
 
 class Exc implements JsonSerializable {
-    protected $message;
-    protected $trace;
+    protected string $message;
+    protected array $trace;
 
 
 
@@ -31,7 +31,7 @@ class Exc implements JsonSerializable {
 
 
 
-    public function bubbleUp() {
+    public function bubbleUp(): void {
         $this->trace = [];
 
         foreach (debug_backtrace() as $trace) {

@@ -2,7 +2,6 @@
 
 namespace core\communication\parser;
 
-use components\core\HttpError\HttpError;
 use core\Active;
 use core\App;
 use core\collection\StrictMap;
