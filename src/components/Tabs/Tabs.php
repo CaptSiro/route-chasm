@@ -3,10 +3,10 @@
 namespace components\Tabs;
 
 use core\view\Render;
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 
 class Tabs implements Render {
-    use TemplateRenderer;
+    use Renderer;
 
     protected ?string $selected = null;
 

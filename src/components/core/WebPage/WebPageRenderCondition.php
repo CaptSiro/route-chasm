@@ -14,7 +14,11 @@ trait WebPageRenderCondition {
 
 
     public static function createHtmlPageCondition(): Closure {
-        return fn() => App::getInstance()->getResponse()->getFormat() === Format::IDENT_HTML;
+        return fn() => (
+            App::getInstance()
+                ->getResponse()
+                ->getFormat() === Format::IDENT_HTML
+        );
     }
 
     private function initCondition(Closure $condition): void {
@@ -27,6 +31,6 @@ trait WebPageRenderCondition {
             return;
         }
 
-        $response->render($this, forceRender: true);
+        $response->render($this);
     }
 }

@@ -7,11 +7,10 @@ use core\module\ModuleInfo;
 use core\Singleton;
 use core\utils\Arrays;
 use core\view\Render;
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 
 class Jsml extends DefaultModule implements Render {
-    use TemplateRenderer;
-    use Singleton;
+    use Renderer, Singleton;
 
 
 

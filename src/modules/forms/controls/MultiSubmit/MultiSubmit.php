@@ -2,13 +2,13 @@
 
 namespace modules\forms\controls\MultiSubmit;
 
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 use modules\forms\FormAction;
 
 class MultiSubmit implements Control {
-    use TemplateRenderer, FormControl;
+    use Renderer, FormControl;
 
     /**
      * @param FormAction[] $actions

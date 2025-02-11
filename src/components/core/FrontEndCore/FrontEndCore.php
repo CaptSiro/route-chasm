@@ -3,8 +3,8 @@
 namespace components\core\FrontEndCore;
 
 use core\view\Render;
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 
 class FrontEndCore implements Render {
-    use TemplateRenderer;
+    use Renderer;
 }

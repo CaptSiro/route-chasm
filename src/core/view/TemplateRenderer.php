@@ -14,7 +14,7 @@ trait TemplateRenderer {
 
 
     public function render(?string $template = null): string {
-        $file = $template ?? $this->template ?? $this->getSource(basename(get_class($this)) .".phtml");
+        $file = $this->template ?? $template ?? $this->getSource(basename(get_class($this)) .".phtml");
 
         if (Files::extension($file) === null) {
             $file .= ".phtml";

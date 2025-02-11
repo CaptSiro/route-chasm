@@ -6,6 +6,7 @@ use components\core\HtmlHead\HtmlHead;
 use core\communication\Request;
 use core\communication\Response;
 use core\view\Component;
+use core\view\Render;
 
 class WebPageContent extends Component {
     protected WebPage $page;
@@ -19,11 +20,11 @@ class WebPageContent extends Component {
 
 
 
-    public function renderPage(Response $response): void {
-        $response->render($this->page);
+    public function getRoot(): Render {
+        return $this->page;
     }
 
     public function execute(Request $request, Response $response): void {
-        $this->renderPage($response);
+        $response->renderRoot($this);
     }
 }

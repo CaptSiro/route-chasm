@@ -26,7 +26,7 @@ class Directory implements Endpoint {
             $remaining = urldecode($app->getRequest()->getParam()->get(Request::PARAM_ANY_TERMINATOR, ""));
 
             $app->getResponse()
-                ->render(new Explorer(
+                ->renderRoot(new Explorer(
                     $path,
                     basename($directory->getDirectory()) .'/'. $remaining,
                     $app->getRequest()->getUrl()->getRealPath(),

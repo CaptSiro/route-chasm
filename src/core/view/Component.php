@@ -8,8 +8,7 @@ use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 
 class Component implements Render, Endpoint {
-    use SimpleEndpoint;
-    use TemplateRenderer;
+    use Renderer, SimpleEndpoint;
 
 
 

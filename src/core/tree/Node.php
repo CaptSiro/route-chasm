@@ -168,7 +168,7 @@ class Node {
     }
 
     public function toString(int $depth): string {
-        $endpoints = array_map(fn($x) => $x instanceof Render ? basename(get_class($x)) : "$x", $this->endpoints);
+        $endpoints = array_map(fn($x) => $x->getEndpointLabel(), $this->endpoints);
         $string = str_repeat(' ', $depth) ."/$this->segment ". implode(', ', $endpoints) .'\n';
 
         foreach ($this->children as $child) {

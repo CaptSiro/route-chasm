@@ -8,7 +8,7 @@ use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 
 class ComponentStructure implements Render, Endpoint {
-    use SimpleEndpoint;
+    use Renderer, SimpleEndpoint;
 
 
 
@@ -23,10 +23,10 @@ class ComponentStructure implements Render, Endpoint {
     }
 
     function execute(Request $request, Response $response): void {
-        $response->render($this);
+        $response->renderRoot($this->root);
     }
 
     function render(?string $template = null): string {
-        return $this->root->render();
+        return $this->root->render($template);
     }
 }

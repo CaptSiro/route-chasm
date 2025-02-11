@@ -3,12 +3,12 @@
 namespace components\core\Html;
 
 use core\view\Render;
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
 class Html implements Render, Control {
-    use TemplateRenderer, FormControl;
+    use Renderer, FormControl;
 
     public function __construct(
         protected readonly string $tag,

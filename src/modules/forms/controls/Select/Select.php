@@ -2,12 +2,12 @@
 
 namespace modules\forms\controls\Select;
 
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
 class Select implements Control {
-    use TemplateRenderer, FormControl;
+    use Renderer, FormControl;
 
 
 

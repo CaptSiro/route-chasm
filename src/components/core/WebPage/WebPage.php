@@ -22,7 +22,7 @@ class WebPage extends Component {
 
 
     public function render(?string $template = null): string {
-        return parent::render(__DIR__ . "/WebPage.phtml");
+        return parent::render($this->getSource('WebPage.phtml'));
     }
 
     /**

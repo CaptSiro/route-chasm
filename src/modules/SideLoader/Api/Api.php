@@ -3,10 +3,10 @@
 namespace modules\SideLoader\Api;
 
 use core\view\Render;
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 
 class Api implements Render {
-    use TemplateRenderer;
+    use Renderer;
 
     public function __construct(
         protected string $importUrl

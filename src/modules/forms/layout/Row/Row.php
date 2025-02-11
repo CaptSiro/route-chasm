@@ -2,13 +2,13 @@
 
 namespace modules\forms\layout\Row;
 
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 use modules\forms\layout\DynamicLayout;
 
 class Row implements Control {
-    use TemplateRenderer, FormControl, DynamicLayout;
+    use Renderer, FormControl, DynamicLayout;
 
     public function __construct(float $widthPercentage = 1) {
         $this->widthPercentage = $widthPercentage;

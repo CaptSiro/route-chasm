@@ -40,8 +40,8 @@ abstract class Resource {
 
         $this->router->use(
             "/",
-            Http::get(fn(Request $request, Response $response) => $response->render($this->index())),
-            Http::post(fn(Request $request, Response $response) => $response->render($this->create($request)))
+            Http::get(fn(Request $request, Response $response) => $response->renderRoot($this->index())),
+            Http::post(fn(Request $request, Response $response) => $response->renderRoot($this->create($request)))
         );
 
         $this->router->use(
@@ -50,9 +50,9 @@ abstract class Resource {
 
             fn(Request $request) => $request->set("model", $this->fromUnique($request->getParam()->getStrict(self::PARAM_UNIQUE))),
 
-            Http::get(fn(Request $request, Response $response) => $response->render($this->read($request->get("model")))),
-            Http::put(fn(Request $request, Response $response) => $response->render($this->update($request->get("model")))),
-            Http::delete(fn(Request $request, Response $response) => $response->render($this->delete($request->get("model")))),
+            Http::get(fn(Request $request, Response $response) => $response->renderRoot($this->read($request->get("model")))),
+            Http::put(fn(Request $request, Response $response) => $response->renderRoot($this->update($request->get("model")))),
+            Http::delete(fn(Request $request, Response $response) => $response->renderRoot($this->delete($request->get("model")))),
         );
     }
 

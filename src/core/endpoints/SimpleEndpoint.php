@@ -38,7 +38,7 @@ trait SimpleEndpoint {
         return $this->node;
     }
 
-    public function __toString(): string {
+    public function getEndpointLabel(): string {
         return basename(get_class($this));
     }
 }

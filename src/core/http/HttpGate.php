@@ -106,7 +106,7 @@ class HttpGate implements Endpoint {
         }
     }
 
-    public function __toString(): string {
+    public function getEndpointLabel(): string {
         return "HTTP ". $this->httpMethod;
     }
 }

@@ -18,5 +18,5 @@ interface Endpoint {
 
     public function execute(Request $request, Response $response): void;
 
-    public function __toString(): string;
+    public function getEndpointLabel(): string;
 }

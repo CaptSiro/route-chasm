@@ -172,19 +172,12 @@ class Response {
      * @param Render $render
      * @param string|null $template
      * @param bool $doFlushResponse
-     * @param bool $forceRender When <code>$render</code> is type of <code>WebPageContent</code> it calls render
-     * function instead of page render function
      * @return void
      * @see Response::EVENT_OB_TRANSFORM
      */
-    public function render(Render $render, ?string $template = null, bool $doFlushResponse = true, bool $forceRender = false): void {
+    public function render(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
         ob_start();
-
-        if ($render instanceof WebPageContent && !$forceRender) {
-            $render->renderPage($this);
-        } else {
-            echo $render->render($template);
-        }
+        echo $render->render($template);
 
         $this->generateHeaders();
 
@@ -199,15 +192,18 @@ class Response {
         $this->exit();
     }
 
+    public function renderRoot(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
+        $this->render($render->getRoot(), $template, $doFlushResponse);
+    }
+
     public function error(string $message, int $httpCode, ?string $template = null): void {
-        $this->render(
+        $this->renderRoot(
             new HttpError(
                 $message,
                 $httpCode,
                 1
             ),
             $template,
-            forceRender: true
         );
     }
 

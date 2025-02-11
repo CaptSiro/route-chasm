@@ -33,8 +33,7 @@ use modules\SideLoader\Api\Api;
 use modules\SideLoader\FileImporter\FileImporter;
 
 class SideLoader extends DefaultModule implements Render {
-    use Source;
-    use Singleton;
+    use Source, Singleton;
 
     public const FILE_SEPARATOR = ',';
     public const FILE_CACHE = 'cache';
@@ -359,6 +358,10 @@ class SideLoader extends DefaultModule implements Render {
     function render(?string $template = null): string {
         $this->hasBeenRendered = true;
         return self::TEMPLATE_PLACEHOLDER;
+    }
+
+    public function getRoot(): Render {
+        return $this;
     }
 
     public function __toString(): string {

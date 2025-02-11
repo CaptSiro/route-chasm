@@ -4,12 +4,12 @@ namespace modules\forms\controls\TextArea;
 
 use core\Attributes;
 use core\CssClass;
-use core\view\TemplateRenderer;
+use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
 class TextArea implements Control {
-    use TemplateRenderer, FormControl, CssClass, Attributes;
+    use Renderer, FormControl, CssClass, Attributes;
 
     public function __construct(
         protected string $name,
