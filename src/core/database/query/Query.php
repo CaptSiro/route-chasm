@@ -5,14 +5,15 @@ namespace core\database\query;
 use core\database\buffer\Buffer;
 use core\database\buffer\EmptyBuffer;
 use core\database\buffer\ParamBuffer;
+use core\database\buffer\StaticBuffer;
 
 class Query {
     public static function build(): QueryBuilder {
         return new QueryBuilder();
     }
 
-    public static function raw(string $sql, array $parameters = []) {
-        // todo
+    public static function raw(string $sql, array $parameters = []): Query {
+        return new Query($sql, StaticBuffer::from($parameters));
     }
 
     public static function from(string $base, string|Query|null $additional): self|string {

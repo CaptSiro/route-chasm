@@ -63,7 +63,6 @@ class SideLoader extends DefaultModule implements Render {
      * @var array<string, FileImporter> $fileImporters
      */
     protected array $fileImporters;
-    protected Cache $cache;
     protected Router $router;
     protected bool $hasBeenRendered;
 
@@ -71,7 +70,6 @@ class SideLoader extends DefaultModule implements Render {
 
     public function __construct() {
         $this->files = [];
-        $this->cache = new LazyFileCache($this->getSource(self::FILE_CACHE));
 
         $javascript = new FileImporter();
         $this->addImporter(
@@ -183,8 +181,6 @@ class SideLoader extends DefaultModule implements Render {
             $response->setHeader(self::HEADER_X_REQUIRE, $require);
         });
 
-        $loader->on(App::EVENT_SHUTDOWN, fn() => $this->cache->save());
-
         $this->router->use(
             '/',
             Http::get(function (Request $request, Response $response) {
@@ -204,20 +200,21 @@ class SideLoader extends DefaultModule implements Render {
 
                 $files = $request->getUrl()->getQuery()->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
-                    if (!$this->cache->has($files)) {
-                        $response->setHeader('X-Debug', $this->cache->asString());
+                    $entry = DatabaseCache::fromHash($files);
+                    if (is_null($entry)) {
                         $response->error(
                             "File not found (file hash: '$files')",
                             HttpCode::CE_NOT_FOUND
                         );
                     }
 
-                    $response->readFile($this->cache->get($files));
+                    $response->readFile($entry->path);
                 }
 
                 foreach (explode(self::FILE_SEPARATOR, $files) as $hash) {
-                    if ($this->cache->has($hash)) {
-                        $response->readFile($this->cache->get($hash), doFlush: false);
+                    $entry = DatabaseCache::fromHash($hash);
+                    if (!is_null($entry)) {
+                        $response->readFile($entry->path, doFlush: false);
                     }
                 }
 
@@ -247,8 +244,11 @@ class SideLoader extends DefaultModule implements Render {
             }
 
             $hex = dechex($hash);
-            if (!$this->cache->has($hex)) {
-                $this->cache->set($hex, $real);
+            $entry = DatabaseCache::fromHash($hex, create: true);
+            if ($entry->hash !== $hex) {
+                $entry->hash = $hex;
+                $entry->path = $real;
+                $entry->save();
             }
 
             if (!$first) {
@@ -281,44 +281,6 @@ class SideLoader extends DefaultModule implements Render {
         }
 
         return $buffer;
-    }
-
-    public function getMergedFiles(string $merged): string {
-        $this->accessibleAfterLoad();
-
-        if ($this->cache->has($merged)) {
-            return $this->cache->get($merged);
-        }
-
-        $directory = $this->getSource('merged');
-        if (!file_exists($directory)) {
-            mkdir($directory);
-        }
-
-        $mergedFile = dechex((Strings::hashAscii($directory .'/'. $merged) << 16) ^ time());
-
-        $source = $this->getSource("merged/$mergedFile");
-        $file = fopen($source, 'w');
-
-        foreach (explode(self::FILE_SEPARATOR, $merged) as $hash) {
-            if (!$this->cache->has($hash)) {
-                fclose($file);
-                unlink($source);
-
-                App::getInstance()
-                    ->getResponse()
-                    ->error(
-                        "File not found (file hash: '$hash')",
-                        HttpCode::CE_NOT_FOUND
-                    );
-            }
-
-            fwrite($file, file_get_contents($this->cache->get($hash)));
-        }
-
-        fclose($file);
-        $this->cache->set($merged, realpath($source));
-        return $source;
     }
 
     public function createImportUrl(string $type, array $files): string {

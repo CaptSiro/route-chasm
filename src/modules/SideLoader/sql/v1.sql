@@ -4,3 +4,5 @@ CREATE TABLE `module_sideloadercache` (
     `path` VARCHAR(255) NOT NULL ,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
+
+ALTER TABLE `module_sideloadercache` ADD INDEX(`hash`);

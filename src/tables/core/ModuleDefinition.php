@@ -2,6 +2,7 @@
 
 namespace tables\core;
 
+use core\database\DatabaseColumns;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
 use core\database\Table;
@@ -12,7 +13,7 @@ use core\module\ModuleInfo;
  * @property string version
  */
 class ModuleDefinition extends Table {
-    private static array $columns;
+    use DatabaseColumns;
 
     public static function init(): void {
         self::$columns = [
@@ -27,10 +28,8 @@ class ModuleDefinition extends Table {
         return 'core_modules';
     }
 
-    public static function getColumns(): array {
-        return self::$columns;
-    }
 
+    
     public static function createFromInfo(ModuleInfo $info): static {
         $module = new static();
 

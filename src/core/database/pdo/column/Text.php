@@ -9,7 +9,11 @@ class Text implements Column {
 
 
 
-    public function transform(mixed $value): string {
+    public function transform(mixed $value): ?string {
+        if (is_null($value)) {
+            return null;
+        }
+
         return (string) $value;
     }
 

@@ -91,7 +91,7 @@ abstract class Table extends Init implements JsonSerializable {
         return new ForeignKey(static::class, $alias);
     }
 
-    public static function fetch(string|Query|null $additional = null): static {
+    public static function fetch(string|Query|null $additional = null): ?static {
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTable(). "`";
         return self::$database
             ->fetch(Query::from($sql, $additional), static::class);
@@ -108,6 +108,18 @@ abstract class Table extends Init implements JsonSerializable {
     }
 
 
+
+    protected static function createConditionally(?self $instance, bool $create = false): ?static {
+        if (!is_null($instance)) {
+            return $instance;
+        }
+
+        if ($create) {
+            return new static();
+        }
+
+        return null;
+    }
 
     public static function fromId(int $id): ?self {
         if ($id === 0) {
@@ -166,7 +178,7 @@ abstract class Table extends Init implements JsonSerializable {
             $name = $column->getAlias();
         }
 
-        return $column->transform($this->data[$name]);
+        return $column->transform($this->data[$name] ?? null);
     }
 
     public function __set(string $column, mixed $value): void {
@@ -268,7 +280,7 @@ abstract class Table extends Init implements JsonSerializable {
             }
 
             $columns[] = "`$name`";
-            $params[] = $this->data[$name];
+            $params[] = $this->data[$name] ?? null;
             $values .= StaticBuffer::PARAM_IDENT;
 
             $first = false;

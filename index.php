@@ -22,6 +22,7 @@ use modules\forms\Form;
 use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
 use modules\forms\layout\Row\Row;
+use modules\SideLoader\DatabaseCache;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
 use tables\core\ModuleDefinition;
@@ -110,6 +111,11 @@ $router->use("/map", fn(Request $request, Response $response) => $response->send
 
 
 $router->use('/modules', fn(Request $request, Response $response) => $response->json(ModuleDefinition::fetchAll()));
+
+$router->use('/test', function (Request $request, Response $response) {
+    $entry = DatabaseCache::fromHash('my_hash', create: true);
+    $response->json($entry->hash);
+});
 
 
 

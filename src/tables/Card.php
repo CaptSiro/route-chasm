@@ -2,6 +2,7 @@
 
 namespace tables;
 
+use core\database\DatabaseColumns;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
 use core\database\Table;
@@ -11,7 +12,7 @@ use core\database\Table;
  * @property string answer
  */
 class Card extends Table {
-    protected static array $columns;
+    use DatabaseColumns;
 
     public static function init(): void {
         self::$columns = [
@@ -25,9 +26,5 @@ class Card extends Table {
 
     public static function getTable(): string {
         return "cards";
-    }
-
-    public static function getColumns(): array {
-        return self::$columns;
     }
 }

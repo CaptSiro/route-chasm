@@ -2,14 +2,19 @@
 
 namespace modules\SideLoader;
 
+use core\database\DatabaseColumns;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
-use core\database\pdo\parameter\PdoPrimitiveParam;
 use core\database\query\Query;
 use core\database\Table;
 
+/**
+ * @property int id
+ * @property string hash
+ * @property string path
+ */
 class DatabaseCache extends Table {
-    protected static array $columns;
+    use DatabaseColumns;
 
     public static function init(): void {
         self::$columns = [
@@ -26,14 +31,14 @@ class DatabaseCache extends Table {
         return 'module_sideloadercache';
     }
 
-    public static function getColumns(): array {
-        return self::$columns;
-    }
 
-    public static function fromHash(string $hash): static {
-        $hashParam = new PdoPrimitiveParam($hash);
-        return self::fetch(
-            Query::build()->use("hash = $hashParam")
+
+    public static function fromHash(string $hash, bool $create = false): ?static {
+        return self::createConditionally(
+            self::fetch(
+                Query::raw("hash = ?", [$hash])
+            ),
+            $create
         );
     }
 }
