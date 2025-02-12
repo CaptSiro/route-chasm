@@ -2,16 +2,16 @@
 
 namespace components\core\Resource;
 
-use components\core\WebPage\WebPageContent;
+use components\core\WebPage\ContainerContent;
 
-class Index extends WebPageContent {
+class Index extends ContainerContent {
     public function __construct(
         string $title,
         protected array $models
     ) {
         parent::__construct();
 
-        $this->page
+        $this->container
             ->getHead()
             ->setTitle($title);
     }

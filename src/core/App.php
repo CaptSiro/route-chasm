@@ -90,6 +90,7 @@ class App implements Loader {
     protected array $listeners;
     protected bool $defaultModulesLoaded;
     protected array $modules;
+    protected array $loaded = [];
     protected ?string $home;
 
 
@@ -231,6 +232,13 @@ class App implements Loader {
         return PdoDatabase::getInstance($config);
     }
 
+    /**
+     * @return array<Module>
+     */
+    public function getLoadedModules(): array {
+        return $this->loaded;
+    }
+
     public function require(Module $module): self {
         if (!isset($this->modules)) {
             $this->modules = ModuleDefinition::fetchAll();
@@ -262,6 +270,7 @@ class App implements Loader {
         }
 
         $module->load($this);
+        $this->loaded[] = $module;
         return $this;
     }
 

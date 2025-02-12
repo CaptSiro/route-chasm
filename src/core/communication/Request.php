@@ -157,6 +157,10 @@ class Request {
         $this->data->set($name, $value);
     }
 
+    public function exists(string $variable): bool {
+        return $this->data->exists($variable);
+    }
+
     public function isMultipart(): bool {
         $header = $this->getHeader(HttpHeader::CONTENT_TYPE);
         if (is_null($header)) {

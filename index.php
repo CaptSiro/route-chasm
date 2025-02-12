@@ -5,6 +5,7 @@ use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
 use components\Tabs\Tabs;
+use core\admin\AdminRouter;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -38,6 +39,10 @@ $app->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 $app->getOptions()->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 
 $router = $app->getMainRouter();
+
+
+
+$router->bind('/admin', AdminRouter::getInstance());
 
 
 
@@ -97,7 +102,7 @@ $form = (new Form(HttpMethod::DELETE))
         "Description" => $c1
     ]));
 $router->use("/form",
-    Http::get(new WebPage(content: $form)),
+    Http::get((new WebPage())->addContent($form)),
     Http::delete(function(Request $request, Response $response) {
         $response->json($request->getBody());
     })

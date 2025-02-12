@@ -3,26 +3,44 @@
 namespace components\core\WebPage;
 
 use components\core\HtmlHead\HtmlHead;
+use core\admin\AdminRouter;
 use core\App;
+use core\view\ArrayContainer;
 use core\view\Component;
+use core\view\Container;
 use core\view\Render;
 
-class WebPage extends Component {
+class WebPage extends Component implements Container {
+    use ArrayContainer;
+
+
+
     public function __construct(
         protected ?string $language = null,
         protected ?Head $head = null,
-        protected ?Render $content = null
     ) {
         $env = App::getInstance()->getEnv();
 
         $this->language ??= $env?->get("WEB_LANGUAGE") ?? "en";
         $this->head ??= new HtmlHead();
+
+        $this->setTemplate(
+            $this->getSource('WebPage.phtml')
+        );
     }
 
 
 
     public function render(?string $template = null): string {
-        return parent::render($this->getSource('WebPage.phtml'));
+        if (AdminRouter::isAdmin(App::getInstance()->getRequest())) {
+            $source = $this->getSource('WebPage.phtml');
+
+            if ($this->template === $source) {
+                $this->setTemplate($this->getSource('WebPage.admin.phtml'));
+            }
+        }
+
+        return parent::render();
     }
 
     /**
@@ -30,19 +48,5 @@ class WebPage extends Component {
      */
     public function getHead(): Head {
         return $this->head;
-    }
-
-    /**
-     * @return Render
-     */
-    public function getContent(): Render {
-        return $this->content;
-    }
-
-    /**
-     * @param Render $content
-     */
-    public function setContent(Render $content): void {
-        $this->content = $content;
     }
 }

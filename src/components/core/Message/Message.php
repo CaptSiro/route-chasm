@@ -3,11 +3,11 @@
 namespace components\core\Message;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\WebPageContent;
+use components\core\WebPage\ContainerContent;
 use core\App;
 use core\communication\Format;
 
-class Message extends WebPageContent {
+class Message extends ContainerContent {
     public function __construct(
         protected string $message
     ) {

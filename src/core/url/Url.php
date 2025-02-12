@@ -112,7 +112,11 @@ class Url {
     }
 
     public function full(): string {
-        return $this->protocol ."://". $this->host . $this->path ."?". $this->queryString;
+        $query = $this->queryString === ''
+            ? ''
+            : '?' . $this->queryString;
+
+        return $this->protocol ."://". $this->host . $this->path . $query;
     }
 
     public function setPath(string $path): void {
@@ -166,5 +170,9 @@ class Url {
      */
     public function getProtocol(): string {
         return $this->protocol;
+    }
+
+    public function __toString(): string {
+        return $this->full();
     }
 }

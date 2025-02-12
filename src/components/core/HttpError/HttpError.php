@@ -3,13 +3,14 @@
 namespace components\core\HttpError;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\WebPageContent;
+use components\core\WebPage\ContainerContent;
+use components\core\WebPage\WebPage;
 use components\core\WebPage\WebPageRenderCondition;
 use core\App;
 use core\communication\Format;
 use core\http\HttpHeader;
 
-class HttpError extends WebPageContent {
+class HttpError extends ContainerContent {
     use WebPageRenderCondition;
 
 
@@ -19,7 +20,10 @@ class HttpError extends WebPageContent {
         protected int $code,
         protected int $stackTraceShiftCount = 0
     ) {
-        parent::__construct(head: new HtmlHead("Error - $message"));
+        parent::__construct(
+            new WebPage(head: new HtmlHead("Error - $message"))
+        );
+
         $this->initCondition(self::createHtmlPageCondition());
     }
 

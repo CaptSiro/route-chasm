@@ -4,7 +4,9 @@
     <?= $this->head ?>
     <body>
         <main>
-            <?= $this->content ?>
+            <?php foreach ($this->children as $child): ?>
+                <?= $child->render() ?>
+            <?php endforeach; ?>
         </main>
     </body>
 </html>

@@ -3,10 +3,11 @@
 namespace components\core\Explorer;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\WebPageContent;
+use components\core\WebPage\ContainerContent;
+use components\core\WebPage\WebPage;
 use modules\SideLoader\Css;
 
-class Explorer extends WebPageContent {
+class Explorer extends ContainerContent {
     public function __construct(
         protected string $directory,
         protected string $label,
@@ -19,6 +20,6 @@ class Explorer extends WebPageContent {
             $this->url .= "/";
         }
 
-        parent::__construct(head: new HtmlHead("Explorer - $this->label"));
+        parent::__construct(new WebPage(head: new HtmlHead("Explorer - $this->label")));
     }
 }

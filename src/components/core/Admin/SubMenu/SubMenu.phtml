@@ -1,0 +1,19 @@
+<?php /** @var SubMenu $this */
+
+use components\core\Admin\Menu\AdminMenu;
+use components\core\Admin\SubMenu\SubMenu;
+
+?>
+<?php if (!$this->isEmpty()): ?>
+    <div>
+        <?php foreach ($this->menu as $label => $menu): ?>
+            <?php if ($label === AdminMenu::KEY_RENDER) continue; ?>
+            <div>
+                <span><?= $label ?></span>
+                <div>
+                    <?= new SubMenu($menu) ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
