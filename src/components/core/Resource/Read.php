@@ -4,6 +4,7 @@ namespace components\core\Resource;
 
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\ContainerContent;
+use components\core\WebPage\WebPage;
 use core\database\Table;
 
 class Read extends ContainerContent {
@@ -11,6 +12,6 @@ class Read extends ContainerContent {
         string $title,
         protected Table $model,
     ) {
-        parent::__construct(head: new HtmlHead($title));
+        parent::__construct(new WebPage(head: new HtmlHead($title)));
     }
 }
