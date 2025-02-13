@@ -8,7 +8,7 @@ use components\core\Resource\Read;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\Table;
+use core\database\Entity;
 use core\http\Http;
 use core\path\Path;
 use core\patterns\Number;
@@ -60,7 +60,7 @@ abstract class Resource {
 
     abstract protected function getTable(): string;
 
-    protected function fromUnique(string $unique): Table {
+    protected function fromUnique(string $unique): Entity {
         return call_user_func($this->getTable() ."::fromUnique", $unique);
     }
 
@@ -111,9 +111,9 @@ abstract class Resource {
     public function create(Request $request): Render {
         $model = new ($this->getTable());
 
-        if (!($model instanceof Table)) {
+        if (!($model instanceof Entity)) {
             $class = $this->getTable();
-            throw new InvalidArgumentException("The provided table class '$class' is not descendant of class ". Table::class);
+            throw new InvalidArgumentException("The provided table class '$class' is not descendant of class ". Entity::class);
         }
 
         $model
@@ -124,7 +124,7 @@ abstract class Resource {
     }
 
 
-    public function read(Table $model): Render {
+    public function read(Entity $model): Render {
         $app = App::getInstance();
         $request = $app->getRequest();
 
@@ -138,7 +138,7 @@ abstract class Resource {
         return $read;
     }
 
-    public function update(Table $model): Render {
+    public function update(Entity $model): Render {
         $model
             ->setDictionary(App::getInstance()->getRequest()->getBody())
             ->save();
@@ -146,7 +146,7 @@ abstract class Resource {
         return new Message("Updated");
     }
 
-    public function delete(Table $model): Render {
+    public function delete(Entity $model): Render {
         $model->delete();
 
         return new Message("Deleted");

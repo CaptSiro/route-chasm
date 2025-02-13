@@ -9,12 +9,12 @@ interface Database {
 
     public function run(string|Query $query): SideEffect;
 
-    public function fetch(string|Query $query, ?string $class = null): ?Table;
+    public function fetch(string|Query $query, ?string $class = null): ?Entity;
 
     /**
      * @param string|Query $query
-     * @param string|null $class <code>Table</code> class
-     * @return array<Table>|null
+     * @param string|null $class <code>Entity</code> class
+     * @return array<Entity>|null
      */
     public function fetchAll(string|Query $query, ?string $class = null): ?array;
 }

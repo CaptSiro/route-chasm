@@ -7,7 +7,7 @@ use core\database\Database;
 use core\database\pdo\config\PdoConfig;
 use core\database\query\Query;
 use core\database\SideEffect;
-use core\database\Table;
+use core\database\Entity;
 use core\MultiSingleton;
 use PDO;
 use PDOStatement;
@@ -16,7 +16,7 @@ use stdClass;
 class PdoDatabase implements Database {
     use MultiSingleton;
 
-    public const TYPE_TABLE = [
+    public const TYPES = [
         "boolean" => PDO::PARAM_BOOL,
         "integer" => PDO::PARAM_INT,
         "double" => PDO::PARAM_STR,
@@ -139,10 +139,10 @@ class PdoDatabase implements Database {
      *
      * @param string|Query $query
      * @param string|null $class
-     * @return Table|null
+     * @return Entity|null
      * @throws MixedIndexingException
      */
-    public function fetch(string|Query $query, ?string $class = null): ?Table {
+    public function fetch(string|Query $query, ?string $class = null): ?Entity {
         $stmt = $this->connection->prepare(Query::unwrapLiteral($query));
 
         self::bind($stmt, $query);

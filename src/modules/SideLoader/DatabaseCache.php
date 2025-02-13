@@ -6,14 +6,14 @@ use core\database\DatabaseColumns;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
 use core\database\query\Query;
-use core\database\Table;
+use core\database\Entity;
 
 /**
  * @property int id
  * @property string hash
  * @property string path
  */
-class DatabaseCache extends Table {
+class DatabaseCache extends Entity {
     use DatabaseColumns;
 
     public static function init(): void {

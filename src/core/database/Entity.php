@@ -13,7 +13,7 @@ use core\database\query\Query;
 use core\Init;
 use JsonSerializable;
 
-abstract class Table extends Init implements JsonSerializable {
+abstract class Entity extends Init implements JsonSerializable {
     public const ORIGIN_CODE = 'code';
     public const ORIGIN_DATABASE = 'database';
 
@@ -34,7 +34,7 @@ abstract class Table extends Init implements JsonSerializable {
     /**
      * Function that is called when class is loaded. Initialize table name, table columns, and database connection
      *
-     * <code>Table::init()</code> function gets default database connection from <code>App</code>
+     * <code>Entity::init()</code> function gets default database connection from <code>App</code>
      *
      * @return void
      */

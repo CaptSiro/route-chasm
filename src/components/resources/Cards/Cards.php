@@ -7,7 +7,7 @@ use core\Resource;
 use core\Singleton;
 use core\url\UrlBuilder;
 use core\view\Render;
-use tables\Card;
+use entities\Card;
 
 class Cards extends Resource {
     use Singleton;

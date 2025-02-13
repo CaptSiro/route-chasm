@@ -28,7 +28,7 @@ use core\utils\Strings;
 use dotenv\Env;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
-use tables\core\ModuleDefinition;
+use entities\core\ModuleDefinition;
 
 class App implements Loader {
     private static ?self $instance = null;

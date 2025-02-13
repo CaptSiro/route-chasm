@@ -1,12 +1,12 @@
 <?php
 
-namespace tables\core;
+namespace entities\core;
 
 use core\database\DatabaseColumns;
 use core\database\pdo\column\Integer;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
-use core\database\Table;
+use core\database\Entity;
 
 /**
  * @property string host
@@ -14,7 +14,7 @@ use core\database\Table;
  * @property string path
  * @property int cost
  */
-class Domain extends Table {
+class Domain extends Entity {
     use DatabaseColumns;
 
     public static function init(): void {

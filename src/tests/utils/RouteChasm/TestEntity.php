@@ -2,9 +2,9 @@
 
 namespace tests\utils\RouteChasm;
 
-use core\database\Table;
+use core\database\Entity;
 
-class TestTable extends Table {
+class TestEntity extends Entity {
     public static function getTable(): string {
         return "table";
     }

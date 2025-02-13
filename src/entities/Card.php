@@ -1,17 +1,17 @@
 <?php
 
-namespace tables;
+namespace entities;
 
 use core\database\DatabaseColumns;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
-use core\database\Table;
+use core\database\Entity;
 
 /**
  * @property string question
  * @property string answer
  */
-class Card extends Table {
+class Card extends Entity {
     use DatabaseColumns;
 
     public static function init(): void {

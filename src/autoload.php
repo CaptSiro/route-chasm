@@ -15,7 +15,7 @@ spl_autoload_register(function ($class) {
         try {
             call_user_func("$class::init");
         } catch (TypeError) {
-            // abstract class extends init method but does not provide override (\core\Table)
+            // abstract class extends init method but does not provide override (\core\Entity)
         }
     }
 });

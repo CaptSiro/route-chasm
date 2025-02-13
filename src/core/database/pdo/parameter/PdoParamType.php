@@ -9,10 +9,10 @@ trait PdoParamType {
     function getType(): int {
         $type = gettype($this->value);
 
-        if (!isset(PdoDatabase::TYPE_TABLE[$type])) {
+        if (!isset(PdoDatabase::TYPES[$type])) {
             return PDO::PARAM_STR;
         }
 
-        return PdoDatabase::TYPE_TABLE[$type];
+        return PdoDatabase::TYPES[$type];
     }
 }

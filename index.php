@@ -26,7 +26,7 @@ use modules\forms\layout\Row\Row;
 use modules\SideLoader\DatabaseCache;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
-use tables\core\ModuleDefinition;
+use entities\core\ModuleDefinition;
 
 require_once __DIR__ ."/src/autoload.php";
 

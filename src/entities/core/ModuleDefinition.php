@@ -1,18 +1,18 @@
 <?php
 
-namespace tables\core;
+namespace entities\core;
 
 use core\database\DatabaseColumns;
 use core\database\pdo\column\PrimaryKey;
 use core\database\pdo\column\Text;
-use core\database\Table;
+use core\database\Entity;
 use core\module\ModuleInfo;
 
 /**
  * @property string identifier
  * @property string version
  */
-class ModuleDefinition extends Table {
+class ModuleDefinition extends Entity {
     use DatabaseColumns;
 
     public static function init(): void {
