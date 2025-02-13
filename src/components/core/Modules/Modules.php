@@ -2,9 +2,10 @@
 
 namespace components\core\Modules;
 
-use core\view\Render;
-use core\view\Renderer;
+use core\view\ContainerContent;
 
-class Modules implements Render {
-    use Renderer;
+class Modules extends ContainerContent {
+    public function __construct() {
+        parent::__construct();
+    }
 }

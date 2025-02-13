@@ -120,6 +120,10 @@ class Request {
         return $this->param;
     }
 
+    public function getAnyParam(): ?string {
+        return $this->param->get(Request::PARAM_ANY_TERMINATOR);
+    }
+
     public function getSession(): ?StrictDictionary {
         return $this->session;
     }
@@ -132,7 +136,7 @@ class Request {
         return $this->headers[$name] ?? null;
     }
 
-    public function setTestHeader(string $name, string $value): void {
+    public function setHeader(string $name, string $value): void {
         if ($this->headers === null) {
             $this->headers = apache_request_headers();
         }

@@ -3,7 +3,9 @@
 namespace components\core\Admin\SubMenu;
 
 use components\core\Admin\Menu\AdminMenu;
+use core\App;
 use core\CssClass;
+use core\endpoints\AdminEndpoint;
 use core\view\Render;
 use core\view\Renderer;
 
@@ -13,6 +15,7 @@ class SubMenu implements Render {
 
 
     public function __construct(
+        protected string $path,
         protected array $menu
     ) {}
 
@@ -29,5 +32,21 @@ class SubMenu implements Render {
         }
 
         return false;
+    }
+
+    public function hasRender(string $label): bool {
+        return isset($this->menu[$label][AdminMenu::KEY_RENDER]);
+    }
+
+    public function createUrl(string $label): ?string {
+        $translated = AdminMenu::getInstance()
+            ->translate($this->path .'/'. $label);
+
+        if (is_null($translated)) {
+            return null;
+        }
+
+        return App::getInstance()
+            ->prependHome(AdminEndpoint::getInstance()->getPath() .'/'. $translated);
     }
 }

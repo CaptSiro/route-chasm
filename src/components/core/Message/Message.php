@@ -3,10 +3,10 @@
 namespace components\core\Message;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\ContainerContent;
 use components\core\WebPage\WebPage;
 use core\App;
 use core\communication\Format;
+use core\view\ContainerContent;
 
 class Message extends ContainerContent {
     public function __construct(

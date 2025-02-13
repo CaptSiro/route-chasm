@@ -23,7 +23,7 @@ class Directory implements Endpoint {
     public static function showExplorer(): Closure {
         return function (self $directory, string $path) {
             $app = App::getInstance();
-            $remaining = urldecode($app->getRequest()->getParam()->get(Request::PARAM_ANY_TERMINATOR, ""));
+            $remaining = urldecode($app->getRequest()->getAnyParam() ?? '');
 
             $app->getResponse()
                 ->renderRoot(new Explorer(
@@ -110,7 +110,7 @@ class Directory implements Endpoint {
             }
 
             case HttpMethod::GET: {
-                $remaining = urldecode($request->getParam()->get(Request::PARAM_ANY_TERMINATOR, ""));
+                $remaining = urldecode($request->getAnyParam() ?? "");
                 $path = realpath($this->directory .'/'. $remaining);
 
                 if ($path === false) {

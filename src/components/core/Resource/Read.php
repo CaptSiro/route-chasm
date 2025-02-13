@@ -3,9 +3,9 @@
 namespace components\core\Resource;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\ContainerContent;
 use components\core\WebPage\WebPage;
 use core\database\Table;
+use core\view\ContainerContent;
 
 class Read extends ContainerContent {
     public function __construct(

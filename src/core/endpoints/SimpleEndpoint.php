@@ -3,6 +3,7 @@
 namespace core\endpoints;
 
 use core\App;
+use core\path\Segment;
 use core\tree\Node;
 use core\url\Url;
 
@@ -23,7 +24,9 @@ trait SimpleEndpoint {
         $segments = [];
 
         while (!is_null($current) && !is_null($current->getSegment())) {
-            $segments[] = $current->getSegment();
+            if (!$current->getSegment()->hasFlag(Segment::FLAG_ANY_TERMINATED)) {
+                $segments[] = $current->getSegment();
+            }
             $current = $current->getParent();
         }
 

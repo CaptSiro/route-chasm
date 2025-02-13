@@ -3,12 +3,12 @@
 namespace components\core\HttpError;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\ContainerContent;
 use components\core\WebPage\WebPage;
 use components\core\WebPage\WebPageRenderCondition;
 use core\App;
 use core\communication\Format;
 use core\http\HttpHeader;
+use core\view\ContainerContent;
 
 class HttpError extends ContainerContent {
     use WebPageRenderCondition;

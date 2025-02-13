@@ -2,7 +2,7 @@
 
 namespace components\core\Resource;
 
-use components\core\WebPage\ContainerContent;
+use core\view\ContainerContent;
 
 class Index extends ContainerContent {
     public function __construct(

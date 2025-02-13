@@ -9,9 +9,15 @@ use components\core\Admin\SubMenu\SubMenu;
         <?php foreach ($this->menu as $label => $menu): ?>
             <?php if ($label === AdminMenu::KEY_RENDER) continue; ?>
             <div>
-                <span><?= $label ?></span>
+                <?php if ($this->hasRender($label)): ?>
+                    <a href="<?= $this->createUrl($label) ?>">
+                        <?= $label ?>
+                    </a>
+                <?php else: ?>
+                    <span><?= $label ?></span>
+                <?php endif; ?>
                 <div>
-                    <?= new SubMenu($menu) ?>
+                    <?= new SubMenu($this->path .'/'. $label, $menu) ?>
                 </div>
             </div>
         <?php endforeach; ?>

@@ -3,8 +3,8 @@
 namespace components\core\Explorer;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\ContainerContent;
 use components\core\WebPage\WebPage;
+use core\view\ContainerContent;
 use modules\SideLoader\Css;
 
 class Explorer extends ContainerContent {

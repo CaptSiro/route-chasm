@@ -14,7 +14,7 @@ function q(Request $request, string $name, string $value): Request {
 }
 
 function h(Request $request, string $header, string $value): Request {
-    $request->setTestHeader($header, $value);
+    $request->setHeader($header, $value);
     return $request;
 }
 

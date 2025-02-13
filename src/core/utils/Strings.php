@@ -156,4 +156,8 @@ class Strings extends Init {
 
         return $number * (1024 ** $exponent);
     }
+
+    public static function urlPathSegment(string $segment): string {
+        return str_replace(' ', '-', strtolower($segment));
+    }
 }

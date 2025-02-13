@@ -5,20 +5,20 @@ use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
 use components\Tabs\Tabs;
-use core\admin\AdminRouter;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\config\AppConfig;
 use core\config\EnvConfig;
+use core\endpoints\AdminEndpoint;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
-use modules\forms\controls\TextField;
 use modules\forms\controls\TextArea\TextArea;
+use modules\forms\controls\TextField;
 use modules\forms\Form;
 use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
@@ -42,7 +42,7 @@ $router = $app->getMainRouter();
 
 
 
-$router->bind('/admin', AdminRouter::getInstance());
+$router->expose('/admin', AdminEndpoint::getInstance());
 
 
 

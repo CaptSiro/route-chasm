@@ -86,7 +86,7 @@ class Router {
 
     public function expose(Path|string $path, Endpoint $endpoint): void {
         $parsed = Path::from($path);
-        $this->use($parsed, Http::any(fn(Request $request, Response $response) => $endpoint->execute($request, $response)));
+        $this->use($parsed, $endpoint);
         $this->use($parsed->merge("/**"), $endpoint);
     }
 

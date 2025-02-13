@@ -1,13 +1,10 @@
 <?php
 
-namespace components\core\WebPage;
+namespace core\view;
 
-use components\core\HtmlHead\HtmlHead;
+use components\core\WebPage\WebPage;
 use core\communication\Request;
 use core\communication\Response;
-use core\view\Component;
-use core\view\Container;
-use core\view\Render;
 
 class ContainerContent extends Component {
     protected Container $container;

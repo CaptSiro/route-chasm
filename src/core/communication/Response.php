@@ -3,7 +3,6 @@
 namespace core\communication;
 
 use components\core\HttpError\HttpError;
-use components\core\WebPage\ContainerContent;
 use core\App;
 use core\http\HttpCode;
 use core\http\HttpHeader;
