@@ -27,6 +27,14 @@ class Form extends Component {
         );
     }
 
+    public static function title(string $content): Html {
+        return new Html(
+            'h2',
+            ['class' => 'form-title'],
+            $content
+        );
+    }
+
     private static Html $hr;
     public static function hr(): Html {
         if (!isset(self::$hr)) {
