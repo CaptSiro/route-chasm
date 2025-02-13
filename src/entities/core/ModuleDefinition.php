@@ -6,6 +6,7 @@ use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
 use core\database\pdo\PdoTable;
+use core\database\StaticTableDefinition;
 use core\module\ModuleInfo;
 
 /**
@@ -13,6 +14,8 @@ use core\module\ModuleInfo;
  * @property string version
  */
 class ModuleDefinition extends Entity {
+    use StaticTableDefinition;
+
     public static function init(): void {
         static::$definition = new PdoTable(
             'core_modules',

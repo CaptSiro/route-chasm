@@ -44,4 +44,8 @@ class JsonComponent implements View, Endpoint, JsonSerializable {
     public function __toString(): string {
         return json_encode($this);
     }
+
+    public function getRoot(): View {
+        return $this;
+    }
 }

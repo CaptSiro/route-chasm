@@ -38,6 +38,18 @@ class Strings extends Init {
         return " !@#$%^&*()-_=+[{]}\\|;:'\",<.>/?";
     }
 
+    public static function randomBase64(int $length, string $specialA = '-', string $specialB = '_'): string {
+        $charset = self::$charsAlpha . self::$charsAlphaUpper . self::$charsNumbers . $specialA . $specialB;
+        $len = strlen($charset);
+
+        $buffer = '';
+        for ($i = 0; $i < $length; $i++) {
+            $buffer .= $charset[rand(0, $len - 1)];
+        }
+
+        return $buffer;
+    }
+
     public static function positions(string $needle, string $haystack, int $offset): array {
         $occurrences = [];
 

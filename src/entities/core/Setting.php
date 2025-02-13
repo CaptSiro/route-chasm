@@ -8,6 +8,7 @@ use core\database\column\Text;
 use core\database\Entity;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
+use core\database\StaticTableDefinition;
 
 /**
  * @property int id
@@ -17,6 +18,8 @@ use core\database\query\Query;
  * @final
  */
 class Setting extends Entity {
+    use StaticTableDefinition;
+
     public static function init(): void {
         static::$definition = new PdoTable(
             'core_settings',

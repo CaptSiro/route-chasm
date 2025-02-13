@@ -262,17 +262,19 @@ class SideLoader extends DefaultModule implements View {
 
         $hashed = '';
         $first = true;
+        $length = $this->hashLength->asInt();
 
         foreach ($files as $file) {
-            $hash = Files::hashPath($file, $real);
-            if ($hash === false) {
+            $real = realpath($file);
+
+            if (!file_exists($real)) {
                 continue;
             }
 
-            $hex = dechex($hash);
-            $entry = DatabaseCache::fromHash($hex, create: true);
-            if ($entry->hash !== $hex) {
-                $entry->hash = $hex;
+            $entry = DatabaseCache::fromPath($real);
+            if (is_null($entry)) {
+                $entry = new DatabaseCache();
+                $entry->hash = DatabaseCache::generateHash($this->maxRetries->asInt(), $length);
                 $entry->path = $real;
                 $entry->save();
             }
@@ -281,8 +283,13 @@ class SideLoader extends DefaultModule implements View {
                 $hashed .= self::FILE_SEPARATOR;
             }
 
-            $hashed .= $hex;
+            $hashed .= $entry->hash;
             $first = false;
+        }
+
+        if ($length !== $this->hashLength->asInt()) {
+            $this->hashLength->value = $length;
+            $this->hashLength->save();
         }
 
         return $hashed;
