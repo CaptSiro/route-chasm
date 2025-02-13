@@ -4,16 +4,10 @@ namespace core\tree;
 
 use core\communication\Request;
 use core\endpoints\Endpoint;
-use core\InstanceCounter;
 use core\path\Segment;
 use core\url\UrlPath;
-use core\view\Render;
 
 class Node {
-    use InstanceCounter;
-
-
-
     protected ?Segment $segment;
 
     /** @var Node[] $children */
@@ -33,7 +27,6 @@ class Node {
         $this->parent = null;
         $this->segment = null;
         $this->insert = 0;
-        $this->instanceId = self::createInstanceId();
     }
 
 
