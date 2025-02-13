@@ -1,6 +1,5 @@
 <?php
 
-use components\Accordion\Accordion;
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
@@ -14,11 +13,12 @@ use core\endpoints\AdminEndpoint;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use entities\core\ModuleDefinition;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
-use modules\forms\controls\TextArea\TextArea;
 use modules\forms\controls\PasswordField;
+use modules\forms\controls\TextArea\TextArea;
 use modules\forms\Form;
 use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
@@ -26,7 +26,6 @@ use modules\forms\layout\Row\Row;
 use modules\SideLoader\DatabaseCache;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
-use entities\core\ModuleDefinition;
 
 require_once __DIR__ ."/src/autoload.php";
 
@@ -74,7 +73,7 @@ $router->use(
     )->query("_test")
 );
 
-$user = new Accordion(
+$user = new \components\layout\Accordion\Accordion(
     'User info',
     (new Row(.50))
         ->add(new PasswordField('Name', 'Name', 'Tonda'))

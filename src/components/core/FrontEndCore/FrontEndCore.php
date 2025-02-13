@@ -2,9 +2,9 @@
 
 namespace components\core\FrontEndCore;
 
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class FrontEndCore implements Render {
+class FrontEndCore implements View {
     use Renderer;
 }

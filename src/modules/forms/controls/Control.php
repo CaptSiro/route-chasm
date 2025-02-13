@@ -2,7 +2,7 @@
 
 namespace modules\forms\controls;
 
-use core\view\Render;
+use core\view\View;
 
-interface Control extends Render {
+interface Control extends View {
 }

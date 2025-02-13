@@ -2,29 +2,25 @@
 
 namespace entities;
 
-use core\database\DatabaseColumns;
-use core\database\pdo\column\PrimaryKey;
-use core\database\pdo\column\Text;
+use core\database\column\PrimaryKey;
+use core\database\column\Text;
 use core\database\Entity;
+use core\database\pdo\PdoTable;
 
 /**
  * @property string question
  * @property string answer
  */
 class Card extends Entity {
-    use DatabaseColumns;
-
     public static function init(): void {
-        self::$columns = [
-            "id" => new PrimaryKey(true),
-            "question" => Text::getInstance(),
-            "answer" => Text::getInstance()
-        ];
-
-        parent::init();
-    }
-
-    public static function getTable(): string {
-        return "cards";
+        static::$definition = new PdoTable(
+            'cards',
+            [
+                "id" => new PrimaryKey(true),
+                "question" => Text::getInstance(),
+                "answer" => Text::getInstance()
+            ],
+            'id'
+        );
     }
 }

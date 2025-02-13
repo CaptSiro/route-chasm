@@ -4,7 +4,7 @@ namespace modules\forms;
 
 use components\core\Html\Html;
 use core\view\Component;
-use core\view\Render;
+use core\view\View;
 
 class Form extends Component {
     private static ?Form $form = null;
@@ -46,7 +46,7 @@ class Form extends Component {
 
 
 
-    /** @var array<Render> */
+    /** @var array<View> */
     protected array $elements;
 
 
@@ -75,7 +75,7 @@ class Form extends Component {
         return $this;
     }
 
-    public function add(Render $control): self {
+    public function add(View $control): self {
         $this->elements[] = $control;
         return $this;
     }

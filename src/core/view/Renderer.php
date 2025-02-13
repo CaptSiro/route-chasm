@@ -5,7 +5,7 @@ namespace core\view;
 trait Renderer {
     use TemplateRenderer;
 
-    public function getRoot(): Render {
+    public function getRoot(): View {
         return $this;
     }
 }

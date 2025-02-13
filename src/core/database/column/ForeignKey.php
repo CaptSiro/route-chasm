@@ -1,7 +1,8 @@
 <?php
 
-namespace core\database\pdo\column;
+namespace core\database\column;
 
+use core\database\Column;
 use http\Exception\InvalidArgumentException;
 
 class ForeignKey implements Column {
@@ -20,7 +21,7 @@ class ForeignKey implements Column {
         return call_user_func("$this->class::fromId", $value);
     }
 
-    public function isVirtual(): bool {
+    public function isVirtual(mixed $value): bool {
         return true;
     }
 

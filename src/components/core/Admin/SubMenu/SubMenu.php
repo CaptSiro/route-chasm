@@ -6,10 +6,10 @@ use components\core\Admin\Menu\AdminMenu;
 use core\App;
 use core\CssClass;
 use core\endpoints\AdminEndpoint;
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class SubMenu implements Render {
+class SubMenu implements View {
     use Renderer, CssClass;
 
 

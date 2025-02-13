@@ -1,11 +1,11 @@
 <?php
 
-namespace core\database\pdo\column;
+namespace core\database;
 
 interface Column {
     public function transform(mixed $value): mixed;
 
-    public function isVirtual(): bool;
+    public function isVirtual(mixed $value): bool;
 
     public function isAutoCreated(): bool;
 }

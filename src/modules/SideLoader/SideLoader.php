@@ -28,15 +28,21 @@ use core\utils\Arrays;
 use core\utils\Files;
 use core\utils\Strings;
 use core\view\BufferTransform;
-use core\view\Render;
+use core\view\View;
+use entities\core\Setting;
 use modules\SideLoader\Api\Api;
 use modules\SideLoader\FileImporter\FileImporter;
 
-class SideLoader extends DefaultModule implements Render {
+class SideLoader extends DefaultModule implements View {
     use Source, Singleton;
 
+    public const IDENTIFIER = 'route-chasm-core:side-loader';
+    public const VERSIONS = ['v1'];
+
+    public const SETTING_HASH_LENGTH = self::IDENTIFIER . '_hash-length';
+    public const SETTING_MAX_RETRIES = self::IDENTIFIER . '_max-retries';
+
     public const FILE_SEPARATOR = ',';
-    public const FILE_CACHE = 'cache';
     public const DIRECTORY_MERGED = 'merged';
     public const HEADER_X_REQUIRE = 'X-Require';
     public const IMPORTER_CSS_CLASS = 'side-loader-importer';
@@ -50,7 +56,7 @@ class SideLoader extends DefaultModule implements Render {
 
 
 
-    public static function getApi(): Render {
+    public static function getApi(): View {
         $instance = self::getInstance();
         $instance->accessibleAfterLoad();
         return new Api(App::getInstance()->prependHome($instance->router->getUrlPath()));
@@ -65,6 +71,9 @@ class SideLoader extends DefaultModule implements Render {
     protected array $fileImporters;
     protected Router $router;
     protected bool $hasBeenRendered;
+
+    protected Setting $hashLength;
+    protected Setting $maxRetries;
 
 
 
@@ -93,11 +102,9 @@ class SideLoader extends DefaultModule implements Render {
 
 
 
-    public const VERSIONS = ['v1'];
-
     public function getInfo(): ModuleInfo {
         return new ModuleInfo(
-            'route-chasm-core:side-loader',
+            self::IDENTIFIER,
             Arrays::last(self::VERSIONS)
         );
     }
@@ -132,6 +139,25 @@ class SideLoader extends DefaultModule implements Render {
     }
 
     public function load(Loader $loader): void {
+        $this->hashLength = Setting::fromName(
+            self::SETTING_HASH_LENGTH,
+            true,
+            4
+        );
+
+        $retries = Setting::fromName(self::SETTING_MAX_RETRIES);
+        if ($retries === null) {
+            $retries = new Setting();
+
+            $retries->name = self::SETTING_MAX_RETRIES;
+            $retries->value = 128;
+            $retries->editable = true;
+
+            $retries->save();
+        }
+
+        $this->maxRetries = $retries;
+
         $loader->on(Response::EVENT_OB_TRANSFORM, function (BufferTransform $buffer) {
             if (!$this->hasBeenRendered) {
                 return;
@@ -322,7 +348,7 @@ class SideLoader extends DefaultModule implements Render {
         return self::TEMPLATE_PLACEHOLDER;
     }
 
-    public function getRoot(): Render {
+    public function getRoot(): View {
         return $this;
     }
 

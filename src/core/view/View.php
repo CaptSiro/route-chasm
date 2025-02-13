@@ -2,8 +2,8 @@
 
 namespace core\view;
 
-interface Render {
+interface View {
     public function render(?string $template = null): string;
 
-    public function getRoot(): Render;
+    public function getRoot(): View;
 }

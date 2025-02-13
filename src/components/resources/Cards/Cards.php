@@ -6,7 +6,7 @@ use core\database\pdo\parameter\PdoPrimitiveParam;
 use core\Resource;
 use core\Singleton;
 use core\url\UrlBuilder;
-use core\view\Render;
+use core\view\View;
 use entities\Card;
 
 class Cards extends Resource {
@@ -24,7 +24,7 @@ class Cards extends Resource {
         return Card::class;
     }
 
-    public function index(?array $models = null): Render {
+    public function index(?array $models = null): View {
         $id = new PdoPrimitiveParam(18);
         return parent::index(Card::fetchAll());
     }

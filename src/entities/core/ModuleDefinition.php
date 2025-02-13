@@ -2,10 +2,10 @@
 
 namespace entities\core;
 
-use core\database\DatabaseColumns;
-use core\database\pdo\column\PrimaryKey;
-use core\database\pdo\column\Text;
+use core\database\column\PrimaryKey;
+use core\database\column\Text;
 use core\database\Entity;
+use core\database\pdo\PdoTable;
 use core\module\ModuleInfo;
 
 /**
@@ -13,19 +13,15 @@ use core\module\ModuleInfo;
  * @property string version
  */
 class ModuleDefinition extends Entity {
-    use DatabaseColumns;
-
     public static function init(): void {
-        self::$columns = [
-            'identifier' => new PrimaryKey(),
-            'version' => Text::getInstance()
-        ];
-
-        parent::init();
-    }
-
-    public static function getTable(): string {
-        return 'core_modules';
+        static::$definition = new PdoTable(
+            'core_modules',
+            [
+                'identifier' => new PrimaryKey(),
+                'version' => Text::getInstance()
+            ],
+            'identifier'
+        );
     }
 
 

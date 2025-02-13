@@ -7,7 +7,7 @@ use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 
-class Component implements Render, Endpoint {
+class Component implements View, Endpoint {
     use Renderer, SimpleEndpoint;
 
 

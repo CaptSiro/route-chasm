@@ -2,10 +2,10 @@
 
 namespace modules\SideLoader\FileImporter;
 
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class FileImporter implements Render {
+class FileImporter implements View {
     use Renderer;
 
     protected array $files;

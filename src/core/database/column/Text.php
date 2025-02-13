@@ -1,7 +1,8 @@
 <?php
 
-namespace core\database\pdo\column;
+namespace core\database\column;
 
+use core\database\Column;
 use core\Singleton;
 
 class Text implements Column {
@@ -17,8 +18,8 @@ class Text implements Column {
         return (string) $value;
     }
 
-    public function isVirtual(): bool {
-        return false;
+    public function isVirtual(mixed $value): bool {
+        return is_null($value);
     }
 
     public function isAutoCreated(): bool {

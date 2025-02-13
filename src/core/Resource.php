@@ -15,7 +15,7 @@ use core\patterns\Number;
 use core\patterns\Pattern;
 use core\url\UrlBuilder;
 use core\view\JsonComponent;
-use core\view\Render;
+use core\view\View;
 use InvalidArgumentException;
 
 abstract class Resource {
@@ -95,7 +95,7 @@ abstract class Resource {
         return $path ."/[". self::PARAM_UNIQUE .']';
     }
 
-    public function index(?array $models = null): Render {
+    public function index(?array $models = null): View {
         $models ??= call_user_func($this->getTable() ."::fetchAll");
 
         if (App::getInstance()->getResponse()->getFormat() === Format::IDENT_JSON) {
@@ -108,7 +108,7 @@ abstract class Resource {
         return $index;
     }
 
-    public function create(Request $request): Render {
+    public function create(Request $request): View {
         $model = new ($this->getTable());
 
         if (!($model instanceof Entity)) {
@@ -124,7 +124,7 @@ abstract class Resource {
     }
 
 
-    public function read(Entity $model): Render {
+    public function read(Entity $model): View {
         $app = App::getInstance();
         $request = $app->getRequest();
 
@@ -138,7 +138,7 @@ abstract class Resource {
         return $read;
     }
 
-    public function update(Entity $model): Render {
+    public function update(Entity $model): View {
         $model
             ->setDictionary(App::getInstance()->getRequest()->getBody())
             ->save();
@@ -146,7 +146,7 @@ abstract class Resource {
         return new Message("Updated");
     }
 
-    public function delete(Entity $model): Render {
+    public function delete(Entity $model): View {
         $model->delete();
 
         return new Message("Deleted");

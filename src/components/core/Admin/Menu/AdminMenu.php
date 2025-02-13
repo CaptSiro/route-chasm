@@ -5,10 +5,10 @@ namespace components\core\Admin\Menu;
 use components\core\Admin\SubMenu\SubMenu;
 use core\Singleton;
 use core\utils\Strings;
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class AdminMenu implements Render {
+class AdminMenu implements View {
     use Renderer, Singleton;
 
 
@@ -19,9 +19,9 @@ class AdminMenu implements Render {
         require_once $file;
     }
 
-    public static function item(string $path, Render $render): void {
+    public static function item(string $path, View $view): void {
         self::getInstance()
-            ->addItem($path, $render);
+            ->addItem($path, $view);
     }
 
 
@@ -43,7 +43,7 @@ class AdminMenu implements Render {
         return $label;
     }
 
-    public function addItem(string $path, Render $render): static {
+    public function addItem(string $path, View $view): static {
         $map = &$this->map;
 
         foreach ($this->createSteps($path) as $step) {
@@ -56,7 +56,7 @@ class AdminMenu implements Render {
             $map = &$map[$segment];
         }
 
-        $map[self::KEY_RENDER] = $render;
+        $map[self::KEY_RENDER] = $view;
         return $this;
     }
 
@@ -76,7 +76,7 @@ class AdminMenu implements Render {
         return implode('/', $translation);
     }
 
-    public function getItem(string $path): ?Render {
+    public function getItem(string $path): ?View {
         $map = $this->map;
 
         foreach ($this->createSteps($path) as $step) {

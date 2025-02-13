@@ -21,12 +21,12 @@ use modules\SideLoader\Javascript;
         <?php endforeach; ?>
     </div>
 
-    <?php $i = 0; foreach ($this->tabs as $label => $render): ?>
+    <?php $i = 0; foreach ($this->tabs as $label => $view): ?>
         <div
             class="tabs__wrapper <?= $this->isSelected($label, $i) ? 'selected' : '' ?>"
             data-label="<?= $label // todo escape ?>"
         >
-            <?= $render->render() ?>
+            <?= $view->render() ?>
         </div>
     <?php $i++; endforeach; ?>
 </div>

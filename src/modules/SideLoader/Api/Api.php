@@ -2,10 +2,10 @@
 
 namespace modules\SideLoader\Api;
 
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class Api implements Render {
+class Api implements View {
     use Renderer;
 
     public function __construct(

@@ -1,7 +1,8 @@
 <?php
 
-namespace core\database\pdo\column;
+namespace core\database\column;
 
+use core\database\Column;
 use core\Singleton;
 
 class Boolean implements Column {
@@ -13,8 +14,8 @@ class Boolean implements Column {
         return boolval($value);
     }
 
-    public function isVirtual(): bool {
-        return false;
+    public function isVirtual(mixed $value): bool {
+        return is_null($value);
     }
 
     public function isAutoCreated(): bool {

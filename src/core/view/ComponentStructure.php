@@ -7,13 +7,13 @@ use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 
-class ComponentStructure implements Render, Endpoint {
+class ComponentStructure implements View, Endpoint {
     use Renderer, SimpleEndpoint;
 
 
 
     public function __construct(
-        protected Render $root
+        protected View $root
     ) {}
 
 

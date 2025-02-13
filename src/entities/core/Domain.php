@@ -2,11 +2,11 @@
 
 namespace entities\core;
 
-use core\database\DatabaseColumns;
-use core\database\pdo\column\Integer;
-use core\database\pdo\column\PrimaryKey;
-use core\database\pdo\column\Text;
+use core\database\column\Integer;
+use core\database\column\PrimaryKey;
+use core\database\column\Text;
 use core\database\Entity;
+use core\database\pdo\PdoTable;
 
 /**
  * @property string host
@@ -15,24 +15,19 @@ use core\database\Entity;
  * @property int cost
  */
 class Domain extends Entity {
-    use DatabaseColumns;
-
     public static function init(): void {
-        self::$columns = [
-            'id' => new PrimaryKey(true),
-            'host' => Text::getInstance(),
-            'port' => Integer::getInstance(),
-            'path' => Text::getInstance(),
-            'cost' => Integer::getInstance()
-        ];
-
-        parent::init();
+        static::$definition = new PdoTable(
+            'core_domains',
+            [
+                'id' => new PrimaryKey(true),
+                'host' => Text::getInstance(),
+                'port' => Integer::getInstance(),
+                'path' => Text::getInstance(),
+                'cost' => Integer::getInstance()
+            ],
+            'id'
+        );
     }
-
-    public static function getTable(): string {
-        return "core_domains";
-    }
-
 
 
     public function save(): void {

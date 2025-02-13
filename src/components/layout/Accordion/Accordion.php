@@ -1,16 +1,16 @@
 <?php
 
-namespace components\Accordion;
+namespace components\layout\Accordion;
 
-use core\view\Render;
 use core\view\Renderer;
+use core\view\View;
 
-class Accordion implements Render {
+class Accordion implements View {
     use Renderer;
 
     public function __construct(
         protected string $title,
-        protected Render $content,
+        protected View $content,
         protected bool $isExpanded = true
     ) {}
 }

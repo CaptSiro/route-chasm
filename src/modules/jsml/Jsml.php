@@ -6,10 +6,10 @@ use core\module\DefaultModule;
 use core\module\ModuleInfo;
 use core\Singleton;
 use core\utils\Arrays;
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class Jsml extends DefaultModule implements Render {
+class Jsml extends DefaultModule implements View {
     use Renderer, Singleton;
 
 

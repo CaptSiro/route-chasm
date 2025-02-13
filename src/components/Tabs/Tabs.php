@@ -2,10 +2,10 @@
 
 namespace components\Tabs;
 
-use core\view\Render;
+use core\view\View;
 use core\view\Renderer;
 
-class Tabs implements Render {
+class Tabs implements View {
     use Renderer;
 
     protected ?string $selected = null;
@@ -13,7 +13,7 @@ class Tabs implements Render {
 
 
     /**
-     * @param array<string, Render> $tabs
+     * @param array<string, View> $tabs
      */
     public function __construct(
         protected array $tabs,

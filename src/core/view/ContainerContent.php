@@ -22,7 +22,7 @@ class ContainerContent extends Component {
 
 
 
-    public function getRoot(): Render {
+    public function getRoot(): View {
         return $this->container;
     }
 

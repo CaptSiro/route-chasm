@@ -7,7 +7,7 @@ use core\App;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\view\BufferTransform;
-use core\view\Render;
+use core\view\View;
 
 class Response {
     /**
@@ -168,15 +168,15 @@ class Response {
      * transform only data rendered from Render object. All data printed to output buffers prior to executing
      * Render::render() are not accessible to transform
      *
-     * @param Render $render
+     * @param View $view
      * @param string|null $template
      * @param bool $doFlushResponse
      * @return void
      * @see Response::EVENT_OB_TRANSFORM
      */
-    public function render(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
+    public function render(View $view, ?string $template = null, bool $doFlushResponse = true): void {
         ob_start();
-        echo $render->render($template);
+        echo $view->render($template);
 
         $this->generateHeaders();
 
@@ -191,8 +191,8 @@ class Response {
         $this->exit();
     }
 
-    public function renderRoot(Render $render, ?string $template = null, bool $doFlushResponse = true): void {
-        $this->render($render->getRoot(), $template, $doFlushResponse);
+    public function renderRoot(View $view, ?string $template = null, bool $doFlushResponse = true): void {
+        $this->render($view->getRoot(), $template, $doFlushResponse);
     }
 
     public function error(string $message, int $httpCode, ?string $template = null): void {

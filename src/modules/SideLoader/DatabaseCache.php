@@ -2,11 +2,11 @@
 
 namespace modules\SideLoader;
 
-use core\database\DatabaseColumns;
-use core\database\pdo\column\PrimaryKey;
-use core\database\pdo\column\Text;
-use core\database\query\Query;
+use core\database\column\PrimaryKey;
+use core\database\column\Text;
 use core\database\Entity;
+use core\database\pdo\PdoTable;
+use core\database\query\Query;
 
 /**
  * @property int id
@@ -14,21 +14,16 @@ use core\database\Entity;
  * @property string path
  */
 class DatabaseCache extends Entity {
-    use DatabaseColumns;
-
     public static function init(): void {
-        self::$columns = [
-            'id' => new PrimaryKey(true),
-            'hash' => Text::getInstance(),
-            'path' => Text::getInstance()
-        ];
-
-        self::$idColumn = 'id';
-        parent::init();
-    }
-
-    public static function getTable(): string {
-        return 'module_sideloadercache';
+        static::$definition = new PdoTable(
+            'module_sideloadercache',
+            [
+                'id' => new PrimaryKey(true),
+                'hash' => Text::getInstance(),
+                'path' => Text::getInstance()
+            ],
+            'id'
+        );
     }
 
 

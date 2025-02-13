@@ -8,7 +8,7 @@ use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 use JsonSerializable;
 
-class JsonComponent implements Render, Endpoint, JsonSerializable {
+class JsonComponent implements View, Endpoint, JsonSerializable {
     use SimpleEndpoint;
 
     protected mixed $json;
