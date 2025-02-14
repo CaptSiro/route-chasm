@@ -17,14 +17,13 @@ use entities\core\ModuleDefinition;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
-use modules\forms\controls\PasswordField;
+use modules\forms\controls\PasswordField\PasswordField;
 use modules\forms\controls\TextArea\TextArea;
 use modules\forms\controls\TextField;
 use modules\forms\Form;
 use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
 use modules\forms\layout\Row\Row;
-use modules\SideLoader\DatabaseCache;
 use modules\SideLoader\Javascript;
 use sptf\Sptf;
 
@@ -79,6 +78,7 @@ $user = new \components\layout\Accordion\Accordion(
     (new Row(.50))
         ->add(new TextField('Name', 'Name', 'Tonda'))
         ->add(new TextField('Surname', 'Surname', 'Maly'))
+        ->add(new PasswordField('Password', 'Password', 'foo123'))
 );
 
 $c0 = (new Column())

@@ -120,12 +120,15 @@ input {
     border-radius: var(--form-border-radius);
     border: unset;
     padding: 8px;
-    margin-top: 4px;
     background-color: var(--form-container-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
 
     transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+.form label {
+    margin-bottom: 0.25em;
 }
 
 .form-file {
@@ -273,4 +276,10 @@ input.invalid {
 
 .form .wrapper:last-child {
     margin-bottom: unset;
+}
+
+.form .password-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }

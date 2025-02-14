@@ -3,9 +3,9 @@
 namespace components\core\Admin\SetupWizard;
 
 use core\http\HttpMethod;
-use core\view\View;
 use core\view\Renderer;
-use modules\forms\controls\PasswordField;
+use core\view\View;
+use modules\forms\controls\PasswordField\PasswordField;
 use modules\forms\controls\Submit\Submit;
 use modules\forms\Form;
 

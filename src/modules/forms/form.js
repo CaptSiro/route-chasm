@@ -94,3 +94,31 @@ function form_file(container) {
         });
     }
 }
+
+
+
+/**
+ * @param {HTMLElement} container
+ */
+function form_password(container) {
+    const control = $('.password-visibility-control', container);
+    if (control === null) {
+        return;
+    }
+
+    const field = $('input', container);
+    const hide = $('[data-action="hide"]', control);
+    const show = $('[data-action="show"]', control);
+
+    hide.addEventListener('click', () => {
+        field.type = 'password';
+        hide.classList.add('hide');
+        show.classList.remove('hide');
+    });
+
+    show.addEventListener('click', () => {
+        field.type = 'text';
+        show.classList.add('hide');
+        hide.classList.remove('hide');
+    });
+}

@@ -29,6 +29,14 @@ class Input implements Control {
         return $this->name;
     }
 
+    public function getLabel(): string {
+        return $this->label;
+    }
+
+    public function getValue(): string {
+        return $this->value;
+    }
+
     public function pattern(string $pattern): self {
         $this->addAttribute("pattern", $pattern);
         return $this;
