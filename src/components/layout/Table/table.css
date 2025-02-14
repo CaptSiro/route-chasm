@@ -18,7 +18,7 @@
     padding: 8px;
 }
 
-.table-row:nth-child(2) {
+.table-row:nth-child(odd) {
     background-color: var(--table-container-1);
 }
 

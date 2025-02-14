@@ -26,6 +26,7 @@ use core\module\Module;
 use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
+use modules\forms\Forms;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
 use entities\core\ModuleDefinition;
@@ -68,7 +69,8 @@ class App implements Loader {
     protected static function getDefaultModules(): array {
         return [
             SideLoader::getInstance(),
-            Jsml::getInstance()
+            Jsml::getInstance(),
+            Forms::getInstance()
         ];
     }
 
