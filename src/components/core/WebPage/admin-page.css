@@ -10,7 +10,7 @@ nav {
 }
 
 .project {
-    margin-bottom: var(--gap);
+    margin: var(--gap) 0;
 }
 
 .author {
