@@ -14,6 +14,8 @@ class SubMenu implements View {
 
 
 
+    protected bool $inset = true;
+
     public function __construct(
         protected string $path,
         protected array $menu
@@ -34,11 +36,15 @@ class SubMenu implements View {
         return false;
     }
 
-    public function hasRender(string $label): bool {
+    public function hasRender(?string $label = null): bool {
+        if (is_null($label)) {
+            return isset($this->menu[AdminMenu::KEY_RENDER]);
+        }
+
         return isset($this->menu[$label][AdminMenu::KEY_RENDER]);
     }
 
-    public function createUrl(string $label): ?string {
+    public function createUrl(string $label = ''): ?string {
         $translated = AdminMenu::getInstance()
             ->translate($this->path .'/'. $label);
 
@@ -48,5 +54,10 @@ class SubMenu implements View {
 
         return App::getInstance()
             ->prependHome(AdminEndpoint::getInstance()->getPath() .'/'. $translated);
+    }
+
+    public function inset(bool $bool): static {
+        $this->inset = $bool;
+        return $this;
     }
 }

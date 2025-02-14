@@ -25,12 +25,12 @@
 }
 
 .tabs .labels .label:hover {
-    background-color: var(--tabs-accent-0) !important;
+    background-color: var(--tabs-accent-1) !important;
     cursor: pointer;
 }
 
 .tabs .labels .label.selected {
-    background-color: var(--tabs-accent-1);
+    background-color: var(--tabs-accent-0);
 }
 
 .tabs .tabs__wrapper {

@@ -19,6 +19,7 @@ use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
 use modules\forms\controls\PasswordField;
 use modules\forms\controls\TextArea\TextArea;
+use modules\forms\controls\TextField;
 use modules\forms\Form;
 use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
@@ -76,8 +77,8 @@ $router->use(
 $user = new \components\layout\Accordion\Accordion(
     'User info',
     (new Row(.50))
-        ->add(new PasswordField('Name', 'Name', 'Tonda'))
-        ->add(new PasswordField('Surname', 'Surname', 'Maly'))
+        ->add(new TextField('Name', 'Name', 'Tonda'))
+        ->add(new TextField('Surname', 'Surname', 'Maly'))
 );
 
 $c0 = (new Column())

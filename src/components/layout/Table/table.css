@@ -1,0 +1,28 @@
+:root {
+    --table-container-0: var(--container-0);
+    --table-container-1: var(--container-1);
+    --table-accent-0: var(--accent-0)
+}
+
+.table {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--table-container-0);
+    border: 2px solid var(--table-container-1);
+}
+
+.table-row,
+.table-header {
+    display: grid;
+    grid-template-columns: inherit;
+    padding: 8px;
+}
+
+.table-row:nth-child(2) {
+    background-color: var(--table-container-1);
+}
+
+.table-header {
+    padding: 16px 8px;
+    background-color: var(--table-accent-0);
+}

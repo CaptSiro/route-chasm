@@ -5,6 +5,7 @@ namespace components\core\Admin\Menu;
 use components\core\Admin\SubMenu\SubMenu;
 use core\Singleton;
 use core\utils\Strings;
+use core\view\StringRenderer;
 use core\view\View;
 use core\view\Renderer;
 
@@ -26,11 +27,21 @@ class AdminMenu implements View {
 
 
 
+    protected ?View $homeLabel;
     protected array $map = [];
     protected array $segmentToLabel = [];
     protected array $labelToSegment = [];
 
+    public function __construct() {
+        $this->homeLabel = new StringRenderer('Home');
+    }
 
+
+
+    public function setHomeLabel(?View $view): static {
+        $this->homeLabel = $view;
+        return $this;
+    }
 
     protected function getTranslation(string $label): string {
         if (isset($this->segmentToLabel[$label])) {

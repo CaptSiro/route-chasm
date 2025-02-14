@@ -93,8 +93,8 @@ input[type="radio"] {
 
 input[type="radio"]:checked,
 input[type="checkbox"]:checked {
-    background-color: var(--form-accent-0);
-    border-color: var(--form-accent-3);
+    background-color: var(--form-accent-3);
+    border-color: var(--form-accent-0);
     transition: background-color 150ms linear;
 }
 
@@ -220,7 +220,7 @@ input.invalid {
 }
 
 .form button:hover {
-    outline: 2px solid var(--form-accent-0);
+    outline: 2px solid var(--form-accent-3);
     background-color: var(--form-container-0);
     cursor: pointer;
 }

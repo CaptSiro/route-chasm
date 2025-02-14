@@ -2,8 +2,18 @@
 
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\SubMenu\SubMenu;
+use modules\SideLoader\Css;
+
+Css::import($this->getSource('admin-menu.css'));
 
 ?>
-<div class="admin-menu">
-    <?= new SubMenu('', $this->map) ?>
+<div class="admin-menu no-inset sub-menu">
+    <?php $menu = new SubMenu('', $this->map) ?>
+    <?php $menu->inset($renderHome = $menu->hasRender() && !is_null($this->homeLabel)) ?>
+    <?php if ($renderHome): ?>
+        <a href="<?= $menu->createUrl() ?>">
+            <?= $this->homeLabel->render() ?>
+        </a>
+    <?php endif; ?>
+    <?= $menu->render() ?>
 </div>

@@ -52,6 +52,8 @@ class App implements Loader {
 
 
     public const ENV = __DIR__ ."/../../.env";
+    public const PROJECT_NAME = 'WEB';
+    public const PROJECT_AUTHOR = 'WEB_AUTHOR';
 
     public const OPTION_DO_REMOVE_HOME_FROM_URL_PATH = "do_remove_home_from_url_path";
     public const OPTION_DO_ADD_HOME_TO_URL_PATH = "do_add_home_to_url_path";
@@ -174,6 +176,14 @@ class App implements Loader {
 
     public function getResponse(): Response {
         return $this->response;
+    }
+
+    public function getProjectName(): ?string {
+        return $this->env->get(self::PROJECT_NAME);
+    }
+
+    public function getProjectAuthor(): ?string {
+        return $this->env->get(self::PROJECT_AUTHOR);
     }
 
     public function getSource(string $resource): string {

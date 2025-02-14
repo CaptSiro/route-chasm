@@ -11,11 +11,11 @@
 }
 
 .accordion.expanded .title {
-    background-color: var(--accordion-accent-1);
+    background-color: var(--accordion-accent-0);
 }
 
 .accordion .title:hover {
-    background-color: var(--accordion-accent-0) !important;
+    background-color: var(--accordion-accent-1) !important;
 }
 
 .accordion .content {

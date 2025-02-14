@@ -1,0 +1,32 @@
+.admin-page {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    overflow: hidden;
+}
+
+nav {
+    padding: var(--gap);
+    background-color: var(--container-1);
+}
+
+.project {
+    margin-bottom: var(--gap);
+}
+
+.author {
+    color: var(--text-1);
+    font-size: 0.8em;
+}
+
+.home-link:visited {
+    color: var(--text-0);
+}
+
+.home-link {
+    text-decoration: none;
+}
+
+main {
+    overflow: auto;
+    margin: var(--gap);
+}

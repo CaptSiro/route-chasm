@@ -1,0 +1,7 @@
+.sub-menu:not(.no-inset) {
+    padding-left: var(--gap);
+}
+
+.admin-menu a:visited {
+    color: var(--text-0);
+}

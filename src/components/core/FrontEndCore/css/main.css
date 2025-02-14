@@ -7,10 +7,10 @@
     --text-0: #ffffff;
     --text-1: #e8e8e8;
     --text-2: #d1d1d1;
-    --accent-0: #d17147;
-    --accent-1: #c75c38;
-    --accent-2: #b34a32;
-    --accent-3: #9b3427;
+    --accent-0: #9b3427;
+    --accent-1: #b34a32;
+    --accent-2: #c75c38;
+    --accent-3: #d17147;
 
     --border-radius: 8px;
     --border-radius-smaller: 4px;
@@ -18,9 +18,36 @@
     --gap-smaller: 8px;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1 {
+    margin: 16px 0;
+}
+
 html {
     background-color: var(--container-0);
     color: var(--text-0);
+    font-family: Calibri, serif;
+}
+
+body {
+    min-height: 100vh;
+}
+
+a {
+    color: var(--text-0);
+}
+
+a:hover {
+    color: var(--text-0);
+}
+
+a:visited {
+    color: var(--text-2);
 }
 
 .hide {

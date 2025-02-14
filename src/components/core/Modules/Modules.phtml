@@ -1,25 +1,10 @@
 <?php /** @var Modules $this */
 
 use components\core\Modules\Modules;
-use core\App;
 use modules\SideLoader\Css;
 
 Css::import($this->getSource('modules.css'));
 
 ?>
-<div class="modules">
-    <div class="module">
-        <span>Name</span>
-        <span>Identifier</span>
-        <span>Version</span>
-    </div>
-
-    <?php foreach (App::getInstance()->getLoadedModules() as $module): ?>
-        <div class="module">
-            <span><?= basename(get_class($module)) ?></span>
-            <?php $info = $module->getInfo() ?>
-            <code><?= $info->identifier ?></code>
-            <span><?= $info->version ?></span>
-        </div>
-    <?php endforeach; ?>
-</div>
+<h1>Loaded modules</h1>
+<?= $this->getModules() ?>

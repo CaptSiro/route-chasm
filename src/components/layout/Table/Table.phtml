@@ -1,0 +1,31 @@
+<?php /** @var Table $this */
+
+use components\layout\Table\Table;
+use modules\SideLoader\Css;
+
+Css::import($this->getSource('table.css'));
+
+?>
+<?php if (!empty($this->columns)): ?>
+    <div
+        class="table"
+        style="grid-template-columns: repeat(<?= count($this->columns) ?>, 1fr);"
+    >
+        <?php if ($this->hasFlag(Table::FLAG_SHOW_HEADER)): ?>
+            <div class="table-header">
+                <?php foreach ($this->columns as $label): ?>
+                    <h4><?= $label ?></h4>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php foreach ($this->rows as $row): ?>
+            <?php $this->proxy->setItem($row); ?>
+            <div class="table-row">
+                <?php foreach ($this->columns as $name => $label): ?>
+                    <?= $this->proxy->getValue($name) ?>
+                <?php endforeach; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
