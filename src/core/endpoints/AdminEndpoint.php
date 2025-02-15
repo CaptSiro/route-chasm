@@ -48,6 +48,11 @@ class AdminEndpoint implements Endpoint {
             );
         }
 
+        if ($item instanceof Endpoint) {
+            $item->execute($request, $response);
+            return;
+        }
+
         $response->renderRoot($item);
     }
 

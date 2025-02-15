@@ -21,6 +21,6 @@ class Component implements View, Endpoint {
     }
 
     public function execute(Request $request, Response $response): void {
-        $response->render($this);
+        $response->renderRoot($this);
     }
 }

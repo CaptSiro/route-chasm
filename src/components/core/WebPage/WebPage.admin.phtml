@@ -1,6 +1,7 @@
 <?php /** @var WebPage $this */
 
 use components\core\Admin\Menu\AdminMenu;
+use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
 use core\App;
 use core\endpoints\AdminEndpoint;
@@ -14,6 +15,8 @@ $app = App::getInstance();
 <html lang="<?= $this->language ?>">
 <?= $this->head ?>
 <body class="admin-page">
+    <?= Terminal::getInstance() ?>
+
     <nav>
         <?php if (!is_null($project = $app->getProjectName())): ?>
             <div class="project">
@@ -30,6 +33,7 @@ $app = App::getInstance();
         <?php endif; ?>
         <?= AdminMenu::getInstance() ?>
     </nav>
+
     <main>
         <?php foreach ($this->children as $child): ?>
             <?= $child->render() ?>

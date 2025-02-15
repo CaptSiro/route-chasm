@@ -1,0 +1,10 @@
+<?php /** @var \components\core\Terminal\Terminal $this */ ?>
+<?php if ($this->shouldDisplay()): ?>
+    <div class="terminal">
+        <div class="logs">
+            <?php foreach ($this->dumps as $var): ?>
+                <?php var_dump($var); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>
