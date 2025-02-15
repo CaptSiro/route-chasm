@@ -3,6 +3,8 @@
 namespace core;
 
 use Closure;
+use components\core\Admin\Home\AdminHome;
+use components\core\Terminal\Terminal;
 use core\communication\Request;
 use core\communication\Response;
 use core\endpoints\Endpoint;
@@ -14,6 +16,7 @@ use core\tree\Node;
 use core\tree\SnapshotStack;
 use core\tree\Trail;
 use core\url\UrlPath;
+use core\utils\Arrays;
 
 class Router {
     protected Node $node;
@@ -33,11 +36,7 @@ class Router {
         return $this->node->getEndpoints();
     }
 
-    public function getInstanceId(): int {
-        return $this->node->getInstanceId();
-    }
-
-    public function setNode(Node $node, Node $parent): void {
+    public function setNode(Node &$node, Node $parent): void {
         $node->copy($this->node, false);
         $this->node = $node;
         $this->node->setParent($parent);
@@ -78,6 +77,7 @@ class Router {
     public function bind(Path|string $path, Router $router): void {
         $parsed = Path::from($path);
         $leaf = $this->getLeaf($parsed);
+
         $router->setNode($leaf, $parsed->getDepth() === 0
             ? $this->node
             : $leaf->getParent()
@@ -115,6 +115,7 @@ class Router {
     }
 
     public function execute(Request $request, Response $response): void {
+        // todo convert to single returning single instance of Endpoint
         $trail = $this->findPath($request->getUrl()->getPath());
         if (is_null($trail)) {
             $response->error(
@@ -126,13 +127,11 @@ class Router {
 
         $request->getParam()->push($trail->getParams());
         $method = $request->getUrl()->getQuery()->get('x');
+        $endpoint = Arrays::last($trail->getEndpoints());
 
-        foreach ($trail->getEndpoints() as $endpoint) {
-            if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
-                call_user_func_array([$endpoint, $method], [$request, $response]);
-                continue;
-            }
-
+        if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
+            call_user_func_array([$endpoint, $method], [$request, $response]);
+        } else {
             $endpoint->execute($request, $response);
         }
 

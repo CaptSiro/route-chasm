@@ -14,6 +14,18 @@ readonly class UrlPath implements Pipeline {
         return new self($segments, self::nextPointer($segments, self::START_POINTER));
     }
 
+    public static function segmented(string $literal): array {
+        $segments = [];
+
+        foreach (explode('/', $literal) as $segment) {
+            if ($segment !== '') {
+                $segments[] = $segment;
+            }
+        }
+
+        return $segments;
+    }
+
     protected static function nextPointer(array $segments, int $pointer): int {
         $count = count($segments);
 

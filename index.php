@@ -1,9 +1,11 @@
 <?php
 
+use components\core\Admin\Home\AdminHome;
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
 use components\resources\Cards\Cards;
 use components\Tabs\Tabs;
+use core\AdminRouter;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -42,6 +44,7 @@ $router = $app->getMainRouter();
 
 
 $router->expose('/admin', AdminEndpoint::getInstance());
+$router->bind('/admin-v2', AdminRouter::getInstance(new AdminHome()));
 
 
 

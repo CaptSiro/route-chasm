@@ -2,7 +2,7 @@
 
 namespace components\core\Admin\Menu;
 
-use components\core\Admin\SubMenu\SubMenu;
+use core\endpoints\Endpoint;
 use core\Singleton;
 use core\utils\Strings;
 use core\view\StringRenderer;
@@ -94,6 +94,13 @@ class AdminMenu implements View {
             $segment = $this->segmentToLabel[$step] ?? null;
 
             if (!isset($map[$segment])) {
+                $isEndpoint = isset($map[self::KEY_RENDER])
+                    && $map[self::KEY_RENDER] instanceof Endpoint
+                    && $map[self::KEY_RENDER] instanceof View;
+                if ($isEndpoint) {
+                    return $map[self::KEY_RENDER];
+                }
+
                 return null;
             }
 

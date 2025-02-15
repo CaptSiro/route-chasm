@@ -2,6 +2,7 @@
 
 namespace core\tree;
 
+use core\App;
 use core\communication\Request;
 use core\endpoints\Endpoint;
 use core\path\Segment;
@@ -73,6 +74,20 @@ class Node {
     }
 
     public function search(UrlPath $path, SnapshotStack $stack): ?Trail {
+        $request = App::getInstance()->getRequest();
+        $response = App::getInstance()->getResponse();
+
+        // This could cause problems in the future... but for now this will do.
+        // Fixes problem when middleware is bound to section of the path but the whole path is not found.
+        // The middlewares are still going to be called.
+        // Example: /admin/foo/bar -> 404: Not Found
+        // - admin middleware still gets called
+        foreach ($this->endpoints as $endpoint) {
+            if ($endpoint->isMiddleware()) {
+                $endpoint->execute($request, $response);
+            }
+        }
+
         if ($this->segment?->hasFlag(Segment::FLAG_ANY_TERMINATED) || $path->isExhausted()) {
             $trail = $stack->merge()
                 ->setFlag($this->segment?->getFlags() ?? 0);

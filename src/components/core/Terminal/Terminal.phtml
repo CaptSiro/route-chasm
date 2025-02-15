@@ -2,8 +2,8 @@
 <?php if ($this->shouldDisplay()): ?>
     <div class="terminal">
         <div class="logs">
-            <?php foreach ($this->dumps as $var): ?>
-                <?php var_dump($var); ?>
+            <?php foreach ($this->messages as $var): ?>
+                <?= $var ?>
             <?php endforeach; ?>
         </div>
     </div>

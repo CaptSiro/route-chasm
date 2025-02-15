@@ -9,6 +9,10 @@ use core\communication\Response;
 class Procedure implements Endpoint {
     use SimpleEndpoint;
 
+    public static function middleware(Closure $function): static {
+        return new static($function, true);
+    }
+
 
 
     public function __construct(
@@ -18,8 +22,8 @@ class Procedure implements Endpoint {
 
 
 
-    public function middleware(): self {
-        $this->isMiddleware = true;
+    public function setIsMiddleware(bool $isMiddleware): static {
+        $this->isMiddleware = $isMiddleware;
         return $this;
     }
 

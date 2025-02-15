@@ -1,0 +1,8 @@
+<?php /** @var \components\core\CallStack\CallStack $this */ ?>
+<div class="trace">
+    <?php foreach ($this->stack as $entry): ?>
+        <div>
+            <code><?= $this->getEntryClass($entry) ?><?= $entry['function'] ?>(...) in <?= $entry['file'] ?>:<?= $entry['line'] ?></code>
+        </div>
+    <?php endforeach; ?>
+</div>

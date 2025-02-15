@@ -52,7 +52,7 @@ class SideLoader extends DefaultModule implements View {
      * <code>HEADER_X_REQUIRE</code> will always be set on response
      */
     public const QUERY_FORCE = 's';
-    public const TEMPLATE_PLACEHOLDER = '<!-- side-loader -->';
+    public const TEMPLATE_PLACEHOLDER = '<!-- '. self::IDENTIFIER .' -->';
 
 
 

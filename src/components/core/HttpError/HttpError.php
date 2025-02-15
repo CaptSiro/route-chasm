@@ -2,6 +2,7 @@
 
 namespace components\core\HttpError;
 
+use components\core\CallStack\CallStack;
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPage;
 use components\core\WebPage\WebPageRenderCondition;
@@ -15,38 +16,22 @@ class HttpError extends ContainerContent {
 
 
 
+    protected CallStack $stack;
+
     public function __construct(
         protected string $message,
         protected int $code,
-        protected int $stackTraceShiftCount = 0
+        int $stackTraceShiftCount = 0
     ) {
         parent::__construct(
             new WebPage(head: new HtmlHead("Error - $message"))
         );
 
+        $this->stack = new CallStack(max($stackTraceShiftCount, 0));
         $this->initCondition(self::createHtmlPageCondition());
     }
 
 
-
-    public function getStackTrace(): array {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-
-        // +1 = current function call
-        for ($i = 0; $i < $this->stackTraceShiftCount + 1; $i++) {
-            array_shift($trace);
-        }
-
-        return $trace;
-    }
-
-    public function getEntryClass(array $entry): string {
-        if (!isset($entry['class'])) {
-            return '';
-        }
-
-        return $entry['class'] . $entry['type'];
-    }
 
     public function render(?string $template = null): string {
         $response = App::getInstance()

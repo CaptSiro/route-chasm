@@ -1,0 +1,25 @@
+<?php /** @var SubMenuV2 $this */
+
+use components\core\Admin\SubMenuV2\SubMenuV2;
+use core\url\UrlGraph;
+
+?>
+<?php if (!$this->isEmpty()): ?>
+    <div class="sub-menu <?= !$this->inset ? 'no-inset' : '' ?>">
+        <?php foreach ($this->menu as $target => $menu): ?>
+            <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>
+            <div>
+                <?php if ($this->hasRender($target)): ?>
+                    <a href="<?= $this->createItemUrl($target) ?>">
+                        <?= $this->segments->getSource($target) ?>
+                    </a>
+                <?php else: ?>
+                    <span><?= $this->segments->getSource($target) ?></span>
+                <?php endif; ?>
+                <div>
+                    <?= $this->createSubMenu($target) ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
