@@ -2,12 +2,13 @@
 
 namespace components\core\Admin\SubMenu;
 
-use components\core\Admin\Menu\AdminMenu;
+use core\AdminRouter;
 use core\App;
 use core\CssClass;
-use core\endpoints\AdminEndpoint;
-use core\view\View;
+use core\translation\Translator;
+use core\url\UrlGraph;
 use core\view\Renderer;
+use core\view\View;
 
 class SubMenu implements View {
     use Renderer, CssClass;
@@ -17,6 +18,7 @@ class SubMenu implements View {
     protected bool $inset = true;
 
     public function __construct(
+        protected Translator $segments,
         protected string $path,
         protected array $menu
     ) {}
@@ -29,35 +31,32 @@ class SubMenu implements View {
             return true;
         }
 
-        if (count($keys) === 1 && $keys[0] === AdminMenu::KEY_RENDER) {
+        if (count($keys) === 1 && $keys[0] === UrlGraph::KEY_LEAF) {
             return true;
         }
 
         return false;
     }
 
-    public function hasRender(?string $label = null): bool {
-        if (is_null($label)) {
-            return isset($this->menu[AdminMenu::KEY_RENDER]);
+    public function hasRender(?string $target = null): bool {
+        if (is_null($target)) {
+            return UrlGraph::isLeaf($this->menu);
         }
 
-        return isset($this->menu[$label][AdminMenu::KEY_RENDER]);
+        return UrlGraph::isLeaf($this->menu[$target]);
     }
 
-    public function createUrl(string $label = ''): ?string {
-        $translated = AdminMenu::getInstance()
-            ->translate($this->path .'/'. $label);
-
-        if (is_null($translated)) {
-            return null;
-        }
-
+    public function createItemUrl(string $target = ''): string {
         return App::getInstance()
-            ->prependHome(AdminEndpoint::getInstance()->getPath() .'/'. $translated);
+            ->prependHome(AdminRouter::getInstance()->getPath() . $this->path .'/'. $target);
     }
 
     public function inset(bool $bool): static {
         $this->inset = $bool;
         return $this;
+    }
+
+    public function createSubMenu(string $target): static {
+        return new static($this->segments, $this->path .'/'. $target, $this->menu[$target]);
     }
 }

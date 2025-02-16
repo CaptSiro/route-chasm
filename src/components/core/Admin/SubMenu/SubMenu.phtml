@@ -1,23 +1,23 @@
 <?php /** @var SubMenu $this */
 
-use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\SubMenu\SubMenu;
+use core\url\UrlGraph;
 
 ?>
 <?php if (!$this->isEmpty()): ?>
     <div class="sub-menu <?= !$this->inset ? 'no-inset' : '' ?>">
-        <?php foreach ($this->menu as $label => $menu): ?>
-            <?php if ($label === AdminMenu::KEY_RENDER) continue; ?>
+        <?php foreach ($this->menu as $target => $menu): ?>
+            <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>
             <div>
-                <?php if ($this->hasRender($label)): ?>
-                    <a href="<?= $this->createUrl($label) ?>">
-                        <?= $label ?>
+                <?php if ($this->hasRender($target)): ?>
+                    <a href="<?= $this->createItemUrl($target) ?>">
+                        <?= $this->segments->getSource($target) ?>
                     </a>
                 <?php else: ?>
-                    <span><?= $label ?></span>
+                    <span><?= $this->segments->getSource($target) ?></span>
                 <?php endif; ?>
                 <div>
-                    <?= new SubMenu($this->path .'/'. $label, $menu) ?>
+                    <?= $this->createSubMenu($target) ?>
                 </div>
             </div>
         <?php endforeach; ?>

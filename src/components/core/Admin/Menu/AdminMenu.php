@@ -2,123 +2,50 @@
 
 namespace components\core\Admin\Menu;
 
+use Closure;
+use components\core\Terminal\Terminal;
+use core\AdminRouter;
 use core\endpoints\Endpoint;
 use core\Singleton;
-use core\utils\Strings;
-use core\view\StringRenderer;
-use core\view\View;
+use core\translation\UrlPathTranslator;
+use core\url\UrlGraph;
 use core\view\Renderer;
+use core\view\View;
 
 class AdminMenu implements View {
     use Renderer, Singleton;
-
-
-
-    public const KEY_RENDER = 0;
 
     public static function load(string $file): void {
         require_once $file;
     }
 
-    public static function item(string $path, View $view): void {
-        self::getInstance()
-            ->addItem($path, $view);
-    }
-
 
 
     protected ?View $homeLabel;
-    protected array $map = [];
-    protected array $segmentToLabel = [];
-    protected array $labelToSegment = [];
+    protected UrlPathTranslator $paths;
+    protected UrlGraph $graph;
 
     public function __construct() {
-        $this->homeLabel = new StringRenderer('Home');
+        $this->paths = new UrlPathTranslator();
+        $this->graph = new UrlGraph(
+            $this->paths->getSegments()
+        );
     }
 
 
 
-    public function setHomeLabel(?View $view): static {
-        $this->homeLabel = $view;
+    public function setHomeLabel(?View $homeLabel): static {
+        $this->homeLabel = $homeLabel;
         return $this;
     }
 
-    protected function getTranslation(string $label): string {
-        if (isset($this->segmentToLabel[$label])) {
-            return $label;
-        }
+    public function add(string $path, Closure|Endpoint ...$endpoints): static {
+        $this->graph->add($path);
 
-        $segment = Strings::urlPathSegment($label);
-        $this->segmentToLabel[$segment] = $label;
-        $this->labelToSegment[$label] = $segment;
-        return $label;
-    }
+        $urlPath = implode('/', $this->paths->add($path));
+        AdminRouter::getInstance()
+            ->use($urlPath, ...$endpoints);
 
-    public function addItem(string $path, View $view): static {
-        $map = &$this->map;
-
-        foreach ($this->createSteps($path) as $step) {
-            $segment = $this->getTranslation($step);
-
-            if (!isset($map[$segment])) {
-                $map[$segment] = [];
-            }
-
-            $map = &$map[$segment];
-        }
-
-        $map[self::KEY_RENDER] = $view;
         return $this;
-    }
-
-    public function translate(string $path): ?string {
-        $translation = [];
-
-        foreach ($this->createSteps($path) as $step) {
-            $segment = $this->labelToSegment[$step] ?? null;
-
-            if (is_null($segment)) {
-                return null;
-            }
-
-            $translation[] = $segment;
-        }
-
-        return implode('/', $translation);
-    }
-
-    public function getItem(string $path): ?View {
-        $map = $this->map;
-
-        foreach ($this->createSteps($path) as $step) {
-            $segment = $this->segmentToLabel[$step] ?? null;
-
-            if (!isset($map[$segment])) {
-                $isEndpoint = isset($map[self::KEY_RENDER])
-                    && $map[self::KEY_RENDER] instanceof Endpoint
-                    && $map[self::KEY_RENDER] instanceof View;
-                if ($isEndpoint) {
-                    return $map[self::KEY_RENDER];
-                }
-
-                return null;
-            }
-
-            $map = $map[$segment];
-        }
-
-        return $map[self::KEY_RENDER] ?? null;
-    }
-
-    protected function createSteps(string $path): array {
-        $steps = [];
-
-        foreach (explode('/', $path) as $step) {
-            if ($step !== '') {
-                $steps[] = $step;
-            }
-        }
-
-        return $steps;
     }
 }

@@ -3,8 +3,8 @@
 namespace components\core\WebPage;
 
 use components\core\HtmlHead\HtmlHead;
+use core\AdminRouter;
 use core\App;
-use core\endpoints\AdminEndpoint;
 use core\view\ArrayContainer;
 use core\view\Component;
 use core\view\Container;
@@ -31,7 +31,7 @@ class WebPage extends Component implements Container {
 
 
     public function render(?string $template = null): string {
-        if (AdminEndpoint::isAdmin(App::getInstance()->getRequest())) {
+        if (AdminRouter::isAdmin(App::getInstance()->getRequest())) {
             $source = $this->getSource('WebPage.phtml');
 
             if ($this->template === $source) {

@@ -1,6 +1,6 @@
 <?php /** @var WebPage $this */
 
-use components\core\Admin\MenuV2\AdminMenuV2;
+use components\core\Admin\Menu\AdminMenu;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
 use core\AdminRouter;
@@ -32,7 +32,7 @@ $app = App::getInstance();
             </div>
         <?php endif; ?>
 
-        <?= AdminMenuV2::getInstance() ?>
+        <?= AdminMenu::getInstance() ?>
     </nav>
 
     <main>

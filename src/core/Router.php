@@ -36,7 +36,7 @@ class Router {
         return $this->node->getEndpoints();
     }
 
-    public function setNode(Node &$node, Node $parent): void {
+    public function setNode(Node $node, Node $parent): void {
         $node->copy($this->node, false);
         $this->node = $node;
         $this->node->setParent($parent);
@@ -115,7 +115,6 @@ class Router {
     }
 
     public function execute(Request $request, Response $response): void {
-        // todo convert to single returning single instance of Endpoint
         $trail = $this->findPath($request->getUrl()->getPath());
         if (is_null($trail)) {
             $response->error(
@@ -127,11 +126,13 @@ class Router {
 
         $request->getParam()->push($trail->getParams());
         $method = $request->getUrl()->getQuery()->get('x');
-        $endpoint = Arrays::last($trail->getEndpoints());
 
-        if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
-            call_user_func_array([$endpoint, $method], [$request, $response]);
-        } else {
+        foreach (array_reverse($trail->getEndpoints()) as $endpoint) {
+            if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
+                call_user_func_array([$endpoint, $method], [$request, $response]);
+                continue;
+            }
+
             $endpoint->execute($request, $response);
         }
 

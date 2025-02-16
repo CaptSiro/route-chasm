@@ -8,10 +8,10 @@ Css::import($this->getSource('admin-menu.css'));
 
 ?>
 <div class="admin-menu no-inset sub-menu">
-    <?php $menu = new SubMenu('', $this->map) ?>
+    <?php $menu = new SubMenu($this->paths->getSegments(), '', $this->graph->getRoot()) ?>
     <?php $menu->inset($renderHome = $menu->hasRender() && !is_null($this->homeLabel)) ?>
     <?php if ($renderHome): ?>
-        <a href="<?= $menu->createUrl() ?>">
+        <a href="<?= $menu->createItemUrl() ?>">
             <?= $this->homeLabel->render() ?>
         </a>
     <?php endif; ?>

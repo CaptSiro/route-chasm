@@ -3,6 +3,7 @@
 use components\core\Admin\Home\AdminHome;
 use components\core\HttpError\HttpError;
 use components\core\WebPage\WebPage;
+use components\layout\Accordion\Accordion;
 use components\resources\Cards\Cards;
 use components\Tabs\Tabs;
 use core\AdminRouter;
@@ -11,7 +12,7 @@ use core\communication\Request;
 use core\communication\Response;
 use core\config\AppConfig;
 use core\config\EnvConfig;
-use core\endpoints\AdminEndpoint;
+use core\endpoints\Procedure;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
@@ -43,8 +44,7 @@ $router = $app->getMainRouter();
 
 
 
-$router->expose('/admin', AdminEndpoint::getInstance());
-$router->bind('/admin-v2', AdminRouter::getInstance(new AdminHome()));
+$router->bind('/admin', AdminRouter::getInstance(new AdminHome()));
 
 
 
@@ -58,7 +58,7 @@ $router->use(
 
 $router->use(
     '/ping',
-    fn() => Javascript::import(Cards::getInstance()->getSource('ping.js')),
+    Procedure::middleware(fn() => Javascript::import(Cards::getInstance()->getSource('ping.js'))),
     fn(Request $request, Response $response) => $response->send(
         '<h2 style="color: whitesmoke" x-swap="outer" x-get="'. App::getInstance()->prependHome('/dong?s') .'">pong</h2>'
     )
@@ -76,7 +76,7 @@ $router->use(
     )->query("_test")
 );
 
-$user = new \components\layout\Accordion\Accordion(
+$user = new Accordion(
     'User info',
     (new Row(.50))
         ->add(new TextField('Name', 'Name', 'Tonda'))
