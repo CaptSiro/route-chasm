@@ -4,6 +4,9 @@ namespace core\database\column;
 
 use core\database\Column;
 use core\Singleton;
+use modules\forms\controls\NumberField;
+use modules\forms\definition\overrides\FieldDefinition;
+use modules\forms\definition\overrides\FieldOverride;
 
 class Integer implements Column {
     use Singleton;
@@ -11,7 +14,7 @@ class Integer implements Column {
 
 
     public function __construct(
-        protected bool $isAutoIncrement
+        protected bool $isAutoIncrement = false
     ) {}
 
 
@@ -26,5 +29,9 @@ class Integer implements Column {
 
     public function isAutoCreated(): bool {
         return $this->isAutoIncrement;
+    }
+
+    public function getFieldDefinition(string $name): FieldDefinition {
+        return new FieldOverride($name, new NumberField($name, $name));
     }
 }

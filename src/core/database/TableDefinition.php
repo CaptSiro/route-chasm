@@ -3,7 +3,7 @@
 namespace core\database;
 
 interface TableDefinition {
-    public function getTable(): string;
+    public function getTableName(): string;
 
     /**
      * @return array<Column>

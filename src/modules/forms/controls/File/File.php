@@ -18,8 +18,8 @@ class File extends Input {
      * @param string[] $files
      */
     public function __construct(
-        string $name,
-        string $label,
+        string $name = self::class,
+        string $label = self::class,
         protected array $files = []
     ) {
         parent::__construct("file", $name, $label);
@@ -43,5 +43,9 @@ class File extends Input {
         $this->fileType = $type;
         $this->addAttribute("accept", $type);
         return $this;
+    }
+
+    public function setValue(mixed $value): void {
+        $this->files = $value;
     }
 }

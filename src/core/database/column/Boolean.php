@@ -4,6 +4,9 @@ namespace core\database\column;
 
 use core\database\Column;
 use core\Singleton;
+use modules\forms\controls\Checkbox\Checkbox;
+use modules\forms\definition\overrides\FieldOverride;
+use modules\forms\definition\overrides\FieldDefinition;
 
 class Boolean implements Column {
     use Singleton;
@@ -20,5 +23,9 @@ class Boolean implements Column {
 
     public function isAutoCreated(): bool {
         return false;
+    }
+
+    public function getFieldDefinition(string $name): FieldDefinition {
+        return new FieldOverride($name, new Checkbox($name, $name));
     }
 }

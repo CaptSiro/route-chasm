@@ -9,18 +9,24 @@ use core\database\column\ForeignKey;
 use core\database\pdo\parameter\PdoPrimitiveParam;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
-use core\Init;
 use JsonSerializable;
+use modules\forms\definition\FormDefinition;
+use modules\forms\Form;
 
-abstract class Entity extends Init implements JsonSerializable {
+abstract class Entity implements JsonSerializable {
     public const ORIGIN_CODE = 'code';
     public const ORIGIN_DATABASE = 'database';
     public const VIRTUALITY_CHECK = 'defined-value'; // code smell
 
 
 
-    public static function getTableDefinition(): TableDefinition {
-        throw new \Exception(__CLASS__ .'::'. __FUNCTION__ . ' is not implemented.');
+    private static array $definitions;
+    public static function addDefinition(string $class, EntityDefinition $entity): void {
+        self::$definitions[$class] = $entity;
+    }
+
+    public static function getDefinition(): ?EntityDefinition {
+        return self::$definitions[static::class] ?? null;
     }
 
 
@@ -33,17 +39,20 @@ abstract class Entity extends Init implements JsonSerializable {
     public static function init(): void {}
 
     public static function getIdColumn(): string {
-        return static::getTableDefinition()->getIdColumn();
+        return static::getDefinition()
+            ->getTable()
+            ->getIdColumn();
     }
 
     public static function getColumnEnumString(bool $includeIdColumn = true): string {
-        $table = '`'. static::getTableDefinition()->getTable() .'`';
+        $def = static::getDefinition()->getTable();
+        $table = '`'. $def->getTableName() .'`';
         $string = $includeIdColumn
-            ? "$table.`". static::getTableDefinition()->getIdColumn() .'`'
+            ? "$table.`". $def->getIdColumn() .'`'
             : "";
 
         $first = !$includeIdColumn;
-        foreach (static::getTableDefinition()->getColumns() as $name => $definition) {
+        foreach ($def->getColumns() as $name => $definition) {
             if ($definition->isVirtual(self::VIRTUALITY_CHECK)) {
                 continue;
             }
@@ -67,8 +76,9 @@ abstract class Entity extends Init implements JsonSerializable {
     }
 
     public static function fetch(string|Query|null $additional = null): ?static {
-        $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTableDefinition()->getTable(). "`";
-        return static::getTableDefinition()->getDatabase()
+        $def = static::getDefinition()->getTable();
+        $sql = "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTableName() . "`";
+        return $def->getDatabase()
             ->fetch(Query::from($sql, $additional), static::class);
     }
 
@@ -77,12 +87,19 @@ abstract class Entity extends Init implements JsonSerializable {
      * @return array<static>|null
      */
     public static function fetchAll(string|Query|null $additional = null): ?array {
-        $sql = "SELECT ". static::getColumnEnumString() ." FROM `". static::getTableDefinition()->getTable(). "`";
-        return static::getTableDefinition()->getDatabase()
+        $def = static::getDefinition()->getTable();
+        $sql = "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTableName() ."`";
+        return $def->getDatabase()
             ->fetchAll(Query::from($sql, $additional), static::class);
     }
 
 
+
+    public static function initCreateForm(Form $form): void {
+        static::getDefinition()
+            ->getForm()
+            ->initForm($form, []);
+    }
 
     protected static function createConditionally(?self $instance, bool $create = false): ?static {
         if (!is_null($instance)) {
@@ -101,11 +118,12 @@ abstract class Entity extends Init implements JsonSerializable {
             return new static();
         }
 
+        $def = static::getDefinition()->getTable();
         $_id = new PdoPrimitiveParam($id);
-        return static::getTableDefinition()->getDatabase()
+        return $def->getDatabase()
             ->fetch(
-                "SELECT ". static::getColumnEnumString() ." FROM `". static::getTableDefinition()->getTable()
-                ."` WHERE `". static::getTableDefinition()->getIdColumn() ."` = $_id",
+                "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTable()
+                ."` WHERE `". $def->getIdColumn() ."` = $_id",
                 static::class
             );
     }
@@ -144,11 +162,13 @@ abstract class Entity extends Init implements JsonSerializable {
 
 
     public function __get(string $name): mixed {
-        if (!isset(static::getTableDefinition()->getColumns()[$name])) {
+        $def = static::getDefinition()->getTable();
+
+        if (!isset($def->getColumns()[$name])) {
             return null;
         }
 
-        $column = static::getTableDefinition()->getColumns()[$name];
+        $column = $def->getColumns()[$name];
         if ($column instanceof ForeignKey) {
             $name = $column->getAlias();
         }
@@ -166,7 +186,9 @@ abstract class Entity extends Init implements JsonSerializable {
     }
 
     public function set(array $data): static {
-        $columns = static::getTableDefinition()->getColumns();
+        $columns = static::getDefinition()
+            ->getTable()
+            ->getColumns();
 
         foreach ($data as $column => $value) {
             if (!$this->isColumnValid($column, $value)) {
@@ -190,7 +212,9 @@ abstract class Entity extends Init implements JsonSerializable {
     }
 
     public function setDictionary(Dictionary $dictionary): static {
-        $columns = static::getTableDefinition()->getColumns();
+        $columns = static::getDefinition()
+            ->getTable()
+            ->getColumns();
 
         foreach ($columns as $column => $definition) {
             if (!$dictionary->exists($column)) {
@@ -211,7 +235,10 @@ abstract class Entity extends Init implements JsonSerializable {
     }
 
     public function isColumnValid(string $column, mixed $value = null): bool {
-        $columns = static::getTableDefinition()->getColumns();
+        $columns = static::getDefinition()
+            ->getTable()
+            ->getColumns();
+
         return isset($columns[$column]) && !$columns[$column]->isVirtual($value ?? $this->data[$column] ?? null);
     }
 
@@ -225,12 +252,14 @@ abstract class Entity extends Init implements JsonSerializable {
             return;
         }
 
-        $sql = "UPDATE `". static::getTableDefinition()->getTable() ."` SET ";
+        $def = static::getDefinition()->getTable();
+        $idColumn = $def->getIdColumn();
+        $sql = "UPDATE `". $def->getTableName() ."` SET ";
         $params = [];
         $first = true;
 
         foreach (array_unique($this->updated) as $column) {
-            if ($column === static::getTableDefinition()->getIdColumn()) {
+            if ($column === $idColumn) {
                 continue;
             }
 
@@ -244,19 +273,22 @@ abstract class Entity extends Init implements JsonSerializable {
             $first = false;
         }
 
-        $sql .= ' WHERE `'. static::getTableDefinition()->getIdColumn() .'` = '. $this->getId();
+        $params[] = $this->getId();
+        $sql .= ' WHERE `'. $idColumn .'` = '. StaticBuffer::PARAM_IDENT;
 
-        static::getTableDefinition()->getDatabase()
+        $def->getDatabase()
             ->run(new Query($sql, StaticBuffer::from($params)));
     }
 
     protected function insert(): void {
+        $def = static::getDefinition()->getTable();
+
         $columns = [];
         $params = [];
         $values = "";
         $first = true;
 
-        foreach (static::getTableDefinition()->getColumns() as $name => $definition) {
+        foreach ($def->getColumns() as $name => $definition) {
             if ($definition->isVirtual($this->data[$name] ?? null)) {
                 continue;
             }
@@ -272,15 +304,16 @@ abstract class Entity extends Init implements JsonSerializable {
             $first = false;
         }
 
-        $sql = 'INSERT INTO `'. static::getTableDefinition()->getTable() ."` (". implode(', ', $columns) .") VALUES (". $values .")";
-        static::getTableDefinition()->getDatabase()
+        $sql = 'INSERT INTO `'. $def->getTableName() ."` (". implode(', ', $columns) .") VALUES (". $values .")";
+        $def->getDatabase()
             ->run(new Query($sql, StaticBuffer::from($params)));
     }
 
     public function delete(): void {
+        $def = static::getDefinition()->getTable();
         $_id = new PdoPrimitiveParam($this->getId());
-        static::getTableDefinition()->getDatabase()
-            ->run("DELETE FROM `". static::getTableDefinition()->getTable() ."` WHERE `". static::getTableDefinition()->getIdColumn() ."` = $_id");
+        $def->getDatabase()
+            ->run("DELETE FROM `". $def->getTableName() ."` WHERE `". $def->getIdColumn() ."` = $_id");
     }
 
     public function getId(): int {
@@ -288,7 +321,7 @@ abstract class Entity extends Init implements JsonSerializable {
             return $this->id;
         }
 
-        return $this->id = $this->data[static::getTableDefinition()->getIdColumn()] ?? null;
+        return $this->id = $this->data[static::getDefinition()->getTable()->getIdColumn()] ?? null;
     }
 
     public function jsonSerialize(): array {
@@ -297,5 +330,11 @@ abstract class Entity extends Init implements JsonSerializable {
 
     public function getData(): array {
         return $this->data;
+    }
+
+    public function initUpdateForm(Form $form): void {
+        static::getDefinition()
+            ->getForm()
+            ->initForm($form, $this->data);
     }
 }

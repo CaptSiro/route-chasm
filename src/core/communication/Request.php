@@ -125,6 +125,10 @@ class Request {
     }
 
     public function getSession(): ?StrictDictionary {
+        if (!isset($this->session)) {
+            $this->startSession();
+        }
+
         return $this->session;
     }
 

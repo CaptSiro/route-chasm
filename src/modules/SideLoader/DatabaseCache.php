@@ -5,33 +5,32 @@ namespace modules\SideLoader;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
+use core\database\EntityDefinition;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
-use core\database\StaticTableDefinition;
 use core\utils\Strings;
 
+
+
+Entity::addDefinition(DatabaseCache::class, new EntityDefinition(
+    new PdoTable(
+        'module_sideloadercache',
+        [
+            'id' => new PrimaryKey(true),
+            'hash' => Text::getInstance(),
+            'path' => Text::getInstance()
+        ],
+        'id'
+    )
+));
+
+
+
 /**
- * @property int id
  * @property string hash
  * @property string path
  */
 class DatabaseCache extends Entity {
-    use StaticTableDefinition;
-
-    public static function init(): void {
-        static::$definition = new PdoTable(
-            'module_sideloadercache',
-            [
-                'id' => new PrimaryKey(true),
-                'hash' => Text::getInstance(),
-                'path' => Text::getInstance()
-            ],
-            'id'
-        );
-    }
-
-
-
     public static function fromHash(string $hash): ?static {
         return static::fetch(
             Query::raw("hash = ?", [$hash])

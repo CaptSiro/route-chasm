@@ -16,7 +16,7 @@ class Input implements Control {
     public function __construct(
         protected string $type,
         protected string $name,
-        protected string $label,
+        protected ?string $label,
         protected ?string $value = null,
     ) {
         $this->attributes = [];
@@ -45,5 +45,17 @@ class Input implements Control {
     public function required(): self {
         $this->addAttribute("required", true);
         return $this;
+    }
+
+    public function setValue(mixed $value): void {
+        $this->value = $value;
+    }
+
+    public function setLabel(string $label): void {
+        $this->label = $label;
+    }
+
+    public function setName(string $name): void {
+        $this->name = $name;
     }
 }

@@ -3,9 +3,9 @@
 namespace core\database;
 
 trait StaticTableDefinition {
-    protected static TableDefinition $definition;
+    protected static TableDefinition $table;
 
     public static function getTableDefinition(): TableDefinition {
-        return self::$definition;
+        return self::$table;
     }
 }

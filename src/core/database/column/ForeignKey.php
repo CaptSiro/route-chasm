@@ -4,6 +4,9 @@ namespace core\database\column;
 
 use core\database\Column;
 use http\Exception\InvalidArgumentException;
+use modules\forms\controls\NumberField;
+use modules\forms\definition\overrides\FieldDefinition;
+use modules\forms\definition\overrides\FieldOverride;
 
 class ForeignKey implements Column {
     public function __construct(
@@ -25,14 +28,16 @@ class ForeignKey implements Column {
         return true;
     }
 
-    /**
-     * @return string
-     */
     public function getAlias(): string {
         return $this->alias;
     }
 
     public function isAutoCreated(): bool {
         return false;
+    }
+
+    public function getFieldDefinition(string $name): FieldDefinition {
+        // todo change to select (?)
+        return new FieldOverride($name, new NumberField($name, $name));
     }
 }

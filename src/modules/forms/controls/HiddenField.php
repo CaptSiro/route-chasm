@@ -4,12 +4,12 @@ namespace modules\forms\controls;
 
 use modules\forms\controls\Input\Input;
 
-class TextField extends Input {
+class HiddenField extends Input {
     public function __construct(
         string $name = self::class,
-        string $label = self::class,
         ?string $value = null
     ) {
-        parent::__construct("text", $name, $label, $value);
+        parent::__construct('hidden', $name, $label = null, $value);
+        $this->addCssClass('hide');
     }
 }

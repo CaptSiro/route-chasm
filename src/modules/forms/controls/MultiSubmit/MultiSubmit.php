@@ -3,11 +3,11 @@
 namespace modules\forms\controls\MultiSubmit;
 
 use core\view\Renderer;
-use modules\forms\controls\Control;
+use core\view\View;
 use modules\forms\controls\FormControl;
 use modules\forms\FormAction;
 
-class MultiSubmit implements Control {
+class MultiSubmit implements View {
     use Renderer, FormControl;
 
     /**

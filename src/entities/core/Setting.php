@@ -6,35 +6,34 @@ use core\database\column\Boolean;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
+use core\database\EntityDefinition;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
-use core\database\StaticTableDefinition;
+
+
+
+Entity::addDefinition(Setting::class, new EntityDefinition(
+    new PdoTable(
+        'core_settings',
+        [
+            'id' => new PrimaryKey(true),
+            'name' => Text::getInstance(),
+            'value' => Text::getInstance(),
+            'editable' => Boolean::getInstance()
+        ],
+        'id'
+    )
+));
+
+
 
 /**
- * @property int id
  * @property string name
  * @property string|null value
  * @property bool editable
  * @final
  */
 class Setting extends Entity {
-    use StaticTableDefinition;
-
-    public static function init(): void {
-        static::$definition = new PdoTable(
-            'core_settings',
-            [
-                'id' => new PrimaryKey(true),
-                'name' => Text::getInstance(),
-                'value' => Text::getInstance(),
-                'editable' => Boolean::getInstance()
-            ],
-            'id'
-        );
-    }
-
-
-
     /**
      * Returns setting that saved under given name. Use <code>create: true</code> and <code>default: <value></code> to
      * create default setting if it is not present

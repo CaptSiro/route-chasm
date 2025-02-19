@@ -3,8 +3,11 @@
 namespace modules\forms;
 
 use components\core\Html\Html;
+use core\communication\Request;
+use core\utils\Strings;
 use core\view\Component;
 use core\view\View;
+use modules\forms\controls\HiddenField;
 
 class Form extends Component {
     private static ?Form $form = null;
@@ -17,6 +20,16 @@ class Form extends Component {
 
     public static function ns(string $class): string {
         return strtr(strtolower($class), "\\", "-");
+    }
+
+    public static function csrf(Request $request): HiddenField {
+        $csrf = $request->getSession()->get('csrf');
+        if (is_null($csrf)) {
+            $csrf = Strings::randomBase64(16);
+            $request->getSession()->set('csrf', $csrf);
+        }
+
+        return new HiddenField('csrf', $csrf);
     }
 
     public static function note(string $content): Html {

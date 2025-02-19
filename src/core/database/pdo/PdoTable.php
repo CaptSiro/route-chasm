@@ -36,7 +36,7 @@ class PdoTable implements TableDefinition {
         return null;
     }
 
-    public function getTable(): string {
+    public function getTableName(): string {
         return $this->name;
     }
 

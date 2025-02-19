@@ -4,6 +4,9 @@ namespace core\database\column;
 
 use core\database\Column;
 use core\Singleton;
+use modules\forms\controls\TextField;
+use modules\forms\definition\overrides\FieldDefinition;
+use modules\forms\definition\overrides\FieldOverride;
 
 class Text implements Column {
     use Singleton;
@@ -24,5 +27,9 @@ class Text implements Column {
 
     public function isAutoCreated(): bool {
         return false;
+    }
+
+    public function getFieldDefinition(string $name): FieldDefinition {
+        return new FieldOverride($name, new TextField($name, $name));
     }
 }

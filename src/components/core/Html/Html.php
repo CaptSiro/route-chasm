@@ -4,11 +4,9 @@ namespace components\core\Html;
 
 use core\view\View;
 use core\view\Renderer;
-use modules\forms\controls\Control;
-use modules\forms\controls\FormControl;
 
-class Html implements View, Control {
-    use Renderer, FormControl;
+class Html implements View {
+    use Renderer;
 
     public static function wrap(string $tag, string $content): string {
         return "<$tag>$content</$tag>";

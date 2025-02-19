@@ -5,7 +5,9 @@ use modules\forms\controls\Input\Input;
 ?>
 <?php $id = $this->getId() ?>
 <div class="form-control <?= $this->cssClass ?>">
-    <label for="<?= $id ?>"><?= $this->label ?></label>
+    <?php if (!is_null($this->label)): ?>
+        <label for="<?= $id ?>"><?= $this->label ?></label>
+    <?php endif; ?>
     <input
         type="<?= $this->type ?>"
         value="<?= $this->value ?>"

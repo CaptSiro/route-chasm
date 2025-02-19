@@ -3,11 +3,11 @@
 namespace modules\forms\layout\Row;
 
 use core\view\Renderer;
-use modules\forms\controls\Control;
+use core\view\View;
 use modules\forms\controls\FormControl;
 use modules\forms\layout\DynamicLayout;
 
-class Row implements Control {
+class Row implements View {
     use Renderer, FormControl, DynamicLayout;
 
     public function __construct(float $widthPercentage = 1) {
