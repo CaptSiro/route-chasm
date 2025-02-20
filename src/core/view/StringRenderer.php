@@ -7,7 +7,7 @@ class StringRenderer implements View {
         protected string $string
     ) {}
 
-    public function render(?string $template = null): string {
+    public function render(): string {
         return $this->string;
     }
 

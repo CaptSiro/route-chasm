@@ -13,8 +13,8 @@ trait TemplateRenderer {
 
 
 
-    public function render(?string $template = null): string {
-        $file = $this->template ?? $template ?? $this->getSource(basename(get_class($this)) .".phtml");
+    public function renderTemplated(?string $template = null): string {
+        $file = $this->template ?? $template ?? $this->getSource($this->getClass() .".phtml");
 
         if (Files::extension($file) === null) {
             $file .= ".phtml";
@@ -29,7 +29,7 @@ trait TemplateRenderer {
         return ob_get_clean();
     }
 
-    public function setTemplate(?string $template): self {
+    public function setTemplate(?string $template): static {
         $this->template = $template;
         return $this;
     }

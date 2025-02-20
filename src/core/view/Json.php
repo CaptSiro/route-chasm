@@ -8,9 +8,7 @@ use core\endpoints\Endpoint;
 use core\endpoints\SimpleEndpoint;
 use JsonSerializable;
 
-class JsonComponent implements View, Endpoint, JsonSerializable {
-    use SimpleEndpoint;
-
+class Json implements View, JsonSerializable {
     protected mixed $json;
 
 
@@ -21,24 +19,12 @@ class JsonComponent implements View, Endpoint, JsonSerializable {
 
 
 
-    public function isMiddleware(): bool {
-        return false;
-    }
-
-    public function json(): null {
-        return null;
-    }
-
-    function execute(Request $request, Response $response): void {
-        $response->json($this);
-    }
-
-    function render(?string $template = null): string {
+    function render(): string {
         return json_encode($this);
     }
 
     public function jsonSerialize(): mixed {
-        return $this->json ?? $this->json();
+        return $this->json;
     }
 
     public function __toString(): string {

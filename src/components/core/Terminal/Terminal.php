@@ -67,7 +67,7 @@ class Terminal extends Component {
         return $isDev && !empty($this->messages);
     }
 
-    public function render(?string $template = null): string {
+    public function render(): string {
         $this->hasBeenRendered = true;
         return self::TEMPLATE_PLACEHOLDER;
     }

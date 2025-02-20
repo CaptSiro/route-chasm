@@ -30,11 +30,9 @@ class WebPage extends Component implements Container {
 
 
 
-    public function render(?string $template = null): string {
+    public function render(): string {
         if (AdminRouter::isAdmin(App::getInstance()->getRequest())) {
-            $source = $this->getSource('WebPage.phtml');
-
-            if ($this->template === $source) {
+            if ($this->template === $this->getSource('WebPage.phtml')) {
                 $this->setTemplate($this->getSource('WebPage.admin.phtml'));
             }
         }
@@ -42,9 +40,6 @@ class WebPage extends Component implements Container {
         return parent::render();
     }
 
-    /**
-     * @return Head
-     */
     public function getHead(): Head {
         return $this->head;
     }

@@ -5,14 +5,14 @@ namespace modules\SideLoader;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
-use core\database\EntityDefinition;
+use core\database\Schema;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
 use core\utils\Strings;
 
 
 
-Entity::addDefinition(DatabaseCache::class, new EntityDefinition(
+Entity::addSchema(DatabaseCache::class, new Schema(
     new PdoTable(
         'module_sideloadercache',
         [

@@ -350,7 +350,7 @@ class SideLoader extends DefaultModule implements View {
         $this->files[$type][] = $file;
     }
 
-    function render(?string $template = null): string {
+    function render(): string {
         $this->hasBeenRendered = true;
         return self::TEMPLATE_PLACEHOLDER;
     }

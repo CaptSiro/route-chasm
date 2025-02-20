@@ -10,6 +10,7 @@ use core\App;
 use core\communication\Format;
 use core\http\HttpHeader;
 use core\view\ContainerContent;
+use core\view\Formatter;
 
 class HttpError extends ContainerContent {
     use WebPageRenderCondition;
@@ -17,6 +18,7 @@ class HttpError extends ContainerContent {
 
 
     protected CallStack $stack;
+    protected Formatter $formatter;
 
     public function __construct(
         protected string $message,
@@ -29,27 +31,26 @@ class HttpError extends ContainerContent {
 
         $this->stack = new CallStack(max($stackTraceShiftCount, 0));
         $this->initCondition(self::createHtmlPageCondition());
-    }
 
-
-
-    public function render(?string $template = null): string {
-        $response = App::getInstance()
-            ->getResponse();
-
-        $response->setStatus($this->code);
-        $format = $response->getFormat();
-        $response->setHeader(HttpHeader::CONTENT_TYPE, $format);
-
-        return match ($format) {
+        $this->formatter = new Formatter(fn(string $format) => match ($format) {
             Format::IDENT_HTML => parent::render(),
-            Format::IDENT_XML => parent::render($this->getSource("HttpError.xml.phtml")),
+            Format::IDENT_XML => parent::renderTemplated($this->getSource("HttpError.xml.phtml")),
             Format::IDENT_JSON => json_encode([
                 "isError" => true,
                 "message" => $this->message,
                 "code" => $this->code
             ]),
             default => "$this->code: $this->message"
-        };
+        });
+    }
+
+
+
+    public function render(): string {
+        App::getInstance()
+            ->getResponse()
+            ->setStatus($this->code);
+
+        return $this->formatter->render();
     }
 }

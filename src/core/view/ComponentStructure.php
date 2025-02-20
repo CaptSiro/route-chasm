@@ -26,7 +26,7 @@ class ComponentStructure implements View, Endpoint {
         $response->renderRoot($this->root);
     }
 
-    function render(?string $template = null): string {
-        return $this->root->render($template);
+    function render(): string {
+        return $this->root->render();
     }
 }

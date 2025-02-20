@@ -22,16 +22,6 @@ class Form extends Component {
         return strtr(strtolower($class), "\\", "-");
     }
 
-    public static function csrf(Request $request): HiddenField {
-        $csrf = $request->getSession()->get('csrf');
-        if (is_null($csrf)) {
-            $csrf = Strings::randomBase64(16);
-            $request->getSession()->set('csrf', $csrf);
-        }
-
-        return new HiddenField('csrf', $csrf);
-    }
-
     public static function note(string $content): Html {
         return new Html(
             'p',
@@ -101,11 +91,11 @@ class Form extends Component {
         return $this->namespace ."__". $name;
     }
 
-    public function render(?string $template = null): string {
+    public function render(): string {
         $last = self::$form;
         self::$form = $this;
 
-        $ret = parent::render($template);
+        $ret = parent::render();
 
         self::$form = $last;
         return $ret;

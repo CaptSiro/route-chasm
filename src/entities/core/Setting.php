@@ -6,13 +6,13 @@ use core\database\column\Boolean;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
-use core\database\EntityDefinition;
+use core\database\Schema;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
 
 
 
-Entity::addDefinition(Setting::class, new EntityDefinition(
+Entity::addSchema(Setting::class, new Schema(
     new PdoTable(
         'core_settings',
         [

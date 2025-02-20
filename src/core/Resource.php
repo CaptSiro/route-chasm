@@ -14,7 +14,7 @@ use core\path\Path;
 use core\patterns\Number;
 use core\patterns\Pattern;
 use core\url\UrlBuilder;
-use core\view\JsonComponent;
+use core\view\Json;
 use core\view\View;
 use InvalidArgumentException;
 
@@ -99,7 +99,7 @@ abstract class Resource {
         $models ??= call_user_func($this->getTable() ."::fetchAll");
 
         if (App::getInstance()->getResponse()->getFormat() === Format::IDENT_JSON) {
-            return new JsonComponent($models);
+            return new Json($models);
         }
 
         $class = $this->getClass();
@@ -129,7 +129,7 @@ abstract class Resource {
         $request = $app->getRequest();
 
         if ($app->getResponse()->getFormat($request) === Format::IDENT_JSON) {
-            return new JsonComponent($model);
+            return new Json($model);
         }
 
         $class = $this->getClass();

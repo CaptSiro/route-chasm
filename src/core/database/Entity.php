@@ -20,13 +20,13 @@ abstract class Entity implements JsonSerializable {
 
 
 
-    private static array $definitions;
-    public static function addDefinition(string $class, EntityDefinition $entity): void {
-        self::$definitions[$class] = $entity;
+    private static array $schema;
+    public static function addSchema(string $class, Schema $entity): void {
+        self::$schema[$class] = $entity;
     }
 
-    public static function getDefinition(): ?EntityDefinition {
-        return self::$definitions[static::class] ?? null;
+    public static function getSchema(): ?Schema {
+        return self::$schema[static::class] ?? null;
     }
 
 
@@ -39,13 +39,13 @@ abstract class Entity implements JsonSerializable {
     public static function init(): void {}
 
     public static function getIdColumn(): string {
-        return static::getDefinition()
+        return static::getSchema()
             ->getTable()
             ->getIdColumn();
     }
 
     public static function getColumnEnumString(bool $includeIdColumn = true): string {
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
         $table = '`'. $def->getTableName() .'`';
         $string = $includeIdColumn
             ? "$table.`". $def->getIdColumn() .'`'
@@ -76,7 +76,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     public static function fetch(string|Query|null $additional = null): ?static {
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTableName() . "`";
         return $def->getDatabase()
             ->fetch(Query::from($sql, $additional), static::class);
@@ -87,7 +87,7 @@ abstract class Entity implements JsonSerializable {
      * @return array<static>|null
      */
     public static function fetchAll(string|Query|null $additional = null): ?array {
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
         $sql = "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTableName() ."`";
         return $def->getDatabase()
             ->fetchAll(Query::from($sql, $additional), static::class);
@@ -96,7 +96,7 @@ abstract class Entity implements JsonSerializable {
 
 
     public static function initCreateForm(Form $form): void {
-        static::getDefinition()
+        static::getSchema()
             ->getForm()
             ->initForm($form, []);
     }
@@ -118,7 +118,7 @@ abstract class Entity implements JsonSerializable {
             return new static();
         }
 
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
         $_id = new PdoPrimitiveParam($id);
         return $def->getDatabase()
             ->fetch(
@@ -162,7 +162,7 @@ abstract class Entity implements JsonSerializable {
 
 
     public function __get(string $name): mixed {
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
 
         if (!isset($def->getColumns()[$name])) {
             return null;
@@ -186,7 +186,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     public function set(array $data): static {
-        $columns = static::getDefinition()
+        $columns = static::getSchema()
             ->getTable()
             ->getColumns();
 
@@ -212,7 +212,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     public function setDictionary(Dictionary $dictionary): static {
-        $columns = static::getDefinition()
+        $columns = static::getSchema()
             ->getTable()
             ->getColumns();
 
@@ -235,7 +235,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     public function isColumnValid(string $column, mixed $value = null): bool {
-        $columns = static::getDefinition()
+        $columns = static::getSchema()
             ->getTable()
             ->getColumns();
 
@@ -252,7 +252,7 @@ abstract class Entity implements JsonSerializable {
             return;
         }
 
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
         $idColumn = $def->getIdColumn();
         $sql = "UPDATE `". $def->getTableName() ."` SET ";
         $params = [];
@@ -281,7 +281,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     protected function insert(): void {
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
 
         $columns = [];
         $params = [];
@@ -310,7 +310,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     public function delete(): void {
-        $def = static::getDefinition()->getTable();
+        $def = static::getSchema()->getTable();
         $_id = new PdoPrimitiveParam($this->getId());
         $def->getDatabase()
             ->run("DELETE FROM `". $def->getTableName() ."` WHERE `". $def->getIdColumn() ."` = $_id");
@@ -321,7 +321,7 @@ abstract class Entity implements JsonSerializable {
             return $this->id;
         }
 
-        return $this->id = $this->data[static::getDefinition()->getTable()->getIdColumn()] ?? null;
+        return $this->id = $this->data[static::getSchema()->getTable()->getIdColumn()] ?? null;
     }
 
     public function jsonSerialize(): array {
@@ -333,7 +333,7 @@ abstract class Entity implements JsonSerializable {
     }
 
     public function initUpdateForm(Form $form): void {
-        static::getDefinition()
+        static::getSchema()
             ->getForm()
             ->initForm($form, $this->data);
     }

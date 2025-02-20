@@ -3,10 +3,10 @@
 namespace tests\utils\RouteChasm;
 
 use core\database\Entity;
-use core\database\EntityDefinition;
+use core\database\Schema;
 use core\database\pdo\PdoTable;
 
-Entity::addDefinition(TestEntity::class, new EntityDefinition(
+Entity::addSchema(TestEntity::class, new Schema(
     new PdoTable('test', []),
 ));
 

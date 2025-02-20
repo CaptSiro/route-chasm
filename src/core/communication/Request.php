@@ -3,6 +3,7 @@
 namespace core\communication;
 
 use core\App;
+use core\collection\Session;
 use core\collection\StrictDictionary;
 use core\collection\StrictMap;
 use core\collection\StrictStack;
@@ -37,7 +38,7 @@ class Request {
 
     private ?array $headers;
 
-    private StrictDictionary|null $session;
+    private Session $session;
 
     private StrictStack $param;
 
@@ -62,6 +63,7 @@ class Request {
         $this->headers = null;
         $this->param = new StrictStack();
         $this->data = new StrictMap();
+        $this->session = new Session();
     }
 
 
@@ -124,11 +126,7 @@ class Request {
         return $this->param->get(Request::PARAM_ANY_TERMINATOR);
     }
 
-    public function getSession(): ?StrictDictionary {
-        if (!isset($this->session)) {
-            $this->startSession();
-        }
-
+    public function getSession(): ?Session {
         return $this->session;
     }
 
@@ -146,15 +144,6 @@ class Request {
         }
 
         $this->headers[$name] = $value;
-    }
-
-    public function hasSession(): bool {
-        return $this->session === null;
-    }
-
-    public function startSession(): void {
-        session_start();
-        $this->session = new StrictMap($_SESSION);
     }
 
     public function get(string $variable) {

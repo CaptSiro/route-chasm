@@ -1,0 +1,13 @@
+<?php /** @var BreadCrumbs $this */
+
+use components\core\BreadCrumbs\BreadCrumbs;
+use modules\SideLoader\Css;
+
+Css::import($this->getSource('bread-crumbs.css'));
+
+?>
+<ul class="bread-crumbs">
+    <?php foreach ($this->items as $item): ?>
+        <?= $item->render() ?>
+    <?php endforeach; ?>
+</ul>

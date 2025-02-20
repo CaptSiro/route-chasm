@@ -36,6 +36,10 @@
     flex-direction: column;
 }
 
+.form-control.hide {
+    margin-top: calc(var(--form-gap) * -1);
+}
+
 .form-actions {
     width: 100%;
     display: flex;

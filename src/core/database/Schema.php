@@ -4,7 +4,7 @@ namespace core\database;
 
 use modules\forms\definition\FormDefinition;
 
-class EntityDefinition {
+class Schema {
     public function __construct(
         protected TableDefinition $table,
         protected ?FormDefinition $form = null

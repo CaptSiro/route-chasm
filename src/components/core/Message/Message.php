@@ -2,6 +2,7 @@
 
 namespace components\core\Message;
 
+use components\core\Html\Html;
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPage;
 use core\App;
@@ -17,9 +18,10 @@ class Message extends ContainerContent {
 
 
 
-    public function render(?string $template = null): string {
+    public function render(): string {
         return match (App::getInstance()->getResponse()->getFormat()) {
             Format::IDENT_HTML => parent::render(),
+            Format::IDENT_XML => Html::wrap('message', $this->message),
             Format::IDENT_JSON => json_encode([
                 "isError" => false,
                 "message" => $this->message

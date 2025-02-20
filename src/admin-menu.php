@@ -7,5 +7,5 @@ use entities\core\Domain;
 
 AdminMenu::getInstance()
     ->add('/Modules', new Modules())
-    ->add('/Domains', new AdminEditor(Domain::class))
+    ->add('/Domains', new AdminEditor(Domain::getSchema()))
 ;

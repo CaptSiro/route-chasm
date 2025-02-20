@@ -1,6 +1,6 @@
 <?php
 
-use core\view\JsonComponent;
+use core\view\Json;
 use sptf\Sptf;
 use tests\utils\RouteChasm\TestComponent\TestComponent;
 
@@ -17,7 +17,7 @@ Sptf::test("component should render correct template", function () {
 
 Sptf::test("serialize JsonComponent", function () {
     $data = ["error" => 418, "message" => "I'm a teapot"];
-    $json = new JsonComponent($data);
+    $json = new Json($data);
 
     Sptf::expect((string) $json)
         ->toBe(json_encode($data));

@@ -2,6 +2,7 @@
 
 namespace core\url;
 
+use components\core\Terminal\Terminal;
 use core\translation\StringTranslator;
 use core\translation\Translator;
 use core\utils\Strings;
@@ -43,6 +44,22 @@ class UrlGraph {
         }
 
         $node[self::KEY_LEAF] = true;
+    }
+
+    public function getSource(string $path): string {
+        $node = &$this->root;
+        $return = [];
+
+        foreach (UrlPath::segmented($path) as $target) {
+            if (!isset($node[$target])) {
+                break;
+            }
+
+            $return[] = $this->segments->getSource($target);
+            $node = &$node[$target];
+        }
+
+        return implode('/', $return);
     }
 
     public function getRoot(): array {

@@ -6,7 +6,7 @@ use core\database\column\Integer;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
-use core\database\EntityDefinition;
+use core\database\Schema;
 use core\database\pdo\PdoTable;
 use modules\forms\controls\TextArea\TextArea;
 use modules\forms\definition\FormDefinition;
@@ -14,7 +14,7 @@ use modules\forms\definition\overrides\FieldOverride;
 
 
 
-Entity::addDefinition(Domain::class, new EntityDefinition(
+Entity::addSchema(Domain::class, new Schema(
     new PdoTable(
         'core_domains',
         [
