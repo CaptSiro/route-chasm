@@ -1,12 +1,12 @@
 <?php
 
-namespace core\database\pdo\parameter;
+namespace core\database\sql\parameter;
 
 use core\database\buffer\ParamBuffer;
 use core\database\Param;
 
-class PdoPrimitiveParam implements Param {
-    use PdoParamType;
+class SqlPrimitiveParam implements Param {
+    use SqlParamType;
 
     public const IDENT = "?";
 

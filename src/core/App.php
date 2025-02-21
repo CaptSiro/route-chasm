@@ -18,8 +18,8 @@ use core\config\Config;
 use core\collection\Map;
 use core\collection\StrictMap;
 use core\database\Database;
-use core\database\pdo\config\PdoConfig;
-use core\database\pdo\PdoDatabase;
+use core\database\sql\config\SqlConfig;
+use core\database\sql\SqlDatabase;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
@@ -240,8 +240,8 @@ class App implements Loader {
             ->get();
     }
 
-    public function getDefaultDatabase(?PdoConfig $config = null): Database {
-        return PdoDatabase::getInstance($config);
+    public function getDefaultDatabase(?SqlConfig $config = null): Database {
+        return SqlDatabase::getInstance($config);
     }
 
     /**

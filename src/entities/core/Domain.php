@@ -8,7 +8,7 @@ use core\database\column\Text;
 use core\database\Entity;
 use core\database\extensions\Enable;
 use core\database\Schema;
-use core\database\pdo\PdoTable;
+use core\database\sql\SqlTable;
 use modules\forms\controls\TextArea\TextArea;
 use modules\forms\definition\FormDefinition;
 use modules\forms\definition\overrides\FieldOverride;
@@ -16,7 +16,7 @@ use modules\forms\definition\overrides\FieldOverride;
 
 
 Entity::addSchema(Domain::class, new Schema(
-    new PdoTable(
+    new SqlTable(
         'core_domains',
         [
             'id' => new PrimaryKey(true),

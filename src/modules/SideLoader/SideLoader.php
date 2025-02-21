@@ -9,7 +9,7 @@ use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\Database;
-use core\database\pdo\PdoDatabase;
+use core\database\sql\SqlDatabase;
 use core\fs\Glob;
 use core\http\Cors;
 use core\http\Http;
@@ -111,7 +111,7 @@ class SideLoader extends DefaultModule implements View {
 
     public function migrate(string $fromVersion): void {
         $database = new DatabaseMigration(
-            PdoDatabase::getInstance(),
+            SqlDatabase::getInstance(),
             self::VERSIONS,
             new Glob(
                 $this->getSource('sql'),

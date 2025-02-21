@@ -1,13 +1,13 @@
 <?php
 
-namespace core\database\pdo\parameter;
+namespace core\database\sql\parameter;
 
 use core\database\buffer\ParamBuffer;
 use core\database\Param;
 use http\Exception\InvalidArgumentException;
 
-class PdoNamedParam implements Param {
-    use PdoParamType;
+class SqlNamedParam implements Param {
+    use SqlParamType;
 
     protected string $name;
 

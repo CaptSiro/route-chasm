@@ -6,12 +6,12 @@ use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
 use core\database\Schema;
-use core\database\pdo\PdoTable;
+use core\database\sql\SqlTable;
 
 
 
 Entity::addSchema(Card::class, new Schema(
-    new PdoTable(
+    new SqlTable(
         'cards',
         [
             "id" => new PrimaryKey(true),

@@ -1,8 +1,8 @@
 <?php
 
-namespace core\database\pdo\config;
+namespace core\database\sql\config;
 
-readonly class BasicPdoConfig implements PdoConfig {
+readonly class BasicSqlConfig implements SqlConfig {
     public function __construct(
         protected string $host,
         protected string $databaseName,

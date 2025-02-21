@@ -1,10 +1,10 @@
 <?php
 
-namespace core\database\pdo\config;
+namespace core\database\sql\config;
 
 use JsonSerializable;
 
-interface PdoConfig extends JsonSerializable {
+interface SqlConfig extends JsonSerializable {
     public function getConnectionString(): string;
 
     /**

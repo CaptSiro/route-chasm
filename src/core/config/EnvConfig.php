@@ -3,7 +3,7 @@
 namespace core\config;
 
 use core\App;
-use core\database\pdo\config\BasicPdoConfig;
+use core\database\sql\config\BasicSqlConfig;
 use core\http\HttpCode;
 use dotenv\Env;
 
@@ -31,8 +31,8 @@ class EnvConfig implements Config {
 
 
 
-    public function getPdoConfig(): BasicPdoConfig {
-        return new BasicPdoConfig(
+    public function getSqlConfig(): BasicSqlConfig {
+        return new BasicSqlConfig(
             $this->getOrDie("DATABASE_HOST"),
             $this->getOrDie("DATABASE_NAME"),
             $this->getOrDie("DATABASE_USER"),

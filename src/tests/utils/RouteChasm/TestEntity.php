@@ -4,10 +4,10 @@ namespace tests\utils\RouteChasm;
 
 use core\database\Entity;
 use core\database\Schema;
-use core\database\pdo\PdoTable;
+use core\database\sql\SqlTable;
 
 Entity::addSchema(TestEntity::class, new Schema(
-    new PdoTable('test', []),
+    new SqlTable('test', []),
 ));
 
 class TestEntity extends Entity {

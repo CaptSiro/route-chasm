@@ -1,6 +1,6 @@
 <?php
 
-namespace core\database\pdo;
+namespace core\database\sql;
 
 use core\App;
 use core\database\Column;
@@ -8,7 +8,7 @@ use core\database\column\PrimaryKey;
 use core\database\Database;
 use core\database\TableDefinition;
 
-class PdoTable implements TableDefinition {
+class SqlTable implements TableDefinition {
     public function __construct(
         protected string $name,
         protected array $columns,

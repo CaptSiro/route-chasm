@@ -6,8 +6,8 @@ namespace core\database;
 use core\collection\Dictionary;
 use core\database\buffer\StaticBuffer;
 use core\database\column\ForeignKey;
-use core\database\pdo\parameter\PdoPrimitiveParam;
-use core\database\pdo\PdoTable;
+use core\database\sql\parameter\SqlPrimitiveParam;
+use core\database\sql\SqlTable;
 use core\database\query\Query;
 use JsonSerializable;
 use modules\forms\definition\FormDefinition;
@@ -119,7 +119,7 @@ abstract class Entity implements JsonSerializable {
         }
 
         $def = static::getSchema()->getTable();
-        $_id = new PdoPrimitiveParam($id);
+        $_id = new SqlPrimitiveParam($id);
         return $def->getDatabase()
             ->fetch(
                 "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTable()
@@ -311,7 +311,7 @@ abstract class Entity implements JsonSerializable {
 
     public function delete(): void {
         $def = static::getSchema()->getTable();
-        $_id = new PdoPrimitiveParam($this->getId());
+        $_id = new SqlPrimitiveParam($this->getId());
         $def->getDatabase()
             ->run("DELETE FROM `". $def->getTableName() ."` WHERE `". $def->getIdColumn() ."` = $_id");
     }

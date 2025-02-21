@@ -2,8 +2,8 @@
 
 namespace core\config;
 
-use core\database\pdo\config\PdoConfig;
+use core\database\sql\config\SqlConfig;
 
 interface Config {
-    public function getPdoConfig(): PdoConfig;
+    public function getSqlConfig(): SqlConfig;
 }

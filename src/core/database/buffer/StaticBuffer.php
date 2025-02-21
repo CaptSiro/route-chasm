@@ -3,13 +3,13 @@
 namespace core\database\buffer;
 
 use core\database\Param;
-use core\database\pdo\parameter\PdoPrimitiveParam;
+use core\database\sql\parameter\SqlPrimitiveParam;
 
 class StaticBuffer implements Buffer {
-    public const PARAM_IDENT = PdoPrimitiveParam::IDENT;
+    public const PARAM_IDENT = SqlPrimitiveParam::IDENT;
 
     public static function from(array $values): self {
-        return new self(array_map(fn($x) => new PdoPrimitiveParam($x), $values));
+        return new self(array_map(fn($x) => new SqlPrimitiveParam($x), $values));
     }
 
 

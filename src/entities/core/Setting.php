@@ -7,13 +7,13 @@ use core\database\column\Text;
 use core\database\Entity;
 use core\database\extensions\Editable;
 use core\database\Schema;
-use core\database\pdo\PdoTable;
+use core\database\sql\SqlTable;
 use core\database\query\Query;
 
 
 
 Entity::addSchema(Setting::class, new Schema(
-    new PdoTable(
+    new SqlTable(
         'core_settings',
         [
             'id' => new PrimaryKey(true),

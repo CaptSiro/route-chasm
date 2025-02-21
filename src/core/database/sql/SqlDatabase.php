@@ -1,19 +1,18 @@
 <?php
 
-namespace core\database\pdo;
+namespace core\database\sql;
 
 use core\App;
 use core\database\Database;
-use core\database\pdo\config\PdoConfig;
+use core\database\sql\config\SqlConfig;
 use core\database\query\Query;
 use core\database\SideEffect;
 use core\database\Entity;
 use core\MultiSingleton;
 use PDO;
 use PDOStatement;
-use stdClass;
 
-class PdoDatabase implements Database {
+class SqlDatabase implements Database {
     use MultiSingleton;
 
     public const TYPES = [
@@ -24,9 +23,9 @@ class PdoDatabase implements Database {
         "NULL" => PDO::PARAM_NULL,
     ];
 
-    protected static ?PdoConfig $config = null;
+    protected static ?SqlConfig $config = null;
 
-    public static function configure(PdoConfig $config): void {
+    public static function configure(SqlConfig $config): void {
         self::$config = $config;
     }
 
@@ -82,7 +81,7 @@ class PdoDatabase implements Database {
 
 
 
-    public function __construct(?PdoConfig $config = null) {
+    public function __construct(?SqlConfig $config = null) {
         if (is_null($config)) {
             $config = self::$config;
         }
@@ -90,7 +89,7 @@ class PdoDatabase implements Database {
         if (!isset($config)) {
             $config = App::getInstance()
                 ->getConfig()
-                ->getPdoConfig();
+                ->getSqlConfig();
         }
 
         $opt = [
