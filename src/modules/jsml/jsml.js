@@ -264,6 +264,45 @@ function Tag(label, isRemovable = true, onRemove = () => true) {
 
 
 
+/**
+ * Calls function with provided element. This function expects `fn` to be one valid fully qualified function name
+ *
+ * @param {HTMLElement} element
+ * @param {string} fn
+ */
+function callFunction(element, fn) {
+    /** @type {any} */
+    let context = window;
+
+    for (const part of fn.split('.')) {
+        context = context[part.trim()];
+
+        if (context === undefined) {
+            return;
+        }
+    }
+
+    if (typeof context === 'function') {
+        context(element);
+    }
+}
+
+/**
+ * Parses function call and calls produced function on given element
+ *
+ * Example: `functionLiteral = 'console.log,custom'` will print `element` to console and call `custom(element)`
+ *
+ * @param {HTMLElement} element
+ * @param {string} functionLiteral
+ */
+function call(element, functionLiteral) {
+    for (const fn of functionLiteral.split(',')) {
+        callFunction(element, fn.trim());
+    }
+}
+
+
+
 window.addEventListener('load', () => {
     /** @type {Map<string, Set<string>>} */
     const imported = new Map();
@@ -391,29 +430,13 @@ window.addEventListener('load', () => {
         });
     }
 
-    function init(element, functionName) {
-        let context = window;
-
-        for (const part of functionName.split('.')) {
-            context = context[part.trim()];
-
-            if (context === undefined) {
-                return;
-            }
-        }
-
-        if (typeof context === 'function') {
-            context(element);
-        }
-    }
-
     /**
      * @param {HTMLElement} element
      */
     function process(element) {
         const functionName = element.getAttribute(X_INIT);
         if (functionName !== null) {
-            init(element, functionName);
+            call(element, functionName);
         }
 
         const ajaxInfo = getAjaxInfo(element);
