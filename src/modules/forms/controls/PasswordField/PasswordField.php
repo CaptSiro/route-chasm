@@ -2,8 +2,8 @@
 
 namespace modules\forms\controls\PasswordField;
 
-use core\Attributes;
-use core\CssClass;
+use core\html\Attributes;
+use core\html\CssClass;
 use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;

@@ -2,7 +2,13 @@
 
 namespace modules\forms;
 
+use core\html\JavascriptInit;
+
 class FormAction {
+    use JavascriptInit;
+
+
+
     public const TYPE_BUTTON = "button";
     public const TYPE_RESET = "reset";
     public const TYPE_SUBMIT = "submit";
@@ -16,6 +22,5 @@ class FormAction {
     public function __construct(
         public readonly string $type,
         public readonly string $label,
-        public string $action = ""
     ) {}
 }

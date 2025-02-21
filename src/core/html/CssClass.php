@@ -1,6 +1,6 @@
 <?php
 
-namespace core;
+namespace core\html;
 
 trait CssClass {
     protected string $cssClass = "";

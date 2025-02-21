@@ -4,7 +4,7 @@ namespace components\core\Admin\SubMenu;
 
 use core\AdminRouter;
 use core\App;
-use core\CssClass;
+use core\html\CssClass;
 use core\translation\Translator;
 use core\url\UrlGraph;
 use core\view\Renderer;
