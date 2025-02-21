@@ -2,14 +2,14 @@
 
 namespace modules\forms\controls\TextArea;
 
-use core\html\Attributes;
-use core\html\CssClass;
+use core\html\HtmlAttribute;
+use core\html\Attribute;
 use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
-class TextArea implements Control {
-    use Renderer, FormControl, CssClass, Attributes;
+class TextArea implements Control, Attribute {
+    use Renderer, FormControl, HtmlAttribute;
 
     public function __construct(
         protected string $name = self::class,

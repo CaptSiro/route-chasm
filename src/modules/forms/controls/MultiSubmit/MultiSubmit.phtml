@@ -3,7 +3,7 @@
     <?php foreach ($this->actions as $action): ?>
         <button
             type="<?= $action->type ?>"
-            <?= $action->getInitAttribute() ?>
+            <?= $action->stringifyAttributes() ?>
         ><?= $action->label ?></button>
     <?php endforeach; ?>
 </div>

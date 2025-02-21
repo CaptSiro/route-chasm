@@ -2,14 +2,14 @@
 
 namespace modules\forms\controls\Input;
 
-use core\html\Attributes;
-use core\html\CssClass;
+use core\html\HtmlAttribute;
+use core\html\Attribute;
 use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
 
-class Input implements Control {
-    use Renderer, FormControl, CssClass, Attributes;
+class Input implements Control, Attribute {
+    use Renderer, FormControl, HtmlAttribute;
 
 
 

@@ -4,14 +4,15 @@ namespace components\core\Admin\SubMenu;
 
 use core\AdminRouter;
 use core\App;
-use core\html\CssClass;
+use core\html\HtmlAttribute;
+use core\html\Attribute;
 use core\translation\Translator;
 use core\url\UrlGraph;
 use core\view\Renderer;
 use core\view\View;
 
-class SubMenu implements View {
-    use Renderer, CssClass;
+class SubMenu implements View, Attribute {
+    use Renderer, HtmlAttribute;
 
 
 

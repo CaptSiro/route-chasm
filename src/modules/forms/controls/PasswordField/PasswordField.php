@@ -2,8 +2,8 @@
 
 namespace modules\forms\controls\PasswordField;
 
-use core\html\Attributes;
-use core\html\CssClass;
+use core\html\HtmlAttribute;
+use core\html\Attribute;
 use core\view\Renderer;
 use modules\forms\controls\Control;
 use modules\forms\controls\FormControl;
@@ -12,8 +12,8 @@ use modules\forms\controls\Input\Input;
 /*
  * This whole class reeks of code smell... This should be reviewed
  */
-class PasswordField implements Control {
-    use Renderer, FormControl, CssClass, Attributes;
+class PasswordField implements Control, Attribute {
+    use Renderer, FormControl, HtmlAttribute;
 
     protected Input $field;
 

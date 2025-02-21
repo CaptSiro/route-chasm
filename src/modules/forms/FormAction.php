@@ -2,10 +2,11 @@
 
 namespace modules\forms;
 
-use core\html\JavascriptInit;
+use core\html\HtmlAttribute;
+use core\html\Attribute;
 
-class FormAction {
-    use JavascriptInit;
+class FormAction implements Attribute {
+    use HtmlAttribute;
 
 
 
