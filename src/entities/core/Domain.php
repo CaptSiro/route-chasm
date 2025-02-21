@@ -6,6 +6,7 @@ use core\database\column\Integer;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
+use core\database\extensions\Enable;
 use core\database\Schema;
 use core\database\pdo\PdoTable;
 use modules\forms\controls\TextArea\TextArea;
@@ -22,7 +23,7 @@ Entity::addSchema(Domain::class, new Schema(
             'host' => Text::getInstance(),
             'port' => Integer::getInstance(),
             'path' => Text::getInstance(),
-            'cost' => Integer::getInstance()
+            'cost' => Integer::getInstance(),
         ],
         'id'
     ),
@@ -30,7 +31,8 @@ Entity::addSchema(Domain::class, new Schema(
         [
             'host' => new FieldOverride('HOST', new TextArea()),
         ],
-    )
+    ),
+    [new Enable()]
 ));
 
 

@@ -27,3 +27,4 @@ CREATE TABLE `core_settings` (
 ) ENGINE = InnoDB;
 
 ALTER TABLE `core_settings` CHANGE `value` `value` TEXT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL;
+ALTER TABLE `core_settings` CHANGE `editable` `is_editable` TINYINT(1) NOT NULL DEFAULT '0';

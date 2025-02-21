@@ -23,21 +23,31 @@ class AdminMenu implements View {
         require_once $file;
     }
 
-    public static function getBreadCrumbs(?string $path = null): BreadCrumbs {
-        $admin = AdminRouter::getInstance()->getPath();
+    public static function getPath(): string {
+        return substr(
+            App::getInstance()
+                ->getRequest()
+                ->getUrl()
+                ->getPath(),
+            strlen(AdminRouter::getInstance()->getPath())
+        );
+    }
 
+    public static function getRequestPathSource(): string {
+        return self::getInstance()
+            ->getPathSource(self::getPath());
+    }
+
+    public static function getBreadCrumbs(?string $path = null): BreadCrumbs {
         if (is_null($path)) {
-            $path = substr(
-                App::getInstance()
-                    ->getRequest()
-                    ->getUrl()
-                    ->getPath(),
-                strlen($admin)
-            );
+            $path = self::getPath();
         }
 
+        $admin = AdminRouter::getInstance()->getPath();
         $app = App::getInstance();
-        $crumbs = [new BreadCrumb('home', $app->prependHome($admin))];
+        $crumbs = [
+            new BreadCrumb('home', $app->prependHome($admin))
+        ];
 
         $source = UrlPath::segmented(self::getInstance()
             ->getPathSource($path));

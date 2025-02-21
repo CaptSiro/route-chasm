@@ -337,4 +337,12 @@ abstract class Entity implements JsonSerializable {
             ->getForm()
             ->initForm($form, $this->data);
     }
+
+    public function getExtension(string $class): ?Extension {
+        $extension = static::getSchema()
+            ->getExtension($class);
+
+        $extension->setEntity($this);
+        return $extension;
+    }
 }

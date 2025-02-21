@@ -151,7 +151,7 @@ class SideLoader extends DefaultModule implements View {
 
             $retries->name = self::SETTING_MAX_RETRIES;
             $retries->value = 128;
-            $retries->editable = true;
+            $retries->is_editable = true;
 
             $retries->save();
         }

@@ -10,6 +10,8 @@ interface TableDefinition {
      */
     public function getColumns(): array;
 
+    public function addColumn(string $name, Column $column): void;
+
     public function getIdColumn(): string;
 
     public function getDatabase(): Database;

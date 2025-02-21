@@ -6,7 +6,3 @@
 .bread-crumbs li {
     list-style-type: none;
 }
-
-.bread-crumb:not(:first-child)::before {
-    content: '>';
-}

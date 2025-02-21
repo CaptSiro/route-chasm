@@ -3,6 +3,7 @@
 namespace core\database\pdo;
 
 use core\App;
+use core\database\Column;
 use core\database\column\PrimaryKey;
 use core\database\Database;
 use core\database\TableDefinition;
@@ -50,5 +51,9 @@ class PdoTable implements TableDefinition {
 
     public function getDatabase(): Database {
         return $this->database;
+    }
+
+    public function addColumn(string $name, Column $column): void {
+        $this->columns[$name] = $column;
     }
 }

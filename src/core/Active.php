@@ -9,13 +9,13 @@ trait Active {
         return $this->isActive;
     }
 
-    public function enable(bool $force = true): self {
+    public function activate(bool $force = true): self {
         $this->isActive = $force;
         return $this;
     }
 
-    public function disable(): self {
-        $this->enable(false);
+    public function deactivate(): self {
+        $this->activate(false);
         return $this;
     }
 }

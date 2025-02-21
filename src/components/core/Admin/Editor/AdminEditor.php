@@ -2,12 +2,14 @@
 
 namespace components\core\Admin\Editor;
 
+use components\core\Admin\Menu\AdminMenu;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\Schema;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\url\UrlPath;
 use core\view\ContainerContent;
 use modules\forms\controls\CsrfField;
 use modules\forms\controls\HiddenField;
@@ -17,7 +19,8 @@ use modules\forms\FormAction;
 
 class AdminEditor extends ContainerContent {
     public function __construct(
-        protected Schema $schema
+        protected Schema $schema,
+        protected ?string $title = null
     ) {
         parent::__construct();
     }
@@ -42,6 +45,15 @@ class AdminEditor extends ContainerContent {
         ]));
 
         return $form;
+    }
+
+    public function getTitle(): string {
+        if (is_null($this->title)) {
+            $segments = UrlPath::segmented(AdminMenu::getRequestPathSource());
+            return array_pop($segments);
+        }
+
+        return $this->title;
     }
 
     public function execute(Request $request, Response $response): void {

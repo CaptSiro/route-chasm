@@ -3,11 +3,20 @@
 use components\core\BreadCrumbs\BreadCrumbs;
 use modules\SideLoader\Css;
 
-Css::import($this->getSource('bread-crumbs.css'));
+$count = count($this->items);
+
+if ($count > 0) {
+    Css::import($this->getSource('bread-crumbs.css'));
+}
 
 ?>
-<ul class="bread-crumbs">
-    <?php foreach ($this->items as $item): ?>
-        <?= $item->render() ?>
-    <?php endforeach; ?>
-</ul>
+<?php if ($count > 0): ?>
+    <ul class="bread-crumbs">
+        <?php $first = true; foreach ($this->items as $item): ?>
+            <?php if (!$first): ?>
+                <span class="delimitor"><?= $this->delimitor ?></span>
+            <?php endif; ?>
+            <?= $item->render() ?>
+        <?php $first = false; endforeach; ?>
+    </ul>
+<?php endif; ?>

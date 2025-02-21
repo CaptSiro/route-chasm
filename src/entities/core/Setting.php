@@ -2,10 +2,10 @@
 
 namespace entities\core;
 
-use core\database\column\Boolean;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
+use core\database\extensions\Editable;
 use core\database\Schema;
 use core\database\pdo\PdoTable;
 use core\database\query\Query;
@@ -19,18 +19,18 @@ Entity::addSchema(Setting::class, new Schema(
             'id' => new PrimaryKey(true),
             'name' => Text::getInstance(),
             'value' => Text::getInstance(),
-            'editable' => Boolean::getInstance()
         ],
         'id'
-    )
+    ),
+     extensions: [new Editable()]
 ));
 
 
 
 /**
- * @property string name
- * @property string|null value
- * @property bool editable
+ * @property string $name
+ * @property string|null $value
+ * @property bool $is_editable
  * @final
  */
 class Setting extends Entity {

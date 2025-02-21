@@ -13,7 +13,8 @@ class BreadCrumbs implements View {
      * @param array<BreadCrumb> $items
      */
     public function __construct(
-        protected array $items
+        protected array $items,
+        protected string $delimitor = '>'
     ) {}
 
     /**
