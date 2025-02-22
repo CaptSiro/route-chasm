@@ -8,7 +8,7 @@ class Glob {
     public function __construct(
         protected string $root,
         protected ?string $extension = null,
-        protected bool $listDirectories = false
+        protected bool $recursive = false
     ) {
         if (isset($this->extension[0]) && $this->extension[0] === '.') {
             $this->extension = substr($this->extension, 1);

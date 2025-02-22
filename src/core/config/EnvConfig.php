@@ -5,6 +5,7 @@ namespace core\config;
 use core\App;
 use core\database\sql\config\BasicSqlConfig;
 use core\http\HttpCode;
+use core\path\Path;
 use dotenv\Env;
 
 class EnvConfig implements Config {
@@ -40,5 +41,12 @@ class EnvConfig implements Config {
             $this->env->get("DATABASE_PORT") ?? "3306",
             $this->env->get("DATABASE_CHARSET") ?? "UTF8",
         );
+    }
+
+    public function getPublicDirectory(): string {
+        $dir = $this->env->get('PUBLIC') ?? 'public';
+
+        return App::getInstance()
+            ->getSource(Path::join('..', $dir));
     }
 }

@@ -1,0 +1,34 @@
+<?php /** @var Window $this */
+
+use components\core\Icon;
+use components\core\Window\Window;
+use modules\SideLoader\Css;
+
+Css::import($this->getSource('window.css'));
+
+?>
+<button onclick="window_open($('#<?= $this->id ?>'))">Open <?= $this->title ?></button>
+<div
+    class="window hide"
+    id="<?= $this->id ?>"
+    data-window-draggable="<?= $this->hasFlag(Window::FLAG_DRAGGABLE) ?>"
+    <?= $this->stringifyAttributes() ?>
+>
+    <div class="head">
+        <span><?= $this->title ?></span>
+        <div class="controls">
+            <?php if ($this->hasFlag(Window::FLAG_MINIMIZABLE)): ?>
+                <button class="minimize">
+                    <?= Icon::nf('nf-fa-window_minimize') ?>
+                </button>
+            <?php endif; ?>
+            <button class="close">
+                <?= Icon::nf('nf-fa-close') ?>
+            </button>
+        </div>
+    </div>
+
+    <div class="content">
+        <?= $this->content->getRoot()->render() ?>
+    </div>
+</div>

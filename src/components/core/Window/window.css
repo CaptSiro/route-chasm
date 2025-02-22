@@ -1,0 +1,55 @@
+:root {
+    --window-container-0: var(--container-0);
+    --window-container-1: var(--container-1);
+    --window-accent-0: var(--accent-0);
+    --window-text-0: var(--text-0);
+}
+
+.window-overlay,
+.window-overlay-active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+}
+
+.window {
+    pointer-events: all;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    background-color: var(--window-container-0);
+    border: 2px solid var(--window-accent-0);
+}
+
+.window .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    background-color: var(--window-container-1);
+}
+
+.window.draggable .head:hover {
+    cursor: grab;
+}
+
+.window .head > span {
+    padding: 8px;
+}
+
+.window .head .controls button {
+    all: unset;
+    cursor: default;
+    background-color: transparent;
+    color: var(--window-text-0);
+    padding: 8px;
+}
+
+.window .head .controls button:hover {
+    cursor: pointer;
+    background-color: var(--window-accent-0);
+}

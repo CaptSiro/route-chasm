@@ -3,6 +3,7 @@
 namespace components\core\Admin\Editor;
 
 use components\core\Admin\Menu\AdminMenu;
+use components\core\Window\Window;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -11,6 +12,7 @@ use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\url\UrlPath;
 use core\view\ContainerContent;
+use core\view\View;
 use modules\forms\controls\CsrfField;
 use modules\forms\controls\HiddenField;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
@@ -25,7 +27,7 @@ class AdminEditor extends ContainerContent {
         parent::__construct();
     }
 
-    public function getForm(): Form {
+    public function getForm(): View {
         $form = new Form(HttpMethod::POST);
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
@@ -44,7 +46,10 @@ class AdminEditor extends ContainerContent {
             new FormAction(FormAction::TYPE_SUBMIT, 'Submit')
         ]));
 
-        return $form;
+        $modal = new Window($form, 'Create domain');
+        $modal->setFlag(Window::FLAG_MINIMIZABLE | Window::FLAG_DRAGGABLE);
+
+        return $modal;
     }
 
     public function getTitle(): string {

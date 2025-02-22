@@ -9,12 +9,19 @@ use modules\SideLoader\SideLoader;
 <?php if (SideLoader::getInstance()->isLoaded()): ?>
     <script
         <?= SideLoader::getInstance()
-            ->createSourceAttribute(Javascript::FILE_TYPE, $this->getSources('js')) ?>
+            ->createSourceAttribute(
+                Javascript::FILE_TYPE,
+                $this->getPublicSources('js', '*.js')
+            ) ?>
     ></script>
 
     <link
         rel="stylesheet"
         <?= SideLoader::getInstance()
-            ->createSourceAttribute(Css::FILE_TYPE, $this->getSources('css'), 'href') ?>
+            ->createSourceAttribute(
+                Css::FILE_TYPE,
+                $this->getPublicSources('css', '*.css'),
+                'href'
+            ) ?>
     >
 <?php endif; ?>

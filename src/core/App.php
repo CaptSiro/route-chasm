@@ -23,6 +23,7 @@ use core\database\sql\SqlDatabase;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
+use core\path\Path;
 use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
@@ -222,7 +223,7 @@ class App implements Loader {
             return $path;
         }
 
-        return Strings::prepend('/', $home) . Strings::prepend('/', $path);
+        return Strings::prepend('/', Path::join($home, $path));
     }
 
     public static function getEnvStatic(): ?Env {

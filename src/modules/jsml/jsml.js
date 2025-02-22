@@ -347,6 +347,7 @@ window.addEventListener('load', () => {
     const X_DATA = 'x-data';
     const X_SWAP = 'x-swap';
     const X_INIT = 'x-init';
+    const X_PROCESSED = 'x-processed';
     
     const attributes = [X_TARGET, X_EVENT, X_SWAP, X_INIT].concat(HTTP_METHODS_ATTR);
     const needProcessing = [X_INIT].concat(HTTP_METHODS_ATTR);
@@ -434,6 +435,12 @@ window.addEventListener('load', () => {
      * @param {HTMLElement} element
      */
     function process(element) {
+        if (Boolean(element.getAttribute(X_PROCESSED))) {
+            return;
+        }
+
+        element.setAttribute(X_PROCESSED, "1");
+
         const functionName = element.getAttribute(X_INIT);
         if (functionName !== null) {
             call(element, functionName);

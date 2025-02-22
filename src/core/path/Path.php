@@ -8,6 +8,34 @@ use core\patterns\Pattern;
 use core\Pipeline;
 
 class Path implements Pipeline {
+    public static function join(string ...$segments): string {
+        if (empty($segments)) {
+            return '';
+        }
+
+        $count = count($segments);
+        if ($count === 1) {
+            return $segments[0];
+        }
+
+        $start = array_shift($segments);
+        $end = array_pop($segments);
+        $count -= 2;
+
+        if ($count === 0) {
+            return rtrim($start, '/\\')
+                .'/'. ltrim($end, '/\\');
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            $segments[$i] = trim($segments[$i], '/\\');
+        }
+
+        return rtrim($start, '/\\')
+            .'/'. implode('/', $segments)
+            .'/'. ltrim($end, '/\\');
+    }
+
     public static function from(Path|string $literal): self {
         return $literal instanceof Path
             ? $literal

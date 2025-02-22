@@ -8,6 +8,7 @@ use core\patterns\Charset;
 class Strings extends Init {
     protected static string $charsAlpha;
     protected static string $charsAlphaUpper;
+    protected static string $charsAllAlpha;
     protected static string $charsNumbers;
 
     public static function init(): void {
@@ -16,6 +17,7 @@ class Strings extends Init {
             ->asString();
 
         self::$charsAlphaUpper = strtoupper(self::$charsAlpha);
+        self::$charsAllAlpha = self::$charsAlpha . self::$charsAlphaUpper;
 
         self::$charsNumbers = (new Charset())
             ->addRange('0', '9')
@@ -30,12 +32,21 @@ class Strings extends Init {
         return self::$charsAlphaUpper;
     }
 
+    public static function CHARS_ALL_ALPHA(): string {
+        return self::$charsAllAlpha;
+    }
+
     public static function CHARS_NUMBERS(): string {
         return self::$charsNumbers;
     }
 
     public static function CHARS_SPECIALS(): string {
         return " !@#$%^&*()-_=+[{]}\\|;:'\",<.>/?";
+    }
+
+    public static function randomChar(string $charset): string {
+        $len = strlen($charset);
+        return $charset[rand(0, $len - 1)];
     }
 
     public static function randomBase64(int $length, string $specialA = '-', string $specialB = '_'): string {
