@@ -50,4 +50,14 @@ class Window implements View, Attribute {
     public function getId(): string {
         return $this->id;
     }
+
+
+
+    public function bindClose(Attribute $trigger, string $event = 'click'): void {
+        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'close')");
+    }
+
+    public function bindOpen(Attribute $trigger, string $event = 'click'): void {
+        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'open')");
+    }
 }

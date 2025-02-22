@@ -217,33 +217,6 @@ input.invalid {
     color: var(--form-text-0);
 }
 
-.form button {
-    padding: 0.5em 1em;
-    font-size: 1em;
-    border-radius: var(--form-border-radius);
-    color: var(--form-text-0);
-    background-color: var(--form-container-0);
-    border: 2px solid var(--form-container-3);
-}
-
-.form button:hover {
-    outline: 2px solid var(--form-accent-3);
-    background-color: var(--form-container-0);
-    cursor: pointer;
-}
-
-.form button.link {
-    all: unset;
-    color: var(--form-text-2);
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.form button.link:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
 .form .chained-inputs > * {
     margin: 2px;
 }

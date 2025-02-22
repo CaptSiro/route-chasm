@@ -240,7 +240,6 @@ function $$(selector, element = document) {
  * @param {boolean} isRemovable
  * @param {(element: HTMLElementTagNameMap["div"], event: Event) => boolean} onRemove Return false to cancel removing
  * @return {HTMLDivElement}
- * @constructor
  */
 function Tag(label, isRemovable = true, onRemove = () => true) {
     const tag = jsml.div({ class: 'tag' }, jsml.span(_, label));
@@ -260,6 +259,14 @@ function Tag(label, isRemovable = true, onRemove = () => true) {
     tag.append(button);
 
     return tag;
+}
+
+/**
+ * @param {string} nf
+ * @return {HTMLElement}
+ */
+function Icon(nf) {
+    return jsml.i('nf ' + nf);
 }
 
 

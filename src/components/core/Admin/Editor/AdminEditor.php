@@ -41,13 +41,15 @@ class AdminEditor extends ContainerContent {
             ->getForm()
             ->initForm($form, []);
 
+        $cancel = new FormAction(FormAction::TYPE_RESET, 'Cancel');
         $form->add(new MultiSubmit([
-            new FormAction(FormAction::TYPE_RESET, 'Cancel'),
+            $cancel,
             new FormAction(FormAction::TYPE_SUBMIT, 'Submit')
         ]));
 
         $modal = new Window($form, 'Create domain');
         $modal->setFlag(Window::FLAG_MINIMIZABLE | Window::FLAG_DRAGGABLE);
+        $modal->bindClose($cancel);
 
         return $modal;
     }

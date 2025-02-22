@@ -53,3 +53,16 @@
     cursor: pointer;
     background-color: var(--window-accent-0);
 }
+
+.text-window {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.text-window .controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: calc(var(--gap) / 2);
+}

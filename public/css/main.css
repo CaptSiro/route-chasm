@@ -52,6 +52,35 @@ a:visited {
     color: var(--text-2);
 }
 
+button {
+    padding: 0.5em 1em;
+    font-size: 1em;
+    border-radius: var(--border-radius);
+    color: var(--text-0);
+    background-color: var(--container-0);
+    border: 2px solid var(--container-3);
+}
+
+button:hover {
+    outline: 2px solid var(--accent-3);
+    background-color: var(--container-0);
+    cursor: pointer;
+}
+
+button.link {
+    all: unset;
+    color: var(--text-2);
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+button.link:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
+
 .hide {
     display: none;
 }
