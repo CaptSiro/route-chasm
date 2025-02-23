@@ -1,5 +1,6 @@
 <?php /** @var WebPage $this */
 
+use components\core\Admin\Home\AdminHome;
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
@@ -36,7 +37,10 @@ $app = App::getInstance();
     </nav>
 
     <main>
-        <?= AdminMenu::getBreadCrumbs() ?>
+        <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getBreadCrumbs()) ?>
+        <?php if (count($crumbs->getItems()) > 1): ?>
+            <?= $crumbs->render() ?>
+        <?php endif; ?>
 
         <?php foreach ($this->children as $child): ?>
             <?= $child->render() ?>
