@@ -9,7 +9,11 @@ use core\utils\Strings;
 class UrlGraph {
     public const KEY_LEAF = 0;
 
-    public static function isLeaf(array $node): bool {
+    public static function isLeaf(?array $node): bool {
+        if (is_null($node)) {
+            return false;
+        }
+
         return isset($node[self::KEY_LEAF]);
     }
 

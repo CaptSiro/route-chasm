@@ -2,10 +2,12 @@
 
 namespace components\core\Admin\SubMenu;
 
+use components\core\Terminal\Terminal;
 use core\AdminRouter;
 use core\App;
 use core\html\HtmlAttribute;
 use core\html\Attribute;
+use core\path\Path;
 use core\translation\Translator;
 use core\url\UrlGraph;
 use core\view\Renderer;
@@ -22,8 +24,21 @@ class SubMenu implements View, Attribute {
         protected Translator $segments,
         protected string $path,
         protected array $menu,
-        protected bool $isExpanded = true
-    ) {}
+        protected bool $isExpanded = true,
+        protected ?Path $selected = null
+    ) {
+        if ($this->hasRender()) {
+            $this->addCssClass('has-target');
+        }
+
+        if (!$this->isEmpty()) {
+            $this->addCssClass('has-sub-menu');
+        }
+
+        if ($this->isLeaf()) {
+            $this->addCssClass('selected');
+        }
+    }
 
 
 
@@ -58,7 +73,35 @@ class SubMenu implements View, Attribute {
         return $this;
     }
 
+    public function isSelected(string $target): bool {
+        if (is_null($this->selected)) {
+            return false;
+        }
+
+        $current = $this->selected->current();
+        return $current->test($target, $ignored);
+    }
+
+    public function isLeaf(): bool {
+        if (is_null($this->selected)) {
+            return false;
+        }
+
+        return $this->selected->isExhausted();
+    }
+
     public function createSubMenu(string $target): static {
-        return new static($this->segments, $this->path .'/'. $target, $this->menu[$target], false);
+        $isSelected = $this->isSelected($target);
+        if ($isSelected) {
+            $this->selected->next();
+        }
+
+        return new static(
+            $this->segments,
+            $this->path .'/'. $target,
+            $this->menu[$target],
+            $isSelected,
+            $isSelected ? $this->selected : null
+        );
     }
 }

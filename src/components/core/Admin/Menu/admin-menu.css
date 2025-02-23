@@ -21,7 +21,8 @@
     align-items: center;
 }
 
-.admin-menu .menu-item .head:hover {
+.admin-menu .menu-item .head:hover,
+.admin-menu .menu-item.selected .head {
     background-color: var(--accent-0);
 }
 

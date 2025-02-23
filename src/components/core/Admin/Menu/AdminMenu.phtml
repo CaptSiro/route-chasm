@@ -10,8 +10,7 @@ Javascript::import($this->getSource('admin-menu.js'));
 
 ?>
 <div class="admin-menu no-inset sub-menu" x-init="adminMenu">
-    <?php $menu = new SubMenu($this->paths->getSegments(), '', $this->graph->getRoot()) ?>
-    <?php $menu->inset($renderHome = $menu->hasRender() && !is_null($this->homeLabel)) ?>
+    <?php $menu = $this->createSubMenu($renderHome) ?>
     <?php if ($renderHome): ?>
         <a href="<?= $menu->createItemUrl() ?>">
             <?= $this->homeLabel->render() ?>

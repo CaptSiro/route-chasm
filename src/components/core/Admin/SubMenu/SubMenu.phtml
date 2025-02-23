@@ -8,13 +8,12 @@ use core\url\UrlGraph;
     <div class="sub-menu <?= !$this->inset ? 'no-inset' : '' ?> <?= $this->isExpanded ? '' : 'hide' ?>">
         <?php foreach ($this->menu as $target => $menu): ?>
             <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>
-            <?php $hasRender = $this->hasRender($target) ?>
             <?php $subMenu = $this->createSubMenu($target) ?>
             <div
-                class="menu-item <?= $hasRender ? 'has-target' : '' ?> <?= !$subMenu->isEmpty() ? 'has-sub-menu': '' ?>"
+                class="menu-item <?= $subMenu->getCssClass() ?>"
             >
                 <div class="head">
-                    <?php if ($hasRender): ?>
+                    <?php if ($subMenu->hasRender()): ?>
                         <a href="<?= $this->createItemUrl($target) ?>">
                             <?= $this->segments->getSource($target) ?>
                         </a>

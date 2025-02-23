@@ -3,12 +3,14 @@
 namespace components\core\Admin\Menu;
 
 use Closure;
+use components\core\Admin\SubMenu\SubMenu;
 use components\core\BreadCrumb\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Terminal\Terminal;
 use core\AdminRouter;
 use core\App;
 use core\endpoints\Endpoint;
+use core\path\Path;
 use core\Singleton;
 use core\translation\UrlPathTranslator;
 use core\url\UrlGraph;
@@ -23,7 +25,7 @@ class AdminMenu implements View {
         require_once $file;
     }
 
-    public static function getPath(): string {
+    public static function getRequestPath(): string {
         return substr(
             App::getInstance()
                 ->getRequest()
@@ -35,16 +37,20 @@ class AdminMenu implements View {
 
     public static function getRequestPathSource(): string {
         return self::getInstance()
-            ->getPathSource(self::getPath());
+            ->getPathSource(self::getRequestPath());
     }
 
     public static function getBreadCrumbs(?string $path = null): BreadCrumbs {
         if (is_null($path)) {
-            $path = self::getPath();
+            $path = self::getRequestPath();
         }
 
         $admin = AdminRouter::getInstance()->getPath();
         $app = App::getInstance();
+        $node = self::getInstance()
+            ->graph
+            ->getRoot();
+
         $crumbs = [
             new BreadCrumb('home', $app->prependHome($admin))
         ];
@@ -55,8 +61,12 @@ class AdminMenu implements View {
         $accumulated = $app->prependHome($admin);
 
         for ($i = 0; $i < count($source); $i++) {
+            if (!is_null($node)) {
+                $node = $node[$target[$i]] ?? null;
+            }
+
             $accumulated .= '/' . $target[$i];
-            $crumbs[] = new BreadCrumb($source[$i], $accumulated);
+            $crumbs[] = new BreadCrumb($source[$i], UrlGraph::isLeaf($node) ? $accumulated : null);
         }
 
         return new BreadCrumbs($crumbs);
@@ -94,5 +104,17 @@ class AdminMenu implements View {
 
     public function getPathSource(string $path): string {
         return $this->graph->getSource($path);
+    }
+
+    public function createSubMenu(?bool &$renderHome): SubMenu {
+        $menu = new SubMenu(
+            $this->paths->getSegments(),
+            '',
+            $this->graph->getRoot(),
+            selected: Path::fromStringArray(UrlPath::segmented(self::getRequestPath()))
+        );
+
+        $menu->inset($renderHome = $menu->hasRender() && !is_null($this->homeLabel));
+        return $menu;
     }
 }

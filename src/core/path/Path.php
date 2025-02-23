@@ -58,6 +58,18 @@ class Path implements Pipeline {
         return $p;
     }
 
+    public static function fromStringArray(array $literals): self {
+        $path = new self();
+
+        foreach ($literals as $literal) {
+            $segment = new Segment();
+            $segment->addPart(new Part(PartType::STATIC, $literal));
+            $path->addSegment($segment);
+        }
+
+        return $path;
+    }
+
     public static function depth(string $literal): int {
         $literalLength = strlen($literal);
         if ($literalLength === 0) {
@@ -173,6 +185,9 @@ class Path implements Pipeline {
         return $this->segments[++$this->index] ?? null;
     }
 
+    /**
+     * @return Segment
+     */
     public function current(): mixed {
         return $this->segments[$this->index];
     }
