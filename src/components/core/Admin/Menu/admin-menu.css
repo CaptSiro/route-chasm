@@ -2,6 +2,29 @@
     padding-left: var(--gap);
 }
 
+.admin-menu .menu-item.has-sub-menu {
+    margin-top: calc(var(--gap) / 2);
+}
+
+.admin-menu .menu-item:not(.has-target) > .head > a {
+    text-decoration: none;
+}
+
+.admin-menu .menu-item .head:hover {
+    cursor: pointer;
+}
+
+.admin-menu .menu-item .head {
+    padding: calc(var(--gap) / 4) var(--gap);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-menu .menu-item .head:hover {
+    background-color: var(--accent-0);
+}
+
 .admin-menu a:visited {
     color: var(--text-0);
 }

@@ -21,7 +21,8 @@ class SubMenu implements View, Attribute {
     public function __construct(
         protected Translator $segments,
         protected string $path,
-        protected array $menu
+        protected array $menu,
+        protected bool $isExpanded = true
     ) {}
 
 
@@ -58,6 +59,6 @@ class SubMenu implements View, Attribute {
     }
 
     public function createSubMenu(string $target): static {
-        return new static($this->segments, $this->path .'/'. $target, $this->menu[$target]);
+        return new static($this->segments, $this->path .'/'. $target, $this->menu[$target], false);
     }
 }

@@ -5,12 +5,11 @@
 }
 
 nav {
-    padding: var(--gap);
     background-color: var(--container-1);
 }
 
 .project {
-    margin: var(--gap) 0;
+    margin: var(--gap);
 }
 
 .author {

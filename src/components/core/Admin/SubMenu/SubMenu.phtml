@@ -5,20 +5,36 @@ use core\url\UrlGraph;
 
 ?>
 <?php if (!$this->isEmpty()): ?>
-    <div class="sub-menu <?= !$this->inset ? 'no-inset' : '' ?>">
+    <div class="sub-menu <?= !$this->inset ? 'no-inset' : '' ?> <?= $this->isExpanded ? '' : 'hide' ?>">
         <?php foreach ($this->menu as $target => $menu): ?>
             <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>
-            <div>
-                <?php if ($this->hasRender($target)): ?>
-                    <a href="<?= $this->createItemUrl($target) ?>">
-                        <?= $this->segments->getSource($target) ?>
-                    </a>
-                <?php else: ?>
-                    <span><?= $this->segments->getSource($target) ?></span>
-                <?php endif; ?>
-                <div>
-                    <?= $this->createSubMenu($target) ?>
+            <?php $hasRender = $this->hasRender($target) ?>
+            <?php $subMenu = $this->createSubMenu($target) ?>
+            <div
+                class="menu-item <?= $hasRender ? 'has-target' : '' ?> <?= !$subMenu->isEmpty() ? 'has-sub-menu': '' ?>"
+            >
+                <div class="head">
+                    <?php if ($hasRender): ?>
+                        <a href="<?= $this->createItemUrl($target) ?>">
+                            <?= $this->segments->getSource($target) ?>
+                        </a>
+                    <?php else: ?>
+                        <span><?= $this->segments->getSource($target) ?></span>
+                    <?php endif; ?>
+
+                    <?php if (!$subMenu->isEmpty()): ?>
+                        <div class="dropdown-control">
+                            <div class="<?= $this->isExpanded ? '' : 'hide' ?>" data-action="show">
+                                <?= \components\core\Icon::nf('nf-fa-angle_right') ?>
+                            </div>
+                            <div class="<?= $this->isExpanded ? 'hide' : '' ?>" data-action="hide">
+                                <?= \components\core\Icon::nf('nf-fa-angle_down') ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
+
+                <?= $subMenu ?>
             </div>
         <?php endforeach; ?>
     </div>

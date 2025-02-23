@@ -2,7 +2,6 @@
 
 namespace core\url;
 
-use components\core\Terminal\Terminal;
 use core\translation\StringTranslator;
 use core\translation\Translator;
 use core\utils\Strings;
