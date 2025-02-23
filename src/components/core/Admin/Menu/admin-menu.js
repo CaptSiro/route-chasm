@@ -4,13 +4,17 @@
 function adminMenu(element) {
     for (const item of $$(".has-sub-menu", element)) {
         const menu = $('.sub-menu', item);
-        const hide = $('.dropdown-control [data-action=hide]');
-        const show = $('.dropdown-control [data-action=show]');
+        const hide = $('.dropdown-control [data-action=hide]', item);
+        const show = $('.dropdown-control [data-action=show]', item);
 
         $('.head', item)?.addEventListener('click', event => {
             menu.classList.toggle('hide');
             show.classList.toggle('hide');
             hide.classList.toggle('hide');
+
+            if (event.target.closest('.dropdown-control') !== null) {
+                event.stopImmediatePropagation();
+            }
         });
     }
 
@@ -20,7 +24,8 @@ function adminMenu(element) {
             continue;
         }
 
-        item.addEventListener('click', () => {
+        item.addEventListener('click', event => {
+            event.stopImmediatePropagation();
             a.click();
         });
     }

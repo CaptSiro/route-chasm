@@ -7,7 +7,8 @@ use components\core\Modules\Modules;
 use entities\core\Domain;
 
 AdminMenu::getInstance()
-    ->add('/Modules', new Modules())
     ->add('/Domains', new AdminEditor(Domain::getSchema()))
+    ->add('/Monitoring/Modules', new Modules())
     ->add('/Sub Menu/Item', new Message('Item'))
+    ->add('/Sub Menu/Item 2', new Message('Item 2'))
 ;

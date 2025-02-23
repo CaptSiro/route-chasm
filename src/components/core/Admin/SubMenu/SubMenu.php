@@ -74,7 +74,7 @@ class SubMenu implements View, Attribute {
     }
 
     public function isSelected(string $target): bool {
-        if (is_null($this->selected)) {
+        if (is_null($this->selected) || $this->selected->isExhausted()) {
             return false;
         }
 

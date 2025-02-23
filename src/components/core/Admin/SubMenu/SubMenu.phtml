@@ -1,6 +1,7 @@
 <?php /** @var SubMenu $this */
 
 use components\core\Admin\SubMenu\SubMenu;
+use components\core\Icon;
 use core\url\UrlGraph;
 
 ?>
@@ -23,11 +24,11 @@ use core\url\UrlGraph;
 
                     <?php if (!$subMenu->isEmpty()): ?>
                         <div class="dropdown-control">
-                            <div class="<?= $this->isExpanded ? '' : 'hide' ?>" data-action="show">
-                                <?= \components\core\Icon::nf('nf-fa-angle_right') ?>
+                            <div class="<?= $subMenu->isExpanded ? 'hide' : '' ?>" data-action="show">
+                                <?= Icon::nf('nf-fa-angle_right') ?>
                             </div>
-                            <div class="<?= $this->isExpanded ? 'hide' : '' ?>" data-action="hide">
-                                <?= \components\core\Icon::nf('nf-fa-angle_down') ?>
+                            <div class="<?= $subMenu->isExpanded ? '' : 'hide' ?>" data-action="hide">
+                                <?= Icon::nf('nf-fa-angle_down') ?>
                             </div>
                         </div>
                     <?php endif; ?>

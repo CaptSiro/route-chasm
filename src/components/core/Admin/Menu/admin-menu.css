@@ -1,9 +1,13 @@
-.sub-menu:not(.no-inset) {
+.admin-menu {
+    margin-top: calc(var(--gap) * 2);
+}
+
+.admin-menu .sub-menu:not(.no-inset) {
     padding-left: var(--gap);
 }
 
 .admin-menu .menu-item.has-sub-menu {
-    margin-top: calc(var(--gap) / 2);
+    margin: calc(var(--gap) / 2) 0;
 }
 
 .admin-menu .menu-item:not(.has-target) > .head > a {
@@ -21,9 +25,12 @@
     align-items: center;
 }
 
-.admin-menu .menu-item .head:hover,
-.admin-menu .menu-item.selected .head {
-    background-color: var(--accent-0);
+.admin-menu .menu-item .head:hover {
+    background-color: var(--accent-0) !important;
+}
+
+.admin-menu .menu-item.selected > .head {
+    background-color: var(--accent-1);
 }
 
 .admin-menu a:visited {
