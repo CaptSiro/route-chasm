@@ -3,14 +3,12 @@
 namespace core;
 
 use components\core\Admin\Menu\AdminMenu;
-use components\core\BreadCrumb\BreadCrumb;
-use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Message\Message;
-use components\core\Terminal\Terminal;
 use core\communication\Request;
+use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
-use core\url\UrlPath;
+use core\http\HttpCode;
 
 /**
  * You may pass <code>Endpoint</code> to <code>AdminRouter::getInstance</code> set as admin home page
@@ -38,6 +36,11 @@ class AdminRouter extends Router {
             }),
             $home ?? new Message('Admin Home')
         );
+
+        $this->use('/**', fn(Request $request, Response $response) => $response->error(
+            'Not found',
+            HttpCode::CE_NOT_FOUND
+        ));
     }
 
 

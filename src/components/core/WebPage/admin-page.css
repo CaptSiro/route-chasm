@@ -17,14 +17,6 @@ nav {
     font-size: 0.8em;
 }
 
-.home-link:visited {
-    color: var(--text-0);
-}
-
-.home-link {
-    text-decoration: none;
-}
-
 main {
     margin: var(--gap);
 }

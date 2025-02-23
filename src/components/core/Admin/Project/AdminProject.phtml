@@ -1,0 +1,33 @@
+<?php /** @var AdminProject $this */
+
+use components\core\Admin\Project\AdminProject;
+use core\AdminRouter;
+use core\App;
+
+?>
+<?php $app = App::getInstance() ?>
+<?php if (!is_null($project = $app->getProjectName())): ?>
+    <div class="project">
+        <h2>
+            <a
+                class="no-link"
+                href="<?= $app->prependHome(AdminRouter::getInstance()->getPath()) ?>"
+            >
+                <?= $project ?>
+            </a>
+        </h2>
+        <?php if (!is_null($author = $app->getProjectAuthor())): ?>
+            <span class="author">
+                <?php if (!is_null($authorLink = $app->getProjectAuthorLink())): ?>
+                    by <a
+                        class="no-link"
+                        href="<?= $authorLink ?>"
+                        target="_blank"
+                    ><?= $author ?></a>
+                <?php else: ?>
+                    by <?= $author ?>
+                <?php endif; ?>
+            </span>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

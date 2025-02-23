@@ -44,12 +44,20 @@ a {
     color: var(--text-0);
 }
 
+a.no-link {
+    text-decoration: none;
+}
+
 a:hover {
     color: var(--text-0);
 }
 
 a:visited {
-    color: var(--text-2);
+    color: var(--text-1);
+}
+
+a.no-link:visited {
+    color: var(--text-0);
 }
 
 button {

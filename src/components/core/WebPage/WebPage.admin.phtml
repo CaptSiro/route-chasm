@@ -2,14 +2,12 @@
 
 use components\core\Admin\Home\AdminHome;
 use components\core\Admin\Menu\AdminMenu;
+use components\core\Admin\Project\AdminProject;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
-use core\AdminRouter;
-use core\App;
 use modules\SideLoader\Css;
 
 Css::import($this->getSource('admin-page.css'));
-$app = App::getInstance();
 
 ?>
 <!DOCTYPE html>
@@ -19,20 +17,7 @@ $app = App::getInstance();
     <?= Terminal::getInstance() ?>
 
     <nav>
-        <?php if (!is_null($project = $app->getProjectName())): ?>
-            <div class="project">
-                <h2>
-                    <a
-                        class="home-link"
-                        href="<?= $app->prependHome(AdminRouter::getInstance()->getPath()) ?>"
-                    ><?= $project ?></a>
-                </h2>
-                <?php if (!is_null($author = $app->getProjectAuthor())): ?>
-                    <span class="author">by <?= $author ?></span>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-
+        <?= new AdminProject() ?>
         <?= AdminMenu::getInstance() ?>
     </nav>
 
