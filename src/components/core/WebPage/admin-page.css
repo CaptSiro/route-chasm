@@ -27,6 +27,5 @@ nav {
 }
 
 main {
-    overflow: auto;
     margin: var(--gap);
 }

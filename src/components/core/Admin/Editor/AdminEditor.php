@@ -48,7 +48,7 @@ class AdminEditor extends ContainerContent {
         ]));
 
         $modal = new Window($form, 'Create domain');
-        $modal->setFlag(Window::FLAG_MINIMIZABLE | Window::FLAG_DRAGGABLE);
+        $modal->setFlag(Window::FLAG_DRAGGABLE);
         $modal->bindClose($cancel);
 
         return $modal;

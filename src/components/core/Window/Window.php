@@ -15,7 +15,7 @@ class Window implements View, Attribute {
     public const FLAG_MINIMIZABLE = 1;
     public const FLAG_DRAGGABLE = 2;
     // todo
-    // public const FLAG_RESIZEABLE = 4;
+//    public const FLAG_RESIZEABLE = 4;
 
     protected static int $idLength = 4;
     protected static array $ids;

@@ -43,7 +43,7 @@ function window_open(element) {
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_OPENED));
     windowOverlayActive.appendChild(element);
 
-    window.onbeforeunload = () => true;
+    // window.onbeforeunload = () => true;
 }
 
 
@@ -124,6 +124,44 @@ function window_init(element) {
 
     if (Boolean(element.dataset.windowDraggable)) {
         element.classList.add('draggable');
+
+        const head = $(".head", element);
+        let isDragging = false;
+        let start;
+        let offsetX;
+        let offsetY;
+
+        head.addEventListener('pointerdown', event => {
+            isDragging = true;
+
+            start = element.getBoundingClientRect();
+            offsetX = event.clientX - start.x;
+            offsetY = event.clientY - start.y;
+
+            head.setPointerCapture(event.pointerId);
+        });
+
+        head.addEventListener('pointerup', event => {
+            isDragging = false;
+
+            head.releasePointerCapture(event.pointerId);
+        });
+
+        head.addEventListener('pointermove', event => {
+            if (!isDragging) {
+                return;
+            }
+
+            const x = event.clientX - offsetX + start.width / 2;
+            const y = event.clientY - offsetY + start.height / 2;
+
+            element.style.left = String(x / window.innerWidth * 100) + "%";
+            element.style.top = String(y / window.innerHeight * 100) + "%";
+        });
+
+        $(".controls", head)?.addEventListener('pointerdown', event => {
+            event.stopImmediatePropagation();
+        });
     }
 
     $('.close', element)?.addEventListener('click', () => {
