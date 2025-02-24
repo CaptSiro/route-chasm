@@ -1,10 +1,10 @@
 <?php
 
-namespace core\url;
+namespace core\path;
 
 use core\Pipeline;
 
-readonly class UrlPath implements Pipeline {
+readonly class SearchPath implements Pipeline {
     public const START_POINTER = -1;
 
 
@@ -12,18 +12,6 @@ readonly class UrlPath implements Pipeline {
     public static function from(string $literal): self {
         $segments = explode('/', $literal);
         return new self($segments, self::nextPointer($segments, self::START_POINTER));
-    }
-
-    public static function segmented(string $literal): array {
-        $segments = [];
-
-        foreach (explode('/', $literal) as $segment) {
-            if ($segment !== '') {
-                $segments[] = $segment;
-            }
-        }
-
-        return $segments;
     }
 
     protected static function nextPointer(array $segments, int $pointer): int {

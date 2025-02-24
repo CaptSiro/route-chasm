@@ -5,8 +5,8 @@ namespace core\tree;
 use core\App;
 use core\communication\Request;
 use core\endpoints\Endpoint;
+use core\path\SearchPath;
 use core\path\Segment;
-use core\url\UrlPath;
 
 class Node {
     protected ?Segment $segment;
@@ -73,7 +73,7 @@ class Node {
         return $this->endpoints;
     }
 
-    public function search(UrlPath $path, SnapshotStack $stack): ?Trail {
+    public function search(SearchPath $path, SnapshotStack $stack): ?Trail {
         $request = App::getInstance()->getRequest();
         $response = App::getInstance()->getResponse();
 

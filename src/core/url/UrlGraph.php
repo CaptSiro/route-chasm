@@ -2,8 +2,10 @@
 
 namespace core\url;
 
+use core\path\SearchPath;
 use core\translation\StringTranslator;
 use core\translation\Translator;
+use core\utils\Arrays;
 use core\utils\Strings;
 
 class UrlGraph {
@@ -36,7 +38,7 @@ class UrlGraph {
     public function add(string $path): void {
         $node = &$this->root;
 
-        foreach (UrlPath::segmented($path) as $segment) {
+        foreach (Arrays::explode('/', $path) as $segment) {
             $target = $this->segments->add($segment);
 
             if (!isset($node[$target])) {
@@ -53,7 +55,7 @@ class UrlGraph {
         $node = &$this->root;
         $return = [];
 
-        foreach (UrlPath::segmented($path) as $target) {
+        foreach (Arrays::explode('/', $path) as $target) {
             if (!isset($node[$target])) {
                 break;
             }

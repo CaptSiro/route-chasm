@@ -6,15 +6,15 @@ use Closure;
 use components\core\Admin\SubMenu\SubMenu;
 use components\core\BreadCrumb\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
-use components\core\Terminal\Terminal;
 use core\AdminRouter;
 use core\App;
 use core\endpoints\Endpoint;
 use core\path\Path;
+use core\path\SearchPath;
 use core\Singleton;
 use core\translation\UrlPathTranslator;
 use core\url\UrlGraph;
-use core\url\UrlPath;
+use core\utils\Arrays;
 use core\view\Renderer;
 use core\view\View;
 
@@ -55,9 +55,9 @@ class AdminMenu implements View {
             new BreadCrumb('home', $app->prependHome($admin))
         ];
 
-        $source = UrlPath::segmented(self::getInstance()
-            ->getPathSource($path));
-        $target = UrlPath::segmented($path);
+        $source = Arrays::explode('/', self::getInstance()
+            ->getPathSource($path));;
+        $target = Arrays::explode('/', $path);
         $accumulated = $app->prependHome($admin);
 
         for ($i = 0; $i < count($source); $i++) {
@@ -111,7 +111,7 @@ class AdminMenu implements View {
             $this->paths->getSegments(),
             '',
             $this->graph->getRoot(),
-            selected: Path::fromStringArray(UrlPath::segmented(self::getRequestPath()))
+            selected: Path::fromStringArray(Arrays::explode('/', self::getRequestPath()))
         );
 
         $menu->inset($renderHome = $menu->hasRender() && !is_null($this->homeLabel));

@@ -10,11 +10,11 @@ use core\communication\Response;
 use core\database\Schema;
 use core\http\HttpCode;
 use core\http\HttpMethod;
-use core\url\UrlPath;
+use core\path\SearchPath;
+use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
 use modules\forms\controls\CsrfField;
-use modules\forms\controls\HiddenField;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
 use modules\forms\Form;
 use modules\forms\FormAction;
@@ -56,7 +56,7 @@ class AdminEditor extends ContainerContent {
 
     public function getTitle(): string {
         if (is_null($this->title)) {
-            $segments = UrlPath::segmented(AdminMenu::getRequestPathSource());
+            $segments = Arrays::explode('/', AdminMenu::getRequestPathSource());
             return array_pop($segments);
         }
 

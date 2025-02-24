@@ -2,7 +2,8 @@
 
 namespace core\translation;
 
-use core\url\UrlPath;
+use core\path\SearchPath;
+use core\utils\Arrays;
 use core\utils\Strings;
 
 class UrlPathTranslator implements Translator {
@@ -23,7 +24,7 @@ class UrlPathTranslator implements Translator {
     public function add(mixed $source): array {
         $target = [];
 
-        foreach (UrlPath::segmented($source) as $segment) {
+        foreach (Arrays::explode('/', $source) as $segment) {
             $target[] = $this->segments->add($segment);
         }
 
@@ -33,7 +34,7 @@ class UrlPathTranslator implements Translator {
     public function getTarget(mixed $source): ?array {
         $target = [];
 
-        foreach (UrlPath::segmented($source) as $segment) {
+        foreach (Arrays::explode('/', $source) as $segment) {
             $t = $this->segments->getTarget($segment);
             if (is_null($t)) {
                 return null;
@@ -48,7 +49,7 @@ class UrlPathTranslator implements Translator {
     public function getSource(mixed $target): ?array {
         $source = [];
 
-        foreach (UrlPath::segmented($target) as $segment) {
+        foreach (Arrays::explode('/', $target) as $segment) {
             $s = $this->segments->getSource($segment);
             if (is_null($s)) {
                 return null;

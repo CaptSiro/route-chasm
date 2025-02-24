@@ -3,20 +3,16 @@
 namespace core;
 
 use Closure;
-use components\core\Admin\Home\AdminHome;
-use components\core\Terminal\Terminal;
 use core\communication\Request;
 use core\communication\Response;
 use core\endpoints\Endpoint;
 use core\endpoints\Procedure;
-use core\http\Http;
 use core\http\HttpCode;
 use core\path\Path;
+use core\path\SearchPath;
 use core\tree\Node;
 use core\tree\SnapshotStack;
 use core\tree\Trail;
-use core\url\UrlPath;
-use core\utils\Arrays;
 
 class Router {
     protected Node $node;
@@ -98,11 +94,12 @@ class Router {
         $snapshots = new SnapshotStack();
 
         $snapshots->push([], $this->node->getEndpoints());
-        return $this->node->search(UrlPath::from($path), $snapshots);
+        return $this->node->search(SearchPath::from($path), $snapshots);
     }
 
     /**
      * Home is not automatically prepended
+     *
      * @see App::prependHome
      * @return string
      */
