@@ -4,6 +4,7 @@ namespace core\endpoints;
 
 use core\communication\Request;
 use core\communication\Response;
+use core\Router;
 use core\tree\Node;
 use core\url\Url;
 
@@ -19,4 +20,6 @@ interface Endpoint {
     public function execute(Request $request, Response $response): void;
 
     public function getEndpointLabel(): string;
+
+    public function onContextBind(Router $leaf): void;
 }

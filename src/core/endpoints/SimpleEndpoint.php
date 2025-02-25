@@ -4,6 +4,7 @@ namespace core\endpoints;
 
 use core\App;
 use core\path\Segment;
+use core\Router;
 use core\tree\Node;
 use core\url\Url;
 
@@ -44,4 +45,6 @@ trait SimpleEndpoint {
     public function getEndpointLabel(): string {
         return basename(get_class($this));
     }
+
+    public function onContextBind(Router $leaf): void {}
 }

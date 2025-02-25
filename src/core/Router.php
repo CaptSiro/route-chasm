@@ -63,13 +63,21 @@ class Router {
         $parsed = Path::from($path);
         $leaf = $this->getLeaf($parsed);
 
-        foreach ($endpoints as $endpoint) {
-            $leaf->addEndpoint($endpoint instanceof Endpoint
-                ? $endpoint
-                : new Procedure($endpoint));
+        $router = new Router();
+        $router->setNode(
+            $leaf,
+            $parsed->getDepth() === 0
+                ? $this->node
+                : $leaf->getParent()
+        );
 
-            // todo
-            // call OnEndpointBind(Router(leaf));
+        foreach ($endpoints as $item) {
+            $endpoint = $item instanceof Endpoint
+                ? $item
+                : new Procedure($item);
+
+            $leaf->addEndpoint($endpoint);
+            $endpoint->onContextBind($router);
         }
     }
 
