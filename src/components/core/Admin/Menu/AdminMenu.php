@@ -3,16 +3,15 @@
 namespace components\core\Admin\Menu;
 
 use Closure;
-use components\core\Admin\SubMenu\SubMenu;
+use components\core\Admin\Menu\Item\AdminMenuItem;
 use components\core\BreadCrumb\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
+use components\core\Menu\Menu;
 use core\AdminRouter;
 use core\App;
 use core\endpoints\Endpoint;
 use core\path\Path;
-use core\path\SearchPath;
 use core\Singleton;
-use core\translation\UrlPathTranslator;
 use core\url\UrlGraph;
 use core\utils\Arrays;
 use core\view\Renderer;
@@ -37,6 +36,8 @@ class AdminMenu implements View {
 
     public static function getRequestPathSource(): string {
         return self::getInstance()
+            ->menu
+            ->getGraph()
             ->getPathSource(self::getRequestPath());
     }
 
@@ -48,7 +49,8 @@ class AdminMenu implements View {
         $admin = AdminRouter::getInstance()->getPath();
         $app = App::getInstance();
         $node = self::getInstance()
-            ->graph
+            ->menu
+            ->getGraph()
             ->getRoot();
 
         $crumbs = [
@@ -56,7 +58,9 @@ class AdminMenu implements View {
         ];
 
         $source = Arrays::explode('/', self::getInstance()
-            ->getPathSource($path));;
+            ->menu
+            ->getGraph()
+            ->getPathSource($path));
         $target = Arrays::explode('/', $path);
         $accumulated = $app->prependHome($admin);
 
@@ -74,47 +78,54 @@ class AdminMenu implements View {
 
 
 
-    protected ?View $homeLabel;
-    protected UrlPathTranslator $paths;
-    protected UrlGraph $graph;
+    protected Menu $menu;
+    protected array $icons;
 
     public function __construct() {
-        $this->paths = new UrlPathTranslator();
-        $this->graph = new UrlGraph(
-            $this->paths->getSegments()
+        $this->menu = new Menu(
+            itemTemplate: new AdminMenuItem()
         );
-    }
 
+        $this->menu->setIsInset(false);
+        $this->menu->setIsExpanded(true);
+        $this->menu->setSelected(
+            Path::fromStringArray(Arrays::explode('/', self::getRequestPath()))
+        );
 
-
-    public function setHomeLabel(?View $homeLabel): static {
-        $this->homeLabel = $homeLabel;
-        return $this;
+        $this->icons = [];
     }
 
     public function add(string $path, Closure|Endpoint ...$endpoints): static {
-        $this->graph->add($path, true);
+        $this->menu->add($path, true);
 
-        $urlPath = implode('/', $this->paths->add($path));
+        $urlPath = implode('/', $this->menu->translatePathToTarget($path));
         AdminRouter::getInstance()
             ->use($urlPath, ...$endpoints);
 
         return $this;
     }
 
-    public function getPathSource(string $path): string {
-        return $this->graph->getPathSource($path);
+    /**
+     * @param array<AdminMenuLabel> $path
+     * @param Closure|Endpoint ...$endpoints
+     * @return static
+     */
+    public function addIcons(array $path, Closure|Endpoint ...$endpoints): static {
+        $labels = '';
+
+        foreach ($path as $item) {
+            if ($item->hasIcon()) {
+                $this->addIcon($item->getLabel(), $item->getIcon());
+            }
+
+            $labels .= '/'. $item->getLabel();
+        }
+
+        return $this->add($labels, ...$endpoints);
     }
 
-    public function createSubMenu(?bool &$renderHome): SubMenu {
-        $menu = new SubMenu(
-            $this->paths->getSegments(),
-            '',
-            $this->graph->getRoot(),
-            selected: Path::fromStringArray(Arrays::explode('/', self::getRequestPath()))
-        );
-
-        $menu->inset($renderHome = $menu->hasRender() && !is_null($this->homeLabel));
-        return $menu;
+    public function addIcon(string $label, string $icon): static {
+        $this->icons[$label] = $icon;
+        return $this;
     }
 }

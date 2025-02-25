@@ -10,10 +10,6 @@
     margin: calc(var(--gap) / 2) 0;
 }
 
-.admin-menu .menu-item:not(.has-target) > .head > a {
-    text-decoration: none;
-}
-
 .admin-menu .menu-item .head:hover {
     cursor: pointer;
 }
@@ -35,4 +31,8 @@
 
 .admin-menu a:visited {
     color: var(--text-0);
+}
+
+.admin-menu .menu-item:not(.has-item) > .head > a {
+    text-decoration: none;
 }

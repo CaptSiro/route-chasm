@@ -1,6 +1,6 @@
 <?php
 
-namespace components\core\Admin\MenuV2;
+namespace components\core\Admin\Menu;
 
 readonly class AdminMenuLabel {
     public function __construct(

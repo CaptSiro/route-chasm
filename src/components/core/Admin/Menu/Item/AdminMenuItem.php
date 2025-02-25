@@ -1,6 +1,6 @@
 <?php
 
-namespace components\core\Admin\MenuV2\Item;
+namespace components\core\Admin\Menu\Item;
 
 use components\core\Menu\Item\MenuItem;
 use core\AdminRouter;

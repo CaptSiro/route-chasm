@@ -2,7 +2,7 @@
 
 namespace components\core\Admin\Editor;
 
-use components\core\Admin\MenuV2\AdminMenu;
+use components\core\Admin\Menu\AdminMenu;
 use components\core\Window\Window;
 use core\App;
 use core\communication\Request;
