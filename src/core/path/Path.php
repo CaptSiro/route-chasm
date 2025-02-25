@@ -9,6 +9,8 @@ use core\Pipeline;
 
 class Path implements Pipeline {
     public static function join(string ...$segments): string {
+        $segments = array_values(array_filter($segments, fn($x) => $x !== ''));
+
         if (empty($segments)) {
             return '';
         }

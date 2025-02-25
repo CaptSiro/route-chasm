@@ -67,6 +67,9 @@ class Router {
             $leaf->addEndpoint($endpoint instanceof Endpoint
                 ? $endpoint
                 : new Procedure($endpoint));
+
+            // todo
+            // call OnEndpointBind(Router(leaf));
         }
     }
 

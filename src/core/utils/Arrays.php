@@ -23,7 +23,7 @@ class Arrays {
         $array[$key] = [$array[$key], $value];
     }
 
-    public static function explode(string $separator, string $subject, bool $filterEmpty = true) {
+    public static function explode(string $separator, string $subject, bool $filterEmpty = true): array {
         if (!$filterEmpty) {
             return explode($separator, $subject);
         }

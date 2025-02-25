@@ -1,0 +1,8 @@
+<?php /** @var \components\core\Admin\MenuV2\Item\AdminMenuItem $this */ ?>
+<?php if ($this->hasValue): ?>
+    <a href="<?= $this->createUrl() ?>">
+        <?= $this->label ?>
+    </a>
+<?php else: ?>
+    <span><?= $this->label ?></span>
+<?php endif; ?>

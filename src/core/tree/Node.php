@@ -159,7 +159,6 @@ class Node {
     public function addEndpoint(Endpoint $endpoint): self {
         $endpoint->setNode($this);
         $this->endpoints[] = $endpoint;
-
         return $this;
     }
 

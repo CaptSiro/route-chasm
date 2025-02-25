@@ -2,7 +2,7 @@
 
 namespace components\core\Admin\Editor;
 
-use components\core\Admin\Menu\AdminMenu;
+use components\core\Admin\MenuV2\AdminMenu;
 use components\core\Window\Window;
 use core\App;
 use core\communication\Request;
@@ -10,7 +10,6 @@ use core\communication\Response;
 use core\database\Schema;
 use core\http\HttpCode;
 use core\http\HttpMethod;
-use core\path\SearchPath;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
@@ -56,7 +55,7 @@ class AdminEditor extends ContainerContent {
 
     public function getTitle(): string {
         if (is_null($this->title)) {
-            $segments = Arrays::explode('/', AdminMenu::getRequestPathSource());
+            $segments = Arrays::explode('/',  AdminMenu::getRequestPathSource());
             return array_pop($segments);
         }
 

@@ -121,5 +121,18 @@ $router->use("/map", fn(Request $request, Response $response) => $response->send
 $router->use('/modules', fn(Request $request, Response $response) => $response->json(ModuleDefinition::fetchAll()));
 
 
+$menu = new \components\core\Menu\Menu();
+$menu
+    ->add('Admin', 'admin-item')
+    ->add('/Item', 'item')
+    ->add('/Item/Sub Item', 'sub-item')
+    ->add('/Item 2', 'item-2')
+    ->add('/Item 3/Sub Item', 'sub-item')
+    ->add('/Item 3/Sub Item', 'change')
+    ->add('/Item 3/Sub Item 2', 'sub-item-2')
+;
+$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
+
+
 
 $app->serve();

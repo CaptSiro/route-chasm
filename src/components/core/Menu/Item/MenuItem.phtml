@@ -1,0 +1,6 @@
+<?php /** @var \components\core\Menu\Item\MenuItem $this */ ?>
+<?php if ($this->hasValue): ?>
+    <span>/<?= $this->getPathSource() ?> - <?= $this->value ?></span>
+<?php else: ?>
+    <span>/<?= $this->getPathSource() ?></span>
+<?php endif; ?>

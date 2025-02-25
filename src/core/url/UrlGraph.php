@@ -19,6 +19,14 @@ class UrlGraph {
         return isset($node[self::KEY_LEAF]);
     }
 
+    public static function getItem(?array $node): mixed {
+        if (is_null($node)) {
+            return null;
+        }
+
+        return $node[self::KEY_LEAF] ?? null;
+    }
+
 
 
     protected array $root = [];
@@ -35,7 +43,11 @@ class UrlGraph {
 
 
 
-    public function add(string $path): void {
+    public function hasItem(): bool {
+        return static::isLeaf($this->root);
+    }
+
+    public function add(string $path, mixed $item): void {
         $node = &$this->root;
 
         foreach (Arrays::explode('/', $path) as $segment) {
@@ -48,10 +60,10 @@ class UrlGraph {
             $node = &$node[$target];
         }
 
-        $node[self::KEY_LEAF] = true;
+        $node[self::KEY_LEAF] = $item;
     }
 
-    public function getSource(string $path): string {
+    public function getPathSource(string $path): string {
         $node = &$this->root;
         $return = [];
 
@@ -69,5 +81,20 @@ class UrlGraph {
 
     public function getRoot(): array {
         return $this->root;
+    }
+
+    public function getSubGraph(string $target): ?static {
+        if (!isset($this->root[$target])) {
+            return null;
+        }
+
+        $graph = new static();
+        $graph->root = &$this->root[$target];
+
+        return $graph;
+    }
+
+    public function getRootItem(): mixed {
+        return self::getItem($this->root);
     }
 }

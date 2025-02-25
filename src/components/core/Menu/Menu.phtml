@@ -1,0 +1,42 @@
+<?php /** @var Menu $this */
+
+use components\core\Icon;
+use components\core\Menu\Menu;
+use core\url\UrlGraph;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
+
+Javascript::import($this->getSource('menu.js'));
+Css::import($this->getSource('menu.css'));
+
+?>
+<?php if (!$this->isEmpty()): ?>
+    <div
+        class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isExpanded ? '' : 'hide' ?>"
+        x-init="menu_init"
+    >
+        <?php foreach ($this->graph->getRoot() as $target => $v): ?>
+            <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>
+            <?php $subMenu = $this->createSubMenu($target) ?>
+            <div
+                class="menu-item <?= $subMenu->getStateClasses() ?>"
+            >
+                <div class="head">
+                    <?= $subMenu->createItem($target) ?>
+                    <?php if (!$subMenu->isEmpty()): ?>
+                        <div class="dropdown-control">
+                            <div class="<?= $subMenu->isExpanded ? 'hide' : '' ?>" data-action="show">
+                                <?= Icon::nf('nf-fa-angle_right') ?>
+                            </div>
+                            <div class="<?= $subMenu->isExpanded ? '' : 'hide' ?>" data-action="hide">
+                                <?= Icon::nf('nf-fa-angle_down') ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <?= $subMenu ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
