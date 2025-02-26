@@ -8,7 +8,9 @@ use core\App;
 use core\path\Path;
 
 class AdminMenuItem extends MenuItem {
-    public function __construct() {
+    public function __construct(
+        protected array &$icons
+    ) {
         $this->setTemplate(
             $this->getResource('AdminMenuItem.phtml')
         );
@@ -19,5 +21,13 @@ class AdminMenuItem extends MenuItem {
             ->prependHome(
                 Path::join(AdminRouter::getInstance()->getPath(), $this->path)
             );
+    }
+
+    public function getIcon(): string {
+        if (!isset($this->icons[$this->label])) {
+            return '';
+        }
+
+        return $this->icons[$this->label];
     }
 }

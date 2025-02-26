@@ -82,8 +82,10 @@ class AdminMenu implements View {
     protected array $icons;
 
     public function __construct() {
+        $this->icons = [];
+
         $this->menu = new Menu(
-            itemTemplate: new AdminMenuItem()
+            itemTemplate: new AdminMenuItem($this->icons)
         );
 
         $this->menu->setIsInset(false);
@@ -91,8 +93,6 @@ class AdminMenu implements View {
         $this->menu->setSelected(
             Path::fromStringArray(Arrays::explode('/', self::getRequestPath()))
         );
-
-        $this->icons = [];
     }
 
     public function add(string $path, Closure|Endpoint ...$endpoints): static {

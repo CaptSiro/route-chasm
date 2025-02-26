@@ -1,8 +1,14 @@
 <?php /** @var \components\core\Admin\Menu\Item\AdminMenuItem $this */ ?>
-<?php if ($this->hasValue): ?>
-    <a href="<?= $this->createUrl() ?>">
-        <?= $this->label ?>
-    </a>
-<?php else: ?>
-    <span><?= $this->label ?></span>
-<?php endif; ?>
+<div class="item-label">
+    <span class="icon">
+        <?= $this->getIcon() ?>
+    </span>
+
+    <?php if ($this->hasValue): ?>
+        <a href="<?= $this->createUrl() ?>">
+            <?= $this->label ?>
+        </a>
+    <?php else: ?>
+        <span><?= $this->label ?></span>
+    <?php endif; ?>
+</div>
