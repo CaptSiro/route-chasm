@@ -6,8 +6,8 @@ use core\url\UrlGraph;
 use modules\SideLoader\Css;
 use modules\SideLoader\Javascript;
 
-Javascript::import($this->getSource('menu.js'));
-Css::import($this->getSource('menu.css'));
+Javascript::import($this->getResource('menu.js'));
+Css::import($this->getResource('menu.css'));
 
 ?>
 <?php if (!$this->isEmpty()): ?>

@@ -2,7 +2,6 @@
 
 namespace core\translation;
 
-use core\path\SearchPath;
 use core\utils\Arrays;
 use core\utils\Strings;
 

@@ -24,7 +24,7 @@ class WebPage extends Component implements Container {
         $this->head ??= new HtmlHead();
 
         $this->setTemplate(
-            $this->getSource('WebPage.phtml')
+            $this->getResource('WebPage.phtml')
         );
     }
 
@@ -32,8 +32,8 @@ class WebPage extends Component implements Container {
 
     public function render(): string {
         if (AdminRouter::isAdmin(App::getInstance()->getRequest())) {
-            if ($this->template === $this->getSource('WebPage.phtml')) {
-                $this->setTemplate($this->getSource('WebPage.admin.phtml'));
+            if ($this->template === $this->getResource('WebPage.phtml')) {
+                $this->setTemplate($this->getResource('WebPage.admin.phtml'));
             }
         }
 

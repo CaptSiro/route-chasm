@@ -9,8 +9,8 @@ use modules\SideLoader\Javascript;
 use entities\Card;
 
 ?>
-<?php Css::import(Cards::getInstance()->getSource('cards.css')) ?>
-<?php Javascript::import(Cards::getInstance()->getSource('cards.js')); ?>
+<?php Css::import(Cards::getInstance()->getResource('cards.css')) ?>
+<?php Javascript::import(Cards::getInstance()->getResource('cards.js')); ?>
 <button x-get="<?= App::getInstance()->prependHome('/ping') ?>" x-swap="outer">Ping</button>
 <div class="cards">
     <?php $base = Cards::getInstance()->getUrl(Resource::URL_READ) ?>

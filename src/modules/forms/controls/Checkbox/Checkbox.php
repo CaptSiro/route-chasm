@@ -12,6 +12,6 @@ class Checkbox extends Input {
     ) {
         parent::__construct("checkbox", $name, $label, $checked);
         $this->addAttribute("checked", $checked);
-        $this->setTemplate($this->getSource("Checkbox"));
+        $this->setTemplate($this->getResource("Checkbox"));
     }
 }

@@ -3,18 +3,18 @@
 namespace core\view;
 
 use core\DoesNotExistException;
-use core\Source;
+use core\ResourceLoader;
 use core\utils\Files;
 
 trait TemplateRenderer {
-    use Source;
+    use ResourceLoader;
 
     protected ?string $template = null;
 
 
 
     public function renderTemplated(?string $template = null): string {
-        $file = $this->template ?? $template ?? $this->getSource($this->getClass() .".phtml");
+        $file = $this->template ?? $template ?? $this->getResource($this->getClass() .".phtml");
 
         if (Files::extension($file) === null) {
             $file .= ".phtml";

@@ -3,11 +3,8 @@
 namespace modules\forms;
 
 use components\core\Html\Html;
-use core\communication\Request;
-use core\utils\Strings;
 use core\view\Component;
 use core\view\View;
-use modules\forms\controls\HiddenField;
 
 class Form extends Component {
     private static ?Form $form = null;

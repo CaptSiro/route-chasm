@@ -4,7 +4,7 @@ use components\core\Icon;
 use components\core\Window\Window;
 use modules\SideLoader\Css;
 
-Css::import($this->getSource('window.css'));
+Css::import($this->getResource('window.css'));
 
 ?>
 <button onclick="window_open($('#<?= $this->id ?>'))">Open <?= $this->title ?></button>

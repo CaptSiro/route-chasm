@@ -2,10 +2,6 @@
 
 namespace core\view;
 
-use core\communication\Request;
-use core\communication\Response;
-use core\endpoints\Endpoint;
-use core\endpoints\SimpleEndpoint;
 use JsonSerializable;
 
 class Json implements View, JsonSerializable {

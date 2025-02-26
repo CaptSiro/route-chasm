@@ -19,7 +19,7 @@ use core\view\View;
 use InvalidArgumentException;
 
 abstract class Resource {
-    use Source;
+    use ResourceLoader;
 
 
 
@@ -104,7 +104,7 @@ abstract class Resource {
 
         $class = $this->getClass();
         $index = new Index("$class", $models ?? call_user_func($this->getTable() ."::fetchAll"));
-        $index->setTemplate($this->getSource("$class.index.phtml"));
+        $index->setTemplate($this->getResource("$class.index.phtml"));
         return $index;
     }
 
@@ -134,7 +134,7 @@ abstract class Resource {
 
         $class = $this->getClass();
         $read = new Read("$class - ". $request->getParam()->get(self::PARAM_UNIQUE), $model);
-        $read->setTemplate($this->getSource("$class.read.phtml"));
+        $read->setTemplate($this->getResource("$class.read.phtml"));
         return $read;
     }
 

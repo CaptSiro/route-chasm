@@ -5,8 +5,8 @@ use modules\SideLoader\Css;
 use modules\SideLoader\Javascript;
 
 ?>
-<?php Css::import($this->getSource("tabs.css")); ?>
-<?php Javascript::import($this->getSource('tabs.js')); ?>
+<?php Css::import($this->getResource("tabs.css")); ?>
+<?php Javascript::import($this->getResource('tabs.js')); ?>
 <?php $this->updateSelected(); ?>
 <div class="tabs" x-init="tabs">
     <div class="labels">

@@ -3,12 +3,9 @@
 namespace modules\SideLoader;
 
 use core\App;
-use core\cache\Cache;
-use core\cache\LazyFileCache;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\Database;
 use core\database\sql\SqlDatabase;
 use core\fs\Glob;
 use core\http\Cors;
@@ -22,11 +19,10 @@ use core\module\ModuleInfo;
 use core\patterns\Ident;
 use core\Router;
 use core\Singleton;
-use core\Source;
+use core\ResourceLoader;
 use core\url\UrlBuilder;
 use core\utils\Arrays;
 use core\utils\Files;
-use core\utils\Strings;
 use core\view\BufferTransform;
 use core\view\View;
 use entities\core\Setting;
@@ -34,7 +30,7 @@ use modules\SideLoader\Api\Api;
 use modules\SideLoader\FileImporter\FileImporter;
 
 class SideLoader extends DefaultModule implements View {
-    use Source, Singleton;
+    use ResourceLoader, Singleton;
 
     public const IDENTIFIER = 'route-chasm-core:side-loader';
     public const VERSIONS = ['v1'];
@@ -85,7 +81,7 @@ class SideLoader extends DefaultModule implements View {
             Javascript::FILE_TYPE,
             $javascript
                 ->setFileType(Javascript::FILE_MIME_TYPE)
-                ->setTemplate($javascript->getSource("JavascriptImporter.phtml"))
+                ->setTemplate($javascript->getResource("JavascriptImporter.phtml"))
         );
 
         $css = new FileImporter();
@@ -93,7 +89,7 @@ class SideLoader extends DefaultModule implements View {
             Css::FILE_TYPE,
             $css
                 ->setFileType(Css::FILE_MIME_TYPE)
-                ->setTemplate($css->getSource("CssImporter.phtml"))
+                ->setTemplate($css->getResource("CssImporter.phtml"))
         );
 
         $this->router = new Router();
@@ -114,7 +110,7 @@ class SideLoader extends DefaultModule implements View {
             SqlDatabase::getInstance(),
             self::VERSIONS,
             new Glob(
-                $this->getSource('sql'),
+                $this->getResource('sql'),
                 '.sql',
                 true
             )

@@ -23,7 +23,7 @@ class File extends Input {
         protected array $files = []
     ) {
         parent::__construct("file", $name, $label);
-        $this->setTemplate($this->getSource("File"));
+        $this->setTemplate($this->getResource("File"));
     }
 
 

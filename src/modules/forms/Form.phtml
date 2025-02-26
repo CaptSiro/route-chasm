@@ -5,8 +5,8 @@ use modules\SideLoader\Css;
 use modules\SideLoader\Javascript;
 
 ?>
-<?php Javascript::import($this->getSource("form.js")); ?>
-<?php Css::import($this->getSource("form.css")); ?>
+<?php Javascript::import($this->getResource("form.js")); ?>
+<?php Css::import($this->getResource("form.css")); ?>
 <form
     class="form"
     data-method="<?= $this->method ?>"

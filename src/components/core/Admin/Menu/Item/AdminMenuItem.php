@@ -10,7 +10,7 @@ use core\path\Path;
 class AdminMenuItem extends MenuItem {
     public function __construct() {
         $this->setTemplate(
-            $this->getSource('AdminMenuItem.phtml')
+            $this->getResource('AdminMenuItem.phtml')
         );
     }
 

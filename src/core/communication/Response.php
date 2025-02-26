@@ -169,14 +169,13 @@ class Response {
      * Render::render() are not accessible to transform
      *
      * @param View $view
-     * @param string|null $template
      * @param bool $doFlushResponse
      * @return void
      * @see Response::EVENT_OB_TRANSFORM
      */
-    public function render(View $view, ?string $template = null, bool $doFlushResponse = true): void {
+    public function render(View $view, bool $doFlushResponse = true): void {
         ob_start();
-        echo $view->render($template);
+        echo $view->render();
 
         $this->generateHeaders();
 
@@ -191,8 +190,8 @@ class Response {
         $this->exit();
     }
 
-    public function renderRoot(View $view, ?string $template = null, bool $doFlushResponse = true): void {
-        $this->render($view->getRoot(), $template, $doFlushResponse);
+    public function renderRoot(View $view, bool $doFlushResponse = true): void {
+        $this->render($view->getRoot(), $doFlushResponse);
     }
 
     public function error(string $message, int $httpCode, ?string $template = null): void {
@@ -211,7 +210,7 @@ class Response {
      *
      * Do prepend home directory is used to dynamically prepend directory structure that is between server directory and this project's directory.
      *
-     * www/ **my-project** /index.php -> localhost/ **my-project** / **'/my-project'** will be prepended
+     * www/ **my-project** /index.php -> localhost/ **my-project** / -> **my-project** will be prepended
      *
      * `/api/user` -> `/my-project/api/user`
      *

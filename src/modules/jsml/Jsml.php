@@ -29,7 +29,7 @@ class Jsml extends DefaultModule implements View {
 
     protected function getSourceFiles(): array {
         $this->accessibleAfterLoad();
-        $jsml = $this->getSource();
+        $jsml = $this->getResource();
 
         return [
             "$jsml/jsml.js",

@@ -14,7 +14,7 @@ class Explorer extends ContainerContent {
         protected string $url,
         protected bool $isParentEntryAllowed = true
     ) {
-        Css::import($this->getSource("Explorer.css"));
+        Css::import($this->getResource("Explorer.css"));
 
         if (!str_ends_with($this->url, "/")) {
             $this->url .= "/";

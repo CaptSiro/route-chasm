@@ -2,7 +2,7 @@
 
 namespace core;
 
-trait Source {
+trait ResourceLoader {
     public static function getStaticSource(string $path = ''): string {
         return App::getInstance()
             ->getSource(dirname(self::class) ."/$path");
@@ -10,13 +10,13 @@ trait Source {
 
 
 
-    public function getSource(string $path = ''): string {
+    public function getResource(string $path = ''): string {
         return App::getInstance()
             ->getSource(dirname(get_class($this)) ."/$path");
     }
 
-    public function getSources(string $directory = ''): array {
-        $dir = $this->getSource($directory);
+    public function getResources(string $directory = ''): array {
+        $dir = $this->getResource($directory);
         $sources = [];
 
         foreach (scandir($dir) as $file) {

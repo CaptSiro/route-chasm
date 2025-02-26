@@ -11,7 +11,7 @@ Sptf::test("component should render correct template", function () {
     Sptf::expect(trim((string) $c))
         ->toBe($str);
 
-    Sptf::expect($c->render($c->getSource("./TestComponentUpperCase")))
+    Sptf::expect($c->renderTemplated($c->getResource("./TestComponentUpperCase")))
         ->toBe(strtoupper($str));
 });
 

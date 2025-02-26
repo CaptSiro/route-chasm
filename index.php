@@ -58,7 +58,7 @@ $router->use(
 
 $router->use(
     '/ping',
-    Procedure::middleware(fn() => Javascript::import(Cards::getInstance()->getSource('ping.js'))),
+    Procedure::middleware(fn() => Javascript::import(Cards::getInstance()->getResource('ping.js'))),
     fn(Request $request, Response $response) => $response->send(
         '<h2 style="color: whitesmoke" x-swap="outer" x-get="'. App::getInstance()->prependHome('/dong?s') .'">pong</h2>'
     )
@@ -95,7 +95,7 @@ $c1 = (new Column())
     ->add(Form::note("Submitting form you are giving us consent to get all your money"))
     ->add(new MultiSubmit([
         new FormAction(FormAction::TYPE_RESET, 'Reset'),
-        new FormAction(FormAction::TYPE_SUBMIT, 'Delete', 'delete'),
+        new FormAction(FormAction::TYPE_SUBMIT, 'Delete'),
         FormAction::submit(),
     ]));
 

@@ -2,7 +2,6 @@
 
 namespace components\core\Admin\SubMenu;
 
-use components\core\Terminal\Terminal;
 use core\AdminRouter;
 use core\App;
 use core\html\HtmlAttribute;
