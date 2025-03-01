@@ -14,6 +14,7 @@ Css::import($this->getResource('menu.css'));
     <div
         class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isExpanded ? '' : 'hide' ?>"
         x-init="menu_init"
+        style="--menu-level: <?= $this->level ?>"
     >
         <?php foreach ($this->graph->getRoot() as $target => $v): ?>
             <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>

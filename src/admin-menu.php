@@ -3,14 +3,19 @@
 use components\core\Admin\Editor\AdminEditor;
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\SptfTests\SptfTests;
+use components\core\Icon;
 use components\core\Message\Message;
 use components\core\Modules\Modules;
 use entities\core\Domain;
 
 AdminMenu::getInstance()
     ->add('/Domains', new AdminEditor(Domain::getSchema()))
+    ->addIcon('Domains', Icon::nf('nf-md-web'))
     ->add('/Monitoring/Modules', new Modules())
+    ->addIcon('Monitoring', Icon::nf('nf-oct-graph'))
+    ->addIcon('Modules', Icon::nf('nf-md-package_variant'))
     ->add('/Monitoring/Tests/RouteChasm', new SptfTests(__DIR__ .'/../src/tests/cases/RouteChasm'))
+    ->addIcon('Tests', Icon::nf('nf-md-beaker_check_outline'))
     ->add('/Sub Menu/Item', new Message('Item'))
     ->add('/Sub Menu/Item 2', new Message('Item 2'))
 ;

@@ -6,5 +6,7 @@ use modules\SideLoader\Css;
 Css::import($this->getResource('modules.css'));
 
 ?>
-<h1>Loaded modules</h1>
-<?= $this->getModules() ?>
+<section>
+    <h1>Loaded modules</h1>
+    <?= $this->getModules() ?>
+</section>

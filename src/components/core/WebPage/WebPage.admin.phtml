@@ -28,12 +28,12 @@ Css::import($this->getResource('admin-page.css'));
     </nav>
 
     <main>
-        <section>
-            <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getBreadCrumbs()) ?>
-            <?php if (count($crumbs->getItems()) > 1): ?>
+        <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getBreadCrumbs()) ?>
+        <?php if (count($crumbs->getItems()) > 1): ?>
+            <section>
                 <?= $crumbs->render() ?>
-            <?php endif; ?>
-        </section>
+            </section>
+        <?php endif; ?>
 
         <?php foreach ($this->children as $child): ?>
             <?= $child->render() ?>

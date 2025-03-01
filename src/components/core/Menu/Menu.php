@@ -14,6 +14,7 @@ use core\view\View;
 class Menu implements View, Attribute {
     use Renderer, HtmlAttribute;
 
+    protected int $level = 0;
     protected bool $isInset = true;
     protected bool $isExpanded = false;
     protected ?Menu $root = null;
@@ -74,6 +75,10 @@ class Menu implements View, Attribute {
     public function setIsInset(bool $bool): static {
         $this->isInset = $bool;
         return $this;
+    }
+
+    public function setLevel(int $level): void {
+        $this->level = $level;
     }
 
     public function setIsExpanded(bool $isExpanded): static {
@@ -156,6 +161,7 @@ class Menu implements View, Attribute {
 
         $menu->graph = $subGraph;
         $menu->paths = $this->paths;
+        $menu->level = $this->level + 1;
 
         if ($this->isSelected($target)) {
             $menu->selected = $this->selected;
