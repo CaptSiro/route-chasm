@@ -15,39 +15,16 @@ use sptf\structs\Context;
 use sptf\structs\Expectation;
 use sptf\structs\Func;
 use sptf\structs\Result;
+use sptf\structs\Suite;
+use sptf\structs\SuiteOutput;
 use sptf\structs\TestCaseHeader;
+use sptf\structs\TestFile;
 
 class Sptf {
     public static function expect(mixed $value): Expect {
         $e = new Expectation($value, debug_backtrace());
         Context::assert($e);
         return $e;
-    }
-
-    public static function testDirectory($dir): void {
-        Context::init();
-
-        $dir_iterator = new RecursiveDirectoryIterator($dir);
-        $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
-
-        /** @var SplFileInfo $file */
-        foreach ($iterator as $file) {
-            if (!$file->isFile() || $file->getFilename() === "." || $file->getFilename() === ".." || !str_ends_with($file->getFilename(), ".php")) {
-                continue;
-            }
-
-            $p = $file->getRealPath();
-
-            echo "<div><div class='file'>$p</div><div class='tests'>";
-            require $p;
-
-            $failed = count(array_filter(Context::getAssertions(), fn($x) => !$x->result()));
-            if ($failed !== 0) {
-                echo "</div><div class='danger'>Failed $failed tests";
-            }
-
-            echo "</div></div>";
-        }
     }
 
     public static function fail(string $reason = ""): void {
@@ -71,6 +48,7 @@ class Sptf {
     public static function test(string $name, callable $suite): void {
         Context::startSuite();
         Context::setIsPrintingAllowed(false);
+
         ob_start();
 
         try {
@@ -82,67 +60,62 @@ class Sptf {
         }
 
         $printed = ob_get_clean();
-        Context::stopSuite();
 
+        Context::stopSuite();
         $time = Context::getTime();
 
-        $failed = [];
-        $passed = 0;
-
-        foreach (Context::getAssertions() as $assertion) {
-            if ($assertion->result()) {
-                $passed++;
-                continue;
-            }
-
-            $failed[] = $assertion->error();
-        }
-
-        $outcome = TestOutcome::fromStats($passed, $failed);
-        $header = new TestCaseHeader($outcome, $name, $time);
-
-        $class = strtolower($outcome->value);
-        echo "<div class='test $class'>";
-        echo $header->html();
-
-        switch ($outcome) {
-            case TestOutcome::FAILED: {
-                foreach ($failed as $fail) {
-                    echo $fail->html();
-                }
-
-                break;
-            }
-            case TestOutcome::NONE: {
-                echo "<div class='warning'>No assertions</div>";
-                break;
-            }
-            case TestOutcome::PASSED: {
-                echo "<div class='assertions'>$passed assertions</div>";
-                break;
-            }
-        }
-
-        echo "</div>";
-
-        if ((Context::getIsPrintingAllowed() || $outcome !== TestOutcome::PASSED) && $printed !== false) {
-            echo $printed;
-        }
+        Context::addSuite(
+            new Suite(
+                $name,
+                $time,
+                Context::getAssertions(),
+                new SuiteOutput(
+                    Context::getIsPrintingAllowed(),
+                    $printed !== false
+                        ? $printed
+                        : ''
+                )
+            )
+        );
     }
 
     public static function allowPrinting(): void {
         Context::setIsPrintingAllowed(true);
     }
 
-    protected static function testHeader(bool $outcome, string $name, float $time): string {
-        $outcomeText = $outcome ? "PASS" : "FAIL";
 
-        return "
-            <div>
-                <span class='outcome'>$outcomeText</span>
-                <span class='name'>$name</span>
-                <span class='time'>$time s</span>
-            </div>
-        ";
+
+    /**
+     * @param $dir
+     * @return array<TestFile>
+     */
+    public static function evaluateDirectory($dir): array {
+        Context::init();
+
+        $dir_iterator = new RecursiveDirectoryIterator($dir);
+        $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
+
+        $files = [];
+
+        /** @var SplFileInfo $file */
+        foreach ($iterator as $file) {
+            $isNotValidTestFile = !$file->isFile()
+                || $file->getFilename() === "."
+                || $file->getFilename() === ".."
+                || !str_ends_with($file->getFilename(), ".php");
+            if ($isNotValidTestFile) {
+                continue;
+            }
+
+            $p = $file->getRealPath();
+            require $p;
+
+            $files[] = new TestFile(
+                $p,
+                Context::getSuitesClean()
+            );
+        }
+
+        return $files;
     }
 }

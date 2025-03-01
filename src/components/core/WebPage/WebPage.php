@@ -20,6 +20,8 @@ class WebPage extends Component implements Container {
     ) {
         $env = App::getInstance()->getEnv();
 
+        // todo
+        // get from request... (preference, domain, ...)
         $this->language ??= $env?->get("WEB_LANGUAGE") ?? "en";
         $this->head ??= new HtmlHead();
 

@@ -18,7 +18,7 @@ class HtmlHead extends Component implements Head {
 
         $env = App::getInstance()->getEnv();
         if (!is_null($env)) {
-            $this->addMeta("author", $env->get("WEB_AUTHOR"));
+            $this->addMeta("author", $env->get(App::PROJECT_AUTHOR));
         }
     }
 

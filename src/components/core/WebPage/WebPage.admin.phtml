@@ -19,13 +19,21 @@ Css::import($this->getResource('admin-page.css'));
     <nav>
         <?= new AdminProject() ?>
         <?= AdminMenu::getInstance() ?>
+
+        <div
+            class="resize-handle"
+            data-target="<parent>"
+            data-direction="horizontal"
+        ></div>
     </nav>
 
     <main>
-        <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getBreadCrumbs()) ?>
-        <?php if (count($crumbs->getItems()) > 1): ?>
-            <?= $crumbs->render() ?>
-        <?php endif; ?>
+        <section>
+            <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getBreadCrumbs()) ?>
+            <?php if (count($crumbs->getItems()) > 1): ?>
+                <?= $crumbs->render() ?>
+            <?php endif; ?>
+        </section>
 
         <?php foreach ($this->children as $child): ?>
             <?= $child->render() ?>

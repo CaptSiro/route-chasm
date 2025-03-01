@@ -7,8 +7,8 @@ enum TestOutcome: string {
     case NONE = "NONE";
     case PASSED = "PASS";
 
-    public static function fromStats(int $passed, array $failed): self {
-        if (!empty($failed)) {
+    public static function fromStats(int $passed, int $failed): self {
+        if ($failed !== 0) {
             return self::FAILED;
         }
 

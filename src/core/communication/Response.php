@@ -194,14 +194,13 @@ class Response {
         $this->render($view->getRoot(), $doFlushResponse);
     }
 
-    public function error(string $message, int $httpCode, ?string $template = null): void {
+    public function error(string $message, int $httpCode): void {
         $this->renderRoot(
             new HttpError(
                 $message,
                 $httpCode,
                 1
             ),
-            $template,
         );
     }
 

@@ -13,6 +13,18 @@ class ExpectationMessage implements Html {
 
 
 
+    public function getHint(): string {
+        return $this->hint;
+    }
+
+    public function getActual(): mixed {
+        return $this->actual;
+    }
+
+    public function getExpected(): mixed {
+        return $this->expected;
+    }
+
     function html(): string {
         return "<div>
             <div class='index'>$this->hint</div>

@@ -1,0 +1,13 @@
+<?php /** @var SptfTests $this */
+
+use components\core\Admin\SptfTests\SptfTests;
+use modules\SideLoader\Css;
+
+Css::import($this->getResource('sptf.css'));
+
+?>
+<section class="sptf">
+    <?php foreach ($this->getTestFiles() as $test): ?>
+        <?= $test ?>
+    <?php endforeach; ?>
+</section>

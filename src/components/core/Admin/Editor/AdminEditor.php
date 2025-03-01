@@ -68,7 +68,10 @@ class AdminEditor extends ContainerContent {
                 parent::execute($request, $response);
             }
             default:
-                $response->error('Invalid HTTP method '. $request->httpMethod, HttpCode::CE_BAD_REQUEST);
+                $response->error(
+                    'Invalid HTTP method '. $request->httpMethod,
+                    HttpCode::CE_BAD_REQUEST
+                );
         }
     }
 }

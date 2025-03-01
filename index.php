@@ -68,14 +68,6 @@ $router->use(
     fn(Request $request, Response $response) => $response->send('<button x-swap="outer" x-get="'. App::getInstance()->prependHome('/ping?s') .'">Back to ping</button>')
 );
 
-$router->use(
-    "/",
-    Http::get(
-        fn() => Sptf::testDirectory(__DIR__ . "/src/tests/cases"),
-        fn(Request $request, Response $response) => $response->flush()
-    )->query("_test")
-);
-
 $user = new Accordion(
     'User info',
     (new Row(.50))

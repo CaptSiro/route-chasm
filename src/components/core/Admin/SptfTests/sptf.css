@@ -1,0 +1,97 @@
+:root {
+    --sptf-pass: #75a47f;
+    --sptf-none: #d1bc2e;
+    --sptf-fail: #e14831;
+    --sptf-string: #7ce485;
+    --sptf-text-0: var(--text-0);
+    --sptf-text-2: var(--text-2);
+    --sptf-gap: var(--gap);
+}
+
+.sptf {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sptf-gap);
+}
+
+.test-file-head {
+    display: flex;
+    gap: var(--sptf-gap);
+}
+
+.test-file-head .passed {
+    display: none;
+    background-color: var(--sptf-pass);
+}
+
+.test-file-head .failed {
+    display: none;
+    background-color: var(--sptf-fail);
+}
+
+.suite .suite-head {
+    display: flex;
+    gap: var(--sptf-gap);
+    align-items: center;
+}
+
+.suite .suite-head .outcome {
+    padding: 0.25em 1em;
+}
+
+.suite.pass .suite-head .outcome {
+    background-color: var(--sptf-pass);
+}
+
+.suite.none .suite-head .outcome {
+    background-color: var(--sptf-none);
+}
+
+.suite.fail .suite-head .outcome {
+    background-color: var(--sptf-fail);
+}
+
+.suite .suite-head .time {
+    color: var(--sptf-text-2);
+}
+
+.suite .suite-head .name {
+    color: var(--sptf-string);
+}
+
+.suite .suite-head .name:before,
+.suite .suite-head .name:after {
+    content: '"';
+    color: var(--sptf-string);
+}
+
+.suite .suite-head .stats .passed {
+    color: var(--sptf-pass);
+}
+
+.suite .suite-head .stats .failed {
+    color: var(--sptf-fail);
+}
+
+.suite-assertions .assertion > div {
+    display: flex;
+    gap: var(--sptf-gap);
+}
+
+.suite-assertions .assertion .index {
+    color: var(--sptf-text-2);
+}
+
+.suite-assertions .assertion .expected {
+    color: var(--sptf-pass);
+}
+
+.suite-assertions .assertion .actual,
+.suite-assertions .assertion .assertion-failed {
+    color: var(--sptf-fail);
+}
+
+.xdebug-var-dump {
+    background-color: #faf0c5;
+    padding: 4px;
+}
