@@ -15,8 +15,8 @@ Entity::addSchema(Card::class, new Schema(
         'cards',
         [
             "id" => new PrimaryKey(true),
-            "question" => Text::getInstance(),
-            "answer" => Text::getInstance()
+            "question" => new Text(),
+            "answer" => new Text()
         ],
         'id'
     )

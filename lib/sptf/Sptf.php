@@ -17,7 +17,6 @@ use sptf\structs\Func;
 use sptf\structs\Result;
 use sptf\structs\Suite;
 use sptf\structs\SuiteOutput;
-use sptf\structs\TestCaseHeader;
 use sptf\structs\TestFile;
 
 class Sptf {

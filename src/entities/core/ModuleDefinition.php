@@ -16,7 +16,7 @@ Entity::addSchema(ModuleDefinition::class,  new Schema(
         'core_modules',
         [
             'identifier' => new PrimaryKey(),
-            'version' => Text::getInstance()
+            'version' => new Text()
         ],
         'identifier'
     )

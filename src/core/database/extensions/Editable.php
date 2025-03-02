@@ -25,6 +25,6 @@ class Editable implements Extension {
     }
 
     public function modifyTable(TableDefinition $table): void {
-        $table->addColumn(EDITABLE_COLUMN_NAME, Boolean::getInstance());
+        $table->addColumn(EDITABLE_COLUMN_NAME, (new Boolean())->overrideName('Is editable'));
     }
 }

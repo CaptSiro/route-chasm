@@ -2,6 +2,7 @@
 
 namespace entities\core;
 
+use components\core\SaveException\SaveError;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
@@ -17,8 +18,8 @@ Entity::addSchema(Setting::class, new Schema(
         'core_settings',
         [
             'id' => new PrimaryKey(true),
-            'name' => Text::getInstance(),
-            'value' => Text::getInstance(),
+            'name' => new Text(),
+            'value' => new Text(),
         ],
         'id'
     ),
@@ -59,12 +60,12 @@ class Setting extends Entity {
 
 
 
-    public function save(): void {
+    public function save(): ?SaveError {
         if (!(is_null($this->value) || gettype($this->value) === 'string')) {
             $this->value = ''. $this->value;
         }
 
-        parent::save();
+        return parent::save();
     }
 
     public function asInt(): int {

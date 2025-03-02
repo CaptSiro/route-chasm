@@ -37,7 +37,7 @@ class AdminRouter extends Router {
             $home ?? new Message('Admin Home')
         );
 
-        $this->use('/**', fn(Request $request, Response $response) => $response->error(
+        $this->use('/**', fn(Request $request, Response $response) => $response->sendMessage(
             'Not found',
             HttpCode::CE_NOT_FOUND
         ));

@@ -158,7 +158,7 @@ class App implements Loader {
             }
         }
 
-        $this->response->error(
+        $this->response->sendMessage(
             "Request body could not be parsed. Format '" .$request->getFormat(). "' is not supported.",
             HttpCode::SE_INTERNAL_SERVER_ERROR
         );

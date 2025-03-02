@@ -274,10 +274,10 @@ function Icon(nf) {
 /**
  * Calls function with provided element. This function expects `fn` to be one valid fully qualified function name
  *
- * @param {HTMLElement} element
  * @param {string} fn
+ * @returns {Function}
  */
-function callFunction(element, fn) {
+function call_getFunction(fn) {
     /** @type {any} */
     let context = window;
 
@@ -289,9 +289,7 @@ function callFunction(element, fn) {
         }
     }
 
-    if (typeof context === 'function') {
-        context(element);
-    }
+    return context;
 }
 
 /**
@@ -303,8 +301,13 @@ function callFunction(element, fn) {
  * @param {string} functionLiteral
  */
 function call(element, functionLiteral) {
-    for (const fn of functionLiteral.split(',')) {
-        callFunction(element, fn.trim());
+    for (const literal of functionLiteral.split(',')) {
+        const fn = call_getFunction(literal.trim());
+        if (fn === undefined) {
+            continue;
+        }
+
+        fn(element);
     }
 }
 

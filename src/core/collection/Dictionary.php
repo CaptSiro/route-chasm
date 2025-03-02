@@ -10,4 +10,6 @@ interface Dictionary {
     public function get(string $name, mixed $or = null): mixed;
 
     public function load(array $array): void;
+
+    public function asArray(): array;
 }

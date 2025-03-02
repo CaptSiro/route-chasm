@@ -1,6 +1,6 @@
 <?php
 
-namespace components\core\HttpError;
+namespace components\core\HttpMessage;
 
 use components\core\CallStack\CallStack;
 use components\core\HtmlHead\HtmlHead;
@@ -11,7 +11,7 @@ use core\communication\Format;
 use core\view\ContainerContent;
 use core\view\Formatter;
 
-class HttpError extends ContainerContent {
+class HttpMessage extends ContainerContent {
     use WebPageRenderCondition;
 
 
@@ -35,7 +35,7 @@ class HttpError extends ContainerContent {
             Format::IDENT_HTML => parent::render(),
             Format::IDENT_XML => parent::renderTemplated($this->getResource("HttpError.xml.phtml")),
             Format::IDENT_JSON => json_encode([
-                "isError" => true,
+                "isError" => $this->code >= 400,
                 "message" => $this->message,
                 "code" => $this->code
             ]),

@@ -3,13 +3,13 @@
 namespace core\database\column;
 
 use core\database\Column;
-use core\Singleton;
+use core\database\ColumnNameOverride;
 use modules\forms\controls\NumberField;
 use modules\forms\definition\overrides\FieldDefinition;
 use modules\forms\definition\overrides\FieldOverride;
 
 class Decimal implements Column {
-    use Singleton;
+    use ColumnNameOverride;
 
 
 
@@ -29,6 +29,6 @@ class Decimal implements Column {
         $field = new NumberField($name, $name);
         $field->step(0.01);
 
-        return new FieldOverride($name, $field);
+        return new FieldOverride($this->name ?? $name, $field);
     }
 }

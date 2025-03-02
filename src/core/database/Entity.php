@@ -3,6 +3,7 @@
 
 namespace core\database;
 
+use components\core\SaveException\SaveError;
 use core\collection\Dictionary;
 use core\database\buffer\StaticBuffer;
 use core\database\column\ForeignKey;
@@ -23,6 +24,7 @@ abstract class Entity implements JsonSerializable {
     private static array $schema;
     public static function addSchema(string $class, Schema $entity): void {
         self::$schema[$class] = $entity;
+        $entity->bindEntityClass($class);
     }
 
     public static function getSchema(): ?Schema {
@@ -242,17 +244,17 @@ abstract class Entity implements JsonSerializable {
         return isset($columns[$column]) && !$columns[$column]->isVirtual($value ?? $this->data[$column] ?? null);
     }
 
-    public function save(): void {
+    public function save(): ?SaveError {
         if (empty($this->updated)) {
-            return;
+            return null;
         }
 
         if (!$this->isFromDatabase()) {
-            $this->insert();
-            return;
+            return $this->insert();
         }
 
         $def = static::getSchema()->getTable();
+        $columns = $def->getColumns();
         $idColumn = $def->getIdColumn();
         $sql = "UPDATE `". $def->getTableName() ."` SET ";
         $params = [];
@@ -268,7 +270,7 @@ abstract class Entity implements JsonSerializable {
             }
 
             $sql .= "`$column` = ". StaticBuffer::PARAM_IDENT;
-            $params[] = $this->data[$column];
+            $params[] = $columns[$column]->transform($this->data[$column]);
 
             $first = false;
         }
@@ -278,9 +280,11 @@ abstract class Entity implements JsonSerializable {
 
         $def->getDatabase()
             ->run(new Query($sql, StaticBuffer::from($params)));
+
+        return null;
     }
 
-    protected function insert(): void {
+    protected function insert(): ?SaveError {
         $def = static::getSchema()->getTable();
 
         $columns = [];
@@ -307,6 +311,8 @@ abstract class Entity implements JsonSerializable {
         $sql = 'INSERT INTO `'. $def->getTableName() ."` (". implode(', ', $columns) .") VALUES (". $values .")";
         $def->getDatabase()
             ->run(new Query($sql, StaticBuffer::from($params)));
+
+        return null;
     }
 
     public function delete(): void {

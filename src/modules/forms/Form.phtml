@@ -10,10 +10,11 @@ use modules\SideLoader\Javascript;
 <form
     class="form"
     data-method="<?= $this->method ?>"
+    data-transformer="<?= $this->bodyTransformer ?>"
     <?php if (!is_null($this->action)): ?>
         action="<?= $this->action ?>"
     <?php endif; ?>
-    onsubmit="submitForm(this); return false"
+    onsubmit="form_submit(this); return false"
 >
     <?php foreach ($this->elements as $control): ?>
         <?= $control->render() ?>

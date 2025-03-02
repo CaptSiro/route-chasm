@@ -2,7 +2,7 @@
 
 namespace core\communication;
 
-use components\core\HttpError\HttpError;
+use components\core\HttpMessage\HttpMessage;
 use core\App;
 use core\http\HttpCode;
 use core\http\HttpHeader;
@@ -131,7 +131,7 @@ class Response {
      */
     public function readFile(string $file, bool $doFlush = true): void {
         if (!file_exists($file)) {
-            $this->error(
+            $this->sendMessage(
                 "RequestFile not found: $file",
                 HttpCode::CE_NOT_FOUND
             );
@@ -194,9 +194,9 @@ class Response {
         $this->render($view->getRoot(), $doFlushResponse);
     }
 
-    public function error(string $message, int $httpCode): void {
+    public function sendMessage(string $message, int $httpCode): void {
         $this->renderRoot(
-            new HttpError(
+            new HttpMessage(
                 $message,
                 $httpCode,
                 1
@@ -207,19 +207,11 @@ class Response {
     /**
      * Redirects request to new URL.
      *
-     * Do prepend home directory is used to dynamically prepend directory structure that is between server directory and this project's directory.
-     *
-     * www/ **my-project** /index.php -> localhost/ **my-project** / -> **my-project** will be prepended
-     *
-     * `/api/user` -> `/my-project/api/user`
-     *
-     *
      * @param string $url accepts same URLs as Location header.
-     * @param bool $doPrependHome
      * @return void
      */
-    public function redirect(string $url, bool $doPrependHome = true): void {
-        $this->setHeader(HttpHeader::LOCATION, ($doPrependHome ? App::getInstance()->getHome() : "") . $url);
+    public function redirect(string $url): void {
+        $this->setHeader(HttpHeader::LOCATION, $url);
         $this->flush();
     }
 }

@@ -1,8 +1,11 @@
 <?php /** @var \components\core\Admin\Menu\Item\AdminMenuItem $this */ ?>
 <div class="item-label">
-    <span class="icon">
-        <?= $this->getIcon() ?>
-    </span>
+    <?php $icon = $this->getIcon() ?>
+    <?php if ($icon !== ''): ?>
+        <span class="icon">
+            <?= $icon ?>
+        </span>
+    <?php endif; ?>
 
     <?php if ($this->hasValue): ?>
         <a href="<?= $this->createUrl() ?>">

@@ -17,8 +17,8 @@ Entity::addSchema(DatabaseCache::class, new Schema(
         'module_sideloadercache',
         [
             'id' => new PrimaryKey(true),
-            'hash' => Text::getInstance(),
-            'path' => Text::getInstance()
+            'hash' => new Text(),
+            'path' => new Text()
         ],
         'id'
     )

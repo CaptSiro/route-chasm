@@ -5,6 +5,10 @@ namespace core\database;
 use modules\forms\definition\FormDefinition;
 
 class Schema {
+    protected ?string $entityClass;
+
+
+
     /**
      * @param TableDefinition $table
      * @param FormDefinition|null $form
@@ -26,12 +30,30 @@ class Schema {
         }
     }
 
+
+
     public function getTable(): TableDefinition {
         return $this->table;
     }
 
     public function getForm(): FormDefinition {
         return $this->form;
+    }
+
+    public function bindEntityClass(string $class): void {
+        $this->entityClass = $class;
+    }
+
+    public function create(array $data): Entity {
+        $entity = new $this->entityClass();
+
+        foreach ($this->table->getColumns() as $name => $column) {
+            if (isset($data[$name])) {
+                $entity->$name = $data[$name];
+            }
+        }
+
+        return $entity;
     }
 
     public function getExtension(string $class): ?Extension {

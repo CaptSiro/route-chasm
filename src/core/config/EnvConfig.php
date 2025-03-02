@@ -21,7 +21,7 @@ class EnvConfig implements Config {
         if ($value === null) {
             App::getInstance()
                 ->getResponse()
-                ->error(
+                ->sendMessage(
                     "Environment variable '$property' is not defined and it is required",
                     HttpCode::SE_INTERNAL_SERVER_ERROR
                 );

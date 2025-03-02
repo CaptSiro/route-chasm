@@ -36,6 +36,10 @@ class Map implements Dictionary, JsonSerializable {
         $this->map = [];
     }
 
+    public function asArray(): array {
+        return $this->map;
+    }
+
     public function jsonSerialize(): array {
         return $this->map;
     }

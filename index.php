@@ -1,7 +1,7 @@
 <?php
 
 use components\core\Admin\Home\AdminHome;
-use components\core\HttpError\HttpError;
+use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
 use components\layout\Accordion\Accordion;
 use components\resources\Cards\Cards;
@@ -28,7 +28,6 @@ use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
 use modules\forms\layout\Row\Row;
 use modules\SideLoader\Javascript;
-use sptf\Sptf;
 
 require_once __DIR__ ."/src/autoload.php";
 
@@ -53,7 +52,7 @@ $router->expose("/public", (new \core\endpoints\Directory(__DIR__ . "/public"))
 
 $router->use(
     "/error",
-    new HttpError("I'm a teapot", HttpCode::CE_IM_A_TEAPOT)
+    new HttpMessage("I'm a teapot", HttpCode::CE_IM_A_TEAPOT)
 );
 
 $router->use(
@@ -99,7 +98,10 @@ $form = (new Form(HttpMethod::DELETE))
 $router->use("/form",
     Http::get((new WebPage())->addContent($form)),
     Http::delete(function(Request $request, Response $response) {
-        $response->json($request->getBody());
+        $body = $request->getBody()->asArray();
+        $body['files'] = $request->getFiles()->asArray();
+
+        $response->json($body);
     })
 );
 

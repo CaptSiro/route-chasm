@@ -29,6 +29,6 @@ class Enable implements Extension {
     }
 
     public function modifyTable(TableDefinition $table): void {
-        $table->addColumn(ENABLE_COLUMN_NAME, Boolean::getInstance());
+        $table->addColumn(ENABLE_COLUMN_NAME, (new Boolean())->overrideName('Enable'));
     }
 }

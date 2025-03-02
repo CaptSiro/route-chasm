@@ -21,9 +21,8 @@ class ResponseFormat implements Format {
 
     public function getIdentifier(Request $request): string {
         $header = $request->getHeader(HttpHeader::X_RESPONSE_TYPE);
-
         if (!is_null($header)) {
-            return $this->matcher->matchQuery($header);
+            return $this->matcher->matchContentType($header);
         }
 
         $queryParam = $this->getTypeFromQuery($request->getUrl()->getQuery());

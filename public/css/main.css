@@ -89,6 +89,21 @@ button.link:hover {
 
 
 
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-0);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-2);
+}
+
+
+
 .hide {
     display: none;
 }

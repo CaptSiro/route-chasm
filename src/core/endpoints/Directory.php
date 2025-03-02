@@ -52,7 +52,7 @@ class Directory implements Endpoint {
 
             App::getInstance()
                 ->getResponse()
-                ->error(
+                ->sendMessage(
                     "Resource is not accessible",
                     HttpCode::CE_FORBIDDEN
                 );
@@ -63,7 +63,7 @@ class Directory implements Endpoint {
         return function () use ($code) {
             App::getInstance()
                 ->getResponse()
-                ->error(
+                ->sendMessage(
                     "Resource is not accessible",
                     $code
                 );
@@ -114,7 +114,7 @@ class Directory implements Endpoint {
                 $path = realpath($this->directory .'/'. $remaining);
 
                 if ($path === false) {
-                    $response->error(
+                    $response->sendMessage(
                         "File not found",
                         HttpCode::CE_NOT_FOUND
                     );
@@ -122,7 +122,7 @@ class Directory implements Endpoint {
                 }
 
                 if (!str_contains($path, $this->directory)) {
-                    $response->error(
+                    $response->sendMessage(
                         "Request references outside of given scope",
                         HttpCode::CE_BAD_REQUEST
                     );
@@ -134,7 +134,7 @@ class Directory implements Endpoint {
                         ($this->onDirectory)($this, $path);
                     }
 
-                    $response->error(
+                    $response->sendMessage(
                         "Resource is not accessible",
                         HttpCode::CE_FORBIDDEN
                     );
@@ -146,7 +146,7 @@ class Directory implements Endpoint {
             }
 
             default: {
-                $response->error(
+                $response->sendMessage(
                     "HTTP method $request->httpMethod is not allowed",
                     HttpCode::CE_METHOD_NOT_ALLOWED
                 );

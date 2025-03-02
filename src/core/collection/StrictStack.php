@@ -65,4 +65,17 @@ class StrictStack implements StrictDictionary {
 
         return false;
     }
+
+    public function asArray(): array {
+        $count = count($this->stack);
+        if ($count <= 0) {
+            return [];
+        }
+
+        if ($count === 1) {
+            return $this->stack[0];
+        }
+
+        return array_merge(...$this->stack);
+    }
 }

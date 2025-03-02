@@ -50,4 +50,8 @@ class Session implements StrictDictionary {
 
         return $_SESSION[$name];
     }
+
+    public function asArray(): array {
+        return $_SESSION;
+    }
 }

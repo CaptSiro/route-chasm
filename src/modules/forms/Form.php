@@ -48,6 +48,7 @@ class Form extends Component {
 
     /** @var array<View> */
     protected array $elements;
+    protected string $bodyTransformer;
 
 
 
@@ -62,9 +63,15 @@ class Form extends Component {
         protected ?string $namespace = null,
     ) {
         $this->elements = [];
+        $this->bodyTransformer = FormTransformer::TRANSFORMER_FORM_DATA;
     }
 
 
+
+    public function setBodyTransformer(string $javascriptFunction): static {
+        $this->bodyTransformer = $javascriptFunction;
+        return $this;
+    }
 
     public function setNamespaceClass(string $class): self {
         return $this->setNamespace(self::ns($class));

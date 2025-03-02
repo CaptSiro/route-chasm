@@ -3,13 +3,13 @@
 namespace core\database\column;
 
 use core\database\Column;
-use core\Singleton;
+use core\database\ColumnNameOverride;
 use modules\forms\controls\NumberField;
 use modules\forms\definition\overrides\FieldDefinition;
 use modules\forms\definition\overrides\FieldOverride;
 
 class Integer implements Column {
-    use Singleton;
+    use ColumnNameOverride;
 
 
 
@@ -32,6 +32,6 @@ class Integer implements Column {
     }
 
     public function getFieldDefinition(string $name): FieldDefinition {
-        return new FieldOverride($name, new NumberField($name, $name));
+        return new FieldOverride($this->name ?? $name, new NumberField($name, $name));
     }
 }

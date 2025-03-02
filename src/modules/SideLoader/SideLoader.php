@@ -208,7 +208,7 @@ class SideLoader extends DefaultModule implements View {
             Http::get(function (Request $request, Response $response) {
                 $type = $request->getUrl()->getQuery()->getStrict('type');
                 if (!isset($this->fileImporters[$type])) {
-                    $response->error(
+                    $response->sendMessage(
                         "There is not known file importer for type '$type'",
                         HttpCode::CE_BAD_REQUEST
                     );
@@ -224,7 +224,7 @@ class SideLoader extends DefaultModule implements View {
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
                     $entry = DatabaseCache::fromHash($files);
                     if (is_null($entry)) {
-                        $response->error(
+                        $response->sendMessage(
                             "File not found (file hash: '$files')",
                             HttpCode::CE_NOT_FOUND
                         );

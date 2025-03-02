@@ -46,4 +46,8 @@ readonly class StrictMap implements StrictDictionary, JsonSerializable {
     public function jsonSerialize(): Map {
         return $this->map;
     }
+
+    public function asArray(): array {
+        return $this->map->asArray();
+    }
 }

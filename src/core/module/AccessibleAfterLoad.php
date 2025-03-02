@@ -28,7 +28,7 @@ trait AccessibleAfterLoad {
 
         App::getInstance()
             ->getResponse()
-            ->error(
+            ->sendMessage(
                 "Module SideLoader is not accessible before module is properly loaded",
                 HttpCode::SE_INTERNAL_SERVER_ERROR
             );

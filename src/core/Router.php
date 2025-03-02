@@ -125,7 +125,7 @@ class Router {
     public function execute(Request $request, Response $response): void {
         $trail = $this->findPath($request->getUrl()->getPath());
         if (is_null($trail)) {
-            $response->error(
+            $response->sendMessage(
                 "Resource not found",
                 HttpCode::CE_NOT_FOUND
             );
@@ -146,7 +146,7 @@ class Router {
 
         $request->getParam()->pop();
 
-        $response->error(
+        $response->sendMessage(
             "Called all responsible endpoints but none of them responded",
             HttpCode::SE_NOT_IMPLEMENTED
         );

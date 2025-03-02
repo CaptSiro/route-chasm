@@ -1,9 +1,57 @@
 /**
+ * @typedef {{ body: any, type: string }} Payload
+ */
+
+/**
  * @param {HTMLElement} form
  */
-async function submitForm(form) {
+async function form_submit(form) {
+    /** @type {(HTMLElement) => Payload} */
+    const transformer = call_getFunction(form.dataset.transformer ?? '');
+    if (transformer === undefined) {
+        throw new Error("Mandatory form attribute 'data-transformer' was not set. " + form);
+    }
+
+    const payload = transformer(form);
+    const headers = {
+        'X-Request-Type': payload.type,
+        'X-Response-Type': 'application/json'
+    };
+
+    const response = await fetch(window.location, {
+        method: form.dataset.method,
+        headers,
+        body: payload.body
+    });
+
+    if (!response.ok) {
+        /** @type {any} */
+        const error = await response.json();
+        if (error['property'] === undefined) {
+            await window_alert(error.message);
+            return;
+        }
+
+        await window_alert(error.message);
+        return;
+    }
+
+    if (response.headers.has('Location')) {
+        window.location.replace(response.headers.get('Location'));
+        return;
+    }
+
+    console.log(await response.json());
+}
+
+
+
+/**
+ * @param {HTMLElement} form
+ * @returns {Payload}
+ */
+function form_formData(form) {
     const data = new FormData();
-    const json = {};
 
     for (const input of form.querySelectorAll("[name]")) {
         if (input.type === "file") {
@@ -14,23 +62,40 @@ async function submitForm(form) {
             continue;
         }
 
+        if (input.type === "checkbox") {
+            data.append(input.name, input.checked);
+            continue;
+        }
+
         data.append(input.name, input.value);
+    }
+
+    return {
+        body: data,
+        type: 'application/x-www-form-urlencoded'
+    };
+}
+
+/**
+ * @param {HTMLElement} form
+ * @returns {Payload}
+ */
+function form_json(form) {
+    const json = {};
+
+    for (const input of form.querySelectorAll("[name]")) {
+        if (input.type === "checkbox") {
+            json[input.name] = input.checked;
+            continue;
+        }
+
         json[input.name] = input.value;
     }
 
-    const response = await fetch(window.location, {
-        method: form.dataset.method,
-        body: data
-    });
-
-    console.log(await response.text());
-
-    const jsonResponse = await fetch(window.location, {
-        method: form.dataset.method,
+    return {
         body: JSON.stringify(json),
-    });
-
-    console.log(await jsonResponse.text());
+        type: 'application/json'
+    };
 }
 
 
