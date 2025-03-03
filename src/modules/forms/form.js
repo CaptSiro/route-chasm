@@ -4,6 +4,28 @@
 
 /**
  * @param {HTMLElement} form
+ * @param {{ message: string, property?: string }} error
+ */
+async function form_showError(form, error) {
+    const message = error['message'];
+    if (message === undefined) {
+        return;
+    }
+
+    const property = error['property'];
+    const input = $(`[name=${property}]`, form);
+    if (property === undefined || input === null) {
+        await window_alert(message);
+        return;
+    }
+
+    input.classList.add("form-invalid");
+    const errorView = jsml.span("form-invalid-message", message);
+    input.after(errorView);
+}
+
+/**
+ * @param {HTMLElement} form
  */
 async function form_submit(form) {
     /** @type {(HTMLElement) => Payload} */
@@ -18,6 +40,14 @@ async function form_submit(form) {
         'X-Response-Type': 'application/json'
     };
 
+    for (const errorView of $$('.form-invalid-message', form)) {
+        errorView.remove();
+    }
+
+    for (const input of $$('.form-invalid', form)) {
+        input.classList.remove('form-invalid');
+    }
+
     const response = await fetch(window.location, {
         method: form.dataset.method,
         headers,
@@ -26,13 +56,24 @@ async function form_submit(form) {
 
     if (!response.ok) {
         /** @type {any} */
-        const error = await response.json();
-        if (error['property'] === undefined) {
-            await window_alert(error.message);
+        const result = await response.json();
+        if (result['property'] !== undefined) {
+            await form_showError(form, result);
             return;
         }
 
-        await window_alert(error.message);
+        if (Array.isArray(result['group'])) {
+            for (const error of result['group']) {
+                await form_showError(form, error);
+            }
+
+            return;
+        }
+
+        if (result['message'] !== undefined) {
+            await window_alert(result['message']);
+        }
+
         return;
     }
 
@@ -41,7 +82,7 @@ async function form_submit(form) {
         return;
     }
 
-    console.log(await response.json());
+    console.log(await response.text());
 }
 
 

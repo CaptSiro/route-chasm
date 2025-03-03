@@ -2,7 +2,6 @@
 
 namespace entities\core;
 
-use components\core\SaveException\SaveError;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
 use core\database\Entity;
@@ -10,6 +9,7 @@ use core\database\extensions\Editable;
 use core\database\Schema;
 use core\database\sql\SqlTable;
 use core\database\query\Query;
+use core\view\View;
 
 
 
@@ -60,7 +60,7 @@ class Setting extends Entity {
 
 
 
-    public function save(): ?SaveError {
+    public function save(): ?View {
         if (!(is_null($this->value) || gettype($this->value) === 'string')) {
             $this->value = ''. $this->value;
         }

@@ -3,13 +3,13 @@
 
 namespace core\database;
 
-use components\core\SaveException\SaveError;
 use core\collection\Dictionary;
 use core\database\buffer\StaticBuffer;
 use core\database\column\ForeignKey;
 use core\database\sql\parameter\SqlPrimitiveParam;
 use core\database\sql\SqlTable;
 use core\database\query\Query;
+use core\view\View;
 use JsonSerializable;
 use modules\forms\definition\FormDefinition;
 use modules\forms\Form;
@@ -244,7 +244,7 @@ abstract class Entity implements JsonSerializable {
         return isset($columns[$column]) && !$columns[$column]->isVirtual($value ?? $this->data[$column] ?? null);
     }
 
-    public function save(): ?SaveError {
+    public function save(): ?View {
         if (empty($this->updated)) {
             return null;
         }
@@ -284,7 +284,7 @@ abstract class Entity implements JsonSerializable {
         return null;
     }
 
-    protected function insert(): ?SaveError {
+    protected function insert(): ?View {
         $def = static::getSchema()->getTable();
 
         $columns = [];

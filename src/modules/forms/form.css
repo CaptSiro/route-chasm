@@ -9,6 +9,10 @@
     --form-accent-1: var(--accent-1);
     --form-accent-3: var(--accent-3);
 
+    --form-invalid-0: #f13854;
+    --form-invalid-1: #f3919f;
+    --form-invalid-text-0: black;
+
     --form-border-radius: var(--border-radius);
     --form-border-radius-smaller: var(--gap-smaller);
     --form-gap: var(--gap);
@@ -192,10 +196,18 @@ input:not([type=checkbox]):focus {
     color: var(--form-text-0);
 }
 
-input.invalid {
-    background-color: #f3919f;
-    border-color: #f13854;
-    color: black;
+input.form-invalid {
+    background-color: var(--form-invalid-1);
+    border-color: var(--form-invalid-0);
+    color: var(--form-invalid-text-0);
+}
+
+.form-invalid-message {
+    padding: 4px;
+    margin-top: calc(var(--form-gap) / 2);
+    background-color: var(--form-invalid-1);
+    color: var(--form-invalid-text-0);
+    border-left: 2px solid var(--form-invalid-0);
 }
 
 .form textarea {
