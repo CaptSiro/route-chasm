@@ -73,9 +73,14 @@ class AdminNexus extends ContainerContent {
 
         $leaf->use('/create', new AdminNexusEditor($this));
 
+        $factory = $this->schema->getEntityFactory();
+
         $leaf->use(
             Path::from('/update/[id]'),
-            Http::get(fn(Request $request, Response $response) => $response->send('editor - update'))
+            fn(Request $request, Response $response) => (new AdminNexusEditor($this))
+                ->setEntity($factory->fromId(
+                    $request->getParam()->get('id')
+                ))
         );
 
         $leaf->use(

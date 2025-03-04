@@ -32,6 +32,9 @@ class Procedure implements Endpoint {
     }
 
     function execute(Request $request, Response $response): void {
-        ($this->function)($request, $response);
+        $ret = ($this->function)($request, $response);
+        if ($ret instanceof Endpoint) {
+            $ret->execute($request, $response);
+        }
     }
 }

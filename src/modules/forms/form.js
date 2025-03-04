@@ -54,12 +54,12 @@ async function form_submit(form) {
         body: payload.body
     });
 
-    if (!response.ok) {
+    if (response.status >= 400) {
         /** @type {any} */
         const result = await response.json();
         if (result['property'] !== undefined) {
             await form_showError(form, result);
-            return;
+            return false;
         }
 
         if (Array.isArray(result['group'])) {
@@ -67,22 +67,23 @@ async function form_submit(form) {
                 await form_showError(form, error);
             }
 
-            return;
+            return false;
         }
 
         if (result['message'] !== undefined) {
             await window_alert(result['message']);
         }
 
-        return;
+        return false;
     }
 
-    if (response.headers.has('Location')) {
-        window.location.replace(response.headers.get('Location'));
-        return;
+    if (response.headers.has('X-Next')) {
+        window.location.replace(response.headers.get('X-Next'));
+        return false;
     }
 
     console.log(await response.text());
+    return false;
 }
 
 

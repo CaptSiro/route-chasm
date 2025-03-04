@@ -10,6 +10,7 @@ use core\communication\Response;
 use core\database\Entity;
 use core\database\Schema;
 use core\http\HttpCode;
+use core\http\HttpHeader;
 use core\http\HttpMethod;
 use core\view\ContainerContent;
 use core\view\View;
@@ -20,6 +21,11 @@ use modules\forms\Form;
 use modules\forms\FormAction;
 
 class AdminNexusEditor extends ContainerContent {
+    public const STATE_CREATOR = 0;
+    public const STATE_UPDATER = 1;
+
+
+
     protected Schema $schema;
     protected WebPage $page;
     protected ?Entity $entity = null;
@@ -38,8 +44,25 @@ class AdminNexusEditor extends ContainerContent {
         return $this;
     }
 
+    protected function getEntityData(): array {
+        if (!isset($this->entity)) {
+            return [];
+        }
+
+        return $this->entity->getData();
+    }
+
+    public function getState(): int {
+        return isset($this->entity)
+            ? self::STATE_UPDATER
+            : self::STATE_CREATOR;
+    }
+
     public function getForm(): View {
-        $form = new Form(HttpMethod::POST);
+        $form = new Form($this->getState() === self::STATE_CREATOR
+            ? HttpMethod::POST
+            : HttpMethod::PUT
+        );
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new HiddenField(
@@ -50,12 +73,14 @@ class AdminNexusEditor extends ContainerContent {
 
         $this->schema
             ->getForm()
-            ->initForm($form, []);
+            ->initForm($form, $this->getEntityData());
 
-        $cancel = new FormAction(FormAction::TYPE_RESET, 'Cancel');
+        $submitLabel = $this->getState() === self::STATE_CREATOR
+            ? 'Create'
+            : 'Update';
         $form->add(new MultiSubmit([
-            $cancel,
-            new FormAction(FormAction::TYPE_SUBMIT, 'Submit')
+            new FormAction(FormAction::TYPE_RESET, 'Cancel'),
+            new FormAction(FormAction::TYPE_SUBMIT, $submitLabel)
         ]));
 
         return $form;
@@ -63,7 +88,7 @@ class AdminNexusEditor extends ContainerContent {
 
     public function getTitle(): string {
         $title = $this->context->getTitle() .' - ';
-        $title .= is_null($this->entity)
+        $title .= $this->getState() === self::STATE_CREATOR
             ? 'Create'
             : 'Update';
 
@@ -90,12 +115,37 @@ class AdminNexusEditor extends ContainerContent {
 
                 $entity = $this->schema->create($request->getBody()->asArray());
                 $error = $entity->save();
-                if (!is_null($error)) {
+
+                if (!is_null($error = $entity->save())) {
                     $response->renderRoot($error);
                 }
 
                 $response->setStatus(HttpCode::S_CREATED);
-                $response->redirect($this->context->getLink());
+                $response->setHeader(HttpHeader::X_NEXT, $this->context->getLink());
+                $response->flush();
+            }
+
+            case HttpMethod::PUT: {
+                if (!CsrfField::check($request)) {
+                    $response->sendMessage(
+                        'Cross-Site request forgery detected',
+                        HttpCode::CE_NOT_ACCEPTABLE
+                    );
+                }
+
+                $entity = $this->schema
+                    ->getEntityFactory()
+                    ->fromId($this->entity->getId());
+
+                $entity->set($request->getBody()->asArray());
+
+                if (!is_null($error = $entity->save())) {
+                    $response->renderRoot($error);
+                }
+
+                $response->setStatus(HttpCode::S_ACCEPTED);
+                $response->setHeader(HttpHeader::X_NEXT, $this->context->getLink());
+                $response->flush();
             }
 
             default:

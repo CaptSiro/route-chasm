@@ -125,7 +125,7 @@ abstract class Entity implements JsonSerializable, Identifier {
         $_id = new SqlPrimitiveParam($id);
         return $def->getDatabase()
             ->fetch(
-                "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTable()
+                "SELECT ". static::getColumnEnumString() ." FROM `". $def->getTableName()
                 ."` WHERE `". $def->getIdColumn() ."` = $_id",
                 static::class
             );
