@@ -3,7 +3,7 @@
 namespace components\layout\Table;
 
 use components\layout\Table\Proxy\Proxy;
-use components\layout\Table\Proxy\TypedProxy;
+use components\layout\Table\Proxy\TypeProxy;
 use core\Flags;
 use core\view\Renderer;
 use core\view\View;
@@ -20,7 +20,7 @@ class Table implements View {
     protected array $rows = [];
 
     public function __construct(
-        protected Proxy $proxy = new TypedProxy()
+        protected Proxy $proxy = new TypeProxy()
     ) {
         $this->setFlag(self::FLAG_SHOW_HEADER);
     }
@@ -29,6 +29,22 @@ class Table implements View {
 
     public function add(string $label, string $columnName): static {
         $this->columns[$columnName] = $label;
+        return $this;
+    }
+
+    public function addAsFirst(string $label, string $columnName): static {
+        $this->columns = [$columnName => $label] + $this->columns;
+        return $this;
+    }
+
+    /**
+     * @param array<string, string> $layout
+     * @return $this
+     */
+    public function addAll(array $layout): static {
+        foreach ($layout as $label => $name) {
+            $this->columns[$name] = $label;
+        }
         return $this;
     }
 

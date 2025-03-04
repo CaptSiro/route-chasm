@@ -3,13 +3,13 @@
 namespace core\database\column;
 
 use core\database\Column;
-use core\database\ColumnNameOverride;
+use core\database\ColumnLabelOverride;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\definition\overrides\FieldOverride;
 use modules\forms\definition\overrides\FieldDefinition;
 
 class Boolean implements Column {
-    use ColumnNameOverride;
+    use ColumnLabelOverride;
 
 
 
@@ -26,6 +26,6 @@ class Boolean implements Column {
     }
 
     public function getFieldDefinition(string $name): FieldDefinition {
-        return new FieldOverride($this->name ?? $name, new Checkbox($name, $name));
+        return new FieldOverride($this->label ?? $name, new Checkbox($name, $name));
     }
 }

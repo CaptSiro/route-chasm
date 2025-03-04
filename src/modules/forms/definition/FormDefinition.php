@@ -4,6 +4,7 @@ namespace modules\forms\definition;
 
 use core\database\TableDefinition;
 use modules\forms\definition\overrides\FieldDefinition;
+use modules\forms\definition\overrides\FieldOverride;
 use modules\forms\Form;
 
 class FormDefinition {
@@ -18,8 +19,21 @@ class FormDefinition {
         protected bool $discardIdColumn = true
     ) {}
 
+
+
     public function link(TableDefinition $table): void {
         $this->table = $table;
+    }
+
+    /**
+     * @return array<FieldOverride>
+     */
+    public function getOverrides(): array {
+        return $this->overrides;
+    }
+
+    public function doDiscardIdColumn(): bool {
+        return $this->discardIdColumn;
     }
 
     public function initForm(Form $form, array $data): void {

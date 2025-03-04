@@ -4,7 +4,7 @@ namespace components\core\Admin\Menu;
 
 use Closure;
 use components\core\Admin\Menu\Item\AdminMenuItem;
-use components\core\BreadCrumb\BreadCrumb;
+use components\core\BreadCrumbs\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Menu\Menu;
 use core\AdminRouter;

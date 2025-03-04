@@ -4,7 +4,9 @@ namespace components\core\Admin\Nexus;
 
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
+use components\core\Message\Message;
 use components\core\WebPage\WebPage;
+use components\layout\Table\Table;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -16,8 +18,14 @@ use core\path\Path;
 use core\Router;
 use core\utils\Arrays;
 use core\view\ContainerContent;
+use core\view\View;
 
 class AdminNexus extends ContainerContent {
+    public const COLUMN_EDIT = 'nexus_edit';
+    public const COLUMN_DELETE = 'nexus_delete';
+
+
+
     protected WebPage $page;
     protected ?string $urlPath = null;
 
@@ -31,6 +39,21 @@ class AdminNexus extends ContainerContent {
     }
 
 
+
+    public function getTable(): View {
+        $table = $this->schema->getTableLayout()->createTable(
+            (new NexusProxy())->setContext($this)
+        );
+
+        if (is_null($table)) {
+            return new Message("Could not create table, because the layout is empty");
+        }
+
+        return $table
+            ->addAsFirst('Edit', self::COLUMN_EDIT)
+            ->add('Delete', self::COLUMN_DELETE)
+            ->load($this->schema->getEntityFactory()->fetchAll());
+    }
 
     public function getTitle(): string {
         if (is_null($this->title)) {

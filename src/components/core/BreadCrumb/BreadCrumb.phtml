@@ -1,8 +1,0 @@
-<?php /** @var \components\core\BreadCrumb\BreadCrumb $this */ ?>
-<li class="bread-crumb">
-    <?php if (is_null($this->url)): ?>
-        <span><?= $this->label ?></span>
-    <?php else: ?>
-        <a href="<?= $this->url ?>"><?= $this->label ?></a>
-    <?php endif; ?>
-</li>

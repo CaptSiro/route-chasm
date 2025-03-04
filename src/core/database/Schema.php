@@ -2,10 +2,12 @@
 
 namespace core\database;
 
+use components\layout\Table\TableLayout;
 use modules\forms\definition\FormDefinition;
 
 class Schema {
     protected ?string $entityClass;
+    protected ?TableLayout $tableLayout = null;
 
 
 
@@ -36,6 +38,36 @@ class Schema {
         return $this->table;
     }
 
+    public function createDefaultTableLayout(): TableLayout {
+        $layout = [];
+        $columns = $this->table->getColumns();
+        $idColumn = $this->table->getIdColumn();
+        $overrides = $this->form->getOverrides();
+
+        foreach ($columns as $name => $column) {
+            if ($this->form->doDiscardIdColumn() && $name === $idColumn) {
+                continue;
+            }
+
+            $definition = $overrides[$name] ?? $column->getFieldDefinition($name);
+            if (!$definition->include()) {
+                continue;
+            }
+
+            $layout[$definition->getLabel() ?? $name] = $name;
+        }
+
+        return new TableLayout($layout);
+    }
+
+    public function getTableLayout(): ?TableLayout {
+        if (!isset($this->tableLayout)) {
+            return $this->tableLayout = $this->createDefaultTableLayout();
+        }
+
+        return $this->tableLayout;
+    }
+
     public function getForm(): FormDefinition {
         return $this->form;
     }
@@ -64,5 +96,11 @@ class Schema {
         }
 
         return null;
+    }
+
+    public function getEntityFactory(): EntityFactory {
+        return new ReflectionEntityFactory(
+            $this->entityClass
+        );
     }
 }

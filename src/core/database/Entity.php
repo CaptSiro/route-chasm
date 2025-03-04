@@ -9,12 +9,13 @@ use core\database\column\ForeignKey;
 use core\database\sql\parameter\SqlPrimitiveParam;
 use core\database\sql\SqlTable;
 use core\database\query\Query;
+use core\Identifier;
 use core\view\View;
 use JsonSerializable;
 use modules\forms\definition\FormDefinition;
 use modules\forms\Form;
 
-abstract class Entity implements JsonSerializable {
+abstract class Entity implements JsonSerializable, Identifier {
     public const ORIGIN_CODE = 'code';
     public const ORIGIN_DATABASE = 'database';
     public const VIRTUALITY_CHECK = 'defined-value'; // code smell
@@ -115,7 +116,7 @@ abstract class Entity implements JsonSerializable {
         return null;
     }
 
-    public static function fromId(int $id): ?self {
+    public static function fromId(int $id): ?static {
         if ($id === 0) {
             return new static();
         }
@@ -134,7 +135,7 @@ abstract class Entity implements JsonSerializable {
         return static::fromId((int) $unique);
     }
 
-    public static function fromRow(array|false $row): ?self {
+    public static function fromRow(array|false $row): ?static {
         if ($row === false) {
             return null;
         }
@@ -302,7 +303,7 @@ abstract class Entity implements JsonSerializable {
             }
 
             $columns[] = "`$name`";
-            $params[] = $this->data[$name] ?? null;
+            $params[] = $definition->transform($this->data[$name] ?? null);
             $values .= StaticBuffer::PARAM_IDENT;
 
             $first = false;

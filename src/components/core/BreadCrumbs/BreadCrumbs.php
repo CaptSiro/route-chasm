@@ -2,7 +2,6 @@
 
 namespace components\core\BreadCrumbs;
 
-use components\core\BreadCrumb\BreadCrumb;
 use core\view\Renderer;
 use core\view\View;
 

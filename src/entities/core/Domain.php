@@ -22,9 +22,9 @@ Entity::addSchema(Domain::class, new Schema(
         'core_domains',
         [
             'id' => new PrimaryKey(true),
-            'host' => (new Text())->overrideName('Host'),
-            'port' => (new Integer())->overrideName('Port'),
-            'path' => (new Text())->overrideName('Path'),
+            'host' => (new Text())->overrideLabel('Host'),
+            'port' => (new Integer())->overrideLabel('Port'),
+            'path' => (new Text())->overrideLabel('Path'),
             'cost' => new Integer(),
         ],
         'id'

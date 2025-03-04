@@ -2,7 +2,9 @@
 
 namespace components\layout\Table\Proxy;
 
-class TypedProxy implements Proxy {
+use components\core\Html\Html;
+
+class TypeProxy implements Proxy {
     protected mixed $item;
 
     public function setItem(mixed $item): void {
@@ -12,13 +14,13 @@ class TypedProxy implements Proxy {
     public function getValue(string $name): string {
         $value = $this->item->$name ?? null;
 
-        return match (gettype($value)) {
+        return Html::wrap('span', match (gettype($value)) {
             "string" => $value,
-            "boolean" => $value ? 'true' : 'false',
+            "boolean" => $value ? 'Yes' : 'No',
             "integer", "double" => ''. $value,
             "array" => implode(', ', $value),
             "object" => json_encode($value),
             default => '',
-        };
+        });
     }
 }

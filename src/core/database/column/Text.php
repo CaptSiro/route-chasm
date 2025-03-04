@@ -3,13 +3,13 @@
 namespace core\database\column;
 
 use core\database\Column;
-use core\database\ColumnNameOverride;
+use core\database\ColumnLabelOverride;
 use modules\forms\controls\TextField;
 use modules\forms\definition\overrides\FieldDefinition;
 use modules\forms\definition\overrides\FieldOverride;
 
 class Text implements Column {
-    use ColumnNameOverride;
+    use ColumnLabelOverride;
 
 
 
@@ -30,6 +30,6 @@ class Text implements Column {
     }
 
     public function getFieldDefinition(string $name): FieldDefinition {
-        return new FieldOverride($this->name ?? $name, new TextField($name, $name));
+        return new FieldOverride($this->label ?? $name, new TextField($name, $name));
     }
 }

@@ -24,6 +24,10 @@ class FieldOverride implements FieldDefinition {
         return $this->component;
     }
 
+    public function getLabel(): ?string {
+        return $this->label;
+    }
+
     public function setName(string $name): void {
         $this->component->setName($name);
     }

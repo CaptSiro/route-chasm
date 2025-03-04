@@ -12,6 +12,10 @@ class Html implements View {
         return "<$tag>$content</$tag>";
     }
 
+    public static function createLink(string $url, string $content): string {
+        return "<a href='$url'>$content</a>";
+    }
+
     public function __construct(
         protected readonly string $tag,
         protected array $attributes = [],

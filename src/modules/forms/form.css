@@ -132,6 +132,8 @@ input {
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
 
+    width: clamp(100px, 100%, 700px);
+
     transition: background-color 250ms linear, border-color 250ms linear;
 }
 

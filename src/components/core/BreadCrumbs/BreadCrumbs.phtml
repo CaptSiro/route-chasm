@@ -14,9 +14,16 @@ if ($count > 0) {
     <ul class="bread-crumbs">
         <?php $first = true; foreach ($this->items as $item): ?>
             <?php if (!$first): ?>
-                <span class="delimitor"><?= $this->delimitor ?></span>
+                <li class="delimitor"><?= $this->delimitor ?></li>
             <?php endif; ?>
-            <?= $item->render() ?>
+
+            <li class="bread-crumb">
+                <?php if (is_null($item->getUrl())): ?>
+                    <span><?= $item->getLabel() ?></span>
+                <?php else: ?>
+                    <a href="<?= $item->getUrl() ?>"><?= $item->getLabel() ?></a>
+                <?php endif; ?>
+            </li>
         <?php $first = false; endforeach; ?>
     </ul>
 <?php endif; ?>
