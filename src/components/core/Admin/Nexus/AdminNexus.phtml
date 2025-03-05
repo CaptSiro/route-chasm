@@ -1,4 +1,11 @@
-<?php /** @var \components\core\Admin\Nexus\AdminNexus $this */ ?>
+<?php /** @var AdminNexus $this */
+
+use components\core\Admin\Nexus\AdminNexus;
+use modules\SideLoader\Javascript;
+
+Javascript::import($this->getResource('nexus.js'));
+
+?>
 <section>
     <h1><?= $this->getTitle() ?></h1>
 

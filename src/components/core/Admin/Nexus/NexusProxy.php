@@ -35,11 +35,15 @@ class NexusProxy extends TypeProxy {
                 $this->context->getUpdateLink((string) $this->item->getId()),
                 Icon::nf('nf-oct-pencil')
             ),
-            AdminNexus::COLUMN_DELETE => Html::createLink(
-                $this->context->getDeleteLink((string) $this->item->getId()),
-                Icon::nf('nf-oct-trash')
+            AdminNexus::COLUMN_DELETE => $this->createDeleteHandle(
+                $this->context->getDeleteLink((string) $this->item->getId())
             ),
             default => parent::getValue($name)
         };
+    }
+
+    protected function createDeleteHandle(string $url): string {
+        $content = Icon::nf('nf-oct-trash');
+        return "<button class='link no-underline' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
     }
 }

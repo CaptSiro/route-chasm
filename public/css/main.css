@@ -75,16 +75,18 @@ button:hover {
     cursor: pointer;
 }
 
-button.link {
+.link {
     all: unset;
-    color: var(--text-2);
-    font-size: 0.9em;
-    font-weight: bold;
 }
 
-button.link:hover {
+.link:hover {
+    all: unset;
     cursor: pointer;
     text-decoration: underline;
+}
+
+.link.no-underline:hover {
+    text-decoration: unset !important;
 }
 
 

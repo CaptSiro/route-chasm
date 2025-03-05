@@ -143,7 +143,7 @@ class AdminNexusEditor extends ContainerContent {
                     $response->renderRoot($error);
                 }
 
-                $response->setStatus(HttpCode::S_ACCEPTED);
+                $response->setStatus(HttpCode::S_OK);
                 $response->setHeader(HttpHeader::X_NEXT, $this->context->getLink());
                 $response->flush();
             }

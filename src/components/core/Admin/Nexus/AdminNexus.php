@@ -85,7 +85,16 @@ class AdminNexus extends ContainerContent {
 
         $leaf->use(
             Path::from('/[id]'),
-            Http::delete(fn(Request $request, Response $response) => $response->send('delete'))
+            Http::delete(function (Request $request, Response $response) use ($factory) {
+                $entity = $factory->fromId(
+                    $request->getParam()->get('id')
+                );
+
+                $entity->delete();
+
+                $response->setStatus(HttpCode::S_OK);
+                $response->flush();
+            })
         );
     }
 
