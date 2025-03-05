@@ -1,7 +1,8 @@
 <?php
 
-namespace entities\core;
+namespace entities\core\Domain;
 
+use components\layout\Table\TableLayout;
 use core\database\column\Integer;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
@@ -11,13 +12,15 @@ use core\database\Schema;
 use core\database\sql\SqlTable;
 use core\guards\Guard;
 use core\guards\NumberGuard;
+use core\path\Path;
 use core\view\View;
 use modules\forms\definition\FormDefinition;
 use modules\forms\definition\overrides\Discard;
+use const core\database\extensions\ENABLE_COLUMN_NAME;
 
 
 
-Entity::addSchema(Domain::class, new Schema(
+$schema = new Schema(
     new SqlTable(
         'core_domains',
         [
@@ -31,7 +34,8 @@ Entity::addSchema(Domain::class, new Schema(
     ),
     new FormDefinition(['cost' => new Discard()]),
     [new Enable()]
-));
+);
+Entity::addSchema(Domain::class, $schema);
 
 
 
@@ -42,6 +46,16 @@ Entity::addSchema(Domain::class, new Schema(
  * @property int cost
  */
 class Domain extends Entity {
+    public static function defaultTableLayout(): TableLayout {
+        return new TableLayout(
+            [
+                'Enabled' => ENABLE_COLUMN_NAME,
+                'Domain' => DomainProxy::COLUMN_DOMAIN
+            ],
+            new DomainProxy()
+        );
+    }
+
     public function save(): ?View {
         $guards = [
             NumberGuard::inRange(
@@ -68,5 +82,22 @@ class Domain extends Entity {
         }
 
         return parent::save();
+    }
+
+    public function getLiteral(): string {
+        $ret = $this->host;
+        if ($this->port !== 0) {
+            $ret .= ':'. $this->port;
+        }
+
+        if ($this->path !== '') {
+            $ret = Path::join($ret, $this->path);
+        }
+
+        return $ret;
+    }
+
+    public function __toString(): string {
+        return $this->getLiteral();
     }
 }

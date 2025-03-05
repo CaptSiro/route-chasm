@@ -1,17 +1,18 @@
 <?php /** @var AdminNexus $this */
 
 use components\core\Admin\Nexus\AdminNexus;
+use modules\SideLoader\Css;
 use modules\SideLoader\Javascript;
 
 Javascript::import($this->getResource('nexus.js'));
+Css::import($this->getResource('nexus.css'));
 
 ?>
-<section>
-    <h1><?= $this->getTitle() ?></h1>
-
-    <a class="button" href="<?= $this->getCreateLink() ?>">Create</a>
-    <a class="button" href="<?= $this->getUpdateLink('4') ?>">Update</a>
-    <a class="button" href="<?= $this->getDeleteLink('4') ?>">Delete</a>
+<section class="nexus">
+    <div class="head">
+        <h1><?= $this->getTitle() ?></h1>
+        <a class="button" href="<?= $this->getCreateLink() ?>">Create</a>
+    </div>
 
     <?= $this->getTable() ?>
 </section>

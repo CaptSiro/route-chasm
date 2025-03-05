@@ -68,6 +68,11 @@ class Schema {
         return $this->tableLayout;
     }
 
+    public function setTableLayout(?TableLayout $tableLayout): static {
+        $this->tableLayout = $tableLayout;
+        return $this;
+    }
+
     public function getForm(): FormDefinition {
         return $this->form;
     }
@@ -76,7 +81,7 @@ class Schema {
         $this->entityClass = $class;
     }
 
-    public function create(array $data): Entity {
+    public function createEntity(array $data): Entity {
         $entity = new $this->entityClass();
 
         foreach ($this->table->getColumns() as $name => $column) {

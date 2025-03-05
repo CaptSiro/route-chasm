@@ -20,24 +20,26 @@ use modules\forms\controls\MultiSubmit\MultiSubmit;
 use modules\forms\Form;
 use modules\forms\FormAction;
 
-class AdminNexusEditor extends ContainerContent {
+class AdminNexusEditor extends ContainerContent implements Editor {
     public const STATE_CREATOR = 0;
     public const STATE_UPDATER = 1;
 
 
 
-    protected Schema $schema;
     protected WebPage $page;
     protected ?Entity $entity = null;
+    protected AdminNexus $context;
 
-    public function __construct(
-        protected AdminNexus $context
-    ) {
+    public function __construct() {
         parent::__construct($this->page = new WebPage());
-        $this->schema = $this->context->getSchema();
     }
 
 
+
+    public function setContext(AdminNexus $context): static {
+        $this->context = $context;
+        return $this;
+    }
 
     public function setEntity(Entity $entity): static {
         $this->entity = $entity;
@@ -59,6 +61,8 @@ class AdminNexusEditor extends ContainerContent {
     }
 
     public function getForm(): View {
+        $schema = $this->context->getSchema();
+
         $form = new Form($this->getState() === self::STATE_CREATOR
             ? HttpMethod::POST
             : HttpMethod::PUT
@@ -66,12 +70,12 @@ class AdminNexusEditor extends ContainerContent {
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new HiddenField(
-            $this->schema
+            $schema
                 ->getTable()
                 ->getIdColumn()
         ));
 
-        $this->schema
+        $schema
             ->getForm()
             ->initForm($form, $this->getEntityData());
 
@@ -113,7 +117,9 @@ class AdminNexusEditor extends ContainerContent {
                     );
                 }
 
-                $entity = $this->schema->create($request->getBody()->asArray());
+                $entity = $this->context
+                    ->getSchema()
+                    ->createEntity($request->getBody()->asArray());
                 $error = $entity->save();
 
                 if (!is_null($error = $entity->save())) {
@@ -133,7 +139,8 @@ class AdminNexusEditor extends ContainerContent {
                     );
                 }
 
-                $entity = $this->schema
+                $entity = $this->context
+                    ->getSchema()
                     ->getEntityFactory()
                     ->fromId($this->entity->getId());
 

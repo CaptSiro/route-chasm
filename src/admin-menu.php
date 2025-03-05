@@ -1,14 +1,18 @@
 <?php
 
-use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Menu\AdminMenu;
+use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\SptfTests\SptfTests;
 use components\core\Icon;
 use components\core\Modules\Modules;
-use entities\core\Domain;
+use entities\core\Domain\Domain;
 
 AdminMenu::getInstance()
-    ->add('/Domains', new AdminNexus(Domain::getSchema()))
+    ->add(
+        '/Domains',
+        (new AdminNexus(Domain::getSchema()))
+            ->setTableLayout(Domain::defaultTableLayout())
+    )
     ->addIcon('Domains', Icon::nf('nf-md-web'))
 
     ->add('/Monitoring/Modules', new Modules())

@@ -4,9 +4,11 @@ namespace components\core\Admin\Nexus;
 
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
+use components\core\Admin\Nexus\Editor\Editor;
 use components\core\Message\Message;
 use components\core\WebPage\WebPage;
 use components\layout\Table\Table;
+use components\layout\Table\TableLayout;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -28,6 +30,8 @@ class AdminNexus extends ContainerContent {
 
     protected WebPage $page;
     protected ?string $urlPath = null;
+    protected ?TableLayout $layout = null;
+    protected ?Editor $editor;
 
 
 
@@ -36,14 +40,35 @@ class AdminNexus extends ContainerContent {
         protected ?string $title = null
     ) {
         parent::__construct($this->page = new WebPage());
+        $this->setEditor(new AdminNexusEditor());
     }
 
 
 
+    public function setEditor(Editor $editor): static {
+        $this->editor = $editor;
+        $this->editor->setContext($this);
+        return $this;
+    }
+
+    public function setTableLayout(?TableLayout $layout): static {
+        $this->layout = $layout;
+        return $this;
+    }
+
+    public function createTable(): ?Table {
+        $layout = $this->layout ?? $this->schema->createDefaultTableLayout();
+        $proxy = $layout->getProxy() ?? new NexusProxy();
+
+        if ($proxy instanceof NexusProxy) {
+            $proxy->setContext($this);
+        }
+
+        return $layout->createTable($proxy);
+    }
+
     public function getTable(): View {
-        $table = $this->schema->getTableLayout()->createTable(
-            (new NexusProxy())->setContext($this)
-        );
+        $table = $this->createTable();
 
         if (is_null($table)) {
             return new Message("Could not create table, because the layout is empty");
@@ -71,13 +96,13 @@ class AdminNexus extends ContainerContent {
     public function onContextBind(Router $leaf): void {
         $this->urlPath = App::getInstance()->prependHome($leaf->getUrlPath());
 
-        $leaf->use('/create', new AdminNexusEditor($this));
+        $leaf->use('/create', $this->editor);
 
         $factory = $this->schema->getEntityFactory();
 
         $leaf->use(
             Path::from('/update/[id]'),
-            fn(Request $request, Response $response) => (new AdminNexusEditor($this))
+            fn(Request $request, Response $response) => $this->editor
                 ->setEntity($factory->fromId(
                     $request->getParam()->get('id')
                 ))

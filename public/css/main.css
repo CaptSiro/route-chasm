@@ -60,19 +60,23 @@ a.no-link:visited {
     color: var(--text-0);
 }
 
-button {
+button,
+.button {
     padding: 0.5em 1em;
     font-size: 1em;
     border-radius: var(--border-radius);
     color: var(--text-0);
     background-color: var(--container-0);
     border: 2px solid var(--container-3);
+    text-decoration: none;
 }
 
-button:hover {
+button:hover,
+.button:hover {
     outline: 2px solid var(--accent-3);
     background-color: var(--container-0);
     cursor: pointer;
+    text-decoration: none;
 }
 
 .link {

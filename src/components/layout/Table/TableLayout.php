@@ -9,7 +9,8 @@ class TableLayout {
      * @param array<string, string> $columns
      */
     public function __construct(
-        protected array $columns
+        protected array $columns,
+        protected ?Proxy $proxy = null
     ) {}
 
     /**
@@ -17,6 +18,10 @@ class TableLayout {
      */
     public function getColumns(): array {
         return $this->columns;
+    }
+
+    public function getProxy(): ?Proxy {
+        return $this->proxy;
     }
 
     public function createTable(Proxy $proxy): ?Table {
