@@ -1,12 +1,12 @@
 <?php
 
-namespace components\layout\Table;
+namespace components\layout\Grid;
 
-use components\layout\Table\Proxy\Proxy;
+use components\layout\Grid\Proxy\Proxy;
 
-class TableLayout {
+class GridLayout {
     /**
-     * @param array<string, string> $columns
+     * @param array<string, ColumnLayout> $columns
      */
     public function __construct(
         protected array $columns,
@@ -24,12 +24,12 @@ class TableLayout {
         return $this->proxy;
     }
 
-    public function createTable(Proxy $proxy): ?Table {
+    public function createTable(Proxy $proxy): ?Grid {
         if (empty($this->columns)) {
             return null;
         }
 
-        $table = new Table($proxy);
+        $table = new Grid($proxy);
         return $table->addAll($this->columns);
     }
 }

@@ -2,12 +2,13 @@
 
 namespace core\database;
 
-use components\layout\Table\TableLayout;
+use components\layout\Grid\ColumnLayout;
+use components\layout\Grid\GridLayout;
 use modules\forms\definition\FormDefinition;
 
 class Schema {
     protected ?string $entityClass;
-    protected ?TableLayout $tableLayout = null;
+    protected ?GridLayout $tableLayout = null;
 
 
 
@@ -38,7 +39,7 @@ class Schema {
         return $this->table;
     }
 
-    public function createDefaultTableLayout(): TableLayout {
+    public function createDefaultTableLayout(): GridLayout {
         $layout = [];
         $columns = $this->table->getColumns();
         $idColumn = $this->table->getIdColumn();
@@ -54,13 +55,13 @@ class Schema {
                 continue;
             }
 
-            $layout[$definition->getLabel() ?? $name] = $name;
+            $layout[$name] = new ColumnLayout($definition->getLabel() ?? $name);
         }
 
-        return new TableLayout($layout);
+        return new GridLayout($layout);
     }
 
-    public function getTableLayout(): ?TableLayout {
+    public function getTableLayout(): ?GridLayout {
         if (!isset($this->tableLayout)) {
             return $this->tableLayout = $this->createDefaultTableLayout();
         }
@@ -68,7 +69,7 @@ class Schema {
         return $this->tableLayout;
     }
 
-    public function setTableLayout(?TableLayout $tableLayout): static {
+    public function setTableLayout(?GridLayout $tableLayout): static {
         $this->tableLayout = $tableLayout;
         return $this;
     }

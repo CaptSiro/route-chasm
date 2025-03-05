@@ -2,7 +2,8 @@
 
 namespace entities\core\Domain;
 
-use components\layout\Table\TableLayout;
+use components\layout\Grid\ColumnLayout;
+use components\layout\Grid\GridLayout;
 use core\database\column\Integer;
 use core\database\column\PrimaryKey;
 use core\database\column\Text;
@@ -46,11 +47,11 @@ Entity::addSchema(Domain::class, $schema);
  * @property int cost
  */
 class Domain extends Entity {
-    public static function defaultTableLayout(): TableLayout {
-        return new TableLayout(
+    public static function defaultTableLayout(): GridLayout {
+        return new GridLayout(
             [
-                'Enabled' => ENABLE_COLUMN_NAME,
-                'Domain' => DomainProxy::COLUMN_DOMAIN
+                ENABLE_COLUMN_NAME => new ColumnLayout('Enabled', '96px'),
+                DomainProxy::COLUMN_DOMAIN => new ColumnLayout('Domain', '1fr')
             ],
             new DomainProxy()
         );

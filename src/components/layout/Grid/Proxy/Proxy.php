@@ -1,6 +1,6 @@
 <?php
 
-namespace components\layout\Table\Proxy;
+namespace components\layout\Grid\Proxy;
 
 interface Proxy {
     public function setItem(mixed $item): void;

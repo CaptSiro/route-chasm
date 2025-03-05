@@ -2,7 +2,7 @@
 
 namespace components\core\Modules;
 
-use components\layout\Table\Table;
+use components\layout\Grid\Grid;
 use core\App;
 use core\view\ContainerContent;
 use core\view\View;
@@ -13,11 +13,11 @@ class Modules extends ContainerContent {
     }
 
     public function getModules(): View {
-        $table = new Table(new ModulesProxy());
+        $table = new Grid(new ModulesProxy());
         $table
-            ->add('Name', 'name')
-            ->add('Identifier', 'identifier')
-            ->add('Version', 'version');
+            ->add('name', 'Name', '128px')
+            ->add('identifier', 'Identifier')
+            ->add('version', 'Version', '64px');
 
         $table->load(
             App::getInstance()->getLoadedModules()

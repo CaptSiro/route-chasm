@@ -3,7 +3,7 @@
 namespace components\core\Modules;
 
 use components\core\Html\Html;
-use components\layout\Table\Proxy\Proxy;
+use components\layout\Grid\Proxy\Proxy;
 use core\module\Module;
 use core\module\ModuleInfo;
 

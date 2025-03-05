@@ -1,0 +1,29 @@
+:root {
+    --grid-container-0: var(--container-0);
+    --grid-container-1: var(--container-1);
+    --grid-accent-0: var(--accent-0)
+}
+
+.grid {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--grid-container-0);
+    border: 2px solid var(--grid-container-1);
+}
+
+.grid-row,
+.grid-header {
+    display: grid;
+    grid-template-columns: inherit;
+    padding: 8px;
+    text-overflow: ellipsis;
+}
+
+.grid-row:nth-child(odd) {
+    background-color: var(--grid-container-1);
+}
+
+.grid-header {
+    padding: 16px 8px;
+    background-color: var(--grid-accent-0);
+}

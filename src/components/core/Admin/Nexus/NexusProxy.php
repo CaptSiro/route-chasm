@@ -4,7 +4,7 @@ namespace components\core\Admin\Nexus;
 
 use components\core\Html\Html;
 use components\core\Icon;
-use components\layout\Table\Proxy\TypeProxy;
+use components\layout\Grid\Proxy\TypeProxy;
 use core\Identifier;
 
 class NexusProxy extends TypeProxy {

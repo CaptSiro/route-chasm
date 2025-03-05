@@ -7,8 +7,8 @@ use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Admin\Nexus\Editor\Editor;
 use components\core\Message\Message;
 use components\core\WebPage\WebPage;
-use components\layout\Table\Table;
-use components\layout\Table\TableLayout;
+use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -30,7 +30,7 @@ class AdminNexus extends ContainerContent {
 
     protected WebPage $page;
     protected ?string $urlPath = null;
-    protected ?TableLayout $layout = null;
+    protected ?GridLayout $layout = null;
     protected ?Editor $editor;
 
 
@@ -51,12 +51,12 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
-    public function setTableLayout(?TableLayout $layout): static {
+    public function setTableLayout(?GridLayout $layout): static {
         $this->layout = $layout;
         return $this;
     }
 
-    public function createTable(): ?Table {
+    public function createTable(): ?Grid {
         $layout = $this->layout ?? $this->schema->createDefaultTableLayout();
         $proxy = $layout->getProxy() ?? new NexusProxy();
 
@@ -75,8 +75,8 @@ class AdminNexus extends ContainerContent {
         }
 
         return $table
-            ->addAsFirst('Edit', self::COLUMN_EDIT)
-            ->add('Delete', self::COLUMN_DELETE)
+            ->addAsFirst(self::COLUMN_EDIT, 'Edit', '64px')
+            ->add(self::COLUMN_DELETE, 'Delete', '64px')
             ->load($this->schema->getEntityFactory()->fetchAll());
     }
 
