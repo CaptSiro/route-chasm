@@ -37,13 +37,18 @@ class Input implements Control, Attribute {
         return $this->value;
     }
 
-    public function pattern(string $pattern): self {
+    public function pattern(string $pattern): static {
         $this->addAttribute("pattern", $pattern);
         return $this;
     }
 
-    public function required(): self {
+    public function required(): static {
         $this->addAttribute("required", true);
+        return $this;
+    }
+
+    public function readonly(): static {
+        $this->addAttribute('readonly');
         return $this;
     }
 

@@ -2,6 +2,8 @@
 
 namespace models\core;
 
+use components\layout\Grid\description\Grid;
+use components\layout\Grid\description\GridColumn;
 use core\App;
 use core\database_v3\sql\Column;
 use core\database_v3\sql\Database;
@@ -14,6 +16,7 @@ use core\module\ModuleInfo;
  * @property string $version
  */
 
+#[Grid]
 #[Table('core_modules')]
 #[Database(App::DATABASE)]
 class ModuleRecord extends Model {
@@ -29,9 +32,11 @@ class ModuleRecord extends Model {
 
 
 
+    #[GridColumn]
     #[Column(type: Column::TYPE_STRING, primaryKey: true)]
     protected string $identifier;
 
+    #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     protected string $version;
 }

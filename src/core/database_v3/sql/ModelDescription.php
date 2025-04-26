@@ -2,7 +2,73 @@
 
 namespace core\database_v3\sql;
 
-readonly class ModelDescription {
+use Exception;
+use ReflectionClass;
+
+class ModelDescription {
+    private static array $descriptions = [];
+
+    public static function extract(string $class): ModelDescription {
+        if (isset(self::$descriptions[$class])) {
+            return self::$descriptions[$class];
+        }
+
+        $reflection = new ReflectionClass($class);
+        $tables = $reflection->getAttributes(Table::class);
+        if (empty($tables)) {
+            throw new Exception("Model must have Table attribute");
+        }
+
+        $databases = $reflection->getAttributes(Database::class);
+        $database = empty($databases)
+            ? new Database()
+            : $databases[0]->newInstance();
+
+        $idColumn = null;
+        $columns = [];
+        $alias = [];
+
+        foreach ($reflection->getProperties() as $property) {
+            $attributes = $property->getAttributes(Column::class);
+            if (empty($attributes)) {
+                continue;
+            }
+
+            /** @var Column $column */
+            $column = $attributes[0]->newInstance();
+            $description = new ColumnDescription(
+                $property->getName(),
+                $column->name ?? $property->getName(),
+                $column->type
+            );
+
+            $columns[] = $description;
+            $alias[$description->alias] = $description;
+
+            if ($column->primaryKey) {
+                if (!is_null($idColumn)) {
+                    throw new Exception("Only one primary key column is allowed for model '$class'");
+                }
+
+                $idColumn = $description;
+            }
+        }
+
+        if (is_null($idColumn)) {
+            throw new Exception("No primary key found for model '$class'");
+        }
+
+        return self::$descriptions[$class] = new ModelDescription(
+            $tables[0]->newInstance()->name,
+            $database->getConnection(),
+            $idColumn,
+            $columns,
+            $alias
+        );
+    }
+
+
+
     /**
      * @param string $table
      * @param Connection $connection
@@ -11,12 +77,14 @@ readonly class ModelDescription {
      * @param array<string, ColumnDescription> $alias
      */
     public function __construct(
-        public string $table,
-        public Connection $connection,
-        public ColumnDescription $idColumn,
-        public array $columns,
-        public array $alias,
+        public readonly string $table,
+        public readonly Connection $connection,
+        public readonly ColumnDescription $idColumn,
+        public readonly array $columns,
+        public readonly array $alias,
     ) {}
+
+
 
     public function getEscapedTable(): string {
         return $this->connection->getDriver()->escapeTable(

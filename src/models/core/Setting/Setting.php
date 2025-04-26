@@ -1,7 +1,9 @@
 <?php
 
-namespace models\core;
+namespace models\core\Setting;
 
+use components\layout\Grid\description\Grid;
+use components\layout\Grid\description\GridColumn;
 use core\App;
 use core\database_v3\sql\Action;
 use core\database_v3\sql\Column;
@@ -13,12 +15,14 @@ use core\database_v3\sql\Table;
 use core\view\View;
 use models\extensions\Editable\Editable;
 use models\extensions\Editable\EditableExtension;
+use modules\forms\description\TextField;
 
 /**
  * @property string $name
  * @property string|null $value
  */
 
+#[Grid(new SettingProxy())]
 #[Table('core_settings')]
 #[Database(App::DATABASE)]
 final class Setting extends Model implements Editable {
@@ -52,9 +56,13 @@ final class Setting extends Model implements Editable {
     #[Column(type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
+    #[TextField('Setting', readonly: true)]
+    #[GridColumn('Setting')]
     #[Column(type: Column::TYPE_STRING)]
     protected string $name;
 
+    #[TextField]
+    #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     protected mixed $value;
 

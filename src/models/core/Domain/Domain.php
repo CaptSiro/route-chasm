@@ -2,6 +2,9 @@
 
 namespace models\core\Domain;
 
+use components\layout\Grid\description\Grid;
+use components\layout\Grid\description\GridColumn;
+use components\layout\Grid\description\GridDescription;
 use core\App;
 use core\database_v3\sql\Action;
 use core\database_v3\sql\Column;
@@ -12,8 +15,11 @@ use core\guards\Guard;
 use core\guards\NumberGuard;
 use core\path\Path;
 use core\view\View;
+use entities\core\Domain\DomainProxy;
 use models\extensions\Enable\Enable;
 use models\extensions\Enable\EnableExtension;
+use modules\forms\description\NumberField;
+use modules\forms\description\TextField;
 
 /**
  * @property int $id
@@ -28,15 +34,29 @@ use models\extensions\Enable\EnableExtension;
 class Domain extends Model implements Enable {
     use EnableExtension;
 
+    public static function getGridDescription(): GridDescription {
+        $columns = [];
+
+        self::addEnableGridColumn($columns);
+        $columns[DomainProxy::COLUMN_DOMAIN] = new GridColumn('Domain');
+
+        return new GridDescription(new DomainProxy(), $columns);
+    }
+
+
+
     #[Column(type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
+    #[TextField('Host')]
     #[Column(type: Column::TYPE_STRING)]
     protected string $host;
 
+    #[NumberField('Port')]
     #[Column(type: Column::TYPE_INTEGER)]
     protected int $port;
 
+    #[TextField('Path')]
     #[Column(type: Column::TYPE_STRING)]
     protected string $path;
 

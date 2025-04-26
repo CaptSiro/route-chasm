@@ -136,23 +136,10 @@ $router->use('/menu', fn(Request $request, Response $response) => $response->ren
 
 
 
-$router->use('/db', function(Request $request, Response $response) {
-    var_dump(
-        \core\database_v3\entities\Setting::all()
-    );
-
-//    $d = new \core\database_v3\entities\Domain();
-//    $d->cost = 3;
-//    $d->path = "/path";
-//    $d->host = "d-host";
-//    $d->port = 69;
-//    var_dump($d->save());
-//    var_dump($d);
-//
-//    $domain = \core\database_v3\entities\Domain::fromId($d->id);
-//    var_dump($domain);
-//    var_dump($domain?->delete());
-
+$router->use('/desc', function(Request $request, Response $response) {
+//    var_dump(\core\database_v3\sql\ModelDescription::extract(\models\core\Setting\Setting::class));
+//    var_dump(\modules\forms\description\FormDescription::extract(\models\core\Setting\Setting::class));
+    var_dump(\components\layout\Grid\description\GridDescription::extract(\models\core\Setting\Setting::class));
     $response->flush();
 });
 

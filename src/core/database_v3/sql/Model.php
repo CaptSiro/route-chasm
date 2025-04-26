@@ -7,75 +7,11 @@ use core\database_v3\sql\query\Query;
 use core\database_v3\sql\query\SelectQuery;
 use core\Identifier;
 use core\view\View;
-use Exception;
 use JsonSerializable;
-use ReflectionClass;
 
 class Model implements JsonSerializable, Identifier {
-    private static array $descriptions = [];
-
-
-    public static function getDescription(string $class): ModelDescription {
-        if (isset(self::$descriptions[$class])) {
-            return self::$descriptions[$class];
-        }
-
-        $reflection = new ReflectionClass($class);
-        $tables = $reflection->getAttributes(Table::class);
-        if (empty($tables)) {
-            throw new Exception("Model must have Table attribute");
-        }
-
-        $databases = $reflection->getAttributes(Database::class);
-        $database = empty($databases)
-            ? new Database()
-            : $databases[0]->newInstance();
-
-        $idColumn = null;
-        $columns = [];
-        $alias = [];
-
-        foreach ($reflection->getProperties() as $property) {
-            $attributes = $property->getAttributes(Column::class);
-            if (empty($attributes)) {
-                continue;
-            }
-
-            /** @var Column $column */
-            $column = $attributes[0]->newInstance();
-            $description = new ColumnDescription(
-                $property->getName(),
-                $column->name ?? $property->getName(),
-                $column->type
-            );
-
-            $columns[] = $description;
-            $alias[$description->alias] = $description;
-
-            if ($column->primaryKey) {
-                if (!is_null($idColumn)) {
-                    throw new Exception("Only one primary key column is allowed for model '$class'");
-                }
-
-                $idColumn = $description;
-            }
-        }
-
-        if (is_null($idColumn)) {
-            throw new Exception("No primary key found for model '$class'");
-        }
-
-        return self::$descriptions[$class] = new ModelDescription(
-            $tables[0]->newInstance()->name,
-            $database->getConnection(),
-            $idColumn,
-            $columns,
-            $alias
-        );
-    }
-
     public static function getTable(): string {
-        return static::getDescription(static::class)->table;
+        return ModelDescription::extract(static::class)->table;
     }
 
 
@@ -97,7 +33,7 @@ class Model implements JsonSerializable, Identifier {
             return null;
         }
 
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $instance = new static();
 
         foreach ($description->columns as $column) {
@@ -147,7 +83,7 @@ class Model implements JsonSerializable, Identifier {
      * @return ?static
      */
     public static function first(?array $projection = null, Query|string|null $where = null): ?static {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
 
         $sql = Sql::select($description->getEscapedTable());
         static::addProjection($description, $sql, $projection);
@@ -171,7 +107,7 @@ class Model implements JsonSerializable, Identifier {
      * @return static|null
      */
     public static function fromId(mixed $id, ?array $projection = null): ?static {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $idColumnName = $description->getEscapedIdColumnName();
 
         return self::first($projection, new Query(
@@ -186,7 +122,7 @@ class Model implements JsonSerializable, Identifier {
      * @return array<static>
      */
     public static function all(?array $projection = null, Query|string|null $where = null): array {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $sql = Sql::select($description->getEscapedTable());
 
         static::addProjection($description, $sql, $projection);
@@ -222,7 +158,7 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function getId(): mixed {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         return $this->{$description->idColumn->alias};
     }
 
@@ -232,7 +168,7 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function set(array $data): static {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
 
         foreach ($data as $property => $value) {
             if (!isset($description->alias[$property])) {
@@ -246,7 +182,7 @@ class Model implements JsonSerializable, Identifier {
     }
 
     private function insert(): Action {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $sql = Sql::insert($description->table);
 
         $sql->columns(array_keys($this->updated));
@@ -275,7 +211,7 @@ class Model implements JsonSerializable, Identifier {
             return $this->insert();
         }
 
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $sql = Sql::update($description->table);
         $idColumnName = $description->idColumn->name;
 
@@ -312,7 +248,7 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function delete(): Action {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $idColumnName = $description->getEscapedIdColumnName();
 
         $sql = Sql::delete($description->table)
@@ -342,7 +278,7 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function getData(): array {
-        $description = static::getDescription(static::class);
+        $description = ModelDescription::extract(static::class);
         $data = [];
 
         foreach ($description->alias as $alias => $ignored) {

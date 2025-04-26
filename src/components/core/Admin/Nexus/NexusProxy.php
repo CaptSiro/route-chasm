@@ -11,6 +11,8 @@ class NexusProxy extends TypeProxy {
     protected AdminNexus $context;
     protected bool $isItemIdentifier = false;
 
+
+
     public function setItem(mixed $item): void {
         $this->isItemIdentifier = $item instanceof Identifier;
         parent::setItem($item);
@@ -31,18 +33,21 @@ class NexusProxy extends TypeProxy {
         }
 
         return match ($name) {
-            AdminNexus::COLUMN_EDIT => Html::createLink(
-                $this->context->getUpdateLink((string) $this->item->getId()),
-                Icon::nf('nf-oct-pencil')
-            ),
-            AdminNexus::COLUMN_DELETE => $this->createDeleteHandle(
-                $this->context->getDeleteLink((string) $this->item->getId())
-            ),
+            AdminNexus::COLUMN_EDIT => $this->getEditValue(),
+            AdminNexus::COLUMN_DELETE => $this->getDeleteValue(),
             default => parent::getValue($name)
         };
     }
 
-    protected function createDeleteHandle(string $url): string {
+    protected function getEditValue(): string {
+        return Html::createLink(
+            $this->context->getUpdateLink((string) $this->item->getId()),
+            Icon::nf('nf-oct-pencil')
+        );
+    }
+
+    protected function getDeleteValue(): string {
+        $url = $this->context->getDeleteLink((string) $this->item->getId());
         $content = Icon::nf('nf-oct-trash');
         return "<button class='link no-underline' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
     }
