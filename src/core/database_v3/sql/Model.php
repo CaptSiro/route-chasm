@@ -6,6 +6,7 @@ use core\database_v3\sql\query\Parameter;
 use core\database_v3\sql\query\Query;
 use core\database_v3\sql\query\SelectQuery;
 use core\Identifier;
+use core\view\View;
 use Exception;
 use JsonSerializable;
 use ReflectionClass;
@@ -44,7 +45,7 @@ class Model implements JsonSerializable, Identifier {
             $column = $attributes[0]->newInstance();
             $description = new ColumnDescription(
                 $property->getName(),
-                $column->name,
+                $column->name ?? $property->getName(),
                 $column->type
             );
 
@@ -269,7 +270,7 @@ class Model implements JsonSerializable, Identifier {
         return Action::INSERT;
     }
 
-    public function save(): Action {
+    public function save(): Action|View {
         if ($this->origin === Origin::APPLICATION) {
             return $this->insert();
         }

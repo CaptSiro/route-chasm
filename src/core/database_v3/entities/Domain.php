@@ -18,18 +18,18 @@ use core\database_v3\sql\Table;
 #[Table('core_domains')]
 #[Database('app')]
 class Domain extends Model {
-    #[Column('id', Column::TYPE_INTEGER, true)]
+    #[Column(primaryKey: true)]
     protected int $id;
 
-    #[Column('host', Column::TYPE_STRING)]
+    #[Column]
     protected string $host;
 
-    #[Column('port', Column::TYPE_INTEGER)]
+    #[Column]
     protected int $port;
 
-    #[Column('path', Column::TYPE_STRING)]
+    #[Column]
     protected string $path;
 
-    #[Column('cost', Column::TYPE_INTEGER)]
+    #[Column]
     protected int $cost;
 }

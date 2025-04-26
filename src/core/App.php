@@ -53,6 +53,7 @@ class App implements Loader {
 
 
 
+    public const DATABASE = "app";
     public const ENV = __DIR__ ."/../../.env";
     public const PROJECT = 'PROJECT';
     public const PROJECT_AUTHOR = 'PROJECT_AUTHOR';

@@ -3,6 +3,7 @@
 namespace core\database_v3\sql\query;
 
 readonly class Parameter {
+    public const TYPE_INFER = "infer";
     public const TYPE_STRING = "string";
     public const TYPE_BOOLEAN = "boolean";
     public const TYPE_INTEGER = "integer";
@@ -16,8 +17,14 @@ readonly class Parameter {
 
 
 
+    public string $type;
+
     public function __construct(
         public mixed $value,
-        public string $type
-    ) {}
+        string $type
+    ) {
+        $this->type = $type === self::TYPE_INFER
+            ? gettype($this->value)
+            : $type;
+    }
 }

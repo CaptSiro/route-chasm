@@ -38,7 +38,7 @@ $config = new EnvConfig(App::getEnvStatic());
 AppConfig::getInstance()
     ->set($config);
 
-Sql::connect("app", new MySqlDriver(
+Sql::connect(App::DATABASE, new MySqlDriver(
     $config->getSqlConfigV3()
 ));
 
@@ -141,9 +141,17 @@ $router->use('/db', function(Request $request, Response $response) {
         \core\database_v3\entities\Setting::all()
     );
 
-    $domain = \core\database_v3\entities\Domain::fromId(18);
-    var_dump($domain);
-    $domain?->delete();
+//    $d = new \core\database_v3\entities\Domain();
+//    $d->cost = 3;
+//    $d->path = "/path";
+//    $d->host = "d-host";
+//    $d->port = 69;
+//    var_dump($d->save());
+//    var_dump($d);
+//
+//    $domain = \core\database_v3\entities\Domain::fromId($d->id);
+//    var_dump($domain);
+//    var_dump($domain?->delete());
 
     $response->flush();
 });

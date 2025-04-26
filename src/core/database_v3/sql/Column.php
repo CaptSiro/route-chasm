@@ -16,8 +16,8 @@ readonly class Column {
 
 
     public function __construct(
-        public string $name,
-        public string $type,
+        public ?string $name = null,
+        public string $type = Parameter::TYPE_INFER,
         public bool $primaryKey = false
     ) {}
 }
