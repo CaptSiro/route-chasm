@@ -12,6 +12,8 @@ use core\communication\Request;
 use core\communication\Response;
 use core\config\AppConfig;
 use core\config\EnvConfig;
+use core\database_v3\sql\connections\MySqlDriver;
+use core\database_v3\sql\Sql;
 use core\endpoints\Procedure;
 use core\http\Http;
 use core\http\HttpCode;
@@ -32,8 +34,13 @@ use modules\SideLoader\Javascript;
 require_once __DIR__ ."/src/autoload.php";
 
 
+$config = new EnvConfig(App::getEnvStatic());
 AppConfig::getInstance()
-    ->set(new EnvConfig(App::getEnvStatic()));
+    ->set($config);
+
+Sql::connect("app", new MySqlDriver(
+    $config->getSqlConfigV3()
+));
 
 $app = App::getInstance();
 $app->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
@@ -126,6 +133,20 @@ $menu
     ->add('/Item 3/Sub Item 2', 'sub-item-2')
 ;
 $router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
+
+
+
+$router->use('/db', function(Request $request, Response $response) {
+    var_dump(
+        \core\database_v3\entities\Setting::all()
+    );
+
+    $domain = \core\database_v3\entities\Domain::fromId(18);
+    var_dump($domain);
+    $domain?->delete();
+
+    $response->flush();
+});
 
 
 

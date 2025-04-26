@@ -5,8 +5,30 @@ namespace core\utils;
 use Generator;
 
 class Arrays {
+    /**
+     * @template T
+     * @param array<T> $array
+     * @return T
+     */
+    public static function first(array $array): mixed {
+        return $array[array_key_first($array)];
+    }
+
+    /**
+     * @template T
+     * @param array<T> $array
+     * @return T
+     */
     public static function last(array $array): mixed {
         return $array[array_key_last($array)];
+    }
+
+    public static function push(array|null &$array, mixed $element): void {
+        if (is_null($array)) {
+            $array = [];
+        }
+
+        $array[] = $element;
     }
 
     public static function append(array &$array, $key, $value): void {

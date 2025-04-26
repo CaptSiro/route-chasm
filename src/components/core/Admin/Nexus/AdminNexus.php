@@ -51,12 +51,12 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
-    public function setTableLayout(?GridLayout $layout): static {
+    public function setGridLayout(?GridLayout $layout): static {
         $this->layout = $layout;
         return $this;
     }
 
-    public function createTable(): ?Grid {
+    public function createGrid(): ?Grid {
         $layout = $this->layout ?? $this->schema->createDefaultTableLayout();
         $proxy = $layout->getProxy() ?? new NexusProxy();
 
@@ -64,11 +64,11 @@ class AdminNexus extends ContainerContent {
             $proxy->setContext($this);
         }
 
-        return $layout->createTable($proxy);
+        return $layout->createGrid($proxy);
     }
 
-    public function getTable(): View {
-        $table = $this->createTable();
+    public function getGrid(): View {
+        $table = $this->createGrid();
 
         if (is_null($table)) {
             return new Message("Could not create table, because the layout is empty");

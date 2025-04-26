@@ -4,6 +4,7 @@ namespace core\config;
 
 use core\App;
 use core\database\sql\config\BasicSqlConfig;
+use core\database_v3\sql\Config as SqlConfigV3;
 use core\http\HttpCode;
 use core\path\Path;
 use dotenv\Env;
@@ -34,6 +35,17 @@ class EnvConfig implements Config {
 
     public function getSqlConfig(): BasicSqlConfig {
         return new BasicSqlConfig(
+            $this->getOrDie("DATABASE_HOST"),
+            $this->getOrDie("DATABASE_NAME"),
+            $this->getOrDie("DATABASE_USER"),
+            $this->getOrDie("DATABASE_PASSWORD"),
+            $this->env->get("DATABASE_PORT") ?? "3306",
+            $this->env->get("DATABASE_CHARSET") ?? "UTF8",
+        );
+    }
+
+    public function getSqlConfigV3(): SqlConfigV3 {
+        return new SqlConfigV3(
             $this->getOrDie("DATABASE_HOST"),
             $this->getOrDie("DATABASE_NAME"),
             $this->getOrDie("DATABASE_USER"),

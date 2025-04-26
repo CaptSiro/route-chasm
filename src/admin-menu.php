@@ -11,7 +11,7 @@ AdminMenu::getInstance()
     ->add(
         '/Domains',
         (new AdminNexus(Domain::getSchema()))
-            ->setTableLayout(Domain::defaultTableLayout())
+            ->setGridLayout(Domain::defaultTableLayout())
     )
     ->addIcon('Domains', Icon::nf('nf-md-web'))
 

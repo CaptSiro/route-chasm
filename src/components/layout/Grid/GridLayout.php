@@ -24,7 +24,7 @@ class GridLayout {
         return $this->proxy;
     }
 
-    public function createTable(Proxy $proxy): ?Grid {
+    public function createGrid(Proxy $proxy): ?Grid {
         if (empty($this->columns)) {
             return null;
         }

@@ -39,6 +39,10 @@ class Schema {
         return $this->table;
     }
 
+    public function getEntityClass(): ?string {
+        return $this->entityClass;
+    }
+
     public function createDefaultTableLayout(): GridLayout {
         $layout = [];
         $columns = $this->table->getColumns();

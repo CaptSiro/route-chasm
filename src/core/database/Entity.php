@@ -152,14 +152,14 @@ abstract class Entity implements JsonSerializable, Identifier {
     /**
      * @var array<string> $updated
      */
-    private array $updated = [];
+    protected array $updated = [];
     private string $origin = self::ORIGIN_CODE;
-    private mixed $id = null;
+    protected mixed $id = null;
 
 
 
     public function __construct(
-        private array $data = []
+        protected array $data = []
     ) {}
 
 
@@ -323,7 +323,7 @@ abstract class Entity implements JsonSerializable, Identifier {
             ->run("DELETE FROM `". $def->getTableName() ."` WHERE `". $def->getIdColumn() ."` = $_id");
     }
 
-    public function getId(): int {
+    public function getId(): mixed {
         if (isset($this->id)) {
             return $this->id;
         }
