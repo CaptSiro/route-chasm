@@ -132,7 +132,7 @@ class Model {
     public static function first(?array $projection = null, Query|string|null $where = null): ?static {
         $description = static::getDescription(static::class);
 
-        $sql = Sql::select($description->table);
+        $sql = Sql::select($description->getEscapedTable());
         static::addProjection($description, $sql, $projection);
 
         if (!is_null($where)) {
@@ -141,11 +141,9 @@ class Model {
 
         $sql->limit(1);
 
-        $sql->setParameterAccess(Query::getParameterAccess($where));
-
         $record = $description
             ->connection
-            ->fetch($sql->toQuery());
+            ->fetch($sql->toQuery($description->connection));
 
         return static::fromRecord($record);
     }
@@ -157,10 +155,10 @@ class Model {
      */
     public static function fromId(mixed $id, ?array $projection = null): ?static {
         $description = static::getDescription(static::class);
-        $idColumnName = $description->idColumn->name;
+        $idColumnName = $description->getEscapedIdColumnName();
 
         return self::first($projection, new Query(
-             "`$idColumnName` = ?",
+             "$idColumnName = ?",
             [Parameter::infer($id)]
         ));
     }
@@ -172,7 +170,7 @@ class Model {
      */
     public static function all(?array $projection = null, Query|string|null $where = null): array {
         $description = static::getDescription(static::class);
-        $sql = Sql::select($description->table);
+        $sql = Sql::select($description->getEscapedTable());
 
         static::addProjection($description, $sql, $projection);
 
@@ -183,7 +181,7 @@ class Model {
         return self::fromRecords(
             $description
                 ->connection
-                ->fetchAll($sql->toQuery())
+                ->fetchAll($sql->toQuery($description->connection))
         );
     }
 
@@ -226,7 +224,7 @@ class Model {
         $sql->value($record);
         $sideEffect = $description
             ->connection
-            ->run($sql->toQuery());
+            ->run($sql->toQuery($description->connection));
 
         if ($sideEffect->rowsAffected === 0) {
             return Action::NONE;
@@ -262,13 +260,13 @@ class Model {
         }
 
         $sql->where(new Query(
-            "`$idColumnName` = ?",
+            $description->getEscapedIdColumnName() ." = ?",
             [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
         ));
 
         $sideEffect = $description
             ->connection
-            ->run($sql->toQuery());
+            ->run($sql->toQuery($description->connection));
 
         if ($sideEffect->rowsAffected === 0) {
             return Action::NONE;
@@ -279,18 +277,18 @@ class Model {
 
     public function delete(): Action {
         $description = static::getDescription(static::class);
-        $idColumnName = $description->idColumn->name;
+        $idColumnName = $description->getEscapedIdColumnName();
 
         $sql = Sql::delete($description->table)
             ->where(new Query(
-                "`$idColumnName` = ?",
+                "$idColumnName = ?",
                 [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
             ))
             ->limit(1);
 
         $sideEffect = $description
             ->connection
-            ->run($sql->toQuery());
+            ->run($sql->toQuery($description->connection));
 
         if ($sideEffect->rowsAffected === 0) {
             return Action::NONE;

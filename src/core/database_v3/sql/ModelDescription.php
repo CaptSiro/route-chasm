@@ -17,4 +17,16 @@ readonly class ModelDescription {
         public array $columns,
         public array $alias,
     ) {}
+
+    public function getEscapedTable(): string {
+        return $this->connection->getDriver()->escapeTable(
+            $this->table
+        );
+    }
+
+    public function getEscapedIdColumnName(): string {
+        return $this->connection->getDriver()->escapeColumn(
+            $this->idColumn->name
+        );
+    }
 }

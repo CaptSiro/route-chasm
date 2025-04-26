@@ -3,6 +3,7 @@
 namespace core\database_v3\sql\connections;
 
 use core\database_v3\sql\Connection;
+use core\database_v3\sql\Driver;
 use core\database_v3\sql\Origin;
 use core\database_v3\sql\query\Query;
 use core\database_v3\sql\Record;
@@ -23,10 +24,15 @@ class PdoConnection implements Connection {
 
 
     public function __construct(
-        protected PDO $connection
+        protected PDO $connection,
+        protected Driver $driver
     ) {}
 
 
+
+    public function getDriver(): Driver {
+        return $this->driver;
+    }
 
     protected function createStatement(Query $query): PDOStatement {
         if (empty($query->parameters)) {

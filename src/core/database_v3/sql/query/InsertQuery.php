@@ -2,6 +2,8 @@
 
 namespace core\database_v3\sql\query;
 
+use core\database_v3\sql\Connection;
+use core\database_v3\sql\Driver;
 use Exception;
 
 class InsertQuery implements SqlQuery {
@@ -34,7 +36,23 @@ class InsertQuery implements SqlQuery {
         return $this;
     }
 
-    public function toQuery(): Query {
+    public function generateColumnList(Driver $driver): string {
+        $list = '';
+        $first = true;
+
+        foreach ($this->columns as $column) {
+            if (!$first) {
+                $list .= ', ';
+            }
+
+            $list .= $driver->escapeColumn($column);
+            $first = false;
+        }
+
+        return $list;
+    }
+
+    public function toQuery(Connection $connection): Query {
         if (empty($this->columns)) {
             throw new Exception("Cannot insert record without specifying columns");
         }
@@ -43,8 +61,11 @@ class InsertQuery implements SqlQuery {
             throw new Exception("No records to be insert");
         }
 
+        $driver = $connection->getDriver();
+
         $parameters = [];
-        $sql = "INSERT INTO `$this->table`(". join(', ', $this->columns) .') VALUES ';
+        $sql = "INSERT INTO ". $driver->escapeTable($this->table)
+            ."(". $this->generateColumnList($driver) .') VALUES ';
 
         foreach ($this->values as $record) {
             $sql .= '(';

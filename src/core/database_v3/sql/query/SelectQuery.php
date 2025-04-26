@@ -2,6 +2,7 @@
 
 namespace core\database_v3\sql\query;
 
+use core\database_v3\sql\Connection;
 use core\database_v3\sql\query\clause\JoinClause;
 use core\database_v3\sql\query\clause\Limit;
 use core\database_v3\sql\query\clause\Offset;
@@ -21,11 +22,19 @@ class SelectQuery implements Portion, SqlQuery {
 
 
 
+    /**
+     * @param string $column Escaping the column is responsibility of the caller
+     * @return $this
+     */
     public function projection(string $column): static {
         Arrays::push($this->projection, $column);
         return $this;
     }
 
+    /**
+     * @param string $table Escaping the table is responsibility of the caller
+     * @return $this
+     */
     public function from(string $table): static {
         $this->from[] = $table;
         return $this;
@@ -50,7 +59,13 @@ class SelectQuery implements Portion, SqlQuery {
 
 
 
-    public function toQuery(): Query {
+    public function toQuery(Connection $connection): Query {
+        if (!empty($this->where)) {
+            $this->setParameterAccess(Query::getParameterAccess(
+                Arrays::first($this->where)->condition)
+            );
+        }
+
         $parameters = [];
         $sql = 'SELECT ';
 

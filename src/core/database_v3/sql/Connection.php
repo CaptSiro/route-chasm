@@ -10,4 +10,6 @@ interface Connection {
     public function fetchAll(Query $query): array;
 
     public function run(Query $query): SideEffect;
+
+    public function getDriver(): Driver;
 }

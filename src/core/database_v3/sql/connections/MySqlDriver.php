@@ -32,6 +32,14 @@ class MySqlDriver implements Driver {
             ]
         );
 
-        return new PdoConnection($connection);
+        return new PdoConnection($connection, $this);
+    }
+
+    public function escapeTable(string $table): string {
+        return "`$table`";
+    }
+
+    public function escapeColumn(string $column): string {
+        return "`$column`";
     }
 }

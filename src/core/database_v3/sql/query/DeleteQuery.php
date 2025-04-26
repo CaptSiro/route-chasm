@@ -2,6 +2,7 @@
 
 namespace core\database_v3\sql\query;
 
+use core\database_v3\sql\Connection;
 use core\database_v3\sql\query\clause\Limit;
 use core\database_v3\sql\query\clause\Where;
 use core\utils\Arrays;
@@ -18,7 +19,7 @@ class DeleteQuery implements SqlQuery {
 
 
 
-    public function toQuery(): Query {
+    public function toQuery(Connection $connection): Query {
         if (empty($this->where)) {
             throw new Exception("DELETE query without WHERE clause is dangerous. Add WHERE clause and preferably LIMIT clause too");
         }
@@ -26,7 +27,7 @@ class DeleteQuery implements SqlQuery {
         $this->setParameterAccess(Query::getParameterAccess(Arrays::first($this->where)->condition));
 
         $parameters = [];
-        $sql = "DELETE FROM `$this->table`";
+        $sql = "DELETE FROM ". $connection->getDriver()->escapeTable($this->table);
 
         $this->addWhere($sql, $parameters);
         $this->addLimit($sql, $parameters);
