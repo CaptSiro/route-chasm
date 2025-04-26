@@ -5,10 +5,12 @@ namespace core\database_v3\sql;
 use core\database_v3\sql\query\Parameter;
 use core\database_v3\sql\query\Query;
 use core\database_v3\sql\query\SelectQuery;
+use core\Identifier;
 use Exception;
+use JsonSerializable;
 use ReflectionClass;
 
-class Model {
+class Model implements JsonSerializable, Identifier {
     private static array $descriptions = [];
 
 
@@ -73,6 +75,20 @@ class Model {
 
     public static function getTable(): string {
         return static::getDescription(static::class)->table;
+    }
+
+
+
+    protected static function createConditionally(?self $instance, bool $create = false): ?static {
+        if (!is_null($instance)) {
+            return $instance;
+        }
+
+        if ($create) {
+            return new static();
+        }
+
+        return null;
     }
 
     public static function fromRecord(?array $record, Origin $origin = Origin::EXTERNAL): ?static {
@@ -204,9 +220,28 @@ class Model {
         return $this->$name;
     }
 
-    public function __set(string $name, $value): void {
-        $this->updated[$name] = 0;
-        $this->$name = $value;
+    public function getId(): mixed {
+        $description = static::getDescription(static::class);
+        return $this->{$description->idColumn->alias};
+    }
+
+    public function __set(string $alias, $value): void {
+        $this->updated[$alias] = 0;
+        $this->$alias = $value;
+    }
+
+    public function set(array $data): static {
+        $description = static::getDescription(static::class);
+
+        foreach ($data as $property => $value) {
+            if (!isset($description->alias[$property])) {
+                continue;
+            }
+
+            $this->__set($property, $value);
+        }
+
+        return $this;
     }
 
     private function insert(): Action {
@@ -299,5 +334,20 @@ class Model {
 
     public function getOrigin(): Origin {
         return $this->origin;
+    }
+
+    public function jsonSerialize(): object {
+        return $this;
+    }
+
+    public function getData(): array {
+        $description = static::getDescription(static::class);
+        $data = [];
+
+        foreach ($description->alias as $alias => $ignored) {
+            $data[$alias] = $this->$alias;
+        }
+
+        return $data;
     }
 }
