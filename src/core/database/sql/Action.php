@@ -1,0 +1,10 @@
+<?php
+
+namespace core\database\sql;
+
+enum Action {
+    case NONE;
+    case INSERT;
+    case UPDATE;
+    case DELETE;
+}

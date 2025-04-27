@@ -17,9 +17,6 @@ use core\config\AppConfig;
 use core\config\Config;
 use core\collection\Map;
 use core\collection\StrictMap;
-use core\database\Database;
-use core\database\sql\config\SqlConfig;
-use core\database\sql\SqlDatabase;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
@@ -27,10 +24,10 @@ use core\path\Path;
 use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
+use models\core\ModuleRecord;
 use modules\forms\Forms;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
-use entities\core\ModuleDefinition;
 
 class App implements Loader {
     private static ?self $instance = null;
@@ -247,10 +244,6 @@ class App implements Loader {
             ->get();
     }
 
-    public function getDefaultDatabase(?SqlConfig $config = null): Database {
-        return SqlDatabase::getInstance($config);
-    }
-
     /**
      * @return array<Module>
      */
@@ -260,7 +253,12 @@ class App implements Loader {
 
     public function require(Module $module): self {
         if (!isset($this->modules)) {
-            $this->modules = ModuleDefinition::fetchAll();
+            $modules = ModuleRecord::all();
+            $this->modules = [];
+
+            foreach ($modules as $moduleModel) {
+                $this->modules[$moduleModel->identifier] = $moduleModel;
+            }
         }
 
         $info = $module->getInfo();
@@ -268,7 +266,7 @@ class App implements Loader {
         $doSaveVersion = false;
 
         if (!isset($this->modules[$info->identifier])) {
-            $this->modules[$info->identifier] = ModuleDefinition::createFromInfo($info);
+            $this->modules[$info->identifier] = ModuleRecord::createFromInfo($info);
             $migrateFrom = '';
         } else {
             $definition = $this->modules[$info->identifier];

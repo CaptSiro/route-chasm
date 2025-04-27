@@ -7,12 +7,12 @@ use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Admin\Nexus\Editor\Editor;
 use components\core\Message\Message;
 use components\core\WebPage\WebPage;
+use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Grid;
-use components\layout\Grid\GridLayout;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\Schema;
+use core\database\sql\ModelDescription;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
@@ -21,6 +21,7 @@ use core\Router;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
+use modules\forms\FormSection;
 
 class AdminNexus extends ContainerContent {
     public const COLUMN_EDIT = 'nexus_edit';
@@ -30,13 +31,14 @@ class AdminNexus extends ContainerContent {
 
     protected WebPage $page;
     protected ?string $urlPath = null;
-    protected ?GridLayout $layout = null;
     protected ?Editor $editor;
 
 
 
     public function __construct(
-        protected Schema $schema,
+        protected ModelDescription $modelDescription,
+        protected FormSection $formSection,
+        protected GridDescription $gridDescription,
         protected ?string $title = null
     ) {
         parent::__construct($this->page = new WebPage());
@@ -45,39 +47,45 @@ class AdminNexus extends ContainerContent {
 
 
 
+    public function getModelDescription(): ModelDescription {
+        return $this->modelDescription;
+    }
+
+    public function getFormSection(): FormSection {
+        return $this->formSection;
+    }
+
+    public function getGridDescription(): GridDescription {
+        return $this->gridDescription;
+    }
+
     public function setEditor(Editor $editor): static {
         $this->editor = $editor;
         $this->editor->setContext($this);
         return $this;
     }
 
-    public function setGridLayout(?GridLayout $layout): static {
-        $this->layout = $layout;
-        return $this;
-    }
-
     public function createGrid(): ?Grid {
-        $layout = $this->layout ?? $this->schema->createDefaultTableLayout();
-        $proxy = $layout->getProxy() ?? new NexusProxy();
+        $proxy = $this->gridDescription->getProxy() ?? new NexusProxy();
 
         if ($proxy instanceof NexusProxy) {
             $proxy->setContext($this);
         }
 
-        return $layout->createGrid($proxy);
+        return $this->gridDescription->createGrid($proxy);
     }
 
     public function getGrid(): View {
-        $table = $this->createGrid();
+        $grid = $this->createGrid();
 
-        if (is_null($table)) {
-            return new Message("Could not create table, because the layout is empty");
+        if (is_null($grid)) {
+            return new Message("Could not create table, because the description is empty");
         }
 
-        return $table
+        return $grid
             ->addAsFirst(self::COLUMN_EDIT, 'Edit', '64px')
             ->add(self::COLUMN_DELETE, 'Delete', '64px')
-            ->load($this->schema->getEntityFactory()->fetchAll());
+            ->load($this->gridDescription->getLoader()->load($grid));
     }
 
     public function getTitle(): string {
@@ -89,21 +97,17 @@ class AdminNexus extends ContainerContent {
         return $this->title;
     }
 
-    public function getSchema(): Schema {
-        return $this->schema;
-    }
-
     public function onContextBind(Router $leaf): void {
         $this->urlPath = App::getInstance()->prependHome($leaf->getUrlPath());
 
         $leaf->use('/create', $this->editor);
 
-        $factory = $this->schema->getEntityFactory();
+        $factory = $this->modelDescription->getFactory();
 
         $leaf->use(
             Path::from('/update/[id]'),
             fn(Request $request, Response $response) => $this->editor
-                ->setEntity($factory->fromId(
+                ->setModel($factory->fromId(
                     $request->getParam()->get('id')
                 ))
         );
@@ -111,11 +115,11 @@ class AdminNexus extends ContainerContent {
         $leaf->use(
             Path::from('/[id]'),
             Http::delete(function (Request $request, Response $response) use ($factory) {
-                $entity = $factory->fromId(
+                $model = $factory->fromId(
                     $request->getParam()->get('id')
                 );
 
-                $entity->delete();
+                $model->delete();
 
                 $response->setStatus(HttpCode::S_OK);
                 $response->flush();

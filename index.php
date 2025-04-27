@@ -4,21 +4,18 @@ use components\core\Admin\Home\AdminHome;
 use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
 use components\layout\Accordion\Accordion;
-use components\resources\Cards\Cards;
-use components\Tabs\Tabs;
+use components\layout\Tabs\Tabs;
 use core\AdminRouter;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\config\AppConfig;
 use core\config\EnvConfig;
-use core\database_v3\sql\connections\MySqlDriver;
-use core\database_v3\sql\Sql;
-use core\endpoints\Procedure;
+use core\database\sql\connections\MySqlDriver;
+use core\database\sql\Sql;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
-use entities\core\ModuleDefinition;
 use modules\forms\controls\Checkbox\Checkbox;
 use modules\forms\controls\File\File;
 use modules\forms\controls\MultiSubmit\MultiSubmit;
@@ -29,7 +26,6 @@ use modules\forms\Form;
 use modules\forms\FormAction;
 use modules\forms\layout\Column\Column;
 use modules\forms\layout\Row\Row;
-use modules\SideLoader\Javascript;
 
 require_once __DIR__ ."/src/autoload.php";
 
@@ -39,7 +35,7 @@ AppConfig::getInstance()
     ->set($config);
 
 Sql::connect(App::DATABASE, new MySqlDriver(
-    $config->getSqlConfigV3()
+    $config->getSqlConfig()
 ));
 
 $app = App::getInstance();
@@ -62,17 +58,7 @@ $router->use(
     new HttpMessage("I'm a teapot", HttpCode::CE_IM_A_TEAPOT)
 );
 
-$router->use(
-    '/ping',
-    Procedure::middleware(fn() => Javascript::import(Cards::getInstance()->getResource('ping.js'))),
-    fn(Request $request, Response $response) => $response->send(
-        '<h2 style="color: whitesmoke" x-swap="outer" x-get="'. App::getInstance()->prependHome('/dong?s') .'">pong</h2>'
-    )
-);
-$router->use(
-    '/dong',
-    fn(Request $request, Response $response) => $response->send('<button x-swap="outer" x-get="'. App::getInstance()->prependHome('/ping?s') .'">Back to ping</button>')
-);
+
 
 $user = new Accordion(
     'User info',
@@ -114,34 +100,25 @@ $router->use("/form",
 
 
 
-$router->resource("/cards", Cards::getInstance());
+// $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
 
 
 
-$router->use('/modules', fn(Request $request, Response $response) => $response->json(ModuleDefinition::fetchAll()));
+// $router->use('/modules', fn(Request $request, Response $response) => $response->json(ModuleDefinition::fetchAll()));
 
 
-$menu = new \components\core\Menu\Menu();
-$menu
-    ->add('Admin', 'admin-item')
-    ->add('/Item', 'item')
-    ->add('/Item/Sub Item', 'sub-item')
-    ->add('/Item 2', 'item-2')
-    ->add('/Item 3/Sub Item', 'sub-item')
-    ->add('/Item 3/Sub Item', 'change')
-    ->add('/Item 3/Sub Item 2', 'sub-item-2')
-;
-$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
-
-
-
-$router->use('/desc', function(Request $request, Response $response) {
-//    var_dump(\core\database_v3\sql\ModelDescription::extract(\models\core\Setting\Setting::class));
-//    var_dump(\modules\forms\description\FormDescription::extract(\models\core\Setting\Setting::class));
-    var_dump(\components\layout\Grid\description\GridDescription::extract(\models\core\Setting\Setting::class));
-    $response->flush();
-});
+//$menu = new \components\core\Menu\Menu();
+//$menu
+//    ->add('Admin', 'admin-item')
+//    ->add('/Item', 'item')
+//    ->add('/Item/Sub Item', 'sub-item')
+//    ->add('/Item 2', 'item-2')
+//    ->add('/Item 3/Sub Item', 'sub-item')
+//    ->add('/Item 3/Sub Item', 'change')
+//    ->add('/Item 3/Sub Item 2', 'sub-item-2')
+//;
+//$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
 
 
 

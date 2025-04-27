@@ -2,9 +2,8 @@
 
 namespace models\core\Domain;
 
-use components\core\Admin\Nexus_v2\NexusProxy;
+use components\core\Admin\Nexus\NexusProxy;
 use components\core\Html\Html;
-use entities\core\Domain\Domain;
 
 class DomainProxy extends NexusProxy {
     public const COLUMN_DOMAIN = 'domain';

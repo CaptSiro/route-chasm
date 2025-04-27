@@ -6,7 +6,7 @@ use core\App;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\sql\SqlDatabase;
+use core\database\sql\Sql;
 use core\fs\Glob;
 use core\http\Cors;
 use core\http\Http;
@@ -25,7 +25,7 @@ use core\utils\Arrays;
 use core\utils\Files;
 use core\view\BufferTransform;
 use core\view\View;
-use entities\core\Setting;
+use models\core\Setting\Setting;
 use modules\SideLoader\Api\Api;
 use modules\SideLoader\FileImporter\FileImporter;
 
@@ -107,7 +107,7 @@ class SideLoader extends DefaultModule implements View {
 
     public function migrate(string $fromVersion): void {
         $database = new DatabaseMigration(
-            SqlDatabase::getInstance(),
+            Sql::getConnection(App::DATABASE),
             self::VERSIONS,
             new Glob(
                 $this->getResource('sql'),
@@ -147,7 +147,7 @@ class SideLoader extends DefaultModule implements View {
 
             $retries->name = self::SETTING_MAX_RETRIES;
             $retries->value = 128;
-            $retries->is_editable = true;
+            $retries->editable = true;
 
             $retries->save();
         }
@@ -222,7 +222,7 @@ class SideLoader extends DefaultModule implements View {
 
                 $files = $request->getUrl()->getQuery()->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
-                    $entry = DatabaseCache::fromHash($files);
+                    $entry = CacheRecord::fromHash($files);
                     if (is_null($entry)) {
                         $response->sendMessage(
                             "File not found (file hash: '$files')",
@@ -234,7 +234,7 @@ class SideLoader extends DefaultModule implements View {
                 }
 
                 foreach (explode(self::FILE_SEPARATOR, $files) as $hash) {
-                    $entry = DatabaseCache::fromHash($hash);
+                    $entry = CacheRecord::fromHash($hash);
                     if (!is_null($entry)) {
                         $response->readFile($entry->path, doFlush: false);
                     }
@@ -258,7 +258,7 @@ class SideLoader extends DefaultModule implements View {
 
         $hashed = '';
         $first = true;
-        $length = $this->hashLength->asInt();
+        $length = $this->hashLength->toInt();
 
         foreach ($files as $file) {
             $real = realpath($file);
@@ -267,10 +267,10 @@ class SideLoader extends DefaultModule implements View {
                 continue;
             }
 
-            $entry = DatabaseCache::fromPath($real);
+            $entry = CacheRecord::fromPath($real);
             if (is_null($entry)) {
-                $entry = new DatabaseCache();
-                $entry->hash = DatabaseCache::generateHash($this->maxRetries->asInt(), $length);
+                $entry = new CacheRecord();
+                $entry->hash = CacheRecord::generateHash($this->maxRetries->toInt(), $length);
                 $entry->path = $real;
                 $entry->save();
             }
@@ -283,7 +283,7 @@ class SideLoader extends DefaultModule implements View {
             $first = false;
         }
 
-        if ($length !== $this->hashLength->asInt()) {
+        if ($length !== $this->hashLength->toInt()) {
             $this->hashLength->value = $length;
             $this->hashLength->save();
         }

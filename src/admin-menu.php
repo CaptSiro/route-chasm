@@ -5,31 +5,37 @@ use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\SptfTests\SptfTests;
 use components\core\Icon;
 use components\core\Modules\Modules;
-use entities\core\Domain\Domain;
-use models\core\Domain\Domain as DomainModel;
+use components\layout\Grid\description\GridDescription;
+use core\database\sql\ModelDescription;
+use models\core\Domain\Domain;
+use models\core\Setting\Setting;
+use modules\forms\description\FormDescription;
 
 AdminMenu::getInstance()
     ->add(
         '/Domains',
-        (new AdminNexus(Domain::getSchema()))
-            ->setGridLayout(Domain::defaultTableLayout())
+        new AdminNexus(
+            ModelDescription::extract(Domain::class),
+            FormDescription::extract(Domain::class),
+            Domain::getGridDescription()
+        )
     )
     ->addIcon('Domains', Icon::nf('nf-md-web'))
 
     ->add(
-        '/Domains V2',
-        new \components\core\Admin\Nexus_v2\AdminNexus(
-            \core\database_v3\sql\ModelDescription::extract(DomainModel::class),
-            \modules\forms\description\FormDescription::extract(DomainModel::class),
-            DomainModel::getGridDescription()
+        '/System/Settings',
+        new AdminNexus(
+            ModelDescription::extract(Setting::class),
+            FormDescription::extract(Setting::class),
+            GridDescription::extract(Setting::class)
         )
     )
-    ->addIcon('Domains V2', Icon::nf('nf-md-web'))
+    ->addIcon('System', Icon::nf('nf-md-console'))
+    ->addIcon('Settings', Icon::nf('nf-cod-settings_gear'))
 
-    ->add('/Monitoring/Modules', new Modules())
-    ->addIcon('Monitoring', Icon::nf('nf-oct-graph'))
+    ->add('/System/Modules', new Modules())
     ->addIcon('Modules', Icon::nf('nf-md-package_variant'))
 
-    ->add('/Monitoring/Tests/RouteChasm', new SptfTests(__DIR__ .'/../src/tests/cases/RouteChasm'))
+    ->add('/System/Tests/RouteChasm', new SptfTests(__DIR__ .'/../src/tests/cases/RouteChasm'))
     ->addIcon('Tests', Icon::nf('nf-md-beaker_check_outline'))
 ;

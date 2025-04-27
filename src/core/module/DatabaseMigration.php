@@ -2,12 +2,13 @@
 
 namespace core\module;
 
-use core\database\Database;
+use core\database\sql\Connection;
+use core\database\sql\query\Query;
 use core\fs\Glob;
 
 class DatabaseMigration {
     public function __construct(
-        protected Database $database,
+        protected Connection $database,
         protected array $versions,
         protected Glob $glob
     ) {}
@@ -30,7 +31,7 @@ class DatabaseMigration {
                 }
 
                 $query = file_get_contents($import);
-                $this->database->run($query);
+                $this->database->run(Query::static($query));
             }
         }
     }

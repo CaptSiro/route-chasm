@@ -2,7 +2,7 @@
 
 namespace core\config;
 
-use core\database\sql\config\SqlConfig;
+use core\database\sql\Config as SqlConfig;
 
 interface Config {
     public function getSqlConfig(): SqlConfig;

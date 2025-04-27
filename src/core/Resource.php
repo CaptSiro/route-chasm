@@ -8,7 +8,8 @@ use components\core\Resource\Read;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\Entity;
+use core\database\sql\Model;
+use core\database\sql\ModelDescription;
 use core\http\Http;
 use core\path\Path;
 use core\patterns\Number;
@@ -16,9 +17,8 @@ use core\patterns\Pattern;
 use core\url\UrlBuilder;
 use core\view\Json;
 use core\view\View;
-use InvalidArgumentException;
 
-abstract class Resource {
+class Resource {
     use ResourceLoader;
 
 
@@ -35,7 +35,9 @@ abstract class Resource {
 
     protected Router $router;
 
-    public function __construct() {
+    public function __construct(
+        protected ModelDescription $modelDescription
+    ) {
         $this->router = new Router();
 
         $this->router->use(
@@ -58,9 +60,7 @@ abstract class Resource {
 
 
 
-    abstract protected function getTable(): string;
-
-    protected function fromUnique(string $unique): Entity {
+    protected function fromUnique(string $unique): Model {
         return call_user_func($this->getTable() ."::fromUnique", $unique);
     }
 
@@ -109,22 +109,22 @@ abstract class Resource {
     }
 
     public function create(Request $request): View {
-        $model = new ($this->getTable());
+//        $model = new ($this->getTable());
 
-        if (!($model instanceof Entity)) {
-            $class = $this->getTable();
-            throw new InvalidArgumentException("The provided table class '$class' is not descendant of class ". Entity::class);
-        }
+//        if (!($model instanceof Model)) {
+//            $class = $this->getTable();
+//            throw new InvalidArgumentException("The provided table class '$class' is not descendant of class ". Model::class);
+//        }
 
-        $model
-            ->setDictionary($request->getBody())
-            ->save();
+//        $model
+//            ->setDictionary($request->getBody())
+//            ->save();
 
         return new Message("Created");
     }
 
 
-    public function read(Entity $model): View {
+    public function read(Model $model): View {
         $app = App::getInstance();
         $request = $app->getRequest();
 
@@ -138,15 +138,15 @@ abstract class Resource {
         return $read;
     }
 
-    public function update(Entity $model): View {
+    public function update(Model $model): View {
         $model
-            ->setDictionary(App::getInstance()->getRequest()->getBody())
+//            ->setDictionary(App::getInstance()->getRequest()->getBody())
             ->save();
 
         return new Message("Updated");
     }
 
-    public function delete(Entity $model): View {
+    public function delete(Model $model): View {
         $model->delete();
 
         return new Message("Deleted");

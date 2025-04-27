@@ -2,7 +2,7 @@
 
 namespace models\core\Setting;
 
-use components\core\Admin\Nexus_v2\NexusProxy;
+use components\core\Admin\Nexus\NexusProxy;
 
 class SettingProxy extends NexusProxy {
     public function isItemEditable(): bool {

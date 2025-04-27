@@ -2,7 +2,7 @@
 
 namespace models\extensions\Editable;
 
-use core\database_v3\sql\Column;
+use core\database\sql\Column;
 
 /**
  * @property bool $editable

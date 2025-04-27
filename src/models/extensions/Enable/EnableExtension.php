@@ -3,7 +3,7 @@
 namespace models\extensions\Enable;
 
 use components\layout\Grid\description\GridColumn;
-use core\database_v3\sql\Column;
+use core\database\sql\Column;
 use modules\forms\description\Checkbox;
 
 const ENABLE_PROPERTY = 'enabled';

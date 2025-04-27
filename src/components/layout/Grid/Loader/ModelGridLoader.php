@@ -3,7 +3,7 @@
 namespace components\layout\Grid\Loader;
 
 use components\layout\Grid\Grid;
-use core\database_v3\sql\ModelFactory;
+use core\database\sql\ModelFactory;
 
 class ModelGridLoader implements GridLoader {
     public function __construct(

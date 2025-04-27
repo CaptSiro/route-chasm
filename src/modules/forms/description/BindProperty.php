@@ -2,8 +2,6 @@
 
 namespace modules\forms\description;
 
-use core\database_v3\sql\Column;
-use core\database_v3\sql\ModelDescription;
 use ReflectionProperty;
 
 trait BindProperty {
