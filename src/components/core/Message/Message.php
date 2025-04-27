@@ -4,7 +4,7 @@ namespace components\core\Message;
 
 use components\core\Html\Html;
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\WebPage;
+use components\core\WebPage\ContextAwareWebPage;
 use core\App;
 use core\communication\Format;
 use core\view\ContainerContent;
@@ -13,7 +13,7 @@ class Message extends ContainerContent {
     public function __construct(
         protected string $message
     ) {
-        parent::__construct(new WebPage(head: new HtmlHead("$message")));
+        parent::__construct(new ContextAwareWebPage(head: new HtmlHead("$message")));
     }
 
 

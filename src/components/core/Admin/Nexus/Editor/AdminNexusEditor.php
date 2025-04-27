@@ -3,7 +3,7 @@
 namespace components\core\Admin\Nexus\Editor;
 
 use components\core\Admin\Nexus\AdminNexus;
-use components\core\WebPage\WebPage;
+use components\core\WebPage\AdminWebPage;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -25,12 +25,12 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
 
 
-    protected WebPage $page;
+    protected AdminWebPage $page;
     protected ?Model $model = null;
     protected AdminNexus $context;
 
     public function __construct() {
-        parent::__construct($this->page = new WebPage());
+        parent::__construct($this->page = new AdminWebPage());
     }
 
 

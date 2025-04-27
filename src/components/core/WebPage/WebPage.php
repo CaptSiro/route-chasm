@@ -3,7 +3,6 @@
 namespace components\core\WebPage;
 
 use components\core\HtmlHead\HtmlHead;
-use core\AdminRouter;
 use core\App;
 use core\view\ArrayContainer;
 use core\view\Component;
@@ -31,16 +30,6 @@ class WebPage extends Component implements Container {
     }
 
 
-
-    public function render(): string {
-        if (AdminRouter::isAdmin(App::getInstance()->getRequest())) {
-            if ($this->template === $this->getResource('WebPage.phtml')) {
-                $this->setTemplate($this->getResource('WebPage.admin.phtml'));
-            }
-        }
-
-        return parent::render();
-    }
 
     public function getHead(): Head {
         return $this->head;

@@ -16,8 +16,8 @@ class Input implements Control, Attribute {
     public function __construct(
         protected string $type,
         protected string $name,
-        protected ?string $label,
-        protected ?string $value = null,
+        protected string $label = self::class,
+        protected string $value = '',
     ) {
         $this->attributes = [];
         $this->setTemplate(self::getStaticSource("Input.phtml"));

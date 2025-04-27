@@ -20,7 +20,7 @@ class PasswordField implements Control, Attribute {
     public function __construct(
         string $name = self::class,
         string $label = self::class,
-        ?string $value = null,
+        string $value = '',
         protected bool $addVisibilityControl = false
     ) {
         $this->field = new Input("password", $name, $label, $value);

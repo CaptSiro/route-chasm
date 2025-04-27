@@ -2,7 +2,7 @@
 
 namespace core\view;
 
-use components\core\WebPage\WebPage;
+use components\core\WebPage\ContextAwareWebPage;
 use core\communication\Request;
 use core\communication\Response;
 
@@ -10,7 +10,7 @@ class ContainerContent extends Component {
     protected Container $container;
 
     public static function getDefaultContainer(): Container {
-        return new WebPage();
+        return new ContextAwareWebPage();
     }
 
 

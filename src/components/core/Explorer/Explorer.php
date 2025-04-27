@@ -3,7 +3,7 @@
 namespace components\core\Explorer;
 
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\WebPage;
+use components\core\WebPage\ContextAwareWebPage;
 use core\view\ContainerContent;
 use modules\SideLoader\Css;
 
@@ -20,6 +20,6 @@ class Explorer extends ContainerContent {
             $this->url .= "/";
         }
 
-        parent::__construct(new WebPage(head: new HtmlHead("Explorer - $this->label")));
+        parent::__construct(new ContextAwareWebPage(head: new HtmlHead("Explorer - $this->label")));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace core;
 
+use components\core\Admin\Login\AdminLogin;
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Message\Message;
 use core\communication\Request;
@@ -30,11 +31,13 @@ class AdminRouter extends Router {
         parent::__construct();
 
         $this->use('/',
-            Procedure::middleware(function (Request $request) {
+            Procedure::middleware(function (Request $request, Response $response) {
                 $request->set(self::KEY_IS_ADMIN, true);
                 AdminMenu::load(App::getInstance()->getSource('admin-menu.php'));
             }),
-            $home ?? new Message('Admin Home')
+            $home ?? new Message('Admin Home'),
+            new AdminLogin(),
+
         );
 
         $this->use('/**', fn(Request $request, Response $response) => $response->sendMessage(

@@ -8,7 +8,7 @@ class NumberField extends Input {
     public function __construct(
         string $name = self::class,
         string $label = self::class,
-        ?string $value = null
+        string $value = ''
     ) {
         parent::__construct("number", $name, $label, $value);
     }

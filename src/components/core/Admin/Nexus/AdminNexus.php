@@ -6,7 +6,7 @@ use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Admin\Nexus\Editor\Editor;
 use components\core\Message\Message;
-use components\core\WebPage\WebPage;
+use components\core\WebPage\AdminWebPage;
 use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Grid;
 use core\App;
@@ -29,7 +29,7 @@ class AdminNexus extends ContainerContent {
 
 
 
-    protected WebPage $page;
+    protected AdminWebPage $page;
     protected ?string $urlPath = null;
     protected ?Editor $editor;
 
@@ -41,7 +41,7 @@ class AdminNexus extends ContainerContent {
         protected GridDescription $gridDescription,
         protected ?string $title = null
     ) {
-        parent::__construct($this->page = new WebPage());
+        parent::__construct($this->page = new AdminWebPage());
         $this->setEditor(new AdminNexusEditor());
     }
 

@@ -4,7 +4,7 @@ namespace components\core\HttpMessage;
 
 use components\core\CallStack\CallStack;
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\WebPage;
+use components\core\WebPage\ContextAwareWebPage;
 use components\core\WebPage\WebPageRenderCondition;
 use core\App;
 use core\communication\Format;
@@ -25,7 +25,7 @@ class HttpMessage extends ContainerContent {
         int $stackTraceShiftCount = 0
     ) {
         parent::__construct(
-            new WebPage(head: new HtmlHead("Error - $message"))
+            new ContextAwareWebPage(head: new HtmlHead("Error - $message"))
         );
 
         $this->stack = new CallStack(max($stackTraceShiftCount, 0));
