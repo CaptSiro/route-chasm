@@ -47,7 +47,11 @@ readonly class StrictMap implements StrictDictionary, JsonSerializable {
         return $this->map;
     }
 
-    public function asArray(): array {
-        return $this->map->asArray();
+    public function toArray(): array {
+        return $this->map->toArray();
+    }
+
+    public function remove(string $name): mixed {
+        return $this->map->remove($name);
     }
 }

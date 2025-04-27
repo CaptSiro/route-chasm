@@ -66,7 +66,7 @@ class StrictStack implements StrictDictionary {
         return false;
     }
 
-    public function asArray(): array {
+    public function toArray(): array {
         $count = count($this->stack);
         if ($count <= 0) {
             return [];
@@ -77,5 +77,17 @@ class StrictStack implements StrictDictionary {
         }
 
         return array_merge(...$this->stack);
+    }
+
+    public function remove(string $name): mixed {
+        foreach (Arrays::reversed($this->stack) as $segment) {
+            if (isset($segment[$name])) {
+                $value = $segment[$name];
+                unset($segment[$name]);
+                return $value;
+            }
+        }
+
+        return null;
     }
 }

@@ -7,6 +7,7 @@ use core\utils\Strings;
 
 class CsrfField extends HiddenField {
     public const FIELD_NAME = 'csrf';
+    public const FIELD_VALID_NAME = 'csrf_valid';
 
     public static function getCsrf(Request $request): string {
         $csrf = $request->getSession()->get('csrf');
@@ -20,7 +21,13 @@ class CsrfField extends HiddenField {
     }
 
     public static function check(Request $request): bool {
-        return $request->getBody()->get(self::FIELD_NAME) === self::getCsrf($request);
+        if (!is_null($isValid = $request->get(self::FIELD_VALID_NAME))) {
+            return $isValid;
+        }
+
+        $isValid = $request->getBody()->remove(self::FIELD_NAME) === self::getCsrf($request);
+        $request->set(self::FIELD_VALID_NAME, $isValid);
+        return $isValid;
     }
 
 

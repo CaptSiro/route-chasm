@@ -6,6 +6,7 @@ use components\core\Admin\SptfTests\SptfTests;
 use components\core\Icon;
 use components\core\Modules\Modules;
 use entities\core\Domain\Domain;
+use models\core\Domain\Domain as DomainModel;
 
 AdminMenu::getInstance()
     ->add(
@@ -14,6 +15,16 @@ AdminMenu::getInstance()
             ->setGridLayout(Domain::defaultTableLayout())
     )
     ->addIcon('Domains', Icon::nf('nf-md-web'))
+
+    ->add(
+        '/Domains V2',
+        new \components\core\Admin\Nexus_v2\AdminNexus(
+            \core\database_v3\sql\ModelDescription::extract(DomainModel::class),
+            \modules\forms\description\FormDescription::extract(DomainModel::class),
+            DomainModel::getGridDescription()
+        )
+    )
+    ->addIcon('Domains V2', Icon::nf('nf-md-web'))
 
     ->add('/Monitoring/Modules', new Modules())
     ->addIcon('Monitoring', Icon::nf('nf-oct-graph'))

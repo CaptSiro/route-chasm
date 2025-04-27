@@ -146,7 +146,11 @@ class Request {
         $this->headers[$name] = $value;
     }
 
-    public function get(string $variable) {
+    public function get(string $variable, mixed $or = null) {
+        return $this->data->get($variable, $or);
+    }
+
+    public function getFatal(string $variable) {
         return $this->data->getStrict($variable);
     }
 

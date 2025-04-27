@@ -105,8 +105,8 @@ $form = (new Form(HttpMethod::DELETE))
 $router->use("/form",
     Http::get((new WebPage())->addContent($form)),
     Http::delete(function(Request $request, Response $response) {
-        $body = $request->getBody()->asArray();
-        $body['files'] = $request->getFiles()->asArray();
+        $body = $request->getBody()->toArray();
+        $body['files'] = $request->getFiles()->toArray();
 
         $response->json($body);
     })

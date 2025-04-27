@@ -51,7 +51,13 @@ class Session implements StrictDictionary {
         return $_SESSION[$name];
     }
 
-    public function asArray(): array {
+    public function toArray(): array {
         return $_SESSION;
+    }
+
+    public function remove(string $name): mixed {
+        $value = $this->get($name);
+        unset($_SESSION[$name]);
+        return $value;
     }
 }

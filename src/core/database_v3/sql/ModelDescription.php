@@ -16,7 +16,7 @@ class ModelDescription {
         $reflection = new ReflectionClass($class);
         $tables = $reflection->getAttributes(Table::class);
         if (empty($tables)) {
-            throw new Exception("Model must have Table attribute");
+            throw new Exception("Model '$class' must have Table attribute");
         }
 
         $databases = $reflection->getAttributes(Database::class);
@@ -39,7 +39,8 @@ class ModelDescription {
             $description = new ColumnDescription(
                 $property->getName(),
                 $column->name ?? $property->getName(),
-                $column->type
+                $column->type,
+                $column->transform
             );
 
             $columns[] = $description;
@@ -59,6 +60,7 @@ class ModelDescription {
         }
 
         return self::$descriptions[$class] = new ModelDescription(
+            $class,
             $tables[0]->newInstance()->name,
             $database->getConnection(),
             $idColumn,
@@ -70,6 +72,7 @@ class ModelDescription {
 
 
     /**
+     * @param string $class
      * @param string $table
      * @param Connection $connection
      * @param ColumnDescription $idColumn
@@ -77,6 +80,7 @@ class ModelDescription {
      * @param array<string, ColumnDescription> $alias
      */
     public function __construct(
+        public readonly string $class,
         public readonly string $table,
         public readonly Connection $connection,
         public readonly ColumnDescription $idColumn,
@@ -96,5 +100,9 @@ class ModelDescription {
         return $this->connection->getDriver()->escapeColumn(
             $this->idColumn->name
         );
+    }
+
+    public function getFactory(): ModelFactory {
+        return ModelFactory::extract($this->class);
     }
 }

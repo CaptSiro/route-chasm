@@ -1,0 +1,18 @@
+<?php /** @var AdminNexus $this */
+
+use components\core\Admin\Nexus_v2\AdminNexus;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
+
+Javascript::import($this->getResource('nexus.js'));
+Css::import($this->getResource('nexus.css'));
+
+?>
+<section class="nexus">
+    <div class="head">
+        <h1><?= $this->getTitle() ?></h1>
+        <a class="button" href="<?= $this->getCreateLink() ?>">Create</a>
+    </div>
+
+    <?= $this->getGrid() ?>
+</section>

@@ -2,6 +2,9 @@
 
 namespace components\layout\Grid\description;
 
+use components\layout\Grid\description\Grid as GridAttribute;
+use components\layout\Grid\Grid;
+use components\layout\Grid\Loader\GridLoader;
 use components\layout\Grid\Proxy\Proxy;
 use ReflectionClass;
 
@@ -17,13 +20,14 @@ class GridDescription {
         }
 
         $reflection = new ReflectionClass($class);
-        $grids = $reflection->getAttributes(Grid::class);
+        $grids = $reflection->getAttributes(GridAttribute::class);
         if (empty($grids)) {
             return self::$descriptions[$class] = null;
         }
 
-        /** @var Grid $grid */
+        /** @var GridAttribute $grid */
         $grid = $grids[0]->newInstance();
+        $grid->bindClass($reflection);
         $columns = [];
 
         foreach ($reflection->getProperties() as $property) {
@@ -38,16 +42,44 @@ class GridDescription {
             $columns[$property->getName()] = $column;
         }
 
-        return self::$descriptions[$class] = new static($grid->proxy, $columns);
+        return self::$descriptions[$class] = new static(
+            $columns,
+            $grid->getLoader(),
+            $grid->proxy,
+        );
     }
 
 
 
     /**
-     * @param array<GridColumn> $columns
+     * @param array<string, GridColumn> $columns
      */
     public function __construct(
-        public Proxy $proxy,
-        public array $columns
+        protected array $columns,
+        protected GridLoader $loader,
+        protected ?Proxy $proxy = null,
     ) {}
+
+
+
+    public function getProxy(): ?Proxy {
+        return $this->proxy;
+    }
+
+    public function getColumns(): array {
+        return $this->columns;
+    }
+
+    public function getLoader(): ?GridLoader {
+        return $this->loader;
+    }
+
+    public function createGrid(Proxy $proxy): ?Grid {
+        if (empty($this->columns)) {
+            return null;
+        }
+
+        $table = new Grid($proxy);
+        return $table->addAll($this->columns);
+    }
 }

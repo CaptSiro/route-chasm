@@ -2,6 +2,7 @@
 
 namespace components\layout\Grid;
 
+use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\Proxy\Proxy;
 use components\layout\Grid\Proxy\TypeProxy;
 use core\Flags;
@@ -17,7 +18,7 @@ class Grid implements View {
 
 
     /**
-     * @var array<string, ColumnLayout>
+     * @var array<string, GridColumn>
      */
     protected array $columns = [];
     protected array $rows = [];
@@ -51,17 +52,17 @@ class Grid implements View {
     }
 
     public function add(string $name, string $label, string $template = '1fr'): static {
-        $this->columns[$name] = new ColumnLayout($label, $template);
+        $this->columns[$name] = new GridColumn($label, $template);
         return $this;
     }
 
     public function addAsFirst(string $name, string $label, string $template = '1fr'): static {
-        $this->columns = [$name => new ColumnLayout($label, $template)] + $this->columns;
+        $this->columns = [$name => new GridColumn($label, $template)] + $this->columns;
         return $this;
     }
 
     /**
-     * @param array<string, ColumnLayout> $layout
+     * @param array<string, GridColumn> $layout
      * @return $this
      */
     public function addAll(array $layout): static {

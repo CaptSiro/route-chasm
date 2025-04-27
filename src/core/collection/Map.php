@@ -36,11 +36,17 @@ class Map implements Dictionary, JsonSerializable {
         $this->map = [];
     }
 
-    public function asArray(): array {
+    public function toArray(): array {
         return $this->map;
     }
 
     public function jsonSerialize(): array {
         return $this->map;
+    }
+
+    public function remove(string $name): mixed {
+        $value = $this->get($name);
+        unset($this->map[$name]);
+        return $value;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace models\core\Domain;
 
-use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
+use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\database_v3\sql\Action;
 use core\database_v3\sql\Column;
@@ -40,7 +40,11 @@ class Domain extends Model implements Enable {
         self::addEnableGridColumn($columns);
         $columns[DomainProxy::COLUMN_DOMAIN] = new GridColumn('Domain');
 
-        return new GridDescription(new DomainProxy(), $columns);
+        return new GridDescription(
+            $columns,
+            new ModelGridLoader(static::class),
+            new DomainProxy()
+        );
     }
 
 
@@ -86,7 +90,7 @@ class Domain extends Model implements Enable {
         }
 
         $cost = 1 + intval($this->port != 0) + intval($this->path != '');
-        if ($cost !== $this->cost) {
+        if (!isset($this->cost) || $cost !== $this->cost) {
             $this->cost = $cost;
         }
 

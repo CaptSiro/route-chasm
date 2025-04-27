@@ -4,7 +4,6 @@ namespace core\database_v3\sql;
 
 use core\database_v3\sql\query\Parameter;
 use core\database_v3\sql\query\Query;
-use core\database_v3\sql\query\SelectQuery;
 use core\Identifier;
 use core\view\View;
 use JsonSerializable;
@@ -29,23 +28,8 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public static function fromRecord(?array $record, Origin $origin = Origin::EXTERNAL): ?static {
-        if (is_null($record)) {
-            return null;
-        }
-
-        $description = ModelDescription::extract(static::class);
-        $instance = new static();
-
-        foreach ($description->columns as $column) {
-            if (!isset($record[$column->name])) {
-                continue;
-            }
-
-            $instance->{$column->alias} = $record[$column->name];
-        }
-
-        $instance->origin = $origin;
-        return $instance;
+        return ModelFactory::extract(static::class)
+            ->fromRecord($record, $origin);
     }
 
     /**
@@ -54,28 +38,10 @@ class Model implements JsonSerializable, Identifier {
      * @return array<static>
      */
     public static function fromRecords(array $records, Origin $origin = Origin::EXTERNAL): array {
-        foreach ($records as $i => $record) {
-            $records[$i] = static::fromRecord($record, $origin);
-        }
-
-        return $records;
+        return ModelFactory::extract(static::class)
+            ->fromRecords($records, $origin);
     }
 
-    protected static function addProjection(ModelDescription $description, SelectQuery $sql, ?array $projection = null): void {
-        if (is_null($projection)) {
-            foreach ($description->columns as $column) {
-                $sql->projection($column->name);
-            }
-
-            return;
-        }
-
-        foreach ($description->columns as $column) {
-            if (in_array($column->name, $projection)) {
-                $sql->projection($column->name);
-            }
-        }
-    }
 
     /**
      * @param ?array $projection Set of columns to select from database. If left null, all columns are selected
@@ -83,37 +49,18 @@ class Model implements JsonSerializable, Identifier {
      * @return ?static
      */
     public static function first(?array $projection = null, Query|string|null $where = null): ?static {
-        $description = ModelDescription::extract(static::class);
-
-        $sql = Sql::select($description->getEscapedTable());
-        static::addProjection($description, $sql, $projection);
-
-        if (!is_null($where)) {
-            $sql->where($where);
-        }
-
-        $sql->limit(1);
-
-        $record = $description
-            ->connection
-            ->fetch($sql->toQuery($description->connection));
-
-        return static::fromRecord($record);
+        return ModelFactory::extract(static::class)
+            ->first($projection, $where);
     }
 
     /**
      * @param mixed $id
-     * @param array|null $projection
+     * @param ?array $projection Set of columns to select from database. If left null, all columns are selected
      * @return static|null
      */
     public static function fromId(mixed $id, ?array $projection = null): ?static {
-        $description = ModelDescription::extract(static::class);
-        $idColumnName = $description->getEscapedIdColumnName();
-
-        return self::first($projection, new Query(
-             "$idColumnName = ?",
-            [Parameter::infer($id)]
-        ));
+        return ModelFactory::extract(static::class)
+            ->first($id, $projection);
     }
 
     /**
@@ -122,20 +69,8 @@ class Model implements JsonSerializable, Identifier {
      * @return array<static>
      */
     public static function all(?array $projection = null, Query|string|null $where = null): array {
-        $description = ModelDescription::extract(static::class);
-        $sql = Sql::select($description->getEscapedTable());
-
-        static::addProjection($description, $sql, $projection);
-
-        if (!is_null($where)) {
-            $sql->where($where);
-        }
-
-        return self::fromRecords(
-            $description
-                ->connection
-                ->fetchAll($sql->toQuery($description->connection))
-        );
+        return ModelFactory::extract(static::class)
+            ->all($projection, $where);
     }
 
 
@@ -171,14 +106,19 @@ class Model implements JsonSerializable, Identifier {
         $description = ModelDescription::extract(static::class);
 
         foreach ($data as $property => $value) {
-            if (!isset($description->alias[$property])) {
+            $column = $description->alias[$property];
+            if (!isset($column)) {
                 continue;
             }
 
-            $this->__set($property, $value);
+            $this->__set($property, $column->transform($value));
         }
 
         return $this;
+    }
+
+    public function setOrigin(Origin $origin): void {
+        $this->origin = $origin;
     }
 
     private function insert(): Action {

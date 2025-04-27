@@ -9,7 +9,9 @@ interface Dictionary {
 
     public function get(string $name, mixed $or = null): mixed;
 
+    public function remove(string $name): mixed;
+
     public function load(array $array): void;
 
-    public function asArray(): array;
+    public function toArray(): array;
 }

@@ -3,6 +3,7 @@
 namespace core\database_v3\sql;
 
 use Attribute;
+use Closure;
 use core\database_v3\sql\query\Parameter;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -15,9 +16,16 @@ readonly class Column {
 
 
 
+    /**
+     * @param string|null $name
+     * @param string $type
+     * @param bool $primaryKey
+     * @param Closure|null $transform Function signature: fn(mixed $value) => mixed
+     */
     public function __construct(
         public ?string $name = null,
         public string $type = Parameter::TYPE_INFER,
-        public bool $primaryKey = false
+        public bool $primaryKey = false,
+        public ?Closure $transform = null
     ) {}
 }

@@ -1,14 +1,13 @@
 <?php
 
-namespace components\core\Admin\Nexus\Editor;
+namespace components\core\Admin\Nexus_v2\Editor;
 
-use components\core\Admin\Nexus\AdminNexus;
+use components\core\Admin\Nexus_v2\AdminNexus;
 use components\core\WebPage\WebPage;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\Entity;
-use core\database\Schema;
+use core\database_v3\sql\Model;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
@@ -27,7 +26,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
 
     protected WebPage $page;
-    protected ?Entity $entity = null;
+    protected ?Model $model = null;
     protected AdminNexus $context;
 
     public function __construct() {
@@ -41,27 +40,27 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         return $this;
     }
 
-    public function setEntity(Entity $entity): static {
-        $this->entity = $entity;
+    public function setModel(Model $model): static {
+        $this->model = $model;
         return $this;
     }
 
-    protected function getEntityData(): array {
-        if (!isset($this->entity)) {
+    protected function getModelData(): array {
+        if (!isset($this->model)) {
             return [];
         }
 
-        return $this->entity->getData();
+        return $this->model->getData();
     }
 
     public function getState(): int {
-        return isset($this->entity)
+        return isset($this->model)
             ? self::STATE_UPDATER
             : self::STATE_CREATOR;
     }
 
     public function getForm(): View {
-        $schema = $this->context->getSchema();
+        $modelDescription = $this->context->getModelDescription();
 
         $form = new Form($this->getState() === self::STATE_CREATOR
             ? HttpMethod::POST
@@ -70,18 +69,17 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new HiddenField(
-            $schema
-                ->getTable()
-                ->getIdColumn()
+            $modelDescription->idColumn->name
         ));
 
-        $schema
-            ->getForm()
-            ->initForm($form, $this->getEntityData());
+        $this->context
+            ->getFormSection()
+            ->add($form, $this->getModelData());
 
         $submitLabel = $this->getState() === self::STATE_CREATOR
             ? 'Create'
             : 'Update';
+
         $form->add(new MultiSubmit([
             new FormAction(FormAction::TYPE_RESET, 'Cancel'),
             new FormAction(FormAction::TYPE_SUBMIT, $submitLabel)
@@ -117,12 +115,15 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                     );
                 }
 
-                $entity = $this->context
-                    ->getSchema()
-                    ->createEntity($request->getBody()->toArray());
-                $error = $entity->save();
+                $model = $this->context
+                    ->getModelDescription()
+                    ->getFactory()
+                    ->new();
 
-                if (!is_null($error = $entity->save())) {
+                $model->set($request->getBody()->toArray());
+                $error = $model->save();
+
+                if ($error instanceof View) {
                     $response->renderRoot($error);
                 }
 
@@ -139,14 +140,15 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                     );
                 }
 
-                $entity = $this->context
-                    ->getSchema()
-                    ->getEntityFactory()
-                    ->fromId($this->entity->getId());
+                $model = $this->context
+                    ->getModelDescription()
+                    ->getFactory()
+                    ->fromId($this->model->getId());
 
-                $entity->set($request->getBody()->toArray());
+                $model->set($request->getBody()->toArray());
+                $error = $model->save();
 
-                if (!is_null($error = $entity->save())) {
+                if ($error instanceof View) {
                     $response->renderRoot($error);
                 }
 

@@ -11,8 +11,6 @@ trait BindProperty {
 
     public function bindProperty(ReflectionProperty $property): void {
         $this->label ??= ucfirst($property->getName());
-
-        $description = ModelDescription::extract($property->class);
-        $this->name = $description->alias[$property->getName()]->name;
+        $this->name = $property->getName();
     }
 }

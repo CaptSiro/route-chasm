@@ -4,6 +4,7 @@ namespace models\extensions\Enable;
 
 use components\layout\Grid\description\GridColumn;
 use core\database_v3\sql\Column;
+use modules\forms\description\Checkbox;
 
 const ENABLE_PROPERTY = 'enabled';
 
@@ -17,6 +18,7 @@ trait EnableExtension {
 
 
 
+    #[Checkbox('Enabled')]
     #[GridColumn('Enabled', '96px')]
     #[Column('is_enabled', Column::TYPE_BOOLEAN)]
     protected bool $enabled;
