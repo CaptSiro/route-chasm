@@ -2,12 +2,15 @@
 
 use components\core\HtmlHead\HtmlHead;
 use components\core\FrontEndCore\FrontEndCore;
+use core\App;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader; ?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="icon" type="image/x-icon" href="<?= App::getInstance()->prependHome("/public/images/favicon.png") ?>">
 
     <?php foreach ($this->meta as $name => $content): ?>
         <meta name="<?= $name ?>" content="<?= $content ?>">
