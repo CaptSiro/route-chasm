@@ -18,6 +18,16 @@ $request = App::getInstance()->getRequest();
 <!DOCTYPE html>
 <html lang="<?= $this->language ?>">
 <?= $this->head ?>
+<script>
+    /**
+     * @param {Element} element
+     */
+    function adminPage_navItem(element) {
+        element.addEventListener("click", () => {
+            $('a', element)?.click();
+        });
+    }
+</script>
 <body class="admin-page">
     <?= Terminal::getInstance() ?>
 
@@ -28,16 +38,14 @@ $request = App::getInstance()->getRequest();
         </div>
 
         <div class="end">
-            <div class="head">
-                <div class="item-label">
+            <div class="nav-item" x-init="adminPage_navItem">
                 <span class="icon">
-                    <?= Icon::nf('nf-fa-angle_left') ?>
+                    <?= Icon::nf('nf-fa-power_off') ?>
                 </span>
 
-                    <a href="<?= AdminLogin::createLogoutUrl(UrlBuilder::fromUrl($request->getUrl())) ?>">
-                        Logout
-                    </a>
-                </div>
+                <a href="<?= AdminLogin::createLogoutUrl(UrlBuilder::fromUrl($request->getUrl())) ?>">
+                    Logout
+                </a>
             </div>
         </div>
 
