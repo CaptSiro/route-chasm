@@ -4,8 +4,8 @@ namespace core\collection;
 
 use JsonSerializable;
 
-readonly class StrictMap implements StrictDictionary, JsonSerializable {
-    private Map $map;
+class StrictMap implements StrictDictionary, JsonSerializable {
+    protected Map $map;
 
 
 
@@ -53,5 +53,11 @@ readonly class StrictMap implements StrictDictionary, JsonSerializable {
 
     public function remove(string $name): mixed {
         return $this->map->remove($name);
+    }
+
+    public function copy(): static {
+        $instance = new static();
+        $instance->map = $this->map->copy();
+        return $instance;
     }
 }

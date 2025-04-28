@@ -84,7 +84,7 @@ class AdminLogin extends ContainerContent {
             if ($logout) {
                 $url->getQuery()->remove(self::QUERY_LOGOUT);
                 $request->getSession()->remove(App::KEY_USER);
-                $response->redirect(UrlBuilder::fromUrl($url)->build());
+                $response->redirect($url->full());
             }
 
             return;

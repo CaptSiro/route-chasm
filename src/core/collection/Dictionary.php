@@ -2,7 +2,9 @@
 
 namespace core\collection;
 
-interface Dictionary {
+use core\Copy;
+
+interface Dictionary extends Copy {
     public function exists(string $name): bool;
 
     public function set(string $name, mixed $value): void;

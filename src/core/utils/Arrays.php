@@ -23,6 +23,16 @@ class Arrays {
         return $array[array_key_last($array)];
     }
 
+    /**
+     * @template S
+     * @template T
+     * @param array<S, T> $array
+     * @return array<S, T>
+     */
+    public static function copy(array $array): array {
+        return array_merge([], $array);
+    }
+
     public static function push(array|null &$array, mixed $element): void {
         if (is_null($array)) {
             $array = [];

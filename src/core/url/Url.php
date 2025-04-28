@@ -5,9 +5,10 @@ namespace core\url;
 use core\App;
 use core\collection\StrictDictionary;
 use core\collection\StrictMap;
+use core\Copy;
 use core\utils\Strings;
 
-class Url {
+class Url implements Copy {
     public const PARAM_REGEX = "/\[([^\]]+)\]/";
     public const SEPARATOR_PROTOCOL = '://';
     public const SEPARATOR_PATH = '/';
@@ -43,7 +44,6 @@ class Url {
             $protocol,
             $host,
             '/'. $path,
-            $query,
             $queryDictionary
         );
     }
@@ -65,7 +65,6 @@ class Url {
             $protocol ?? $request->getUrl()->protocol,
             $host ?? $request->getUrl()->host,
             $path,
-            $query ?? '',
             $query === null
                 ? new StrictMap()
                 : self::parseQuery($query)
@@ -90,7 +89,6 @@ class Url {
             $_SERVER['REQUEST_SCHEME'] ?? "http",
             $_SERVER['HTTP_HOST'] ?? "localhost",
             $path,
-            $_SERVER['QUERY_STRING'],
             new StrictMap($_GET)
         );
     }
@@ -98,11 +96,10 @@ class Url {
 
 
     function __construct(
-        private readonly string $protocol,
-        private readonly string $host,
-        private string $path,
-        private readonly string $queryString,
-        private readonly StrictDictionary $query
+        protected string $protocol,
+        protected string $host,
+        protected string $path,
+        protected readonly StrictDictionary $query
     ) {}
 
 
@@ -111,10 +108,27 @@ class Url {
         return $this->query;
     }
 
+    public function getQueryString(): string {
+        $query = '';
+
+        $first = true;
+        foreach ($this->query->toArray() as $key => $value) {
+            if (!$first) {
+                $query .= '&';
+            }
+
+            $query .= urlencode($key) .'='. urlencode($value);
+            $first = false;
+        }
+
+        return $query;
+    }
+
     public function full(): string {
-        $query = $this->queryString === ''
+        $queryString = $this->getQueryString();
+        $query = $queryString === ''
             ? ''
-            : '?' . $this->queryString;
+            : '?' . $queryString;
 
         return $this->protocol ."://". $this->host . $this->path . $query;
     }
@@ -158,18 +172,17 @@ class Url {
         return $this->path;
     }
 
-    /**
-     * @return string
-     */
-    public function getQueryString(): string {
-        return $this->queryString;
-    }
-
-    /**
-     * @return string
-     */
     public function getProtocol(): string {
         return $this->protocol;
+    }
+
+    public function copy(): static {
+        return new static(
+            $this->protocol,
+            $this->host,
+            $this->path,
+            $this->query->copy()
+        );
     }
 
     public function __toString(): string {

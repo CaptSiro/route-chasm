@@ -3,6 +3,7 @@
 namespace core\collection;
 
 use core\Flags;
+use core\utils\Arrays;
 use JsonSerializable;
 
 class Map implements Dictionary, JsonSerializable {
@@ -48,5 +49,11 @@ class Map implements Dictionary, JsonSerializable {
         $value = $this->get($name);
         unset($this->map[$name]);
         return $value;
+    }
+
+    public function copy(): static {
+        $instance = new static();
+        $instance->map = Arrays::copy($this->map);
+        return $instance;
     }
 }

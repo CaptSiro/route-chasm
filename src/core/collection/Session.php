@@ -60,4 +60,8 @@ class Session implements StrictDictionary {
         unset($_SESSION[$name]);
         return $value;
     }
+
+    public function copy(): static {
+        return new static();
+    }
 }

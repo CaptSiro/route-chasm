@@ -5,6 +5,9 @@ namespace core\collection;
 use core\utils\Arrays;
 
 class StrictStack implements StrictDictionary {
+    /**
+     * @var array<array<string, mixed>>
+     */
     private array $stack;
 
 
@@ -89,5 +92,15 @@ class StrictStack implements StrictDictionary {
         }
 
         return null;
+    }
+
+    public function copy(): static {
+        $instance = new static();
+
+        foreach ($this->stack as $item) {
+            $instance->stack[] = Arrays::copy($item);
+        }
+
+        return $instance;
     }
 }
