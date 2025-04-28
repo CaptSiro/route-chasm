@@ -1,4 +1,11 @@
-<?php /** @var \components\core\Admin\Login\AdminLogin $this */ ?>
+<?php /** @var AdminLogin $this */
+
+use components\core\Admin\Login\AdminLogin;
+use modules\SideLoader\Css;
+
+Css::import($this->getResource('admin-login.css'));
+
+?>
 <div>
     <?= $this->createLoginForm() ?>
 </div>

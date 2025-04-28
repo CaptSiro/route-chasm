@@ -49,6 +49,6 @@ class NexusProxy extends TypeProxy {
     protected function getDeleteValue(): string {
         $url = $this->context->getDeleteLink((string) $this->item->getId());
         $content = Icon::nf('nf-oct-trash');
-        return "<button class='link no-underline' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
+        return "<button class='link no-style' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
     }
 }

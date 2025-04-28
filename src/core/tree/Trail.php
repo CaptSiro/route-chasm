@@ -12,7 +12,7 @@ class Trail {
 
     /**
      * @param array<string, string> $params
-     * @param array<Endpoint> $endpoints
+     * @param array<array<Endpoint>> $endpoints
      */
     public function __construct(
         protected array $params,
@@ -37,7 +37,7 @@ class Trail {
     }
 
     /**
-     * @return array
+     * @return array<array<Endpoint>>
      */
     public function getEndpoints(): array {
         return $this->endpoints;

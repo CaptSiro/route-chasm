@@ -1,13 +1,18 @@
 <?php /** @var WebPage $this */
 
 use components\core\Admin\Home\AdminHome;
+use components\core\Admin\Login\AdminLogin;
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Project\AdminProject;
+use components\core\Icon;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
+use core\App;
+use core\url\UrlBuilder;
 use modules\SideLoader\Css;
 
 Css::import($this->getResource('admin-page.css'));
+$request = App::getInstance()->getRequest();
 
 ?>
 <!DOCTYPE html>
@@ -17,8 +22,24 @@ Css::import($this->getResource('admin-page.css'));
     <?= Terminal::getInstance() ?>
 
     <nav>
-        <?= new AdminProject() ?>
-        <?= AdminMenu::getInstance() ?>
+        <div class="start">
+            <?= new AdminProject() ?>
+            <?= AdminMenu::getInstance() ?>
+        </div>
+
+        <div class="end">
+            <div class="head">
+                <div class="item-label">
+                <span class="icon">
+                    <?= Icon::nf('nf-fa-angle_left') ?>
+                </span>
+
+                    <a href="<?= AdminLogin::createLogoutUrl(UrlBuilder::fromUrl($request->getUrl())) ?>">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
 
         <div
             class="resize-handle"

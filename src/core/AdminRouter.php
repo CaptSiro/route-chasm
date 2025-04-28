@@ -35,9 +35,8 @@ class AdminRouter extends Router {
                 $request->set(self::KEY_IS_ADMIN, true);
                 AdminMenu::load(App::getInstance()->getSource('admin-menu.php'));
             }),
-            $home ?? new Message('Admin Home'),
             new AdminLogin(),
-
+            $home ?? new Message('Admin Home'),
         );
 
         $this->use('/**', fn(Request $request, Response $response) => $response->sendMessage(

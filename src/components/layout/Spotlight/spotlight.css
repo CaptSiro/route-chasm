@@ -1,0 +1,3 @@
+.spotlight-item:not(.spotlight-visible) {
+    display: none;
+}

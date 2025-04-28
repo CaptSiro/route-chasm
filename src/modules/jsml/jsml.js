@@ -272,6 +272,17 @@ function Icon(nf) {
 
 
 /**
+ * @template T
+ * @param {T|undefined|null} variable
+ * @return {boolean}
+ */
+function is(variable) {
+    return variable !== undefined && variable !== null;
+}
+
+
+
+/**
  * Calls function with provided element. This function expects `fn` to be one valid fully qualified function name
  *
  * @param {string} fn

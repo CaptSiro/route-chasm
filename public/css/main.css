@@ -81,16 +81,23 @@ button:hover,
 
 .link {
     all: unset;
+    color: var(--accent-3);
+}
+
+.link.no-style {
+    color: var(--text-0);
 }
 
 .link:hover {
     all: unset;
     cursor: pointer;
     text-decoration: underline;
+    color: var(--accent-3);
 }
 
-.link.no-underline:hover {
+.link.no-style:hover {
     text-decoration: unset !important;
+    color: var(--text-0);
 }
 
 

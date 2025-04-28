@@ -2,9 +2,21 @@
 
 namespace core\url;
 
+use core\App;
 use core\utils\Arrays;
 
 class UrlBuilder {
+    public static function fromUrl(Url $url): static {
+        return new static(
+            $url->getProtocol(),
+            $url->getHost(),
+            App::getInstance()->prependHome($url->getPath()),
+            $url->getQuery()->toArray()
+        );
+    }
+
+
+
     /** @var array<string, ?string> $params */
     protected array $params;
 

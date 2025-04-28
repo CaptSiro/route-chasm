@@ -1,0 +1,17 @@
+<?php /** @var Spotlight $this */
+
+use components\layout\Spotlight\Spotlight;
+use modules\SideLoader\Css;
+use modules\SideLoader\Javascript;
+
+Css::import($this->getResource('spotlight.css'));
+Javascript::import($this->getResource('spotlight.js'));
+
+?><div class="spotlight">
+    <?php foreach ($this->views as $label => $view): ?>
+        <div
+            class="spotlight-item <?= $this->visibilityClass($label) ?>"
+            data-spotlight-item="<?= $label ?>"
+        ><?= $view->render() ?></div>
+    <?php endforeach; ?>
+</div>

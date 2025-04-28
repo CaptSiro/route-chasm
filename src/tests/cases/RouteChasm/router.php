@@ -134,8 +134,10 @@ Sptf::test("find path for deeply nested dynamic Routers", function () {
     Sptf::expect(is_null($trail))
         ->toBe(false);
 
-    foreach ($trail->getEndpoints() as $endpoint) {
-        $endpoint->execute($request, new Response((new RequestFormat())->setFormatMatcher(new FormatMatcher())));
+    foreach ($trail->getEndpoints() as $node) {
+        foreach ($node as $endpoint) {
+            $endpoint->execute($request, new Response((new RequestFormat())->setFormatMatcher(new FormatMatcher())));
+        }
     }
 
     Sptf::expect($ret)

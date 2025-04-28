@@ -56,6 +56,8 @@ class App implements Loader {
     public const PROJECT_AUTHOR = 'PROJECT_AUTHOR';
     public const PROJECT_AUTHOR_LINK = 'PROJECT_AUTHOR_LINK';
 
+    public const KEY_USER = 'user';
+
     public const OPTION_DO_REMOVE_HOME_FROM_URL_PATH = "do_remove_home_from_url_path";
     public const OPTION_DO_ADD_HOME_TO_URL_PATH = "do_add_home_to_url_path";
     public const OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET = "always_return_html_for_http_get";

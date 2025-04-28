@@ -135,13 +135,21 @@ class Router {
         $request->getParam()->push($trail->getParams());
         $method = $request->getUrl()->getQuery()->get('x');
 
-        foreach (array_reverse($trail->getEndpoints()) as $endpoint) {
-            if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
-                call_user_func_array([$endpoint, $method], [$request, $response]);
-                continue;
-            }
+        $nodes = $trail->getEndpoints();
+        $last = array_key_last($nodes);
+        foreach ($nodes as $i => $node) {
+            foreach ($node as $endpoint) {
+                if ($endpoint->isMiddleware() || $last !== $i) {
+                    continue;
+                }
 
-            $endpoint->execute($request, $response);
+                if (!is_null($method) && $method !== '' && method_exists($endpoint, $method)) {
+                    call_user_func_array([$endpoint, $method], [$request, $response]);
+                    continue;
+                }
+
+                $endpoint->execute($request, $response);
+            }
         }
 
         $request->getParam()->pop();

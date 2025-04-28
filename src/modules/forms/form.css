@@ -9,6 +9,8 @@
     --form-accent-1: var(--accent-1);
     --form-accent-3: var(--accent-3);
 
+    --form-container-input-0: var(--form-container-0);
+
     --form-invalid-0: #f13854;
     --form-invalid-1: #f3919f;
     --form-invalid-text-0: black;
@@ -82,7 +84,7 @@ input[type="checkbox"] {
     position: relative;
 
     appearance: none;
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     margin: 0 !important;
 
     font: inherit;
@@ -120,7 +122,7 @@ input[type="radio"]:after {
     width: 50%;
     height: 50%;
     border-radius: 50%;
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
 }
 
 
@@ -128,7 +130,7 @@ input {
     border-radius: var(--form-border-radius);
     border: unset;
     padding: 8px;
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
 
@@ -154,7 +156,7 @@ input {
     border: unset;
     padding: 8px;
     margin-top: 4px;
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
 }
@@ -169,7 +171,7 @@ input {
 .form-files > div {
     padding: 4px 8px;
     border-radius: var(--form-border-radius-smaller);
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -194,7 +196,7 @@ input {
 
 input:not([type=checkbox]):focus {
     outline: 2px solid var(--form-accent-1);
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     color: var(--form-text-0);
 }
 
@@ -214,7 +216,7 @@ input.form-invalid {
 
 .form textarea {
     border-radius: var(--form-border-radius);
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     color: var(--form-text-0);
     border: 2px solid var(--form-container-3);
     resize: none;
@@ -227,7 +229,7 @@ input.form-invalid {
 
 .form textarea:focus {
     outline: 2px solid var(--form-accent-1);
-    background-color: var(--form-container-0);
+    background-color: var(--form-container-input-0);
     color: var(--form-text-0);
 }
 

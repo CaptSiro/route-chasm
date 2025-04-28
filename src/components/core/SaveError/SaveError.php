@@ -25,7 +25,7 @@ class SaveError implements View, JsonSerializable {
         $this->formatter = new Formatter(fn($type) => match ($type) {
             Format::IDENT_HTML => $this->renderTemplated(),
             Format::IDENT_XML => $this->renderTemplated($this->getResource("SaveError.xml.phtml")),
-            Format::IDENT_JSON => $this->jsonSerialize(),
+            Format::IDENT_JSON => json_encode($this),
             default => $this->message
         });
     }

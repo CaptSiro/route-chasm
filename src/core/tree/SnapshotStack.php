@@ -44,7 +44,7 @@ class SnapshotStack {
             }
 
             if (!empty($item[self::ENDPOINTS])) {
-                $endpoints = array_merge($endpoints, $item[self::ENDPOINTS]);
+                $endpoints[] = $item[self::ENDPOINTS];
             }
         }
 

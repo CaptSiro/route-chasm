@@ -2,31 +2,37 @@
 
 namespace components\core\Message;
 
-use components\core\Html\Html;
-use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\ContextAwareWebPage;
-use core\App;
 use core\communication\Format;
-use core\view\ContainerContent;
+use core\view\Formatter;
+use core\view\Renderer;
+use core\view\View;
+use JsonSerializable;
 
-class Message extends ContainerContent {
+class Message implements View, JsonSerializable {
+    use Renderer;
+
+
+
+    protected Formatter $formatter;
+
     public function __construct(
         protected string $message
     ) {
-        parent::__construct(new ContextAwareWebPage(head: new HtmlHead("$message")));
+        $this->formatter = new Formatter(fn($type) => match ($type) {
+            Format::IDENT_HTML => $this->renderTemplated(),
+            Format::IDENT_XML => "<message>$this->message</message>",
+            Format::IDENT_JSON => json_encode($this),
+            default => $this->message
+        });
     }
 
 
 
+    public function jsonSerialize(): array {
+        return ['message' => $this->message];
+    }
+
     public function render(): string {
-        return match (App::getInstance()->getResponse()->getFormat()) {
-            Format::IDENT_HTML => parent::render(),
-            Format::IDENT_XML => Html::wrap('message', $this->message),
-            Format::IDENT_JSON => json_encode([
-                "isError" => false,
-                "message" => $this->message
-            ]),
-            default => $this->message,
-        };
+        return $this->formatter->render();
     }
 }

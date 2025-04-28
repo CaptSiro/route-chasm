@@ -9,7 +9,7 @@ class HiddenField extends Input {
         string $name = self::class,
         string $value = ''
     ) {
-        parent::__construct('hidden', $name, $label = null, $value);
+        parent::__construct('hidden', $name, '', $value);
         $this->addCssClass('hide');
     }
 }

@@ -15,7 +15,7 @@ function bind(string $path): Router {
         return $r;
     }
 
-    Sptf::expect(count($node->getEndpoints()))->toBe(2);
+    Sptf::expect(count($node->getEndpoints()[0]))->toBe(2);
 
     return $r;
 }
