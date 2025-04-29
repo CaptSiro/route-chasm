@@ -100,6 +100,11 @@ $router->use("/form",
 
 
 
+$router->use('/user', function(Request $request, Response $response) {
+    var_dump(\models\core\User\User::fromTag('root')->getGroups());
+    $response->flush();
+});
+
 // $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
 

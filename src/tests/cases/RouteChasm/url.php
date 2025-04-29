@@ -41,11 +41,12 @@ Sptf::test('creates URL from server vars', function () {
 
 
 Sptf::test('parse fully qualified URL', function () {
+    Sptf::allowPrinting();
     App::getInstance()
         ->getOptions()
         ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
 
-    $url = Url::from('http://localhost/nocoma?ping=pong&foo=bar');
+    $url = Url::from('http://localhost/nocoma?ping=pong&foo=bar&fizz');
 
     Sptf::expect($url->getProtocol())
         ->toBe('http');
@@ -57,7 +58,7 @@ Sptf::test('parse fully qualified URL', function () {
         ->toBe('/nocoma');
 
     Sptf::expect($url->getQueryString())
-        ->toBe('ping=pong&foo=bar');
+        ->toBe('ping=pong&foo=bar&fizz');
 
     App::getInstance()
         ->getOptions()

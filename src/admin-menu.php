@@ -8,7 +8,7 @@ use components\core\Modules\Modules;
 use components\layout\Grid\description\GridDescription;
 use core\database\sql\ModelDescription;
 use models\core\Domain\Domain;
-use models\core\Group;
+use models\core\Group\Group;
 use models\core\Privilege\Privilege;
 use models\core\Resource;
 use models\core\Setting\Setting;
@@ -35,6 +35,7 @@ AdminMenu::getInstance()
             GridDescription::extract(Group::class),
         )
     )
+    ->addIcon('Groups', Icon::nf('nf-fa-group'))
 
     ->add(
         '/System/Privileges',
@@ -44,6 +45,7 @@ AdminMenu::getInstance()
             GridDescription::extract(Privilege::class),
         )
     )
+    ->addIcon('Privileges', Icon::nf('nf-cod-settings'))
 
     ->add(
         '/System/User resources',
@@ -53,6 +55,7 @@ AdminMenu::getInstance()
             GridDescription::extract(Resource::class),
         )
     )
+    ->addIcon('User resources', Icon::nf('nf-md-laptop_account'))
 
     ->add(
         '/System/Settings',
@@ -69,4 +72,5 @@ AdminMenu::getInstance()
 
     ->add('/System/Tests/RouteChasm', new SptfTests(__DIR__ .'/../src/tests/cases/RouteChasm'))
     ->addIcon('Tests', Icon::nf('nf-md-beaker_check_outline'))
+    ->addIcon('RouteChasm', Icon::nf('nf-md-alpha_r_box'))
 ;

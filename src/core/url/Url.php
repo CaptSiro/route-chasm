@@ -22,8 +22,9 @@ class Url implements Copy {
     public static function parseQuery(string $literal): StrictDictionary {
         $map = new StrictMap();
 
-        foreach (explode('&', $literal) as $name => $value) {
-            $map->set($name, $value);
+        foreach (explode('&', $literal) as $pair) {
+            $x = explode('=', $pair, 2);
+            $map->set($x[0], $x[1] ?? null);
         }
 
         return $map;
@@ -38,7 +39,6 @@ class Url implements Copy {
                 ->host;
         $path = Strings::split($rest, '?', $query);
         $queryDictionary = self::parseQuery($query);
-
 
         return new Url(
             $protocol,
@@ -117,7 +117,10 @@ class Url implements Copy {
                 $query .= '&';
             }
 
-            $query .= urlencode($key) .'='. urlencode($value);
+            $query .= is_null($value)
+                ? urlencode($key)
+                : urlencode($key) .'='. urlencode($value);
+
             $first = false;
         }
 

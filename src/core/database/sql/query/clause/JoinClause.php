@@ -21,7 +21,7 @@ readonly class JoinClause {
 
 
     public function getSql(): string {
-        return strtoupper($this->type) .' JOIN `'. $this->table .'` ON '. $this->condition;
+        return strtoupper($this->type) .' JOIN '. $this->table .' ON '. $this->condition;
     }
 
     public function getParameters(): array {

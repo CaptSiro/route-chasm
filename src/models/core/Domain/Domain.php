@@ -28,7 +28,7 @@ use modules\forms\description\TextField;
  * @property int $cost
  */
 
-#[Table('core_domains')]
+#[Table('core_domain')]
 #[Database(App::DATABASE)]
 class Domain extends Model implements Enable {
     use EnableExtension;
@@ -48,7 +48,7 @@ class Domain extends Model implements Enable {
 
 
 
-    #[Column(type: Column::TYPE_INTEGER, primaryKey: true)]
+    #[Column('id_domain', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
     #[TextField('Host')]

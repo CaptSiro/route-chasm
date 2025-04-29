@@ -2,6 +2,7 @@
 
 namespace models\core\Privilege;
 
+use components\core\SaveError\SaveError;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
@@ -9,6 +10,9 @@ use core\database\sql\Action;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\ModelCache;
+use core\database\sql\Origin;
+use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\view\View;
 use models\extensions\Editable\Editable;
@@ -19,9 +23,41 @@ use modules\forms\description\TextField;
 #[Table('core_privilege')]
 #[Database(App::DATABASE)]
 class Privilege extends Model implements Editable {
+    use ModelCache;
+
+
+
+    public const READ = 'Read';
+    public const CREATE = 'Create';
+    public const UPDATE = 'Update';
+
+    public static function read(): ?static {
+        return static::fromName(self::READ);
+    }
+
+    public static function create(): ?static {
+        return static::fromName(self::CREATE);
+    }
+
+    public static function update(): ?static {
+        return static::fromName(self::UPDATE);
+    }
+
+    public static function fromName(string $name): ?static {
+        if (!is_null($hit = static::modelCache_get($name))) {
+            return $hit;
+        }
+
+        return static::modelCache_set($name, static::first(
+            where: Query::infer('name = ?', [$name])
+        ));
+    }
+
+
+
     use EditableExtension;
 
-    #[Column(type: Column::TYPE_INTEGER, primaryKey: true)]
+    #[Column('id_privilege', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
     #[GridColumn]
@@ -32,7 +68,15 @@ class Privilege extends Model implements Editable {
 
 
     public function save(): Action|View {
-        $this->setEditable(true);
+        if ($this->isNewRecord()) {
+            $privilege = self::fromName($this->name);
+            if (!is_null($privilege)) {
+                return new SaveError('name', 'Name is already taken');
+            }
+
+            $this->setEditable(true);
+        }
+
         return parent::save();
     }
 }

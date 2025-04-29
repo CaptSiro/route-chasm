@@ -17,7 +17,7 @@ use core\module\ModuleInfo;
  */
 
 #[Grid]
-#[Table('core_modules')]
+#[Table('core_module')]
 #[Database(App::DATABASE)]
 class ModuleRecord extends Model {
     public static function createFromInfo(ModuleInfo $info): static {

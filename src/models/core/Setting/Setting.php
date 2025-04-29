@@ -23,7 +23,7 @@ use modules\forms\description\TextField;
  */
 
 #[Grid(new SettingProxy())]
-#[Table('core_settings')]
+#[Table('core_setting')]
 #[Database(App::DATABASE)]
 final class Setting extends Model implements Editable {
     use EditableExtension;
@@ -55,7 +55,7 @@ final class Setting extends Model implements Editable {
 
 
 
-    #[Column(type: Column::TYPE_INTEGER, primaryKey: true)]
+    #[Column('id_setting', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
     #[TextField('Setting', readonly: true)]

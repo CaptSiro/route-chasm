@@ -15,6 +15,7 @@ use core\http\HttpMethod;
 use core\url\UrlBuilder;
 use core\view\ContainerContent;
 use core\view\View;
+use models\core\User\User;
 use modules\forms\controls\HiddenField;
 use modules\forms\controls\PasswordField\PasswordField;
 use modules\forms\controls\Submit\Submit;
@@ -29,7 +30,7 @@ class AdminLogin extends ContainerContent {
     private const METHOD_ENV = 'env';
 
     private const FIELD_METHOD = 'method';
-    private const FIELD_USERNAME = 'username';
+    private const FIELD_TAG = 'tag';
     private const FIELD_PASSWORD = 'password';
 
     public static function createLogoutUrl(UrlBuilder $builder): string {
@@ -55,7 +56,7 @@ class AdminLogin extends ContainerContent {
         $userLogin = new Form(HttpMethod::POST, namespace: self::METHOD_USER);
 
         $userLogin->add(Form::title('Admin Login'));
-        $userLogin->add(new TextField(self::FIELD_USERNAME, 'Username'));
+        $userLogin->add(new TextField(self::FIELD_TAG, 'Tag'));
         $userLogin->add(new PasswordField(self::FIELD_PASSWORD, 'Password'));
         $userLogin->add(new HiddenField(self::FIELD_METHOD, self::METHOD_USER));
         $userLogin->add(new SpotlightSwitchLink('Login via .env password ', 'env', 'here'));
@@ -108,10 +109,11 @@ class AdminLogin extends ContainerContent {
                 if ($method === self::METHOD_ENV) {
                     if (App::getInstance()->getEnv()->get(self::PASSWORD) !== $password) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message('The submitted password is wrong'));
+                        $response->renderRoot(new Message('The password is wrong'));
                     }
 
-                    $request->getSession()->set(App::KEY_USER, 'root');
+                    $user = User::fromTag(User::TAG_ROOT);
+                    $request->getSession()->set(App::KEY_USER, $user->id);
 
                     $response->setStatus(HttpCode::S_OK);
                     $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->full());
@@ -119,8 +121,24 @@ class AdminLogin extends ContainerContent {
                 }
 
                 if ($method === self::METHOD_USER) {
-                    // todo
-                    // admin user login
+                    $tag = $body->getStrict(self::FIELD_TAG);
+                    $user = User::fromTag($tag);
+
+                    if (!password_verify($password, $user->password)) {
+                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
+                        $response->renderRoot(new Message('The password is wrong or the user is not admin'));
+                    }
+
+                    if (!$user->isAdmin()) {
+                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
+                        $response->renderRoot(new Message('The password is wrong or the user is not admin'));
+                    }
+
+                    $request->getSession()->set(App::KEY_USER, $user->id);
+
+                    $response->setStatus(HttpCode::S_OK);
+                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->full());
+                    $response->flush();
                 }
 
                 $response->setStatus(HttpCode::CE_BAD_REQUEST);

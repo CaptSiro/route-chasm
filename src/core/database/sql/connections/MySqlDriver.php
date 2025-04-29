@@ -28,7 +28,6 @@ class MySqlDriver implements Driver {
             $this->config->password,
             $this->options ?? [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::MYSQL_ATTR_MULTI_STATEMENTS => false,
             ]
         );
 

@@ -33,6 +33,11 @@ class ModelFactory {
         return new $this->modelClass();
     }
 
+    public function finish(Model $model): Model {
+        $model->useUnsafeAccess(false);
+        return $model;
+    }
+
     public function fromRecord(?array $record, Origin $origin = Origin::EXTERNAL): ?Model {
         if (is_null($record)) {
             return null;
@@ -40,6 +45,7 @@ class ModelFactory {
 
         $description = ModelDescription::extract($this->modelClass);
         $instance = $this->new();
+        $instance->useUnsafeAccess(true);
 
         foreach ($description->columns as $column) {
             if (!isset($record[$column->name])) {
@@ -50,7 +56,7 @@ class ModelFactory {
         }
 
         $instance->setOrigin($origin);
-        return $instance;
+        return $this->finish($instance);
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace core\database\sql;
 
-use components\core\Message\Message;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\Identifier;
@@ -10,6 +9,10 @@ use core\view\View;
 use JsonSerializable;
 
 class Model implements JsonSerializable, Identifier {
+    public static function getDescription(): ModelDescription {
+        return ModelDescription::extract(static::class);
+    }
+
     public static function getTable(): string {
         return ModelDescription::extract(static::class)->table;
     }
@@ -78,12 +81,17 @@ class Model implements JsonSerializable, Identifier {
 
     private Origin $origin;
     private array $updated = [];
+    private bool $unsafeAccess = false;
 
     public function __construct() {
         $this->origin = Origin::APPLICATION;
     }
 
 
+
+    public function useUnsafeAccess(bool $access): void {
+        $this->unsafeAccess = $access;
+    }
 
     public function __get(string $name) {
         if (!isset($this->$name)) {
@@ -99,7 +107,10 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function __set(string $alias, $value): void {
-        $this->updated[$alias] = 0;
+        if (!$this->unsafeAccess) {
+            $this->updated[$alias] = 0;
+        }
+
         $this->$alias = $value;
     }
 
@@ -120,6 +131,10 @@ class Model implements JsonSerializable, Identifier {
 
     public function setOrigin(Origin $origin): void {
         $this->origin = $origin;
+    }
+
+    public function isNewRecord(): bool {
+        return $this->origin === Origin::APPLICATION;
     }
 
     private function insert(): Action|View {
@@ -154,7 +169,7 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function save(): Action|View {
-        if ($this->origin === Origin::APPLICATION) {
+        if ($this->isNewRecord()) {
             return $this->insert();
         }
 

@@ -2,6 +2,7 @@
 
 namespace core\database\sql;
 
+use core\database\sql\query\SelectQuery;
 use Exception;
 use ReflectionClass;
 
@@ -104,5 +105,13 @@ class ModelDescription {
 
     public function getFactory(): ModelFactory {
         return ModelFactory::extract($this->class);
+    }
+
+    public function projection(SelectQuery $sql): void {
+        $table = $this->getEscapedTable();
+
+        foreach ($this->columns as $column) {
+            $sql->projection($table .'.'. $column->name);
+        }
     }
 }
