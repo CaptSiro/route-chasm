@@ -5,4 +5,4 @@ function exceptions_error_handler($severity, $message, $filename, $lineno): void
     exit();
 }
 
-set_error_handler('exceptions_error_handler');
+//set_error_handler('exceptions_error_handler');

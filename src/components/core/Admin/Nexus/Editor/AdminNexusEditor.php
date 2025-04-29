@@ -69,7 +69,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new HiddenField(
-            $modelDescription->idColumn->name
+            $modelDescription->idColumn->alias
         ));
 
         $this->context

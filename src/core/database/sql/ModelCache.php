@@ -9,7 +9,11 @@ trait ModelCache {
         return static::$modelCache[$key] ?? $or;
     }
 
-    protected static function modelCache_set(string $key, self $value): ?static {
+    protected static function modelCache_set(string $key, ?self $value): ?static {
+        if (is_null($value)) {
+            return null;
+        }
+
         return static::$modelCache[$key] = $value;
     }
 }
