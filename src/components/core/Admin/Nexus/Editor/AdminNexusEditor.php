@@ -81,7 +81,9 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             : 'Update';
 
         $form->add(new MultiSubmit([
-            new FormAction(FormAction::TYPE_RESET, 'Cancel'),
+            (new FormAction(FormAction::TYPE_BUTTON, 'Cancel'))
+                ->addJavascriptInit('nexus_cancelButton')
+                ->addAttribute('data-url', $this->context->getLink()),
             new FormAction(FormAction::TYPE_SUBMIT, $submitLabel)
         ]));
 

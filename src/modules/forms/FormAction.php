@@ -20,6 +20,10 @@ class FormAction implements Attribute {
         return new self(self::TYPE_SUBMIT, $label);
     }
 
+    /**
+     * @param string $type
+     * @param string $label
+     */
     public function __construct(
         public readonly string $type,
         public readonly string $label,

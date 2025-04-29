@@ -29,3 +29,19 @@ function nexus_deleteButton(button) {
         button.parentElement.remove();
     });
 }
+
+
+
+/**
+ * @param {HTMLElement} button
+ */
+function nexus_cancelButton(button) {
+    button.addEventListener('click', () => {
+        const url = button.dataset.url;
+        if (!is(url)) {
+            return;
+        }
+
+        window.location.replace(url);
+    });
+}
