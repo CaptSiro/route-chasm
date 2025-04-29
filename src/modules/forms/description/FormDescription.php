@@ -49,7 +49,7 @@ class FormDescription implements FormSection {
     public function add(Form $form, array $data): void {
         foreach ($this->controls as $property => $control) {
             $view = $control->getControl();
-            $view->setValue($data[$property] ?? null);
+            $view->setValue($data[$property] ?? '');
             $form->add($view);
         }
     }

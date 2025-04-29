@@ -27,10 +27,10 @@ Css::import($this->getResource('menu.css'));
                     <?php if (!$subMenu->isEmpty()): ?>
                         <div class="dropdown-control">
                             <div class="<?= $subMenu->isExpanded ? 'hide' : '' ?>" data-action="show">
-                                <?= Icon::nf('nf-fa-angle_right') ?>
+                                <?= Icon::nf('nf-fa-angle_right', '>') ?>
                             </div>
                             <div class="<?= $subMenu->isExpanded ? '' : 'hide' ?>" data-action="hide">
-                                <?= Icon::nf('nf-fa-angle_down') ?>
+                                <?= Icon::nf('nf-fa-angle_down', 'v') ?>
                             </div>
                         </div>
                     <?php endif; ?>

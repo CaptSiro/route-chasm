@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ ."/core/Init.php";
+require_once __DIR__ ."/exception-handler.php";
 
 spl_autoload_register(function ($class) {
     $file = __DIR__ ."/$class.php";

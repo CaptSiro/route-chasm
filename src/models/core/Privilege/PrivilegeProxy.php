@@ -1,20 +1,12 @@
 <?php
 
-namespace models\core\Setting;
+namespace models\core\Privilege;
 
 use components\core\Admin\Nexus\NexusProxy;
 use models\extensions\Editable\EditableProxy;
 
-class SettingProxy extends NexusProxy {
+class PrivilegeProxy extends NexusProxy {
     use EditableProxy;
-
-    protected function getEditValue(): string {
-        if (!$this->isItemEditable()) {
-            return '';
-        }
-
-        return parent::getEditValue();
-    }
 
     protected function getDeleteValue(): string {
         if (!$this->isItemEditable()) {
@@ -22,5 +14,13 @@ class SettingProxy extends NexusProxy {
         }
 
         return parent::getDeleteValue();
+    }
+
+    protected function getEditValue(): string {
+        if (!$this->isItemEditable()) {
+            return '';
+        }
+
+        return parent::getEditValue();
     }
 }

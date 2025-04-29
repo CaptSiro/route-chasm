@@ -16,6 +16,6 @@ trait EditableExtension {
     }
 
     public function setEditable(bool $editable): void {
-        $this->editable = $editable;
+        $this->set(['editable' => $editable]);
     }
 }

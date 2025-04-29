@@ -19,11 +19,11 @@ Css::import($this->getResource('window.css'));
         <div class="controls">
             <?php if ($this->hasFlag(Window::FLAG_MINIMIZABLE)): ?>
                 <button class="minimize">
-                    <?= Icon::nf('nf-fa-window_minimize') ?>
+                    <?= Icon::nf('nf-fa-window_minimize', '_') ?>
                 </button>
             <?php endif; ?>
             <button class="close">
-                <?= Icon::nf('nf-fa-close') ?>
+                <?= Icon::nf('nf-fa-close', 'X') ?>
             </button>
         </div>
     </div>

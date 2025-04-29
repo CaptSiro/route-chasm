@@ -28,7 +28,7 @@ trait EnableExtension {
     }
 
     public function enable(bool $enable = true): void {
-        $this->enabled = $enable;
+        $this->set(['enabled' => $enable]);
     }
 
     public function disable(): void {

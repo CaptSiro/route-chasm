@@ -8,7 +8,15 @@ use core\view\Renderer;
 class Html implements View {
     use Renderer;
 
+    public static function safe(string $content): string {
+        return htmlspecialchars($content);
+    }
+
     public static function wrap(string $tag, string $content): string {
+        return static::wrapUnsafe($tag, htmlspecialchars($content));
+    }
+
+    public static function wrapUnsafe(string $tag, string $content): string {
         return "<$tag>$content</$tag>";
     }
 

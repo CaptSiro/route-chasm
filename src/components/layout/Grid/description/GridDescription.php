@@ -45,7 +45,7 @@ class GridDescription {
         return self::$descriptions[$class] = new static(
             $columns,
             $grid->getLoader(),
-            $grid->proxy,
+            $grid->getProxy(),
         );
     }
 

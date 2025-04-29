@@ -40,15 +40,14 @@ class NexusProxy extends TypeProxy {
     }
 
     protected function getEditValue(): string {
-        return Html::createLink(
-            $this->context->getUpdateLink((string) $this->item->getId()),
-            Icon::nf('nf-oct-pencil')
-        );
+        $url = $this->context->getUpdateLink((string) $this->item->getId());
+        $content = Icon::nf('nf-oct-pencil', 'Edit');
+        return "<a href='$url' class='link no-style'>$content</a>";
     }
 
     protected function getDeleteValue(): string {
         $url = $this->context->getDeleteLink((string) $this->item->getId());
-        $content = Icon::nf('nf-oct-trash');
+        $content = Icon::nf('nf-oct-trash', 'Delete');
         return "<button class='link no-style' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
     }
 }

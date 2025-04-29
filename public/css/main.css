@@ -40,6 +40,10 @@ body {
     min-height: 100vh;
 }
 
+body.online i.nf > * {
+    display: none;
+}
+
 a {
     color: var(--text-0);
 }

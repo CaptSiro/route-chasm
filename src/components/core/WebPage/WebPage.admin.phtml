@@ -40,7 +40,7 @@ $request = App::getInstance()->getRequest();
         <div class="end">
             <div class="nav-item" x-init="adminPage_navItem">
                 <span class="icon">
-                    <?= Icon::nf('nf-fa-power_off') ?>
+                    <?= Icon::nf('nf-fa-power_off', '<') ?>
                 </span>
 
                 <a href="<?= AdminLogin::createLogoutUrl(UrlBuilder::fromUrl($request->getUrl())) ?>">

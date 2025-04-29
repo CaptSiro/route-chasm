@@ -2,6 +2,7 @@
 
 namespace core\database\sql;
 
+use components\core\Message\Message;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\Identifier;
@@ -121,7 +122,7 @@ class Model implements JsonSerializable, Identifier {
         $this->origin = $origin;
     }
 
-    private function insert(): Action {
+    private function insert(): Action|View {
         $description = ModelDescription::extract(static::class);
         $sql = Sql::insert($description->table);
 

@@ -14,6 +14,7 @@ class TypeProxy implements Proxy {
     public function getValue(string $name): string {
         $value = $this->item->$name ?? null;
 
+        // wrap is a safe-function, no need to Html::safe it
         return Html::wrap('span', match (gettype($value)) {
             "string" => $value,
             "boolean" => $value ? 'Yes' : 'No',

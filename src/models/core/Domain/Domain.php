@@ -6,7 +6,6 @@ use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
-use core\communication\Request;
 use core\database\sql\Action;
 use core\database\sql\Column;
 use core\database\sql\Database;

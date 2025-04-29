@@ -44,8 +44,10 @@ final class Setting extends Model implements Editable {
         }
 
         $setting = new self();
-        $setting->name = $name;
-        $setting->value = $default;
+        $setting->set([
+            'name' => $name,
+            'value' => $default
+        ]);
         $setting->save();
 
         return $setting;

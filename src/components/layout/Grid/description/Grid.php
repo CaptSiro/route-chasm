@@ -6,19 +6,14 @@ use Attribute;
 use components\layout\Grid\Loader\GridLoader;
 use components\layout\Grid\Loader\StaticGridLoader;
 use components\layout\Grid\Proxy\Proxy;
-use components\layout\Grid\Proxy\TypeProxy;
 use ReflectionClass;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class Grid {
-    public readonly Proxy $proxy;
-
     public function __construct(
-        ?Proxy $proxy = null,
+        protected ?Proxy $proxy = null,
         protected ?GridLoader $loader = null
-    ) {
-        $this->proxy = $proxy ?? new TypeProxy();
-    }
+    ) {}
 
 
 
@@ -41,5 +36,9 @@ class Grid {
 
     public function getLoader(): ?GridLoader {
         return $this->loader;
+    }
+
+    public function getProxy(): ?Proxy {
+        return $this->proxy;
     }
 }
