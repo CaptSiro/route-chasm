@@ -105,6 +105,9 @@ $router->use('/user', function(Request $request, Response $response) {
     $response->flush();
 });
 
+$router->use('/exc', fn() => throw new Exception('Test exception'));
+$router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
+
 // $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
 
