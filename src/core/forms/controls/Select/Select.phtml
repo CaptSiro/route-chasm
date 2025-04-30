@@ -1,0 +1,49 @@
+<?php /** @var Select $this */
+
+use components\core\Html\Html;
+use components\core\Icon;
+use core\forms\controls\Select\Select;
+
+?><div class="form-select" x-init="form_select">
+    <label for="<?= $this->getId() ?>_search"><?= $this->label ?></label>
+
+    <label>
+        <select name="<?= $this->name ?>">
+            <?php foreach ($this->values as $value => $label): ?>
+                <option
+                    value="<?= Html::escapeAttribute($value) ?>"
+                    <?php if ($value === $this->selected): ?>
+                        selected
+                    <?php endif; ?>
+                >
+                    <?= Html::escape($label) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </label>
+
+    <div class="head">
+        <div class="stack">
+            <label for="<?= $this->getId() ?>_search" class="selection form-input-icon">
+                <span class="option"><?= $this->values[$this->selected] ?? '' ?></span>
+                <?= Icon::nf('nf-fa-angle_down') ?>
+            </label>
+
+            <label class="search form-input-icon opacity-0">
+                <input type="text" class="select-search" id="<?= $this->getId() ?>_search">
+                <?= Icon::nf('nf-fa-angle_up') ?>
+            </label>
+        </div>
+
+        <div class="dropdown hide" data-max-height="200px">
+            <div class="dropdown-items">
+                <?php foreach ($this->values as $value => $label): ?>
+                    <div
+                        class="dropdown-item <?= $value === $this->selected ? 'selected' : '' ?>"
+                        data-value="<?= Html::escapeAttribute($value) ?>"
+                    ><?= Html::escape($label) ?></div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</div>

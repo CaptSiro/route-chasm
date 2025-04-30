@@ -12,8 +12,8 @@ use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
+use core\forms\description\TextField;
 use core\view\View;
-use modules\forms\description\TextField;
 
 #[Grid]
 #[Table('core_resource')]

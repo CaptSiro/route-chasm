@@ -122,7 +122,11 @@ button:hover,
 
 
 .hide {
-    display: none;
+    display: none !important;
+}
+
+.opacity-0 {
+    opacity: 0 !important;
 }
 
 
@@ -136,4 +140,10 @@ button:hover,
     background-color: black;
     color: #aae568;
     overflow: auto;
+}
+
+
+
+.dropdown.animate {
+    transition: max-height ease-in-out 250ms;
 }

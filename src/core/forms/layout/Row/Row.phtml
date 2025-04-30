@@ -1,0 +1,6 @@
+<?php /** @var \core\forms\layout\Row\Row $this */ ?>
+<div class="form-row" <?= $this->getStyle() ?>>
+    <?php foreach ($this->children as $child): ?>
+        <?= $child->render() ?>
+    <?php endforeach; ?>
+</div>

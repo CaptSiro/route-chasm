@@ -13,19 +13,21 @@ use core\config\AppConfig;
 use core\config\EnvConfig;
 use core\database\sql\connections\MySqlDriver;
 use core\database\sql\Sql;
+use core\forms\controls\Checkbox\Checkbox;
+use core\forms\controls\File\File;
+use core\forms\controls\MultiSubmit\MultiSubmit;
+use core\forms\controls\PasswordField\PasswordField;
+use core\forms\controls\Select\Select;
+use core\forms\controls\Submit\Submit;
+use core\forms\controls\TextArea\TextArea;
+use core\forms\controls\TextField;
+use core\forms\Form;
+use core\forms\FormAction;
+use core\forms\layout\Column\Column;
+use core\forms\layout\Row\Row;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
-use modules\forms\controls\Checkbox\Checkbox;
-use modules\forms\controls\File\File;
-use modules\forms\controls\MultiSubmit\MultiSubmit;
-use modules\forms\controls\PasswordField\PasswordField;
-use modules\forms\controls\TextArea\TextArea;
-use modules\forms\controls\TextField;
-use modules\forms\Form;
-use modules\forms\FormAction;
-use modules\forms\layout\Column\Column;
-use modules\forms\layout\Row\Row;
 
 require_once __DIR__ ."/src/autoload.php";
 
@@ -107,6 +109,39 @@ $router->use('/user', function(Request $request, Response $response) {
 
 $router->use('/exc', fn() => throw new Exception('Test exception'));
 $router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
+$router->use('/select',
+    Http::get(function(Request $request, Response $response) {
+        $selectForm = new Form(HttpMethod::POST);
+
+        $selectForm->add(new Select('country', 'Country', [
+            'cz' => 'The Czech Republic',
+            'uk' => 'The United Kingdom',
+            'au' => 'Australia',
+            'ca' => 'Canada',
+            'me' => 'Mexico',
+            'aa' => 'Andorra',
+            'fr' => 'France',
+            'ch' => 'China',
+            'jp' => 'Japan',
+            'sk' => 'South Korea',
+            'nk' => 'North Korea',
+            'tw' => 'Taiwan',
+            'ge' => 'Germany',
+            'it' => 'Italy',
+            'us' => 'USA',
+            'ph' => 'Philippines',
+            'np' => 'Nepal',
+            'th' => 'Thailand',
+            'vn' => 'Vietnam'
+        ], 'jp'));
+        $selectForm->add(new Submit());
+
+        $response->renderRoot((new WebPage())->addContent($selectForm));
+    }),
+    Http::post(fn(Request $request, Response $response) => $response->json(
+        $request->getBody()->toArray()
+    ))
+);
 
 // $router->resource("/cards", Cards::getInstance());
 $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));

@@ -1,0 +1,15 @@
+<?php /** @var \core\forms\controls\TextArea\TextArea $this */
+
+use core\forms\controls\TextArea\TextArea;
+
+?>
+<?php $id = $this->getId() ?>
+<div class="form-control <?= $this->cssClass ?>">
+    <label for="<?= $id ?>"><?= $this->label ?></label>
+    <textarea
+        id="<?= $id ?>"
+        name="<?= $this->name ?>"
+        id="<?= $id ?>"
+        <?= $this->stringifyAttributes() ?>
+    ><?= $this->value ?></textarea>
+</div>

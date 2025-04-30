@@ -3,6 +3,8 @@
 namespace core;
 
 use Closure;
+use core\collection\Map;
+use core\collection\StrictMap;
 use core\communication\FormatMatcher;
 use core\communication\parser\FormBodyParser;
 use core\communication\parser\JsonBodyParser;
@@ -15,8 +17,6 @@ use core\communication\Response;
 use core\communication\ResponseFormat;
 use core\config\AppConfig;
 use core\config\Config;
-use core\collection\Map;
-use core\collection\StrictMap;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
@@ -25,7 +25,6 @@ use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
 use models\core\ModuleRecord;
-use modules\forms\Forms;
 use modules\jsml\Jsml;
 use modules\SideLoader\SideLoader;
 
@@ -72,7 +71,6 @@ class App implements Loader {
         return [
             SideLoader::getInstance(),
             Jsml::getInstance(),
-            Forms::getInstance()
         ];
     }
 

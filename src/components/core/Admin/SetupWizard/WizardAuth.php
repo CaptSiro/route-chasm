@@ -2,12 +2,12 @@
 
 namespace components\core\Admin\SetupWizard;
 
+use core\forms\controls\PasswordField\PasswordField;
+use core\forms\controls\Submit\Submit;
+use core\forms\Form;
 use core\http\HttpMethod;
 use core\view\Renderer;
 use core\view\View;
-use modules\forms\controls\PasswordField\PasswordField;
-use modules\forms\controls\Submit\Submit;
-use modules\forms\Form;
 
 class WizardAuth implements View {
     use Renderer;

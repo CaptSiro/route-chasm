@@ -11,14 +11,14 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\Table;
+use core\forms\description\NumberField;
+use core\forms\description\TextField;
 use core\guards\Guard;
 use core\guards\NumberGuard;
 use core\path\Path;
 use core\view\View;
 use models\extensions\Enable\Enable;
 use models\extensions\Enable\EnableExtension;
-use modules\forms\description\NumberField;
-use modules\forms\description\TextField;
 
 /**
  * @property int $id

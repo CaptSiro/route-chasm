@@ -13,6 +13,7 @@ use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\ModelDescription;
+use core\forms\FormSection;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
@@ -21,7 +22,6 @@ use core\Router;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
-use modules\forms\FormSection;
 
 class AdminNexus extends ContainerContent {
     public const COLUMN_EDIT = 'nexus_edit';

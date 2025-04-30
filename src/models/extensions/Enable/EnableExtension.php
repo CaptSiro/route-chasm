@@ -4,7 +4,7 @@ namespace models\extensions\Enable;
 
 use components\layout\Grid\description\GridColumn;
 use core\database\sql\Column;
-use modules\forms\description\Checkbox;
+use core\forms\description\Checkbox;
 
 const ENABLE_PROPERTY = 'enabled';
 

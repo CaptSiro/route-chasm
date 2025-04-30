@@ -3,7 +3,7 @@
 namespace core;
 
 trait ResourceLoader {
-    public static function getStaticSource(string $path = ''): string {
+    public static function getClassResource(string $path = ''): string {
         return App::getInstance()
             ->getSource(dirname(self::class) ."/$path");
     }

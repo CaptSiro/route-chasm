@@ -9,6 +9,11 @@ use components\layout\Spotlight\Switch\SpotlightSwitchLink;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\forms\controls\HiddenField;
+use core\forms\controls\PasswordField\PasswordField;
+use core\forms\controls\Submit\Submit;
+use core\forms\controls\TextField;
+use core\forms\Form;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
@@ -16,11 +21,6 @@ use core\url\UrlBuilder;
 use core\view\ContainerContent;
 use core\view\View;
 use models\core\User\User;
-use modules\forms\controls\HiddenField;
-use modules\forms\controls\PasswordField\PasswordField;
-use modules\forms\controls\Submit\Submit;
-use modules\forms\controls\TextField;
-use modules\forms\Form;
 
 class AdminLogin extends ContainerContent {
     public const PASSWORD = 'ADMIN_LOGIN_PASSWORD';

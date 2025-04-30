@@ -8,8 +8,12 @@ use core\view\Renderer;
 class Html implements View {
     use Renderer;
 
-    public static function safe(string $content): string {
+    public static function escape(string $content): string {
         return htmlspecialchars($content);
+    }
+
+    public static function escapeAttribute(string $value): string {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5);
     }
 
     public static function wrap(string $tag, string $content): string {

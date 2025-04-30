@@ -7,12 +7,12 @@ use components\core\Icon;
 use components\core\Modules\Modules;
 use components\layout\Grid\description\GridDescription;
 use core\database\sql\ModelDescription;
+use core\forms\description\FormDescription;
 use models\core\Domain\Domain;
 use models\core\Group\Group;
 use models\core\Privilege\Privilege;
 use models\core\Resource;
 use models\core\Setting\Setting;
-use modules\forms\description\FormDescription;
 
 AdminMenu::getInstance()
     ->add(

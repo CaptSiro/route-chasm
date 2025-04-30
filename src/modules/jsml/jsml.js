@@ -285,10 +285,14 @@ function is(variable) {
 /**
  * Calls function with provided element. This function expects `fn` to be one valid fully qualified function name
  *
- * @param {string} fn
+ * @param {string | null | undefined} fn
  * @returns {Function}
  */
 function call_getFunction(fn) {
+    if (!is(fn)) {
+        return undefined;
+    }
+
     /** @type {any} */
     let context = window;
 
@@ -296,7 +300,7 @@ function call_getFunction(fn) {
         context = context[part.trim()];
 
         if (context === undefined) {
-            return;
+            return undefined;
         }
     }
 
@@ -314,7 +318,7 @@ function call_getFunction(fn) {
 function call(element, functionLiteral) {
     for (const literal of functionLiteral.split(',')) {
         const fn = call_getFunction(literal.trim());
-        if (fn === undefined) {
+        if (!is(fn)) {
             continue;
         }
 
@@ -456,7 +460,7 @@ window.addEventListener('load', () => {
      * @param {HTMLElement} element
      */
     function process(element) {
-        if (Boolean(element.getAttribute(X_PROCESSED))) {
+        if (!(element instanceof HTMLElement) || Boolean(element.getAttribute(X_PROCESSED))) {
             return;
         }
 
