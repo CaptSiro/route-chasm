@@ -254,6 +254,39 @@ function form_selectSearch(select, query) {
 }
 
 /**
+ * @param {HTMLElement} child
+ * @param {(child: HTMLElement, parent: HTMLElement) => Opt<HTMLElement>} next
+ * @returns {Opt<HTMLElement>}
+ */
+function form_selectFind(child, next) {
+    const parent = child.parentElement;
+    const len = parent.children.length;
+    if (len <= 0) {
+        return null;
+    }
+
+    if (len <= 1) {
+        return child;
+    }
+
+    let current = child;
+    for (let i = 0; i < len; i++) {
+        current = next(current, parent);
+        if (!is(current)) {
+            return null;
+        }
+
+        if (current.classList.contains('hide')) {
+            continue;
+        }
+
+        return current;
+    }
+
+    return null;
+}
+
+/**
  * @param {HTMLElement} container
  */
 function form_select(container) {
@@ -319,30 +352,6 @@ function form_select(container) {
         selectionLabel.textContent = option.textContent;
     };
 
-    const find = (child, next) => {
-        const parent = child.parentElement;
-        const len = parent.children.length;
-        if (len <= 0) {
-            return null;
-        }
-
-        if (len <= 1) {
-            return child;
-        }
-
-        let current = child;
-        for (let i = 0; i < len; i++) {
-            current = next(current, parent);
-            if (current.classList.contains('hide')) {
-                continue;
-            }
-
-            return current;
-        }
-
-        return child;
-    }
-
     searchInput?.addEventListener('keydown', event => {
         if (event.key === "ArrowUp" || event.key === "ArrowDown") {
             event.preventDefault();
@@ -357,12 +366,12 @@ function form_select(container) {
             let target;
 
             if (event.key === "ArrowUp") {
-                target = find(selected, (child, parent) =>
+                target = form_selectFind(selected, (child, parent) =>
                     child.previousElementSibling ?? parent.children[parent.children.length - 1])
             }
 
             if (event.key === "ArrowDown") {
-                target = find(selected, (child, parent) =>
+                target = form_selectFind(selected, (child, parent) =>
                     child.nextElementSibling ?? parent.children[0]);
             }
 

@@ -1,4 +1,9 @@
 /**
+ * @template T
+ * @typedef {T | null | undefined} Opt
+ */
+
+/**
  * @param {boolean} isOnline
  * @private
  */
