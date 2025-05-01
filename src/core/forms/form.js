@@ -15,7 +15,7 @@ async function form_showError(form, error) {
     const property = error['property'];
     const input = $(`[name=${property}]`, form);
     if (!is(property) || !is(input)) {
-        await window_alert(message);
+        await window_alert(message, WINDOW_ALERT_SETTINGS);
         return;
     }
 
@@ -71,7 +71,7 @@ async function form_submit(form) {
         }
 
         if (is(result['message'])) {
-            await window_alert(result['message']);
+            await window_alert(result['message'], WINDOW_ALERT_SETTINGS);
         }
 
         return false;

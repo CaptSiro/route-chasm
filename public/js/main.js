@@ -1,3 +1,19 @@
+/** @type {WindowSettings} */
+const WINDOW_ALERT_SETTINGS = {
+    isMinimizable: true,
+    isDraggable: true,
+    isResizable: false,
+}
+
+/** @type {WindowSettings} */
+const WINDOW_CONFIRM_SETTINGS = {
+    isMinimizable: true,
+    isDraggable: true,
+    isResizable: false
+}
+
+
+
 window.addEventListener('load', () => {
     const setInternetStatus = isOnline => {
         document.body.classList.toggle('online', isOnline);

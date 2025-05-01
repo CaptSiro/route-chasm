@@ -230,7 +230,7 @@ function window_init(element) {
         return;
     }
 
-    if (!element.parentElement.classList.contains("window-overlay-active")) {
+    if (!element.parentElement?.classList.contains("window-overlay-active")) {
         windowOverlay.appendChild(element);
         element.classList.add('hide');
     }
@@ -241,6 +241,27 @@ function window_init(element) {
 
     $('.close', element)?.addEventListener('click', () => {
         window_close(element);
+    });
+
+    element.addEventListener("pointerdown", () => {
+        if (!is(element.parentElement)) {
+            return;
+        }
+
+        const windows = Array.from(element.parentElement.children);
+        if (element.style.zIndex === String(windows.length + 1)) {
+            return;
+        }
+
+        windows.sort((a, b) => {
+            return Number(a.style.zIndex) - Number(b.style.zIndex);
+        });
+
+        for (let i = 0; i < windows.length; i++) {
+            windows[i].style.zIndex = String(i + 1);
+        }
+
+        element.style.zIndex = String(windows.length + 1);
     });
 
     const minimize = $('.minimize', element);
@@ -320,7 +341,7 @@ function window_create(title, content, settings = {}) {
  * @param {WindowSettings} settings
  * @return {Promise<void>}
  */
-function window_alert(message, settings) {
+function window_alert(message, settings = {}) {
     return new Promise(resolve => {
         const w = window_create(
             "Alert",
@@ -347,7 +368,7 @@ function window_alert(message, settings) {
  * @param {WindowSettings} settings
  * @return {Promise<boolean>}
  */
-async function window_confirm(message, settings) {
+async function window_confirm(message, settings = {}) {
     return new Promise(resolve => {
         let result = false;
 

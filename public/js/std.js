@@ -187,8 +187,20 @@ function std_scrollIntoView(child, parent) {
     const parentA = scroll;
     const parentB = parentA + parentRect.height;
 
-    const isParentAbsolute = getComputedStyle(parent).position === 'absolute';
-    const childA = child.offsetTop - (isParentAbsolute ? 0 : parentRect.top);
+    let current = child.parentElement;
+    let parentTop = 0;
+
+    while (true) {
+        parentTop += current.offsetTop;
+
+        if (!is(current) || current !== parent) {
+            break;
+        }
+
+        current = current.parentElement;
+    }
+
+    const childA = child.offsetTop - parentTop;
     const childB = childA + childRect.height;
 
     if (std_rangeInRange(parentA, parentB, childA, childB)) {

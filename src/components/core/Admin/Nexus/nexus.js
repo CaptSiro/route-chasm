@@ -9,7 +9,7 @@ function nexus_deleteButton(button) {
     }
 
     button.addEventListener('click', async () => {
-        if (!(await window_confirm("Do you want to delete the record?"))) {
+        if (!(await window_confirm("Do you want to delete the record?", WINDOW_CONFIRM_SETTINGS))) {
             return;
         }
 
@@ -22,7 +22,10 @@ function nexus_deleteButton(button) {
 
         if (response.status >= 400) {
             const result = response.json();
-            await window_alert(result['message'] ?? 'Error has occurred while processing your request.')
+            await window_alert(
+                result['message'] ?? 'Error has occurred while processing your request.',
+                WINDOW_ALERT_SETTINGS
+            );
             return;
         }
 
