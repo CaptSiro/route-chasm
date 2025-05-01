@@ -245,10 +245,11 @@ function Tag(label, isRemovable = true, onRemove = () => true) {
 
 /**
  * @param {string} nf
+ * @param {string | undefined} fallback
  * @return {HTMLElement}
  */
-function Icon(nf) {
-    return jsml.i('nf ' + nf);
+function Icon(nf, fallback = undefined) {
+    return jsml.i('nf ' + nf, fallback);
 }
 
 

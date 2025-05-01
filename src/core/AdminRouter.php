@@ -31,7 +31,7 @@ class AdminRouter extends Router {
         parent::__construct();
 
         $this->use('/',
-            Procedure::middleware(function (Request $request, Response $response) {
+            Procedure::middleware(function (Request $request) {
                 $request->set(self::KEY_IS_ADMIN, true);
                 AdminMenu::load(App::getInstance()->getSource('admin-menu.php'));
             }),

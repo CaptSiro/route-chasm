@@ -4,7 +4,6 @@ namespace models\core\User;
 
 use components\core\Admin\Nexus\NexusProxy;
 use components\core\Html\Html;
-use models\core\Domain\Domain;
 
 class UserProxy extends NexusProxy {
     public const COLUMN_USER = 'tag';

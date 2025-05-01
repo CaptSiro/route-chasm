@@ -4,12 +4,13 @@ namespace core\forms\controls\Input;
 
 use core\forms\controls\Control;
 use core\forms\controls\FormControl;
+use core\forms\controls\FormControlInfo;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
 use core\view\Renderer;
 
 class Input implements Control, Attribute {
-    use Renderer, FormControl, HtmlAttribute;
+    use Renderer, FormControl, FormControlInfo, HtmlAttribute;
 
 
 
@@ -50,17 +51,5 @@ class Input implements Control, Attribute {
     public function readonly(): static {
         $this->addAttribute('readonly');
         return $this;
-    }
-
-    public function setValue(mixed $value): void {
-        $this->value = $value;
-    }
-
-    public function setLabel(string $label): void {
-        $this->label = $label;
-    }
-
-    public function setName(string $name): void {
-        $this->name = $name;
     }
 }

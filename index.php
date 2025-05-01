@@ -64,10 +64,10 @@ $router->use(
 
 $user = new Accordion(
     'User info',
-    (new Row(.50))
+    (new Row(.75))
         ->add(new TextField('Name', 'Name', 'Tonda'))
         ->add(new TextField('Surname', 'Surname', 'Maly'))
-        ->add(new PasswordField('Password', 'Password', 'foo123'))
+        ->add(new PasswordField('Password', 'Password', 'foo123', addVisibilityControl: true))
 );
 
 $c0 = (new Column())

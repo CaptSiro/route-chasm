@@ -4,10 +4,11 @@ namespace core\forms\controls\Select;
 
 use core\forms\controls\Control;
 use core\forms\controls\FormControl;
+use core\forms\controls\FormControlInfo;
 use core\view\Renderer;
 
 class Select implements Control {
-    use Renderer, FormControl;
+    use Renderer, FormControl, FormControlInfo;
 
 
 
@@ -28,17 +29,5 @@ class Select implements Control {
 
     public function getFieldName(): ?string {
         return $this->name;
-    }
-
-    public function setName(string $name): void {
-        $this->name = $name;
-    }
-
-    public function setValue(mixed $value): void {
-        $this->values = $value;
-    }
-
-    public function setLabel(string $label): void {
-        $this->label = $label;
     }
 }

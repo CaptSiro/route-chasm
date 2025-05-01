@@ -43,6 +43,7 @@ class Trail {
         return $this->endpoints;
     }
 
+    /** @noinspection PhpParamsInspection */
     public function __toString(): string {
         return 'Endpoints: '
             . json_encode(array_map(fn($x) => get_class($x), $this->endpoints))

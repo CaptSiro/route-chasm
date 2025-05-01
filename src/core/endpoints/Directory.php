@@ -130,6 +130,7 @@ class Directory implements Endpoint {
                 }
 
                 if (is_dir($path)) {
+                    /** @noinspection PhpConditionAlreadyCheckedInspection */
                     if (!is_null($this->onDirectory)) {
                         ($this->onDirectory)($this, $path);
                     }
