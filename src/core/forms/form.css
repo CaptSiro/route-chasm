@@ -318,6 +318,7 @@ input.form-invalid {
 }
 
 .form-select .head {
+    margin-top: 4px;
 }
 
 .form-select .head .stack {

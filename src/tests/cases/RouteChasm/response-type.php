@@ -28,8 +28,8 @@ Sptf::test("should detect response type from request", function () {
             q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 't'),
             q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'text'),
             h(Request::test(), HttpHeader::X_RESPONSE_TYPE, ''),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 't'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text/plain'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'undefined'),
         ],
         Format::IDENT_HTML => [
             Request::test(),
@@ -37,16 +37,14 @@ Sptf::test("should detect response type from request", function () {
             q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'html'),
             q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'h'),
             q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'html'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'h'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'html'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text/html'),
         ],
         Format::IDENT_JSON => [
             q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'j'),
             q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'json'),
             q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'j'),
             q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'json'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'j'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'json'),
+            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'application/json'),
         ]
     ];
 

@@ -44,6 +44,10 @@ body.online i.nf > * {
     display: none;
 }
 
+i.nf {
+    font-style: normal;
+}
+
 a {
     color: var(--text-0);
 }

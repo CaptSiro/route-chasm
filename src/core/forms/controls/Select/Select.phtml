@@ -26,12 +26,12 @@ use core\forms\controls\Select\Select;
         <div class="stack">
             <label for="<?= $this->getId() ?>_search" class="selection form-input-icon">
                 <span class="option"><?= $this->values[$this->selected] ?? '' ?></span>
-                <?= Icon::nf('nf-fa-angle_down') ?>
+                <?= Icon::nf('nf-fa-angle_down', 'v') ?>
             </label>
 
             <label class="search form-input-icon opacity-0">
                 <input type="text" class="select-search" id="<?= $this->getId() ?>_search">
-                <?= Icon::nf('nf-fa-angle_up') ?>
+                <?= Icon::nf('nf-fa-angle_up', '^') ?>
             </label>
         </div>
 
