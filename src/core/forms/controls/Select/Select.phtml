@@ -35,14 +35,16 @@ use core\forms\controls\Select\Select;
             </label>
         </div>
 
-        <div class="dropdown hide" data-max-height="200px">
-            <div class="dropdown-items">
-                <?php foreach ($this->values as $value => $label): ?>
-                    <div
-                        class="dropdown-item <?= $value === $this->selected ? 'selected' : '' ?>"
-                        data-value="<?= Html::escapeAttribute($value) ?>"
-                    ><?= Html::escape($label) ?></div>
-                <?php endforeach; ?>
+        <div class="options">
+            <div class="dropdown hide" data-max-height="200px">
+                <div class="dropdown-items">
+                    <?php foreach ($this->values as $value => $label): ?>
+                        <div
+                            class="dropdown-item <?= $value === $this->selected ? 'selected' : '' ?>"
+                            data-value="<?= Html::escapeAttribute($value) ?>"
+                        ><?= Html::escape($label) ?></div>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </div>

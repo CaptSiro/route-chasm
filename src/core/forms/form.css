@@ -24,7 +24,6 @@
 
 .form {
     display: flex;
-    overflow: auto;
     flex-direction: column;
     padding: 32px;
     background-color: var(--form-container-0);
@@ -331,7 +330,14 @@ input.form-invalid {
     grid-column-start: 1;
 }
 
+.form-select .options {
+    position: relative;
+}
+
 .form-select .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
     width: 100%;
     overflow: auto;
     border-radius: var(--form-border-radius-smaller);
