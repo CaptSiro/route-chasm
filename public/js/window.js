@@ -1,5 +1,7 @@
 const EVENT_WINDOW_OPENED = 'windowOpened';
 const EVENT_WINDOW_CLOSED = 'windowClosed';
+const EVENT_WINDOW_MINIMIZED = 'windowMinimized';
+const EVENT_WINDOW_MAXIMIZED = 'windowMaximized';
 
 
 
@@ -39,19 +41,42 @@ function window_open(element) {
         return;
     }
 
+    window_maximize(element);
+    element.style.left = "50%";
+    element.style.top = "50%";
+
     element.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_OPENED));
-    windowOverlayActive.appendChild(element);
+    windowOverlayActive?.appendChild(element);
+}
 
-    // window.onbeforeunload = () => true;
+/**
+ * @param {HTMLElement} element
+ * @return {boolean}
+ */
+function window_isOpened(element) {
+    return !element.classList.contains("hide");
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {number} x
+ * @param {number} y
+ * @private
+ */
+function window_move(element, x, y) {
+    element.style.left = String(x / window.innerWidth * 100) + "%";
+    element.style.top = String(y / window.innerHeight * 100) + "%";
 }
 
 
 
 /**
  * @param {HTMLElement} element
+ * @param {Opt<HTMLElement>} maximize
+ * @param {Opt<HTMLElement>} minimize
  */
-function window_minimize(element) {
+function window_minimize(element, maximize = undefined, minimize = undefined) {
     if (!isWindowModuleLoaded) {
         queue.push({
             fn: window_minimize,
@@ -60,7 +85,66 @@ function window_minimize(element) {
         return;
     }
 
-    console.warn('[TODO]: window_minimize');
+    const content = $(".content", element);
+    if (!is(content)) {
+        return;
+    }
+
+    const rect = element.getBoundingClientRect();
+    content.classList.add('hide');
+    element.style.height = "unset";
+    const after = element.getBoundingClientRect();
+
+    window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
+
+    minimize ??= $('.minimize', element);
+    maximize ??= $('.maximize', element);
+
+    if (!is(minimize) || !is(maximize)) {
+        return;
+    }
+
+    minimize.classList.add('hide');
+    maximize.classList.remove('hide');
+    element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MINIMIZED));
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {Opt<HTMLElement>} maximize
+ * @param {Opt<HTMLElement>} minimize
+ */
+function window_maximize(element, maximize = undefined, minimize = undefined) {
+    if (!isWindowModuleLoaded) {
+        queue.push({
+            fn: window_minimize,
+            arg: element
+        });
+        return;
+    }
+
+    const content = $(".content", element);
+    if (!is(content)) {
+        return;
+    }
+
+    const rect = element.getBoundingClientRect();
+    content.classList.remove('hide');
+    element.style.height = element.dataset.height ?? "unset";
+    const after = element.getBoundingClientRect();
+
+    window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
+
+    minimize ??= $('.minimize', element);
+    maximize ??= $('.maximize', element);
+
+    if (!is(minimize) || !is(maximize)) {
+        return;
+    }
+
+    maximize.classList.add('hide');
+    minimize.classList.remove('hide');
+    element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MAXIMIZED));
 }
 
 
@@ -84,26 +168,55 @@ function window_close(element) {
     window.onbeforeunload = null;
 }
 
-function window_requestAction(id, action) {
-    const w = $("#" + id);
-    if (w === null) {
+
+
+/**
+ * @param {HTMLElement} element
+ */
+function window_addDraggable(element) {
+    element.classList.add('draggable');
+
+    const head = $(".head", element);
+    if (!is(head)) {
         return;
     }
 
-    switch (action) {
-        case 'close': {
-            window_close(w);
-            break;
+    let isDragging = false;
+    let start;
+    let offsetX;
+    let offsetY;
+
+    head.addEventListener('pointerdown', event => {
+        isDragging = true;
+
+        start = element.getBoundingClientRect();
+        offsetX = event.clientX - start.x;
+        offsetY = event.clientY - start.y;
+
+        head.setPointerCapture(event.pointerId);
+    });
+
+    head.addEventListener('pointerup', event => {
+        isDragging = false;
+
+        head.releasePointerCapture(event.pointerId);
+    });
+
+    head.addEventListener('pointermove', event => {
+        if (!isDragging || !is(offsetX) || !is(offsetY) || !is(start)) {
+            return;
         }
 
-        case 'open': {
-            window_open(w);
-            break;
-        }
-    }
+        const x = event.clientX - offsetX + start.width / 2;
+        const y = event.clientY - offsetY + start.height / 2;
+
+        window_move(element, x, y);
+    });
+
+    $(".controls", head)?.addEventListener('pointerdown', event => {
+        event.stopImmediatePropagation();
+    });
 }
-
-
 
 /**
  * @param {HTMLElement} element
@@ -123,80 +236,64 @@ function window_init(element) {
     }
 
     if (Boolean(element.dataset.windowDraggable)) {
-        element.classList.add('draggable');
-
-        const head = $(".head", element);
-        let isDragging = false;
-        let start;
-        let offsetX;
-        let offsetY;
-
-        head.addEventListener('pointerdown', event => {
-            isDragging = true;
-
-            start = element.getBoundingClientRect();
-            offsetX = event.clientX - start.x;
-            offsetY = event.clientY - start.y;
-
-            head.setPointerCapture(event.pointerId);
-        });
-
-        head.addEventListener('pointerup', event => {
-            isDragging = false;
-
-            head.releasePointerCapture(event.pointerId);
-        });
-
-        head.addEventListener('pointermove', event => {
-            if (!isDragging) {
-                return;
-            }
-
-            const x = event.clientX - offsetX + start.width / 2;
-            const y = event.clientY - offsetY + start.height / 2;
-
-            element.style.left = String(x / window.innerWidth * 100) + "%";
-            element.style.top = String(y / window.innerHeight * 100) + "%";
-        });
-
-        $(".controls", head)?.addEventListener('pointerdown', event => {
-            event.stopImmediatePropagation();
-        });
+        window_addDraggable(element);
     }
 
     $('.close', element)?.addEventListener('click', () => {
         window_close(element);
     });
 
+    const minimize = $('.minimize', element);
+    const maximize = $('.maximize', element);
 
-    $('.minimize', element)?.addEventListener('click', () => {
-        window_minimize(element);
+    if (!is(minimize) || !is(maximize)) {
+        return;
+    }
+
+    minimize.classList.remove('hide');
+    maximize.classList.add('hide');
+
+    minimize.addEventListener('click', () => {
+        window_minimize(element, maximize, minimize);
+    });
+
+    maximize.addEventListener('click', () => {
+        window_maximize(element, maximize, minimize);
     });
 }
 
 
 
 /**
+ * @typedef {{
+     isDraggable?: boolean,
+     isMinimizable?: boolean,
+     isResizable?: boolean,
+     width?: string,
+     height?: string,
+ }} WindowSettings
+ */
+
+/**
  * @param {string} title
  * @param content
- * @param {boolean} isDraggable
- * @param {boolean} isMinimizable
+ * @param {WindowSettings} settings
  * @return {HTMLDivElement}
  */
-function window_create(title, content, isDraggable = false, isMinimizable = false) {
+function window_create(title, content, settings = {}) {
     const controls = [
         jsml.button("close", Icon("nf-fa-close"))
     ];
 
-    if (isMinimizable) {
+    if (settings.isMinimizable === true) {
         controls.unshift(
-            jsml.button("minimize", Icon("nf-fa-window_minimize"))
+            jsml.button("minimize", Icon("nf-fa-window_minimize")),
+            jsml.button("maximize", Icon("nf-fa-window_maximize")),
         );
     }
 
     const w = jsml.div({
         class: "window hide",
-        "x-init": "window_init"
     }, [
         jsml.div("head", [
             jsml.span(_, title),
@@ -205,10 +302,14 @@ function window_create(title, content, isDraggable = false, isMinimizable = fals
         jsml.div("content", content)
     ]);
 
-    if (isDraggable) {
+    w.dataset.width = w.style.width = settings.width ?? "300px";
+    w.dataset.height = w.style.height = settings.height ?? "unset";
+
+    if (settings.isDraggable === true) {
         w.dataset.windowDraggable = "true";
     }
 
+    window_init(w);
     return w;
 }
 
@@ -216,9 +317,10 @@ function window_create(title, content, isDraggable = false, isMinimizable = fals
 
 /**
  * @param {string} message
+ * @param {WindowSettings} settings
  * @return {Promise<void>}
  */
-function window_alert(message) {
+function window_alert(message, settings) {
     return new Promise(resolve => {
         const w = window_create(
             "Alert",
@@ -229,10 +331,11 @@ function window_alert(message) {
                         onClick: () => window_close(w)
                     }, 'Ok')
                 )
-            ])
+            ]),
+            settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve());
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(undefined));
         window_open(w);
     });
 }
@@ -241,9 +344,10 @@ function window_alert(message) {
 
 /**
  * @param {string} message
+ * @param {WindowSettings} settings
  * @return {Promise<boolean>}
  */
-async function window_confirm(message) {
+async function window_confirm(message, settings) {
     return new Promise(resolve => {
         let result = false;
 
@@ -265,7 +369,8 @@ async function window_confirm(message) {
                         }
                     }, 'Cancel'),
                 ])
-            ])
+            ]),
+            settings
         );
 
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));

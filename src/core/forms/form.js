@@ -8,13 +8,13 @@
  */
 async function form_showError(form, error) {
     const message = error['message'];
-    if (message === undefined) {
+    if (!is(message)) {
         return;
     }
 
     const property = error['property'];
     const input = $(`[name=${property}]`, form);
-    if (property === undefined || input === null) {
+    if (!is(property) || !is(input)) {
         await window_alert(message);
         return;
     }
@@ -29,8 +29,8 @@ async function form_showError(form, error) {
  */
 async function form_submit(form) {
     /** @type {(HTMLElement) => Payload} */
-    const transformer = call_getFunction(form.dataset.transformer ?? '');
-    if (transformer === undefined) {
+    const transformer = std_getFunction(form.dataset.transformer ?? '');
+    if (!is(transformer)) {
         throw new Error("Mandatory form attribute 'data-transformer' was not set. " + form);
     }
 
@@ -57,7 +57,7 @@ async function form_submit(form) {
     if (response.status >= 400) {
         /** @type {any} */
         const result = await response.json();
-        if (result['property'] !== undefined) {
+        if (is(result)) {
             await form_showError(form, result);
             return false;
         }
@@ -70,7 +70,7 @@ async function form_submit(form) {
             return false;
         }
 
-        if (result['message'] !== undefined) {
+        if (is(result['message'])) {
             await window_alert(result['message']);
         }
 
@@ -209,7 +209,7 @@ function form_file(container) {
  */
 function form_password(container) {
     const control = $('.password-visibility-control', container);
-    if (control === null) {
+    if (!is(control)) {
         return;
     }
 
@@ -335,7 +335,7 @@ function form_select(container) {
         }
     });
 
-    const searchFunction = call_getFunction(container.dataset.search) ?? form_selectSearch;
+    const searchFunction = std_getFunction(container.dataset.search) ?? form_selectSearch;
     searchInput?.addEventListener('input', () => {
         searchFunction(container, searchInput.value);
     });

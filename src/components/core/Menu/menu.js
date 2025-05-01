@@ -2,7 +2,7 @@
  * @param {HTMLElement} element
  */
 function menu_init(element) {
-    if (element.parentElement.closest('.menu') !== null) {
+    if (is(element.parentElement.closest('.menu'))) {
         return;
     }
 
@@ -24,7 +24,7 @@ function menu_init(element) {
 
     for (const item of $$(".menu-item", element)) {
         const a = $('a', $('.head', item));
-        if (a === null) {
+        if (!is(a)) {
             continue;
         }
 

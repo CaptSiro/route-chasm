@@ -3,7 +3,7 @@
  */
 function nexus_deleteButton(button) {
     const url = button.dataset.url;
-    if (url === undefined) {
+    if (!is(url)) {
         button.remove()
         return;
     }

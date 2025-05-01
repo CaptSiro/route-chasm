@@ -214,24 +214,6 @@ function jsmlInit() {
 const jsml = jsmlInit();
 const _ = undefined;
 
-/**
- * @param {string} selector
- * @param {Element | Document} element
- * @returns {HTMLAnchorElement | HTMLElement | HTMLAreaElement | HTMLAudioElement | HTMLBaseElement | HTMLQuoteElement | HTMLBodyElement | HTMLBRElement | HTMLButtonElement | HTMLCanvasElement | HTMLTableCaptionElement | HTMLTableColElement | HTMLDataElement | HTMLDataListElement | HTMLModElement | HTMLDetailsElement | HTMLDialogElement | HTMLDivElement | HTMLDListElement | HTMLEmbedElement | HTMLFieldSetElement | HTMLFormElement | HTMLHeadingElement | HTMLHeadElement | HTMLHRElement | HTMLHtmlElement | HTMLIFrameElement | HTMLImageElement | HTMLInputElement | HTMLLabelElement | HTMLLegendElement | HTMLLIElement | HTMLLinkElement | HTMLMapElement | HTMLMenuElement | HTMLMetaElement | HTMLMeterElement | HTMLObjectElement | HTMLOListElement | HTMLOptGroupElement | HTMLOptionElement | HTMLOutputElement | HTMLParagraphElement | HTMLPictureElement | HTMLPreElement | HTMLProgressElement | HTMLScriptElement | HTMLSelectElement | HTMLSlotElement | HTMLSourceElement | HTMLSpanElement | HTMLStyleElement | HTMLTableElement | HTMLTableSectionElement | HTMLTableCellElement | HTMLTemplateElement | HTMLTextAreaElement | HTMLTimeElement | HTMLTitleElement | HTMLTableRowElement | HTMLTrackElement | HTMLUListElement | HTMLVideoElement}
- */
-function $(selector, element = document) {
-    return element.querySelector(selector);
-}
-
-/**
- * @param {string} selector
- * @param {Element | Document} element
- * @returns {NodeListOf<HTMLElementTagNameMap[keyof HTMLElementTagNameMap]> |  NodeListOf<Element>}
- */
-function $$(selector, element = document) {
-    return element.querySelectorAll(selector);
-}
-
 
 
 /**
@@ -267,63 +249,6 @@ function Tag(label, isRemovable = true, onRemove = () => true) {
  */
 function Icon(nf) {
     return jsml.i('nf ' + nf);
-}
-
-
-
-/**
- * @template T
- * @param {T|undefined|null} variable
- * @return {boolean}
- */
-function is(variable) {
-    return variable !== undefined && variable !== null;
-}
-
-
-
-/**
- * Calls function with provided element. This function expects `fn` to be one valid fully qualified function name
- *
- * @param {string | null | undefined} fn
- * @returns {Function}
- */
-function call_getFunction(fn) {
-    if (!is(fn)) {
-        return undefined;
-    }
-
-    /** @type {any} */
-    let context = window;
-
-    for (const part of fn.split('.')) {
-        context = context[part.trim()];
-
-        if (context === undefined) {
-            return undefined;
-        }
-    }
-
-    return context;
-}
-
-/**
- * Parses function call and calls produced function on given element
- *
- * Example: `functionLiteral = 'console.log,custom'` will print `element` to console and call `custom(element)`
- *
- * @param {HTMLElement} element
- * @param {string} functionLiteral
- */
-function call(element, functionLiteral) {
-    for (const literal of functionLiteral.split(',')) {
-        const fn = call_getFunction(literal.trim());
-        if (!is(fn)) {
-            continue;
-        }
-
-        fn(element);
-    }
 }
 
 
@@ -468,7 +393,7 @@ window.addEventListener('load', () => {
 
         const functionName = element.getAttribute(X_INIT);
         if (functionName !== null) {
-            call(element, functionName);
+            std_call(element, functionName);
         }
 
         const ajaxInfo = getAjaxInfo(element);

@@ -1,4 +1,4 @@
-const LS_TERMINAL_OPENED = 'ls_to';
+const KEY_TERMINAL_OPENED = 'ls_to';
 
 window.addEventListener('load', () => {
     const terminal = document.querySelector('.terminal');
@@ -6,7 +6,7 @@ window.addEventListener('load', () => {
         return;
     }
 
-    const show = Boolean(localStorage.getItem(LS_TERMINAL_OPENED) ?? true);
+    const show = Boolean(localStorage.getItem(KEY_TERMINAL_OPENED) ?? true);
     if (!show) {
         terminal.classList.add('hide');
     }
