@@ -229,7 +229,7 @@ function std_dom_scrollIntoView(child, parent) {
 /**
  * @param {HTMLElement} child
  * @param {(child: HTMLElement, parent: HTMLElement) => Opt<HTMLElement>} next
- * @param {(current: HTMLElement) => boolean} skipPredicate
+ * @param {SkipPredicate<HTMLElement>} skipPredicate
  * @returns {Opt<HTMLElement>}
  */
 function std_dom_findChild(child, next, skipPredicate) {

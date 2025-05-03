@@ -273,6 +273,29 @@ function form_select_getOptions(select) {
 }
 
 /**
+ * @param {HTMLElement} container
+ * @param {string} value
+ */
+function form_select_selectOption(container, value) {
+    const option = $(`select option[value=${value}]`, container);
+    if (!is(option)) {
+        return;
+    }
+
+    option.parentElement.value = option.value;
+    const label = $('.option', container);
+    if (is(label)) {
+        label.textContent = option.textContent;
+    }
+
+    $('.select-search', container)?.blur();
+    $('.dropdown-item.cursor', container)?.classList.remove('cursor');
+
+    const dropdownItem = $(`.dropdown-item[data-value=${value}]`, container);
+    dropdownItem?.classList.add('cursor');
+}
+
+/**
  * @param {HTMLElement} select
  * @param {string} query
  */
@@ -283,44 +306,26 @@ function form_select_search(select, query) {
     for (const option of $$(".dropdown-item", select)) {
         const valid = option.textContent.toLowerCase().includes(q);
         option.classList.toggle('hide', !valid);
-        option.classList.remove('selected');
+        option.classList.remove('cursor');
 
         if (valid && !is(first)) {
             first = option;
         }
     }
 
-    first?.classList.add('selected');
+    first?.classList.add('cursor');
 }
 
-/**
- * @param {HTMLElement} current
- * @return {boolean}
- */
-function form_select_skipPredicate(current) {
-    return current.classList.contains('hide');
-}
-
-/**
- * @param {HTMLElement} container
- */
-function form_select(container) {
-    const select = $('select', container);
-    const options = form_select_getOptions(select);
-    const searchInput = $('.select-search', container);
-    const search = $('.search', container);
-    const selection = $('.selection', container);
-    const selectionLabel = $('.option', selection);
-    const dropdown = $('.dropdown', container);
-    const dropdownItems = $('.dropdown-items', container);
-
+function form_select_searchInputInit(
+    container, searchInput, search, selection, dropdown, dropdownItems, defaultSearchFunction
+) {
     searchInput?.addEventListener('focus', () => {
         search.classList.remove('opacity-0');
         selection.classList.add('opacity-0');
         dropdown_expand(container, dropdown);
 
         setTimeout(() => {
-            const selected = $('.selected', dropdownItems);
+            const selected = $('.cursor', dropdownItems);
             if (!is(selected)) {
                 return;
             }
@@ -340,57 +345,99 @@ function form_select(container) {
         }
     });
 
-    const searchFunction = std_getFunction(container.dataset.search) ?? form_select_search;
+    const searchFunction = std_getFunction(container.dataset.search) ?? defaultSearchFunction;
     searchInput?.addEventListener('input', () => {
         searchFunction(container, searchInput.value);
     });
+}
 
-    const selectOption = value => {
-        const option = options.get(value);
-        searchInput.blur();
-
-        if (!is(option)) {
+/**
+ * @param {HTMLElement} dropdown
+ * @param {HTMLElement} dropdownItems
+ * @param {"up" | "down"} direction
+ * @param {SkipPredicate<HTMLElement>} skipPredicate
+ */
+function form_select_moveCursor(dropdown, dropdownItems, direction, skipPredicate) {
+    const cursor = $('.cursor', dropdownItems);
+    if (!is(cursor)) {
+        if (dropdownItems.children.length === 0) {
             return;
         }
 
-        select.value = option.value;
-        selectionLabel.textContent = option.textContent;
-    };
+        const target = skipPredicate(dropdownItems.children[0])
+            ? std_dom_findChild(dropdownItems.children[0], std_dom_nextChild, skipPredicate)
+            : dropdownItems.children[0];
+
+        target?.classList.add('cursor');
+        return;
+    }
+
+    cursor.classList.remove('cursor');
+    let target;
+
+    if (direction === "up") {
+        target = std_dom_findChild(cursor, std_dom_previousChild, skipPredicate);
+    } else if (direction === "down") {
+        target = std_dom_findChild(cursor, std_dom_nextChild, skipPredicate);
+    }
+
+    if (!is(target)) {
+        return;
+    }
+
+    target.classList.add('cursor');
+    std_dom_scrollIntoView(target, dropdown);
+}
+
+/**
+ * @param {HTMLElement} current
+ * @return {boolean}
+ */
+function form_select_skipPredicate(current) {
+    return current.classList.contains('hide');
+}
+
+/**
+ * @param {HTMLElement} container
+ */
+function form_select_init(container) {
+    const searchInput = $('.select-search', container);
+    const search = $('.search', container);
+    const selection = $('.selection', container);
+    const dropdown = $('.dropdown', container);
+    const dropdownItems = $('.dropdown-items', container);
+
+    form_select_searchInputInit(
+        container, searchInput, search, selection, dropdown, dropdownItems, form_select_search
+    );
 
     searchInput?.addEventListener('keydown', event => {
+        if (event.key === "Escape") {
+            searchInput.blur();
+            return;
+        }
+
         if (event.key === "ArrowUp" || event.key === "ArrowDown") {
             event.preventDefault();
 
-            const selected = $('.selected', dropdownItems);
-            if (!is(selected)) {
-                dropdownItems.children[0]?.classList.add('selected');
-                return;
-            }
-
-            selected.classList.remove('selected');
-            let target;
-
             if (event.key === "ArrowUp") {
-                target = std_dom_findChild(selected, std_dom_previousChild, form_select_skipPredicate);
+                form_select_moveCursor(dropdown, dropdownItems, "up", form_select_skipPredicate);
             }
 
             if (event.key === "ArrowDown") {
-                target = std_dom_findChild(selected, std_dom_nextChild, form_select_skipPredicate);
+                form_select_moveCursor(dropdown, dropdownItems, "down", form_select_skipPredicate);
             }
-
-            if (!is(target)) {
-                return;
-            }
-
-            target.classList.add('selected');
-            std_dom_scrollIntoView(target, dropdown);
         }
 
         if (event.key === "Enter") {
             event.preventDefault();
 
-            const selected = $('.selected', dropdownItems);
-            selectOption(selected.dataset.value);
+            const cursor = $('.cursor', dropdownItems);
+            if (!is(cursor) || form_select_skipPredicate(cursor)) {
+                return;
+            }
+
+            form_select_selectOption(container, cursor.dataset.value);
         }
     });
 
@@ -405,9 +452,7 @@ function form_select(container) {
             return;
         }
 
-        $('.selected', dropdownItems)?.classList.remove('selected');
-        item.classList.add('selected');
-        selectOption(item.dataset.value);
+        form_select_selectOption(container, item.dataset.value)
     });
 
     dropdown_shrink(container, dropdown);
@@ -476,102 +521,45 @@ function form_multiSelect_deselelectOption(container, value) {
 }
 
 /**
- * @param {HTMLElement} select
- * @param {string} query
- */
-function form_multiSelect_search(select, query) {
-    const q = query.toLowerCase();
-    let first = undefined;
-
-    for (const option of $$(".dropdown-item", select)) {
-        const valid = option.textContent.toLowerCase().includes(q);
-        option.classList.toggle('hide', !valid);
-        option.classList.remove('cursor');
-
-        if (valid && !is(first)) {
-            first = option;
-        }
-    }
-
-    first?.classList.add('cursor');
-}
-
-/**
  * @param {HTMLElement} container
  */
 function form_multiSelect_init(container) {
-    const select = $('select', container);
-    const options = form_select_getOptions(select);
     const searchInput = $('.select-search', container);
     const search = $('.search', container);
     const selection = $('.selection', container);
     const dropdown = $('.dropdown', container);
     const dropdownItems = $('.dropdown-items', container);
 
-    searchInput?.addEventListener('focus', () => {
-        search.classList.remove('opacity-0');
-        selection.classList.add('opacity-0');
-        dropdown_expand(container, dropdown);
-
-        setTimeout(() => {
-            const selected = $('.selected', dropdownItems);
-            if (!is(selected)) {
-                return;
-            }
-
-            std_dom_scrollIntoView(selected, dropdown);
-        }, DROPDOWN_ANIMATION_DURATION);
-    });
-
-    searchInput?.addEventListener('blur', () => {
-        search.classList.add('opacity-0');
-        selection.classList.remove('opacity-0');
-        dropdown_shrink(container, dropdown);
-        searchInput.value = '';
-
-        for (const option of $$(".dropdown-item", dropdownItems)) {
-            option.classList.remove('hide');
-        }
-    });
-
-    const searchFunction = std_getFunction(container.dataset.search) ?? form_multiSelect_search;
-    searchInput?.addEventListener('input', () => {
-        searchFunction(container, searchInput.value);
-    });
+    form_select_searchInputInit(
+        container, searchInput, search, selection, dropdown, dropdownItems, form_select_search
+    );
 
     searchInput?.addEventListener('keydown', event => {
+        if (event.key === "Escape") {
+            searchInput.blur();
+            return;
+        }
+
         if (event.key === "ArrowUp" || event.key === "ArrowDown") {
             event.preventDefault();
 
-            const selected = $('.cursor', dropdownItems);
-            if (!is(selected)) {
-                dropdownItems.children[0]?.classList.add('cursor');
-                return;
-            }
-
-            selected.classList.remove('cursor');
-            let target;
-
             if (event.key === "ArrowUp") {
-                target = std_dom_findChild(selected, std_dom_previousChild, form_multiSelect_skipPredicate);
+                form_select_moveCursor(dropdown, dropdownItems, "up", form_multiSelect_skipPredicate);
             }
 
             if (event.key === "ArrowDown") {
-                target = std_dom_findChild(selected, std_dom_nextChild, form_multiSelect_skipPredicate);
+                form_select_moveCursor(dropdown, dropdownItems, "down", form_multiSelect_skipPredicate);
             }
-
-            if (!is(target)) {
-                return;
-            }
-
-            target.classList.add('cursor');
-            std_dom_scrollIntoView(target, dropdown);
         }
 
         if (event.key === "Enter") {
             event.preventDefault();
 
             const cursor = $('.cursor', dropdownItems);
+            if (!is(cursor) || form_multiSelect_skipPredicate(cursor)) {
+                return;
+            }
+
             form_multiSelect_selectOption(container, cursor.dataset.value);
             cursor.classList.remove('cursor');
 

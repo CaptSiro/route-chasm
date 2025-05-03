@@ -4,7 +4,7 @@ use components\core\Html\Html;
 use components\core\Icon;
 use core\forms\controls\Select\Select;
 
-?><div class="form-select" x-init="form_select">
+?><div class="form-select" x-init="form_select_init">
     <label for="<?= $this->getId() ?>_search"><?= $this->label ?></label>
 
     <label>
@@ -45,7 +45,7 @@ use core\forms\controls\Select\Select;
                 <div class="dropdown-items">
                     <?php foreach ($this->values as $value => $label): ?>
                         <div
-                            class="dropdown-item <?= $value === $this->selected ? 'selected' : '' ?>"
+                            class="dropdown-item <?= $value === $this->selected ? 'cursor' : '' ?>"
                             data-value="<?= Html::escapeAttribute($value) ?>"
                         ><?= Html::escape($label) ?></div>
                     <?php endforeach; ?>
