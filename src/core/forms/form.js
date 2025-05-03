@@ -89,27 +89,47 @@ async function form_submit(form) {
 
 
 /**
+ * @param {HTMLElement} control
+ */
+function form_extract(control) {
+    const extract = std_getFunction(control.dataset.extract);
+    if (is(extract)) {
+        return extract(control);
+    }
+
+    if ('value' in control) {
+        return control.value;
+    }
+
+    return null;
+}
+
+/**
  * @param {HTMLElement} form
  * @returns {Payload}
  */
 function form_formData(form) {
     const data = new FormData();
 
-    for (const input of form.querySelectorAll("[name]")) {
-        if (input.type === "file") {
-            for (const file of input.files) {
-                data.append(input.name, file);
+    for (const control of form.querySelectorAll("[name]")) {
+        if (Boolean(control.dataset.skipSubmit)) {
+            continue;
+        }
+
+        if (control.type === "file") {
+            for (const file of control.files) {
+                data.append(control.name, file);
             }
 
             continue;
         }
 
-        if (input.type === "checkbox") {
-            data.append(input.name, input.checked);
+        if (control.type === "checkbox") {
+            data.append(control.name, control.checked);
             continue;
         }
 
-        data.append(input.name, input.value);
+        data.append(control.name, form_extract(control));
     }
 
     return {
@@ -125,13 +145,17 @@ function form_formData(form) {
 function form_json(form) {
     const json = {};
 
-    for (const input of form.querySelectorAll("[name]")) {
-        if (input.type === "checkbox") {
-            json[input.name] = input.checked;
+    for (const control of form.querySelectorAll("[name]")) {
+        if (Boolean(control.dataset.skipSubmit)) {
             continue;
         }
 
-        json[input.name] = input.value;
+        if (control.type === "checkbox") {
+            json[control.name] = control.checked;
+            continue;
+        }
+
+        json[control.name] = form_extract(control);
     }
 
     return {
@@ -233,10 +257,26 @@ function form_password(container) {
 
 
 /**
+ * @param {HTMLSelectElement} select
+ * @returns {Map<string, HTMLOptionElement>}
+ */
+function form_select_getOptions(select) {
+    const options = new Map();
+
+    for (const option of select.children) {
+        if (option instanceof HTMLOptionElement) {
+            options.set(option.value, option);
+        }
+    }
+
+    return options;
+}
+
+/**
  * @param {HTMLElement} select
  * @param {string} query
  */
-function form_selectSearch(select, query) {
+function form_select_search(select, query) {
     const q = query.toLowerCase();
     let first = undefined;
 
@@ -254,36 +294,11 @@ function form_selectSearch(select, query) {
 }
 
 /**
- * @param {HTMLElement} child
- * @param {(child: HTMLElement, parent: HTMLElement) => Opt<HTMLElement>} next
- * @returns {Opt<HTMLElement>}
+ * @param {HTMLElement} current
+ * @return {boolean}
  */
-function form_selectFind(child, next) {
-    const parent = child.parentElement;
-    const len = parent.children.length;
-    if (len <= 0) {
-        return null;
-    }
-
-    if (len <= 1) {
-        return child;
-    }
-
-    let current = child;
-    for (let i = 0; i < len; i++) {
-        current = next(current, parent);
-        if (!is(current)) {
-            return null;
-        }
-
-        if (current.classList.contains('hide')) {
-            continue;
-        }
-
-        return current;
-    }
-
-    return null;
+function form_select_skipPredicate(current) {
+    return current.classList.contains('hide');
 }
 
 /**
@@ -291,17 +306,7 @@ function form_selectFind(child, next) {
  */
 function form_select(container) {
     const select = $('select', container);
-
-    /**
-     * @type {Map<string, HTMLOptionElement>}
-     */
-    const options = new Map();
-    for (const option of select.children) {
-        if (option instanceof HTMLOptionElement) {
-            options.set(option.value, option);
-        }
-    }
-
+    const options = form_select_getOptions(select);
     const searchInput = $('.select-search', container);
     const search = $('.search', container);
     const selection = $('.selection', container);
@@ -320,7 +325,7 @@ function form_select(container) {
                 return;
             }
 
-            std_scrollIntoView(selected, dropdown);
+            std_dom_scrollIntoView(selected, dropdown);
         }, DROPDOWN_ANIMATION_DURATION);
     });
 
@@ -335,7 +340,7 @@ function form_select(container) {
         }
     });
 
-    const searchFunction = std_getFunction(container.dataset.search) ?? form_selectSearch;
+    const searchFunction = std_getFunction(container.dataset.search) ?? form_select_search;
     searchInput?.addEventListener('input', () => {
         searchFunction(container, searchInput.value);
     });
@@ -366,13 +371,11 @@ function form_select(container) {
             let target;
 
             if (event.key === "ArrowUp") {
-                target = form_selectFind(selected, (child, parent) =>
-                    child.previousElementSibling ?? parent.children[parent.children.length - 1])
+                target = std_dom_findChild(selected, std_dom_previousChild, form_select_skipPredicate);
             }
 
             if (event.key === "ArrowDown") {
-                target = form_selectFind(selected, (child, parent) =>
-                    child.nextElementSibling ?? parent.children[0]);
+                target = std_dom_findChild(selected, std_dom_nextChild, form_select_skipPredicate);
             }
 
             if (!is(target)) {
@@ -380,7 +383,7 @@ function form_select(container) {
             }
 
             target.classList.add('selected');
-            std_scrollIntoView(target, dropdown);
+            std_dom_scrollIntoView(target, dropdown);
         }
 
         if (event.key === "Enter") {
@@ -410,4 +413,240 @@ function form_select(container) {
     dropdown_shrink(container, dropdown);
     dropdown.classList.remove('hide');
     dropdown_animate(dropdown, true);
+}
+
+
+
+/**
+ * @param {HTMLElement} current
+ * @return {boolean}
+ */
+function form_multiSelect_skipPredicate(current) {
+    return form_select_skipPredicate(current)
+        || current.classList.contains('selected');
+}
+
+/**
+ * @param {string} value
+ * @param {string} label
+ * @return {HTMLDivElement}
+ */
+function form_multiSelect_Option(value, label) {
+    return jsml.div({ class: "option", "data-value": value }, [
+        jsml.span(_, label),
+        jsml.button(
+            { type: "button", "x-init": form_multiSelect_removeOptionButton.name },
+            Icon('nf-fa-close', 'X')
+        )
+    ]);
+}
+
+/**
+ * @param {HTMLElement} container
+ * @param {string} value
+ */
+function form_multiSelect_selectOption(container, value) {
+    const option = $(`select option[value=${value}]`, container);
+    if (!is(option)) {
+        return;
+    }
+
+    option.setAttribute("selected", "selected");
+
+    const dropdownItem = $(`.dropdown-item[data-value=${value}]`, container);
+    dropdownItem?.classList.add('selected');
+
+    const options = $('.options-selected', container);
+    options.append(form_multiSelect_Option(value, dropdownItem.textContent));
+}
+
+/**
+ * @param {HTMLElement} container
+ * @param {string} value
+ */
+function form_multiSelect_deselelectOption(container, value) {
+    const option = $(`select option[value=${value}]`, container);
+    if (!is(option)) {
+        return;
+    }
+
+    option.removeAttribute('selected');
+    const dropdownItem = $(`.dropdown-item[data-value=${value}]`, container);
+    dropdownItem?.classList.remove('selected');
+}
+
+/**
+ * @param {HTMLElement} select
+ * @param {string} query
+ */
+function form_multiSelect_search(select, query) {
+    const q = query.toLowerCase();
+    let first = undefined;
+
+    for (const option of $$(".dropdown-item", select)) {
+        const valid = option.textContent.toLowerCase().includes(q);
+        option.classList.toggle('hide', !valid);
+        option.classList.remove('cursor');
+
+        if (valid && !is(first)) {
+            first = option;
+        }
+    }
+
+    first?.classList.add('cursor');
+}
+
+/**
+ * @param {HTMLElement} container
+ */
+function form_multiSelect_init(container) {
+    const select = $('select', container);
+    const options = form_select_getOptions(select);
+    const searchInput = $('.select-search', container);
+    const search = $('.search', container);
+    const selection = $('.selection', container);
+    const dropdown = $('.dropdown', container);
+    const dropdownItems = $('.dropdown-items', container);
+
+    searchInput?.addEventListener('focus', () => {
+        search.classList.remove('opacity-0');
+        selection.classList.add('opacity-0');
+        dropdown_expand(container, dropdown);
+
+        setTimeout(() => {
+            const selected = $('.selected', dropdownItems);
+            if (!is(selected)) {
+                return;
+            }
+
+            std_dom_scrollIntoView(selected, dropdown);
+        }, DROPDOWN_ANIMATION_DURATION);
+    });
+
+    searchInput?.addEventListener('blur', () => {
+        search.classList.add('opacity-0');
+        selection.classList.remove('opacity-0');
+        dropdown_shrink(container, dropdown);
+        searchInput.value = '';
+
+        for (const option of $$(".dropdown-item", dropdownItems)) {
+            option.classList.remove('hide');
+        }
+    });
+
+    const searchFunction = std_getFunction(container.dataset.search) ?? form_multiSelect_search;
+    searchInput?.addEventListener('input', () => {
+        searchFunction(container, searchInput.value);
+    });
+
+    searchInput?.addEventListener('keydown', event => {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+            event.preventDefault();
+
+            const selected = $('.cursor', dropdownItems);
+            if (!is(selected)) {
+                dropdownItems.children[0]?.classList.add('cursor');
+                return;
+            }
+
+            selected.classList.remove('cursor');
+            let target;
+
+            if (event.key === "ArrowUp") {
+                target = std_dom_findChild(selected, std_dom_previousChild, form_multiSelect_skipPredicate);
+            }
+
+            if (event.key === "ArrowDown") {
+                target = std_dom_findChild(selected, std_dom_nextChild, form_multiSelect_skipPredicate);
+            }
+
+            if (!is(target)) {
+                return;
+            }
+
+            target.classList.add('cursor');
+            std_dom_scrollIntoView(target, dropdown);
+        }
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+
+            const cursor = $('.cursor', dropdownItems);
+            form_multiSelect_selectOption(container, cursor.dataset.value);
+            cursor.classList.remove('cursor');
+
+            const target = std_dom_findChild(cursor, std_dom_nextChild, form_multiSelect_skipPredicate);
+            if (!is(target)) {
+                return;
+            }
+
+            target.classList.add('cursor');
+            std_dom_scrollIntoView(target, dropdown);
+        }
+    });
+
+    dropdownItems.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const item = event instanceof Element && event.target.classList.contains('dropdown-item')
+            ? event.target
+            : event.target.closest('.dropdown-item');
+
+        if (!is(item)) {
+            return;
+        }
+
+        form_multiSelect_selectOption(container, item.dataset.value);
+    });
+
+    dropdown_shrink(container, dropdown);
+    dropdown.classList.remove('hide');
+    dropdown_animate(dropdown, true);
+}
+
+/**
+ * @param {HTMLElement} control
+ */
+function form_multiSelect_extract(control) {
+    if (!(control instanceof HTMLSelectElement)) {
+        return;
+    }
+
+    let selected = '';
+    let first = true;
+
+    for (const option of control.children) {
+        if (!option.selected) {
+            continue;
+        }
+
+        if (!first) {
+            selected += ';';
+        }
+
+        selected += option.value;
+        first = false;
+    }
+
+    return selected;
+}
+
+/**
+ * @param {HTMLElement} button
+ */
+function form_multiSelect_removeOptionButton(button) {
+    const option = button.closest('.option');
+    if (!is(option)) {
+        console.warn("Cannot initialize option remove button because the button is not inside '.option' element");
+        return;
+    }
+
+    const removeOption = () => {
+        form_multiSelect_deselelectOption(option.closest('.form-select'), option.dataset.value);
+        option.remove();
+    }
+
+    button.addEventListener('click', removeOption);
+    option.addEventListener('auxclick', removeOption);
 }

@@ -249,7 +249,7 @@ function Tag(label, isRemovable = true, onRemove = () => true) {
  * @return {HTMLElement}
  */
 function Icon(nf, fallback = undefined) {
-    return jsml.i('nf ' + nf, fallback);
+    return jsml.i('nf ' + nf, jsml.span(_, fallback));
 }
 
 
@@ -298,7 +298,7 @@ window.addEventListener('load', () => {
     const X_DATA = 'x-data';
     const X_SWAP = 'x-swap';
     const X_INIT = 'x-init';
-    const X_PROCESSED = 'x-processed';
+    const X_PROCESSED = 'x-p';
     
     const attributes = [X_TARGET, X_EVENT, X_SWAP, X_INIT].concat(HTTP_METHODS_ATTR);
     const needProcessing = [X_INIT].concat(HTTP_METHODS_ATTR);
@@ -467,7 +467,12 @@ window.addEventListener('load', () => {
 
             if (mutations[i].type === "childList") {
                 for (let j = 0; j < mutations[i].addedNodes.length; j++) {
-                    process(mutations[i].addedNodes[j]);
+                    const element = mutations[i].addedNodes[j];
+                    if (element instanceof HTMLElement) {
+                        for (const x of element.querySelectorAll(selector)) {
+                            process(x);
+                        }
+                    }
                 }
             }
         }

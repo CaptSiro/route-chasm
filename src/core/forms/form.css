@@ -11,6 +11,7 @@
     --form-accent-3: var(--accent-3);
 
     --form-container-input-0: var(--form-container-0);
+    --form-container-input-2: var(--form-container-2);
 
     --form-invalid-0: #f13854;
     --form-invalid-1: #f3919f;
@@ -357,10 +358,43 @@ input.form-invalid {
     padding: 2px 4px;
 }
 
+.form-select .dropdown-item.cursor,
 .form-select .dropdown-item.selected {
     background-color: var(--form-container-2);
 }
 
 .form-select .dropdown-item:hover {
     background-color: var(--form-accent-0);
+}
+
+
+
+.form-select.multiple .dropdown-item.selected {
+    display: none;
+}
+
+.form-select.multiple .options-selected {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--form-gap-smaller);
+    margin-top: calc(var(--form-gap-smaller) / 2);
+    margin-bottom: var(--form-gap-smaller);
+}
+
+.form-select.multiple .options-selected .option {
+    display: flex;
+    gap: var(--form-gap-smaller);
+    padding: 4px 8px;
+    border-radius: var(--form-border-radius-smaller);
+    background-color: var(--form-container-input-2);
+    align-items: center;
+}
+
+.form-select.multiple .options-selected .option button {
+    all: unset;
+    font-size: 0.75rem;
+}
+
+.form-select.multiple .options-selected .option button:hover {
+    cursor: pointer;
 }

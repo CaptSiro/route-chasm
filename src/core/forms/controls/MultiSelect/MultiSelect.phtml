@@ -1,0 +1,73 @@
+<?php /** @var MultiSelect $this */
+
+use components\core\Html\Html;
+use components\core\Icon;
+use core\forms\controls\MultiSelect\MultiSelect;
+
+$valuesEscaped = [];
+foreach ($this->values as $value => $label) {
+    $valuesEscaped[Html::escapeAttribute($value)] = $label;
+}
+
+$selectedEscaped = array_map(fn($x) => Html::escapeAttribute($x), $this->selected);
+
+?><div class="form-select multiple" x-init="form_multiSelect_init">
+    <label>
+        <select name="<?= $this->name ?>" multiple data-extract="form_multiSelect_extract">
+            <?php foreach ($valuesEscaped as $value => $label): ?>
+                <option
+                    value="<?= $value ?>"
+                    <?php if (in_array($value, $selectedEscaped)): ?>
+                        selected
+                    <?php endif; ?>
+                >
+                    <?= $label ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </label>
+
+    <div class="head">
+        <div class="stack">
+            <label for="<?= $this->getId() ?>_search" class="selection form-input-icon">
+                <span class="option"><?= $this->label ?></span>
+                <?= Icon::nf('nf-fa-angle_down', 'v') ?>
+            </label>
+
+            <label class="search form-input-icon opacity-0">
+                <input
+                    type="text"
+                    class="select-search"
+                    id="<?= $this->getId() ?>_search"
+                    placeholder="<?= $this->getAttribute('placeholder') ?>"
+                >
+                <?= Icon::nf('nf-fa-angle_up', '^') ?>
+            </label>
+        </div>
+
+        <div class="options-selected">
+            <?php foreach ($selectedEscaped as $value): ?>
+                <div class="option" data-value="<?= $value ?>">
+                    <span><?= $valuesEscaped[$value] ?></span>
+                    <button
+                        type="button"
+                        x-init="form_multiSelect_removeOptionButton"
+                    ><?= Icon::nf('nf-fa-close', 'X') ?></button>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="options">
+            <div class="dropdown hide" data-max-height="200px">
+                <div class="dropdown-items">
+                    <?php foreach ($valuesEscaped as $value => $label): ?>
+                        <div
+                            class="dropdown-item <?= in_array($value, $selectedEscaped) ? 'selected' : '' ?>"
+                            data-value="<?= $value ?>"
+                        ><?= $label ?></div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

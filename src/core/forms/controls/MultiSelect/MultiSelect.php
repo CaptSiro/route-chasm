@@ -1,6 +1,6 @@
 <?php
 
-namespace core\forms\controls\Select;
+namespace core\forms\controls\MultiSelect;
 
 use core\forms\controls\Control;
 use core\forms\controls\FormControl;
@@ -9,7 +9,7 @@ use core\html\Attribute;
 use core\html\HtmlAttribute;
 use core\view\Renderer;
 
-class Select implements Control, Attribute {
+class MultiSelect implements Control, Attribute {
     use Renderer, FormControl, FormControlInfo, HtmlAttribute;
 
 
@@ -19,7 +19,7 @@ class Select implements Control, Attribute {
         protected string $name = self::class,
         protected string $label = self::class,
         protected array $values = [],
-        protected ?string $selected = null
+        protected array $selected = []
     ) {
         $this->setPlaceholder('Type to search');
     }

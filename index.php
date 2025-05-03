@@ -15,6 +15,7 @@ use core\database\sql\connections\MySqlDriver;
 use core\database\sql\Sql;
 use core\forms\controls\Checkbox\Checkbox;
 use core\forms\controls\File\File;
+use core\forms\controls\MultiSelect\MultiSelect;
 use core\forms\controls\MultiSubmit\MultiSubmit;
 use core\forms\controls\PasswordField\PasswordField;
 use core\forms\controls\Select\Select;
@@ -111,9 +112,7 @@ $router->use('/exc', fn() => throw new Exception('Test exception'));
 $router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
 $router->use('/select',
     Http::get(function(Request $request, Response $response) {
-        $selectForm = new Form(HttpMethod::POST);
-
-        $selectForm->add(new Select('country', 'Country', [
+        $countryList = [
             'cz' => 'The Czech Republic',
             'uk' => 'The United Kingdom',
             'au' => 'Australia',
@@ -133,7 +132,12 @@ $router->use('/select',
             'np' => 'Nepal',
             'th' => 'Thailand',
             'vn' => 'Vietnam'
-        ], 'jp'));
+        ];
+
+        $selectForm = new Form(HttpMethod::POST);
+
+        $selectForm->add(new Select('country', 'Country', $countryList, 'jp'));
+        $selectForm->add(new MultiSelect('countries', 'Countries', $countryList, ['jp', 'sk', 'nk']));
         $selectForm->add(new Submit());
 
         $response->renderRoot((new WebPage())->addContent($selectForm));

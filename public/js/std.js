@@ -178,7 +178,7 @@ function std_dateRelative(date) {
  * @param {HTMLElement} child
  * @param {HTMLElement} parent
  */
-function std_scrollIntoView(child, parent) {
+function std_dom_scrollIntoView(child, parent) {
     const childRect = child.getBoundingClientRect();
     const parentRect = parent.getBoundingClientRect();
 
@@ -224,6 +224,58 @@ function std_scrollIntoView(child, parent) {
         top,
         behavior: "smooth"
     });
+}
+
+/**
+ * @param {HTMLElement} child
+ * @param {(child: HTMLElement, parent: HTMLElement) => Opt<HTMLElement>} next
+ * @param {(current: HTMLElement) => boolean} skipPredicate
+ * @returns {Opt<HTMLElement>}
+ */
+function std_dom_findChild(child, next, skipPredicate) {
+    const parent = child.parentElement;
+    const len = parent.children.length;
+    if (len <= 0) {
+        return null;
+    }
+
+    if (len <= 1) {
+        return child;
+    }
+
+    let current = child;
+    for (let i = 0; i < len; i++) {
+        current = next(current, parent);
+        if (!is(current)) {
+            return null;
+        }
+
+        if (skipPredicate(current)) {
+            continue;
+        }
+
+        return current;
+    }
+
+    return null;
+}
+
+/**
+ * @param {HTMLElement} child
+ * @param {HTMLElement} parent
+ * @return {Opt<HTMLElement>}
+ */
+function std_dom_nextChild(child, parent) {
+    return child.nextElementSibling ?? parent.children[0];
+}
+
+/**
+ * @param {HTMLElement} child
+ * @param {HTMLElement} parent
+ * @return {Opt<HTMLElement>}
+ */
+function std_dom_previousChild(child, parent) {
+    return child.previousElementSibling ?? parent.children[parent.children.length - 1];
 }
 
 

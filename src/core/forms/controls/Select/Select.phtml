@@ -30,7 +30,12 @@ use core\forms\controls\Select\Select;
             </label>
 
             <label class="search form-input-icon opacity-0">
-                <input type="text" class="select-search" id="<?= $this->getId() ?>_search">
+                <input
+                    type="text"
+                    class="select-search"
+                    id="<?= $this->getId() ?>_search"
+                    placeholder="<?= $this->getAttribute('placeholder') ?>"
+                >
                 <?= Icon::nf('nf-fa-angle_up', '^') ?>
             </label>
         </div>
