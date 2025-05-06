@@ -5,7 +5,7 @@ namespace models\core\Setting;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
-use core\database\sql\Action;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
@@ -70,7 +70,7 @@ final class Setting extends Model implements Editable {
 
 
 
-    public function save(): View|Action {
+    public function save(): View|DatabaseAction {
         if (!(gettype($this->value) === 'string')) {
             $this->value = (string) $this->value;
         }

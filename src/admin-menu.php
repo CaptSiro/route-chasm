@@ -2,6 +2,7 @@
 
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Nexus\AdminNexus;
+use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Admin\SptfTests\SptfTests;
 use components\core\Icon;
 use components\core\Modules\Modules;
@@ -13,13 +14,15 @@ use models\core\Group\Group;
 use models\core\Privilege\Privilege;
 use models\core\Resource;
 use models\core\Setting\Setting;
+use models\core\User\User;
+use models\core\User\UserEditorBehavior;
 
 AdminMenu::getInstance()
     ->add(
         '/Domains',
         new AdminNexus(
             ModelDescription::extract(Domain::class),
-            FormDescription::extract(Domain::class),
+            FormDescription::getEditor(Domain::class),
             Domain::getGridDescription()
         )
     )
@@ -28,10 +31,20 @@ AdminMenu::getInstance()
     ->addIcon('System', Icon::nf('nf-md-console'))
 
     ->add(
+        '/System/Users',
+        new AdminNexus(
+            ModelDescription::extract(User::class),
+            UserEditorBehavior::getEditor(),
+            GridDescription::extract(User::class),
+        )
+    )
+    ->addIcon('Users', Icon::nf('nf-fa-user'))
+
+    ->add(
         '/System/Groups',
         new AdminNexus(
             ModelDescription::extract(Group::class),
-            FormDescription::extract(Group::class),
+            FormDescription::getEditor(Group::class),
             GridDescription::extract(Group::class),
         )
     )
@@ -41,7 +54,7 @@ AdminMenu::getInstance()
         '/System/Privileges',
         new AdminNexus(
             ModelDescription::extract(Privilege::class),
-            FormDescription::extract(Privilege::class),
+            FormDescription::getEditor(Privilege::class),
             GridDescription::extract(Privilege::class),
         )
     )
@@ -51,7 +64,7 @@ AdminMenu::getInstance()
         '/System/User resources',
         new AdminNexus(
             ModelDescription::extract(Resource::class),
-            FormDescription::extract(Resource::class),
+            FormDescription::getEditor(Resource::class),
             GridDescription::extract(Resource::class),
         )
     )
@@ -61,7 +74,7 @@ AdminMenu::getInstance()
         '/System/Settings',
         new AdminNexus(
             ModelDescription::extract(Setting::class),
-            FormDescription::extract(Setting::class),
+            FormDescription::getEditor(Setting::class),
             GridDescription::extract(Setting::class)
         )
     )

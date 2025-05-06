@@ -3,9 +3,9 @@
 namespace core\database\sql;
 
 interface Record {
-    public function save(): Action;
+    public function save(): DatabaseAction;
 
-    public function delete(): Action;
+    public function delete(): DatabaseAction;
 
     public function setOrigin(Origin $origin): void;
 }

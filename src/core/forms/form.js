@@ -4,6 +4,37 @@
 
 /**
  * @param {HTMLElement} form
+ */
+function form_init(form) {
+    form.addEventListener('submit', async event => {
+        await form_submit(form, event);
+    });
+
+    const formBarrier = $('.form-barrier', form);
+    const cancelSubmit = event => {
+        if (event.target instanceof Element) {
+            const button = event.target.closest('button');
+            if (!is(button)) {
+                return;
+            }
+
+            const buttonType = button.getAttribute('type');
+            if (buttonType === 'submit' || buttonType === 'reset') {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    };
+
+    formBarrier.addEventListener('click', cancelSubmit);
+    formBarrier.addEventListener('pointerdown', cancelSubmit);
+    formBarrier.addEventListener('mousedown', cancelSubmit);
+}
+
+/**
+ * @param {HTMLElement} form
  * @param {{ message: string, property?: string }} error
  */
 async function form_showError(form, error) {
@@ -13,7 +44,7 @@ async function form_showError(form, error) {
     }
 
     const property = error['property'];
-    const input = $(`[name=${property}]`, form);
+    const input = $(`[name="${property}"]`, form);
     if (!is(property) || !is(input)) {
         await window_alert(message, WINDOW_ALERT_SETTINGS);
         return;
@@ -26,8 +57,12 @@ async function form_showError(form, error) {
 
 /**
  * @param {HTMLElement} form
+ * @param {Event} event
  */
-async function form_submit(form) {
+async function form_submit(form, event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
     /** @type {(HTMLElement) => Payload} */
     const transformer = std_getFunction(form.dataset.transformer ?? '');
     if (!is(transformer)) {
@@ -59,7 +94,7 @@ async function form_submit(form) {
         const result = await response.json();
         if (is(result)) {
             await form_showError(form, result);
-            return false;
+            return;
         }
 
         if (Array.isArray(result['group'])) {
@@ -67,23 +102,24 @@ async function form_submit(form) {
                 await form_showError(form, error);
             }
 
-            return false;
+            return;
         }
 
         if (is(result['message'])) {
             await window_alert(result['message'], WINDOW_ALERT_SETTINGS);
         }
 
-        return false;
+        return;
     }
 
     if (response.headers.has('X-Next')) {
         window.location.replace(response.headers.get('X-Next'));
-        return false;
+        return;
     }
 
+    // todo
+    // add std_getFunction(data-handler)
     console.log(await response.text());
-    return false;
 }
 
 
@@ -277,7 +313,7 @@ function form_select_getOptions(select) {
  * @param {string} value
  */
 function form_select_selectOption(container, value) {
-    const option = $(`select option[value=${value}]`, container);
+    const option = $(`select option[value="${value}"]`, container);
     if (!is(option)) {
         return;
     }
@@ -291,7 +327,7 @@ function form_select_selectOption(container, value) {
     $('.select-search', container)?.blur();
     $('.dropdown-item.cursor', container)?.classList.remove('cursor');
 
-    const dropdownItem = $(`.dropdown-item[data-value=${value}]`, container);
+    const dropdownItem = $(`.dropdown-item[data-value="${value}"]`, container);
     dropdownItem?.classList.add('cursor');
 }
 
@@ -316,6 +352,16 @@ function form_select_search(select, query) {
     first?.classList.add('cursor');
 }
 
+/**
+ * @param {HTMLElement} container
+ * @param {HTMLElement} searchInput
+ * @param {HTMLElement} search
+ * @param {HTMLElement} selection
+ * @param {HTMLElement} dropdown
+ * @param {HTMLElement} dropdownItems
+ * @param {Function} defaultSearchFunction
+ * @private
+ */
 function form_select_searchInputInit(
     container, searchInput, search, selection, dropdown, dropdownItems, defaultSearchFunction
 ) {
@@ -491,14 +537,14 @@ function form_multiSelect_Option(value, label) {
  * @param {string} value
  */
 function form_multiSelect_selectOption(container, value) {
-    const option = $(`select option[value=${value}]`, container);
+    const option = $(`select option[value="${value}"]`, container);
     if (!is(option)) {
         return;
     }
 
     option.setAttribute("selected", "selected");
 
-    const dropdownItem = $(`.dropdown-item[data-value=${value}]`, container);
+    const dropdownItem = $(`.dropdown-item[data-value="${value}"]`, container);
     dropdownItem?.classList.add('selected');
 
     const options = $('.options-selected', container);
@@ -510,13 +556,13 @@ function form_multiSelect_selectOption(container, value) {
  * @param {string} value
  */
 function form_multiSelect_deselelectOption(container, value) {
-    const option = $(`select option[value=${value}]`, container);
+    const option = $(`select option[value="${value}"]`, container);
     if (!is(option)) {
         return;
     }
 
     option.removeAttribute('selected');
-    const dropdownItem = $(`.dropdown-item[data-value=${value}]`, container);
+    const dropdownItem = $(`.dropdown-item[data-value="${value}"]`, container);
     dropdownItem?.classList.remove('selected');
 }
 

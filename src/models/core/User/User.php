@@ -7,14 +7,17 @@ use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
 use core\collection\Session;
-use core\database\sql\Action;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
+use core\database\sql\SideEffect;
 use core\database\sql\Sql;
 use core\database\sql\Table;
 use core\view\View;
+use Exception;
 use models\core\Group\Group;
 use models\core\Privilege\Privilege;
 use models\core\Resource;
@@ -70,7 +73,7 @@ class User extends Model {
 
 
 
-    public function save(): Action|View {
+    public function save(): DatabaseAction|View {
         if ($this->isNewRecord()) {
             $user = self::fromTag($this->tag);
 
@@ -125,6 +128,75 @@ class User extends Model {
         return !is_null($connection->fetch(
             $sql->toQuery($connection))
         );
+    }
+
+    public function leaveAllGroups(): SideEffect {
+        $connection = static::getDescription()->connection;
+        $driver = $connection->getDriver();
+        $ug = self::TABLE_USERS_X_GROUPS;
+
+        $sql = Sql::delete(self::TABLE_USERS_X_GROUPS)
+            ->where(
+                Query::infer("$ug.id_user = ?", [$this->id])
+            );
+
+        return $connection->run($sql->toQuery($connection));
+    }
+
+    /**
+     * @param array<Group> $groups
+     * @return DatabaseAction
+     * @throws Exception
+     */
+    public function assign(array $groups): DatabaseAction {
+        return $this->assignIds(array_map(fn($x) => $x->id, $groups));
+    }
+
+    /**
+     * @param array<int> $groupIds
+     * @return DatabaseAction
+     * @throws Exception
+     */
+    public function assignIds(array $groupIds): DatabaseAction {
+        $this->leaveAllGroups();
+
+        if (empty($groupIds)) {
+            return DatabaseAction::NONE;
+        }
+
+        $connection = static::getDescription()->connection;
+        $driver = $connection->getDriver();
+
+        $sql = Sql::insert(self::TABLE_USERS_X_GROUPS)
+            ->columns(['id_group', 'id_user']);
+
+        $userId = new Parameter($this->id, Parameter::TYPE_INTEGER);
+
+        $memberOf = [];
+        foreach ($this->getGroups() as $group) {
+            $memberOf[] = $group->id;
+        }
+
+        foreach ($groupIds as $groupId) {
+            if (in_array($groupId, $memberOf)) {
+                continue;
+            }
+
+            $sql->value([
+                new Parameter($groupId, Parameter::TYPE_INTEGER),
+                $userId
+            ]);
+        }
+
+        if ($sql->empty()) {
+            return DatabaseAction::NONE;
+        }
+
+        $sideEffect = $connection->run($sql->toQuery($connection));
+
+        return $sideEffect->rowsAffected > 0
+            ? DatabaseAction::INSERT
+            : DatabaseAction::NONE;
     }
 
     public function isAdmin(): bool {

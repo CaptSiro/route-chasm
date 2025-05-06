@@ -1,8 +1,7 @@
 <?php
 
-namespace components\core\Admin\Nexus\Editor;
+namespace components\core\Admin\Nexus;
 
-use components\core\Admin\Nexus\AdminNexus;
 use core\database\sql\Model;
 use core\endpoints\Endpoint;
 

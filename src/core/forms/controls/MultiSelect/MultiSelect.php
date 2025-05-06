@@ -12,6 +12,13 @@ use core\view\Renderer;
 class MultiSelect implements Control, Attribute {
     use Renderer, FormControl, FormControlInfo, HtmlAttribute;
 
+    /**
+     * @param string $value
+     * @return array<string>
+     */
+    public static function parse(string $value): array {
+        return explode(';', $value);
+    }
 
 
 

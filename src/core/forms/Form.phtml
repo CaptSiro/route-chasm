@@ -14,9 +14,11 @@ use modules\SideLoader\Javascript;
     <?php if (!is_null($this->action)): ?>
         action="<?= $this->action ?>"
     <?php endif; ?>
-    onsubmit="form_submit(this); return false"
+    x-init="form_init"
 >
-    <?php foreach ($this->elements as $control): ?>
-        <?= $control->render() ?>
-    <?php endforeach; ?>
+    <div class="form-barrier">
+        <?php foreach ($this->elements as $control): ?>
+            <?= $control->render() ?>
+        <?php endforeach; ?>
+    </div>
 </form>

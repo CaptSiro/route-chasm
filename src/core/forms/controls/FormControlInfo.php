@@ -8,7 +8,7 @@ trait FormControlInfo {
     }
 
     public function setValue(mixed $value): void {
-        $this->values = $value;
+        $this->value = $value;
     }
 
     public function setLabel(string $label): void {

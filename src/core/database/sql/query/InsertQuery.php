@@ -52,6 +52,10 @@ class InsertQuery implements SqlQuery {
         return $list;
     }
 
+    public function empty(): bool {
+        return empty($this->values);
+    }
+
     public function toQuery(Connection $connection): Query {
         if (empty($this->columns)) {
             throw new Exception("Cannot insert record without specifying columns");
@@ -67,7 +71,12 @@ class InsertQuery implements SqlQuery {
         $sql = "INSERT INTO ". $driver->escapeTable($this->table)
             ."(". $this->generateColumnList($driver) .') VALUES ';
 
+        $firstValue = true;
         foreach ($this->values as $record) {
+            if (!$firstValue) {
+                $sql .= ',';
+            }
+
             $sql .= '(';
 
             $first = true;
@@ -83,6 +92,7 @@ class InsertQuery implements SqlQuery {
             }
 
             $sql .= ')';
+            $firstValue = false;
         }
 
         return new Query($sql, $parameters);

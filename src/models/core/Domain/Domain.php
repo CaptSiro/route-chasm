@@ -6,7 +6,7 @@ use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
-use core\database\sql\Action;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
@@ -68,7 +68,7 @@ class Domain extends Model implements Enable {
 
 
 
-    public function save(): Action|View {
+    public function save(): DatabaseAction|View {
         $guards = [
             NumberGuard::inRange(
                 strlen($this->host), 0, 255,

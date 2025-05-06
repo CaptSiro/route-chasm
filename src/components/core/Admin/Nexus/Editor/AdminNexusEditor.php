@@ -3,6 +3,7 @@
 namespace components\core\Admin\Nexus\Editor;
 
 use components\core\Admin\Nexus\AdminNexus;
+use components\core\Admin\Nexus\Editor;
 use components\core\WebPage\AdminWebPage;
 use core\App;
 use core\communication\Request;
@@ -29,7 +30,9 @@ class AdminNexusEditor extends ContainerContent implements Editor {
     protected ?Model $model = null;
     protected AdminNexus $context;
 
-    public function __construct() {
+    public function __construct(
+        protected EditorBehavior $behaviour
+    ) {
         parent::__construct($this->page = new AdminWebPage());
     }
 
@@ -43,14 +46,6 @@ class AdminNexusEditor extends ContainerContent implements Editor {
     public function setModel(Model $model): static {
         $this->model = $model;
         return $this;
-    }
-
-    protected function getModelData(): array {
-        if (!isset($this->model)) {
-            return [];
-        }
-
-        return $this->model->getData();
     }
 
     public function getState(): int {
@@ -72,9 +67,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             $modelDescription->idColumn->alias
         ));
 
-        $this->context
-            ->getFormSection()
-            ->add($form, $this->getModelData());
+        $this->behaviour->initForm($form, $this->model);
 
         $submitLabel = $this->getState() === self::STATE_CREATOR
             ? 'Create'
@@ -122,8 +115,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                     ->getFactory()
                     ->new();
 
-                $model->set($request->getBody()->toArray());
-                $error = $model->save();
+                $error = $this->behaviour->onSubmit($model, EditorBehaviorAction::CREATE);
 
                 if ($error instanceof View) {
                     $response->renderRoot($error);
@@ -147,8 +139,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                     ->getFactory()
                     ->fromId($this->model->getId());
 
-                $model->set($request->getBody()->toArray());
-                $error = $model->save();
+                $error = $this->behaviour->onSubmit($model, EditorBehaviorAction::UPDATE);
 
                 if ($error instanceof View) {
                     $response->renderRoot($error);

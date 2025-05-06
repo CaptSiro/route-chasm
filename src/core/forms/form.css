@@ -23,7 +23,7 @@
     --form-gap-smaller: var(--gap-smaller);
 }
 
-.form {
+.form .form-barrier {
     display: flex;
     flex-direction: column;
     padding: 32px;
@@ -31,10 +31,6 @@
     color: var(--form-text-0);
     border-radius: var(--form-border-radius);
     gap: var(--form-gap);
-}
-
-.form.hide {
-    display: none;
 }
 
 .form-control {
@@ -95,7 +91,7 @@ input[type="checkbox"] {
     border: 2px solid var(--form-container-3);
     border-radius: 0.15em !important;
     transform: translateY(-0.075em);
-    transition: background-color 100ms linear;
+    transition: background-color var(--animation-duration) linear;
 }
 
 input[type="radio"] {
@@ -106,7 +102,7 @@ input[type="radio"]:checked,
 input[type="checkbox"]:checked {
     background-color: var(--form-accent-3);
     border-color: var(--form-accent-0);
-    transition: background-color 150ms linear;
+    transition: background-color var(--animation-duration) linear;
 }
 
 input[type=radio]:focus,
@@ -137,7 +133,32 @@ input {
 
     width: clamp(100px, 100%, 700px);
 
-    transition: background-color 250ms linear, border-color 250ms linear;
+    transition: background-color var(--animation-duration) linear,
+        border-color var(--animation-duration) linear;
+}
+
+input[readonly] {
+    background-color: var(--form-container-input-0);
+    color: var(--form-text-2);
+    font-style: italic;
+}
+
+input:not([type=checkbox]):focus {
+    outline: 2px solid var(--form-accent-1);
+    background-color: var(--form-container-input-0);
+    color: var(--form-text-0);
+}
+
+input[readonly]:focus {
+    outline: unset;
+    background-color: var(--form-container-input-0);
+    color: var(--form-text-2);
+}
+
+input.form-invalid {
+    background-color: var(--form-invalid-1);
+    border-color: var(--form-invalid-0);
+    color: var(--form-invalid-text-0);
 }
 
 .form-input-icon {
@@ -153,7 +174,8 @@ input {
     border: 2px solid var(--form-container-3);
 
     width: clamp(100px, 100%, 700px);
-    transition: background-color 250ms linear, border-color 250ms linear;
+    transition: background-color var(--animation-duration) linear,
+        border-color var(--animation-duration) linear;
 }
 
 .form-input-icon input,
@@ -217,18 +239,6 @@ input {
     outline: unset;
 }
 
-input:not([type=checkbox]):focus {
-    outline: 2px solid var(--form-accent-1);
-    background-color: var(--form-container-input-0);
-    color: var(--form-text-0);
-}
-
-input.form-invalid {
-    background-color: var(--form-invalid-1);
-    border-color: var(--form-invalid-0);
-    color: var(--form-invalid-text-0);
-}
-
 .form-invalid-message {
     padding: 4px;
     margin-top: calc(var(--form-gap) / 2);
@@ -247,7 +257,8 @@ input.form-invalid {
     padding: 8px;
     margin-top: 8px;
 
-    transition: background-color 250ms linear, border-color 250ms linear;
+    transition: background-color var(--animation-duration) linear,
+        border-color var(--animation-duration) linear;
 }
 
 .form textarea:focus {
@@ -298,6 +309,11 @@ input.form-invalid {
     display: flex;
     align-items: center;
     gap: 4px;
+    width: clamp(100px, 100%, 700px);
+}
+
+.form .password-container input {
+    width: 100%;
 }
 
 
@@ -344,6 +360,14 @@ input.form-invalid {
     overflow: auto;
     border-radius: var(--form-border-radius-smaller);
     background-color: var(--form-container-1);
+    outline: 2px solid transparent;
+
+    transition: max-height ease-in-out var(--animation-duration),
+            outline-color var(--animation-duration);
+}
+
+.form-select.expanded .dropdown {
+    outline: 2px solid var(--form-container-3);
 }
 
 .form-select .dropdown-items {

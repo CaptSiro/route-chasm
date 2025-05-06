@@ -3,8 +3,6 @@
 namespace components\core\Admin\Nexus;
 
 use components\core\Admin\Menu\AdminMenu;
-use components\core\Admin\Nexus\Editor\AdminNexusEditor;
-use components\core\Admin\Nexus\Editor\Editor;
 use components\core\Message\Message;
 use components\core\WebPage\AdminWebPage;
 use components\layout\Grid\description\GridDescription;
@@ -13,7 +11,6 @@ use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\ModelDescription;
-use core\forms\FormSection;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
@@ -31,18 +28,17 @@ class AdminNexus extends ContainerContent {
 
     protected AdminWebPage $page;
     protected ?string $urlPath = null;
-    protected ?Editor $editor;
 
 
 
     public function __construct(
         protected ModelDescription $modelDescription,
-        protected FormSection $formSection,
+        protected Editor $editor,
         protected GridDescription $gridDescription,
         protected ?string $title = null
     ) {
         parent::__construct($this->page = new AdminWebPage());
-        $this->setEditor(new AdminNexusEditor());
+        $this->editor->setContext($this);
     }
 
 
@@ -51,12 +47,12 @@ class AdminNexus extends ContainerContent {
         return $this->modelDescription;
     }
 
-    public function getFormSection(): FormSection {
-        return $this->formSection;
-    }
-
     public function getGridDescription(): GridDescription {
         return $this->gridDescription;
+    }
+
+    public function getEditor(): Editor {
+        return $this->editor;
     }
 
     public function setEditor(Editor $editor): static {

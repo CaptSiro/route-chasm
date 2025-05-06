@@ -19,6 +19,20 @@ function dropdown_expand(container, content) {
     content.style.maxHeight = `min(${content.scrollHeight + 1}px, ${maxHeight})`;
 }
 
+function dropdown_refit(container, content) {
+    if (!dropdown_isExpanded(container)) {
+        return;
+    }
+
+    const maxHeight = content.dataset.maxHeight;
+    if (!is(maxHeight)) {
+        content.style.maxHeight = content.scrollHeight + 1 + "px";
+        return;
+    }
+
+    content.style.maxHeight = `min(${content.scrollHeight + 1}px, ${maxHeight})`;
+}
+
 function dropdown_shrink(container, content) {
     container.classList.remove('expanded');
     content.style.maxHeight = '0';

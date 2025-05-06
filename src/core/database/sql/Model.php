@@ -9,6 +9,18 @@ use core\view\View;
 use JsonSerializable;
 
 class Model implements JsonSerializable, Identifier {
+    public static function get(?Model $model, string $property, mixed $or = null): mixed {
+        if (is_null($model)) {
+            return $or;
+        }
+
+        return $model->$property;
+    }
+
+    public static function getString(?Model $model, string $property): string {
+        return self::get($model, $property, '');
+    }
+
     public static function getDescription(): ModelDescription {
         return ModelDescription::extract(static::class);
     }
@@ -137,7 +149,7 @@ class Model implements JsonSerializable, Identifier {
         return $this->origin === Origin::APPLICATION;
     }
 
-    private function insert(): Action|View {
+    private function insert(): DatabaseAction|View {
         $description = ModelDescription::extract(static::class);
         $sql = Sql::insert($description->table);
 
@@ -161,14 +173,14 @@ class Model implements JsonSerializable, Identifier {
             ->run($sql->toQuery($description->connection));
 
         if ($sideEffect->rowsAffected === 0) {
-            return Action::NONE;
+            return DatabaseAction::NONE;
         }
 
         $this->{$description->idColumn->alias} = $sideEffect->lastInsertedId;
-        return Action::INSERT;
+        return DatabaseAction::INSERT;
     }
 
-    public function save(): Action|View {
+    public function save(): DatabaseAction|View {
         if ($this->isNewRecord()) {
             return $this->insert();
         }
@@ -190,7 +202,7 @@ class Model implements JsonSerializable, Identifier {
         }
 
         if ($setClauses === 0) {
-            return Action::NONE;
+            return DatabaseAction::NONE;
         }
 
         $sql->where(new Query(
@@ -203,13 +215,13 @@ class Model implements JsonSerializable, Identifier {
             ->run($sql->toQuery($description->connection));
 
         if ($sideEffect->rowsAffected === 0) {
-            return Action::NONE;
+            return DatabaseAction::NONE;
         }
 
-        return Action::UPDATE;
+        return DatabaseAction::UPDATE;
     }
 
-    public function delete(): Action {
+    public function delete(): DatabaseAction {
         $description = ModelDescription::extract(static::class);
         $idColumnName = $description->getEscapedIdColumnName();
 
@@ -225,10 +237,10 @@ class Model implements JsonSerializable, Identifier {
             ->run($sql->toQuery($description->connection));
 
         if ($sideEffect->rowsAffected === 0) {
-            return Action::NONE;
+            return DatabaseAction::NONE;
         }
 
-        return Action::DELETE;
+        return DatabaseAction::DELETE;
     }
 
     public function getOrigin(): Origin {

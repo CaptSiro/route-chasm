@@ -2,7 +2,7 @@
 
 namespace core\database\sql;
 
-enum Action {
+enum DatabaseAction {
     case NONE;
     case INSERT;
     case UPDATE;

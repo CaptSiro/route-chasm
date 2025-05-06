@@ -6,7 +6,7 @@ use components\core\SaveError\SaveError;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
-use core\database\sql\Action;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
@@ -66,7 +66,7 @@ class Privilege extends Model implements Editable {
 
 
 
-    public function save(): Action|View {
+    public function save(): DatabaseAction|View {
         if ($this->isNewRecord()) {
             $privilege = self::fromName($this->name);
             if (!is_null($privilege)) {

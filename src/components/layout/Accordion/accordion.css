@@ -5,6 +5,7 @@
 }
 
 .accordion .title {
+    background-color: var(--accordion-container-1);
     cursor: pointer;
     padding: 16px;
     border: none;
@@ -23,7 +24,12 @@
     padding: 0 16px;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 250ms ease-out;
+    position: static;
+    transition: max-height var(--animation-duration) ease-out;
+}
+
+.accordion.expanded .content.visible {
+    overflow: visible;
 }
 
 .accordion .content > :first-child {

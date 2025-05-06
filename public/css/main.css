@@ -18,6 +18,7 @@
     --border-radius-smaller: 4px;
     --gap: 16px;
     --gap-smaller: 8px;
+    --animation-duration: 250ms;
 }
 
 * {
@@ -149,5 +150,5 @@ button:hover,
 
 
 .dropdown.animate {
-    transition: max-height ease-in-out 250ms;
+    transition: max-height ease-in-out var(--animation-duration);
 }
