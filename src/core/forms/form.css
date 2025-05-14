@@ -364,6 +364,8 @@ input.form-invalid {
 
     transition: max-height ease-in-out var(--animation-duration),
             outline-color var(--animation-duration);
+
+    z-index: 1;
 }
 
 .form-select.expanded .dropdown {

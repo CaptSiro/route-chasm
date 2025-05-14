@@ -50,8 +50,18 @@ async function form_showError(form, error) {
         return;
     }
 
+    const fn = std_getFunction(input.dataset.onError) ?? form_onError;
+    await fn(input, form, message);
+}
+
+/**
+ * @param {HTMLElement} input
+ * @param {HTMLFormElement} form
+ * @param {string} message
+ */
+function form_onError(input, form, message) {
     input.classList.add("form-invalid");
-    const errorView = jsml.span("form-invalid-message", message);
+    const errorView = jsml.span("form-invalid-message auto-delete", message);
     input.after(errorView);
 }
 
@@ -75,7 +85,7 @@ async function form_submit(form, event) {
         'X-Response-Type': 'application/json'
     };
 
-    for (const errorView of $$('.form-invalid-message', form)) {
+    for (const errorView of $$('.auto-delete', form)) {
         errorView.remove();
     }
 
@@ -90,36 +100,56 @@ async function form_submit(form, event) {
     });
 
     if (response.status >= 400) {
-        /** @type {any} */
-        const result = await response.json();
-        if (is(result)) {
-            await form_showError(form, result);
-            return;
-        }
-
-        if (Array.isArray(result['group'])) {
-            for (const error of result['group']) {
-                await form_showError(form, error);
-            }
-
-            return;
-        }
-
-        if (is(result['message'])) {
-            await window_alert(result['message'], WINDOW_ALERT_SETTINGS);
-        }
-
+        const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onSubmitFailure;
+        await fn(form, response);
         return;
     }
 
     if (response.headers.has('X-Next')) {
-        window.location.replace(response.headers.get('X-Next'));
+        const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onRedirect;
+        await fn(form, response, response.headers.get('X-Next'));
         return;
     }
 
-    // todo
-    // add std_getFunction(data-handler)
-    console.log(await response.text());
+    const fn = std_getFunction(form.dataset.onSubmitSuccess);
+    if (is(fn)) {
+        fn(form, response);
+    }
+}
+
+/**
+ * @param {HTMLFormElement} form
+ * @param {Response} response
+ * @param {string} redirect
+ */
+function form_onRedirect(form, response, redirect) {
+    window.location.replace(redirect);
+}
+
+/**
+ * @param {HTMLFormElement} form
+ * @param {Response} response
+ * @return {Promise<void>}
+ */
+async function form_onSubmitFailure(form, response) {
+    /** @type {any} */
+    const result = await response.json();
+    if (is(result)) {
+        await form_showError(form, result);
+        return;
+    }
+
+    if (Array.isArray(result['group'])) {
+        for (const error of result['group']) {
+            await form_showError(form, error);
+        }
+
+        return;
+    }
+
+    if (is(result['message'])) {
+        await window_alert(result['message'], WINDOW_ALERT_SETTINGS);
+    }
 }
 
 
@@ -288,6 +318,22 @@ function form_password(container) {
         show.classList.add('hide');
         hide.classList.remove('hide');
     });
+}
+
+/**
+ * @param {HTMLElement} input
+ * @param {HTMLFormElement} form
+ * @param {string} message
+ */
+function form_password_onError(input, form, message) {
+    const password = input.closest(".form-control.password");
+    if (!is(password)) {
+        return window_alert(message, WINDOW_ALERT_SETTINGS);
+    }
+
+    password.append(
+        jsml.span("form-invalid-message auto-delete", message)
+    );
 }
 
 

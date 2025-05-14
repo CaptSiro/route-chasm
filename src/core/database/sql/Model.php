@@ -76,7 +76,7 @@ class Model implements JsonSerializable, Identifier {
      */
     public static function fromId(mixed $id, ?array $projection = null): ?static {
         return ModelFactory::extract(static::class)
-            ->first($id, $projection);
+            ->fromId($id, $projection);
     }
 
     /**

@@ -20,11 +20,13 @@ use core\http\HttpMethod;
 use core\url\UrlBuilder;
 use core\view\ContainerContent;
 use core\view\View;
+use models\core\Setting\Setting;
 use models\core\User\User;
 
 class AdminLogin extends ContainerContent {
     public const PASSWORD = 'ADMIN_LOGIN_PASSWORD';
     public const QUERY_LOGOUT = '__logout';
+    public const SETTING_NAME_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
 
     private const METHOD_USER = 'user';
     private const METHOD_ENV = 'env';
@@ -52,22 +54,48 @@ class AdminLogin extends ContainerContent {
         return true;
     }
 
+    public function useEnvPasswordMethod(): bool {
+        $setting = Setting::fromName(self::SETTING_NAME_ENV_PASSWORD);
+
+        if (is_null($setting)) {
+            $setting = new Setting();
+
+            $setting->name = self::SETTING_NAME_ENV_PASSWORD;
+            $setting->value = 'yes';
+            $setting->editable = true;
+
+            $setting->save();
+        }
+
+        return $setting->toBoolean();
+    }
+
     public function createLoginForm(): View {
+        $useEnvPasswordMethod = $this->useEnvPasswordMethod();
+
         $userLogin = new Form(HttpMethod::POST, namespace: self::METHOD_USER);
 
         $userLogin->add(Form::title('Admin Login'));
         $userLogin->add(new TextField(self::FIELD_TAG, 'Tag'));
         $userLogin->add(new PasswordField(self::FIELD_PASSWORD, 'Password'));
         $userLogin->add(new HiddenField(self::FIELD_METHOD, self::METHOD_USER));
-        $userLogin->add(new SpotlightSwitchLink('Login via .env password ', 'env', 'here'));
+
+        if ($useEnvPasswordMethod) {
+            $userLogin->add(new SpotlightSwitchLink('Login with .env password ', 'env', 'here'));
+        }
+
         $userLogin->add(new Submit());
+
+        if (!$useEnvPasswordMethod) {
+            return $userLogin;
+        }
 
         $envLogin = new Form(HttpMethod::POST, namespace: self::METHOD_ENV);
 
         $envLogin->add(Form::title('.env Admin Login'));
         $envLogin->add(new PasswordField(self::FIELD_PASSWORD, 'Password'));
         $envLogin->add(new HiddenField(self::FIELD_METHOD, self::METHOD_ENV));
-        $envLogin->add(new SpotlightSwitchLink('Login via user account ', 'user', 'here'));
+        $envLogin->add(new SpotlightSwitchLink('Login with user account ', 'user', 'here'));
         $envLogin->add(new Submit());
 
         return new Spotlight([
@@ -77,15 +105,22 @@ class AdminLogin extends ContainerContent {
     }
 
     public function execute(Request $request, Response $response): void {
-        // todo
-        // change to User::fromSession($request->session())->inGroup(Admin);
-        if ($request->getSession()->exists(App::KEY_USER)) {
+        $loggedIn = User::fromSession($request->getSession());
+        if (!is_null($loggedIn)) {
             $url = $request->getUrl();
             $logout = $url->getQuery()->exists(self::QUERY_LOGOUT);
             if ($logout) {
                 $url->getQuery()->remove(self::QUERY_LOGOUT);
-                $request->getSession()->remove(App::KEY_USER);
+                User::logout();
                 $response->redirect($url->full());
+            }
+
+            if (!$loggedIn->isAdmin()) {
+                $this->setTemplate(
+                    $this->getResource('AdminLogin.permissionDenied.phtml')
+                );
+
+                parent::execute($request, $response);
             }
 
             return;
@@ -107,13 +142,17 @@ class AdminLogin extends ContainerContent {
                 $password = $body->getStrict(self::FIELD_PASSWORD);
 
                 if ($method === self::METHOD_ENV) {
+                    if (!$this->useEnvPasswordMethod()) {
+                        $response->setStatus(HttpCode::CE_METHOD_NOT_ALLOWED);
+                        $response->renderRoot(new Message('.env password method is not allowed'));
+                    }
+
                     if (App::getInstance()->getEnv()->get(self::PASSWORD) !== $password) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
                         $response->renderRoot(new Message('The password is wrong'));
                     }
 
-                    $user = User::fromTag(User::TAG_ROOT);
-                    $request->getSession()->set(App::KEY_USER, $user->id);
+                    User::fromTag(User::TAG_ROOT)?->login();
 
                     $response->setStatus(HttpCode::S_OK);
                     $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->full());
@@ -126,15 +165,15 @@ class AdminLogin extends ContainerContent {
 
                     if (!password_verify($password, $user->password)) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message('The password is wrong or the user is not admin'));
+                        $response->renderRoot(new Message('The password is wrong'));
                     }
 
                     if (!$user->isAdmin()) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message('The password is wrong or the user is not admin'));
+                        $response->renderRoot(new Message('The user does not have adequate privilege to login as Admin'));
                     }
 
-                    $request->getSession()->set(App::KEY_USER, $user->id);
+                    $user->login();
 
                     $response->setStatus(HttpCode::S_OK);
                     $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->full());

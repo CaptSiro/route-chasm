@@ -83,7 +83,7 @@ final class Setting extends Model implements Editable {
     }
 
     public function toBoolean(): bool {
-        return boolval($this->value);
+        return filter_var($this->value, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function toFloat(): float {
