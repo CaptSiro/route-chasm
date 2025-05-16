@@ -25,8 +25,6 @@ use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
 use models\core\ModuleRecord;
-use modules\jsml\Jsml;
-use modules\SideLoader\SideLoader;
 
 class App implements Loader {
     private static ?self $instance = null;
@@ -68,10 +66,7 @@ class App implements Loader {
      * @return array<Module>
      */
     protected static function getDefaultModules(): array {
-        return [
-            SideLoader::getInstance(),
-            Jsml::getInstance(),
-        ];
+        return [];
     }
 
     public static function createOptionDoNotAutoload(string $moduleClass): string {

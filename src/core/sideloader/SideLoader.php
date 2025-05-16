@@ -1,39 +1,35 @@
 <?php
 
-namespace modules\SideLoader;
+namespace core\sideloader;
 
 use core\App;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
-use core\database\sql\Sql;
-use core\fs\Glob;
 use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
-use core\module\DatabaseMigration;
-use core\module\DefaultModule;
 use core\module\Loader;
-use core\module\ModuleInfo;
 use core\patterns\Ident;
 use core\Router;
+use core\sideloader\api\SideLoaderApi;
+use core\sideloader\importers\FileImporter;
 use core\Singleton;
-use core\ResourceLoader;
 use core\url\UrlBuilder;
-use core\utils\Arrays;
 use core\utils\Files;
 use core\view\BufferTransform;
+use core\view\Renderer;
 use core\view\View;
 use models\core\Setting\Setting;
-use modules\SideLoader\Api\Api;
-use modules\SideLoader\FileImporter\FileImporter;
+use models\core\SideLoaderRecord;
 
-class SideLoader extends DefaultModule implements View {
-    use ResourceLoader, Singleton;
+class SideLoader implements View {
+    use Renderer, Singleton;
+
+
 
     public const IDENTIFIER = 'route-chasm-core:side-loader';
-    public const VERSIONS = ['v1'];
 
     public const SETTING_HASH_LENGTH = self::IDENTIFIER . '_hash-length';
     public const SETTING_MAX_RETRIES = self::IDENTIFIER . '_max-retries';
@@ -44,7 +40,7 @@ class SideLoader extends DefaultModule implements View {
     public const IMPORTER_CSS_CLASS = 'side-loader-importer';
 
     /**
-     * If <code>FORCE_QUERY</code> is present in url query the default response type checking is ignored and
+     * If <code>QUERY_FORCE</code> is present in url query the default response type checking is ignored and
      * <code>HEADER_X_REQUIRE</code> will always be set on response
      */
     public const QUERY_FORCE = 's';
@@ -54,8 +50,7 @@ class SideLoader extends DefaultModule implements View {
 
     public static function getApi(): View {
         $instance = self::getInstance();
-        $instance->accessibleAfterLoad();
-        return new Api(App::getInstance()->prependHome($instance->router->getUrlPath()));
+        return new SideLoaderApi(App::getInstance()->prependHome($instance->router->getUrlPath()));
     }
 
 
@@ -70,6 +65,7 @@ class SideLoader extends DefaultModule implements View {
 
     protected Setting $hashLength;
     protected Setting $maxRetries;
+    protected bool $initialized;
 
 
 
@@ -93,48 +89,9 @@ class SideLoader extends DefaultModule implements View {
         );
 
         $this->router = new Router();
+        $this->initialized = false;
         $this->hasBeenRendered = false;
-    }
 
-
-
-    public function getInfo(): ModuleInfo {
-        return new ModuleInfo(
-            self::IDENTIFIER,
-            Arrays::last(self::VERSIONS)
-        );
-    }
-
-    public function migrate(string $fromVersion): void {
-        $database = new DatabaseMigration(
-            Sql::getConnection(App::DATABASE),
-            self::VERSIONS,
-            new Glob(
-                $this->getResource('sql'),
-                '.sql',
-                true
-            )
-        );
-
-        $database->migrateDatabase($fromVersion, Arrays::last(self::VERSIONS));
-    }
-
-
-
-    public function addImporter(string $fileType, FileImporter $importer): void {
-        $this->fileImporters[$fileType] = $importer;
-    }
-
-    public function doSendRequireHeader(Request $request): bool {
-        $type = App::getInstance()
-            ->getResponse()
-            ->getFormat($request);
-
-        return $type !== Format::IDENT_HTML
-            || $request->getUrl()->getQuery()->exists(self::QUERY_FORCE);
-    }
-
-    public function load(Loader $loader): void {
         $this->hashLength = Setting::fromName(
             self::SETTING_HASH_LENGTH,
             true,
@@ -153,7 +110,28 @@ class SideLoader extends DefaultModule implements View {
         }
 
         $this->maxRetries = $retries;
+    }
 
+
+
+    public function addImporter(string $fileType, FileImporter $importer): void {
+        $this->fileImporters[$fileType] = $importer;
+    }
+
+    public function doSendRequireHeader(Request $request): bool {
+        $type = App::getInstance()
+            ->getResponse()
+            ->getFormat($request);
+
+        return $type !== Format::IDENT_HTML
+            || $request->getUrl()->getQuery()->exists(self::QUERY_FORCE);
+    }
+
+    public function isInitialized(): bool {
+        return $this->initialized;
+    }
+
+    public function initRouter(Loader $loader): Router {
         $loader->on(Response::EVENT_OB_TRANSFORM, function (BufferTransform $buffer) {
             if (!$this->hasBeenRendered) {
                 return;
@@ -222,7 +200,7 @@ class SideLoader extends DefaultModule implements View {
 
                 $files = $request->getUrl()->getQuery()->getStrict('files');
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
-                    $entry = CacheRecord::fromHash($files);
+                    $entry = SideLoaderRecord::fromHash($files);
                     if (is_null($entry)) {
                         $response->sendMessage(
                             "File not found (file hash: '$files')",
@@ -234,7 +212,7 @@ class SideLoader extends DefaultModule implements View {
                 }
 
                 foreach (explode(self::FILE_SEPARATOR, $files) as $hash) {
-                    $entry = CacheRecord::fromHash($hash);
+                    $entry = SideLoaderRecord::fromHash($hash);
                     if (!is_null($entry)) {
                         $response->readFile($entry->path, doFlush: false);
                     }
@@ -246,16 +224,11 @@ class SideLoader extends DefaultModule implements View {
                 ->query('files')
         );
 
-        $loader
-            ->getMainRouter()
-            ->bind('/import', $this->router);
-
-        $this->markLoaded();
+        $this->initialized = true;
+        return $this->router;
     }
 
     public function joinHashed(array $files): string {
-        $this->accessibleAfterLoad();
-
         $hashed = '';
         $first = true;
         $length = $this->hashLength->toInt();
@@ -267,10 +240,10 @@ class SideLoader extends DefaultModule implements View {
                 continue;
             }
 
-            $entry = CacheRecord::fromPath($real);
+            $entry = SideLoaderRecord::fromPath($real);
             if (is_null($entry)) {
-                $entry = new CacheRecord();
-                $entry->hash = CacheRecord::generateHash($this->maxRetries->toInt(), $length);
+                $entry = new SideLoaderRecord();
+                $entry->hash = SideLoaderRecord::generateHash($this->maxRetries->toInt(), $length);
                 $entry->path = $real;
                 $entry->save();
             }
@@ -313,8 +286,6 @@ class SideLoader extends DefaultModule implements View {
     }
 
     public function createImportUrl(string $type, array $files): string {
-        $this->accessibleAfterLoad();
-
         $path = App::getInstance()
             ->prependHome($this->router->getUrlPath());
 
@@ -336,8 +307,6 @@ class SideLoader extends DefaultModule implements View {
     }
 
     public function import(string $type, string $file): void {
-        $this->accessibleAfterLoad();
-
         if (!isset($this->files[$type])) {
             $this->files[$type] = [$file];
             return;

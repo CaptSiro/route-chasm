@@ -1,9 +1,9 @@
 <?php
 
-namespace modules\SideLoader\FileImporter;
+namespace core\sideloader\importers;
 
-use core\view\View;
 use core\view\Renderer;
+use core\view\View;
 
 class FileImporter implements View {
     use Renderer;

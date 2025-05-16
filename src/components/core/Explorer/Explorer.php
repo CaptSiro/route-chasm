@@ -4,8 +4,8 @@ namespace components\core\Explorer;
 
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\ContextAwareWebPage;
+use core\sideloader\Css;
 use core\view\ContainerContent;
-use modules\SideLoader\Css;
 
 class Explorer extends ContainerContent {
     public function __construct(

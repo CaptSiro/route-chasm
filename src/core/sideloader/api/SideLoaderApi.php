@@ -1,11 +1,11 @@
 <?php
 
-namespace modules\SideLoader\Api;
+namespace core\sideloader\api;
 
-use core\view\View;
 use core\view\Renderer;
+use core\view\View;
 
-class Api implements View {
+class SideLoaderApi implements View {
     use Renderer;
 
     public function __construct(

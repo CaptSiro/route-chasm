@@ -32,6 +32,17 @@ CREATE TABLE IF NOT EXISTS core_setting (
 
 
 
+DROP TABLE IF EXISTS `core_sideloader`;
+CREATE TABLE IF NOT EXISTS `core_sideloader` (
+    `id_cache` INT NOT NULL AUTO_INCREMENT ,
+    `hash` VARCHAR(127) NOT NULL ,
+    `path` VARCHAR(255) NOT NULL ,
+    PRIMARY KEY (`id_cache`),
+    INDEX (`hash`)
+) ENGINE = MyISAM;
+
+
+
 DROP TABLE IF EXISTS `core_users_x_groups`;
 DROP TABLE IF EXISTS `core_user`;
 CREATE TABLE IF NOT EXISTS `core_user` (

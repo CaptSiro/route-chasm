@@ -8,8 +8,8 @@ use components\core\Icon;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
 use core\App;
+use core\sideloader\Css;
 use core\url\UrlBuilder;
-use modules\SideLoader\Css;
 
 Css::import($this->getResource('admin-page.css'));
 $request = App::getInstance()->getRequest();

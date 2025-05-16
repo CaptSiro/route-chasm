@@ -1,6 +1,6 @@
 <?php
 
-namespace modules\SideLoader;
+namespace models\core;
 
 use core\App;
 use core\database\sql\Column;
@@ -15,9 +15,9 @@ use core\utils\Strings;
  * @property string path
  */
 
-#[Table('sideloader_cache')]
+#[Table('core_sideloader')]
 #[Database(App::DATABASE)]
-class CacheRecord extends Model {
+class SideLoaderRecord extends Model {
     public static function fromHash(string $hash): ?static {
         return static::first(
             where: Query::infer('hash = ?', [$hash]),

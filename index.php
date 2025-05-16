@@ -29,13 +29,13 @@ use core\forms\layout\Row\Row;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\sideloader\SideLoader;
 
 require_once __DIR__ ."/src/autoload.php";
 
 
 $config = new EnvConfig(App::getEnvStatic());
-AppConfig::getInstance()
-    ->set($config);
+AppConfig::getInstance()->set($config);
 
 Sql::connect(App::DATABASE, new MySqlDriver(
     $config->getSqlConfig()
@@ -49,6 +49,7 @@ $router = $app->getMainRouter();
 
 
 
+$router->bind('/import', SideLoader::getInstance()->initRouter($app));
 $router->bind('/admin', AdminRouter::getInstance(new AdminHome()));
 
 

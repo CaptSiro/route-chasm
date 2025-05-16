@@ -1,6 +1,6 @@
 <?php
 
-namespace modules\SideLoader;
+namespace core\sideloader;
 
 class Javascript {
     public const FILE_TYPE = 'js';

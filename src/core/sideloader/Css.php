@@ -1,6 +1,6 @@
 <?php
 
-namespace modules\SideLoader;
+namespace core\sideloader;
 
 class Css {
     public const FILE_TYPE = 'css';

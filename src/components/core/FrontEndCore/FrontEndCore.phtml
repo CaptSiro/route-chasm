@@ -1,12 +1,12 @@
 <?php /** @var FrontEndCore $this */
 
 use components\core\FrontEndCore\FrontEndCore;
-use modules\SideLoader\Css;
-use modules\SideLoader\Javascript;
-use modules\SideLoader\SideLoader;
+use core\sideloader\Css;
+use core\sideloader\Javascript;
+use core\sideloader\SideLoader;
 
 ?>
-<?php if (SideLoader::getInstance()->isLoaded()): ?>
+<?php if (SideLoader::getInstance()->isInitialized()): ?>
     <script
         <?= SideLoader::getInstance()
             ->createSourceAttribute(
