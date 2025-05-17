@@ -2,10 +2,16 @@
 
 use components\core\Admin\SptfTests\SptfTests;
 use core\sideloader\Css;
+use core\sideloader\Javascript;
 
 Css::import($this->getResource('sptf.css'));
+Javascript::import($this->getResource('sptf.js'));
 
 ?>
+<section>
+    <button x-init="sptf_hideButton">Hide passed tests</button>
+</section>
+
 <section class="sptf">
     <?php foreach ($this->getTestFiles() as $test): ?>
         <?= $test ?>

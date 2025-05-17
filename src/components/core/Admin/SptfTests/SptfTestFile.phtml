@@ -1,5 +1,9 @@
 <?php /** @var \components\core\Admin\SptfTests\SptfTestFile $this */ ?>
-<div class="test-file">
+<div
+    class="test-file"
+    data-failed="<?= $this->testFile->getFailed() ?>"
+    data-passed="<?= $this->testFile->getPassed() ?>"
+>
     <div class="test-file-head">
         <span class="passed"><?= $this->testFile->getPassed() ?></span>
         <span class="failed"><?= $this->testFile->getFailed() ?></span>
