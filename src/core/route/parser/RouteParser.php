@@ -10,10 +10,16 @@ class RouteParser {
     public const REGEX_ALPHANUMERIC = '[a-zA-Z0-9]';
     public const REGEX_IDENT = self::REGEX_ALPHA . self::REGEX_ALPHANUMERIC . '*';
 
+    public static function createParameter(string $name, string $regex): string {
+        return "(<$name>$regex)";
+    }
+
+
+
     public function __construct(
         protected string $identRegex = self::REGEX_IDENT,
         protected string $anyRegex = self::REGEX_ANY,
-        protected bool $mergeConsecutiveSlashes = false,
+        protected bool $mergeConsecutiveSlashes = true,
     ) {}
 
 
@@ -55,7 +61,7 @@ class RouteParser {
                     }
 
                     $regex = $parameters[$ident] ?? $this->anyRegex;
-                    $segment .= "(<$ident>$regex)";
+                    $segment .= self::createParameter($ident, $regex);
                     $position += 2;
                     break;
                 }

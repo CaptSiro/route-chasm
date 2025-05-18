@@ -4,12 +4,31 @@ namespace core\route;
 
 use core\collection\iterator\ArrayIterator;
 use core\collection\iterator\ArrayIteratorTrait;
+use core\route\parser\RouteParser;
 
 /**
  * @template-implements ArrayIterator<int, string>
  */
 class Route implements ArrayIterator {
     use ArrayIteratorTrait;
+
+    /**
+     * @param string $route
+     * @param array<string, string> $parameters
+     * @return static
+     */
+    public static function from(string $route, array $parameters = []): static {
+        // todo
+        // get app Route parser
+        $parser = new RouteParser();
+        return $parser->parse($route, $parameters);
+    }
+
+    public static function createSegmentRegex(string $segment): string {
+        return "/$segment/";
+    }
+
+
 
     /**
      * @var string[]
@@ -34,6 +53,10 @@ class Route implements ArrayIterator {
 
     public function getDepth(): int {
         return count($this->segments);
+    }
+
+    public function getSegment(int $index): ?string {
+        return $this->segments[$index] ?? null;
     }
 
 
