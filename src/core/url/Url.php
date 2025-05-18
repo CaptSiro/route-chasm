@@ -3,8 +3,8 @@
 namespace core\url;
 
 use core\App;
+use core\collection\dictionary\StrictMap;
 use core\collection\StrictDictionary;
-use core\collection\StrictMap;
 use core\Copy;
 use core\utils\Strings;
 

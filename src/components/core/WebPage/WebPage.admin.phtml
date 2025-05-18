@@ -29,8 +29,6 @@ $request = App::getInstance()->getRequest();
     }
 </script>
 <body class="admin-page">
-    <?= Terminal::getInstance() ?>
-
     <nav>
         <div class="start">
             <?= new AdminProject() ?>
@@ -68,5 +66,7 @@ $request = App::getInstance()->getRequest();
             <?= $child->render() ?>
         <?php endforeach; ?>
     </main>
+
+    <?= Terminal::getInstance() ?>
 </body>
 </html>

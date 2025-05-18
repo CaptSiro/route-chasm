@@ -1,6 +1,8 @@
 <?php
 
-namespace core\collection;
+namespace core\collection\dictionary;
+
+use core\collection\StrictDictionary;
 
 class Session implements StrictDictionary {
     protected bool $isStarted = false;

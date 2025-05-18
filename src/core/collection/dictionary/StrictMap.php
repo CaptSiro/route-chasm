@@ -1,7 +1,8 @@
 <?php
 
-namespace core\collection;
+namespace core\collection\dictionary;
 
+use core\collection\StrictDictionary;
 use JsonSerializable;
 
 class StrictMap implements StrictDictionary, JsonSerializable {

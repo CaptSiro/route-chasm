@@ -3,8 +3,8 @@
 namespace core;
 
 use Closure;
-use core\collection\Map;
-use core\collection\StrictMap;
+use core\collection\dictionary\Map;
+use core\collection\dictionary\StrictMap;
 use core\communication\FormatMatcher;
 use core\communication\parser\FormBodyParser;
 use core\communication\parser\JsonBodyParser;

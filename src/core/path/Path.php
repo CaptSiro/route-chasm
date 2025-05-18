@@ -9,6 +9,14 @@ use core\Pipeline;
 
 class Path implements Pipeline {
     public static function join(string ...$segments): string {
+        return self::joinArray($segments);
+    }
+
+    /**
+     * @param array<string> $segments
+     * @return string
+     */
+    public static function joinArray(array $segments): string {
         $segments = array_values(array_filter($segments, fn($x) => $x !== ''));
 
         if (empty($segments)) {

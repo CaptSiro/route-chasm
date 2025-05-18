@@ -1,7 +1,8 @@
 <?php
 
-namespace core\collection;
+namespace core\collection\dictionary;
 
+use core\collection\StrictDictionary;
 use core\utils\Arrays;
 
 class StrictStack implements StrictDictionary {

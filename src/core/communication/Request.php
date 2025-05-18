@@ -3,10 +3,10 @@
 namespace core\communication;
 
 use core\App;
-use core\collection\Session;
+use core\collection\dictionary\Session;
+use core\collection\dictionary\StrictMap;
+use core\collection\dictionary\StrictStack;
 use core\collection\StrictDictionary;
-use core\collection\StrictMap;
-use core\collection\StrictStack;
 use core\http\HttpHeader;
 use core\url\Url;
 

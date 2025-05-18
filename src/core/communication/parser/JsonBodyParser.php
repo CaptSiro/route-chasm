@@ -3,7 +3,7 @@
 namespace core\communication\parser;
 
 use core\Active;
-use core\collection\StrictMap;
+use core\collection\dictionary\StrictMap;
 use core\communication\Format;
 use core\communication\Request;
 use core\Flags;

@@ -1,7 +1,8 @@
 <?php
 
-namespace core\collection;
+namespace core\collection\dictionary;
 
+use core\collection\Dictionary;
 use core\Flags;
 use core\utils\Arrays;
 use JsonSerializable;
