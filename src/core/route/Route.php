@@ -24,10 +24,6 @@ class Route implements ArrayIterator {
         return $parser->parse($route, $parameters);
     }
 
-    public static function createSegmentRegex(string $segment): string {
-        return "/$segment/";
-    }
-
 
 
     /**
@@ -55,8 +51,11 @@ class Route implements ArrayIterator {
         return count($this->segments);
     }
 
-    public function getSegment(int $index): ?string {
-        return $this->segments[$index] ?? null;
+    /**
+     * @return array<string>
+     */
+    public function getSegments(): array {
+        return $this->segments;
     }
 
 

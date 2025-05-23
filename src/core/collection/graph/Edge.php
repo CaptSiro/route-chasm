@@ -16,17 +16,19 @@ class Edge {
         protected Vertex $vertex
     ) {}
 
+
+
+    /**
+     * @return E
+     */
+    public function get(): mixed {
+        return $this->value;
+    }
+
     /**
      * @return Vertex<V, E>
      */
     public function getVertex(): Vertex {
         return $this->vertex;
-    }
-
-    /**
-     * @return E
-     */
-    public function getValue(): mixed {
-        return $this->value;
     }
 }

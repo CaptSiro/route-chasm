@@ -28,7 +28,7 @@ class Vertex {
     /**
      * @return V
      */
-    public function getValue(): mixed {
+    public function get(): mixed {
         return $this->value;
     }
 

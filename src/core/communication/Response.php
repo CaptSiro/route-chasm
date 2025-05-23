@@ -21,6 +21,12 @@ class Response {
      */
     public const EVENT_OB_TRANSFORM = self::class .':ob-transform';
 
+    public static function test(?LimitedFormat $format = null): static {
+        return new static(
+            $format ?? (new ResponseFormat())->setFormatMatcher(new FormatMatcher())
+        );
+    }
+
 
 
     protected array $headers;

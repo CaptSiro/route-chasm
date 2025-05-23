@@ -1,12 +1,20 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
+use core\actions\ActCounter;
+use core\actions\Action;
+use core\communication\Request;
+use core\communication\Response;
 use core\route\parser\RouteParser;
 use core\route\parser\RouteParsingException;
 use core\route\parser\Token;
 use core\route\parser\Tokenizer;
 use core\route\parser\TokenType;
+use core\route\Path;
 use core\route\Route;
+use core\route\RouteNode;
 use core\route\RouteTree;
+use core\route\RouteSegment;
+use core\route\Trace;
 use sptf\Sptf;
 
 Sptf::test("should tokenize routes correctly", function () {
@@ -38,14 +46,14 @@ Sptf::test("should tokenize routes correctly", function () {
             new Token(TokenType::BRACKET_L, "["),
             new Token(TokenType::IDENT, "foo"),
             new Token(TokenType::BRACKET_R, "]"),
-            Token::eof()
+            Token::eof(),
         ],
         "/[foo]" => [
             new Token(TokenType::SLASH, "/"),
             new Token(TokenType::BRACKET_L, "["),
             new Token(TokenType::IDENT, "foo"),
             new Token(TokenType::BRACKET_R, "]"),
-            Token::eof()
+            Token::eof(),
         ],
         "/@[foo]/[bar]/fizz" => [
             new Token(TokenType::SLASH, "/"),
@@ -208,25 +216,148 @@ Sptf::test("should return correct depth of route", function () {
 });
 
 Sptf::test("should create vertex", function () {
+    Sptf::allowPrinting();
+
     $foo = "foo+";
-    $fooSegment = Route::createSegmentRegex(RouteParser::createParameter("foo", $foo));
-    $barSegment = Route::createSegmentRegex("bar");
+    $fooSegment = RouteSegment::createRegex(RouteParser::createParameter("foo", $foo));
+    $barSegment = RouteSegment::createRegex("bar");
 
     $a = Route::from("/[foo]", ["foo" => $foo]);
     $b = Route::from("/[foo]/bar", ["foo" => $foo]);
 
     $tree = new RouteTree();
-    $tree->getVertex($a);
-    $tree->getVertex($b);
+    $tree->getTerminalVertex($a);
+    $tree->getTerminalVertex($b);
 
     $root = $tree->getRoot();
 
     Sptf::expect(count($root->getEdges()))->toBe(1);
 
     $fooEdge = $root->getEdges()[0];
-    Sptf::expect($fooEdge->getValue())->toBe($fooSegment);
+    Sptf::expect($fooEdge->get()->getRegex())->toBe($fooSegment);
     Sptf::expect(count($fooEdge->getVertex()->getEdges()))->toBe(1);
 
     $barEdge = $fooEdge->getVertex()->getEdges()[0];
-    Sptf::expect($barEdge->getValue())->toBe($barSegment);
+    Sptf::expect($barEdge->get()->getRegex())->toBe($barSegment);
+});
+
+/**
+ * @param array<Trace<RouteNode, RouteSegment>> $traces
+ * @return void
+ */
+function call_actions(array $traces): void {
+    $q = Request::test();
+    $p = Response::test();
+
+    foreach ($traces as $trace) {
+        foreach ($trace->getVertexes() as $vertex) {
+            foreach ($vertex->get()->getActions() as $action) {
+                var_dump("act id=". $vertex->getInstanceId() .' '. $vertex->getParentEdge()?->get()->getRegex());
+                $action->act($q, $p);
+            }
+        }
+    }
+}
+
+function assert_counts(array $counters): void {
+    foreach ($counters as $tuple) {
+        [$counter, $count] = $tuple;
+        Sptf::expect($counter->getN())->toBe($count);
+    }
+}
+
+Sptf::test("should find correct vertexes", function () {
+    Sptf::allowPrinting();
+
+    $tree = new RouteTree();
+
+    $root = new ActCounter();
+    $tree
+        ->getTerminalVertex(Route::from("/"))
+        ->addAction($root);
+
+    $any = new ActCounter();
+    $tree
+        ->getTerminalVertex(Route::from("/**"))
+        ->addAction($any);
+
+    $foo = new ActCounter();
+    $tree
+        ->getTerminalVertex(Route::from("/foo"))
+        ->addAction($foo);
+
+    $fooBar = new ActCounter();
+    $tree
+        ->getTerminalVertex(Route::from("/foo/bar"))
+        ->addAction($fooBar);
+
+    $dynamicFoo = new ActCounter();
+    $tree
+        ->getTerminalVertex(Route::from("/[foo]", ["foo" => "fo+"]))
+        ->addAction($dynamicFoo);
+
+    $dynamicFooBar = new ActCounter();
+    $tree
+        ->getTerminalVertex(Route::from("/[foo]/[bar]", ["foo" => "fo+", "bar" => "ba?r"]))
+        ->addAction($dynamicFooBar);
+
+    call_actions($tree->traceSearch(Path::from("/")));
+    assert_counts([
+        [$root, 1],
+        [$any, 0],
+        [$foo, 0],
+        [$fooBar, 0],
+        [$dynamicFoo, 0],
+        [$dynamicFooBar, 0],
+    ]);
+
+    call_actions($tree->traceSearch(Path::from("/non-existent")));
+    assert_counts([
+        [$root, 2],
+        [$any, 1],
+        [$foo, 0],
+        [$fooBar, 0],
+        [$dynamicFoo, 0],
+        [$dynamicFooBar, 0],
+    ]);
+
+    call_actions($tree->traceSearch(Path::from("/foo")));
+    assert_counts([
+        [$root, 5],
+        [$any, 2],
+        [$foo, 1],
+        [$fooBar, 0],
+        [$dynamicFoo, 1],
+        [$dynamicFooBar, 0],
+    ]);
+
+    call_actions($tree->traceSearch(Path::from("/foo/bar")));
+    assert_counts([
+        [$root, 8],
+        [$any, 3],
+        [$foo, 2],
+        [$fooBar, 1],
+        [$dynamicFoo, 2],
+        [$dynamicFooBar, 1],
+    ]);
+
+    call_actions($tree->traceSearch(Path::from("/foooo")));
+    assert_counts([
+        [$root, 10],
+        [$any, 4],
+        [$foo, 2],
+        [$fooBar, 1],
+        [$dynamicFoo, 3],
+        [$dynamicFooBar, 1],
+    ]);
+
+    call_actions($tree->traceSearch(Path::from("/foooo/br")));
+    assert_counts([
+        [$root, 12],
+        [$any, 5],
+        [$foo, 2],
+        [$fooBar, 1],
+        [$dynamicFoo, 4],
+        [$dynamicFooBar, 2],
+    ]);
 });

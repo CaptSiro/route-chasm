@@ -2,50 +2,121 @@
 
 namespace core\route;
 
+use core\collection\graph\Edge;
+use core\collection\graph\Graph;
 use core\collection\graph\TreeVertex;
-use core\path\Path;
+use core\collection\graph\Vertex;
 
-class RouteTree {
-    /** @var TreeVertex<RouteNode, string> */
+/**
+ * @template-implements Graph<RouteNode, RouteSegment>
+ */
+class RouteTree implements Graph {
+    /** @var TreeVertex<RouteNode, RouteSegment> */
     protected TreeVertex $root;
 
-    /** @var RouteSearch<RouteNode, string> */
-    protected RouteSearch $search;
-
-    /** @var RouteExtend<RouteNode, string> */
+    /** @var RouteExtend<RouteNode, RouteSegment> */
     protected RouteExtend $routeExtend;
 
+
+
     /**
-     * @param ?TreeVertex<RouteNode, string> $root
+     * @param ?TreeVertex<RouteNode, RouteSegment> $root
      */
     public function __construct(
         ?TreeVertex $root = null
     ) {
-        $this->root = $root ?? new TreeVertex(new RouteNode());
-        $this->search = new RouteSearch();
-        $this->routeExtend = new RouteExtend(fn() => new TreeVertex(new RouteNode()));
+        $this->root = $root ?? RouteNode::createEmpty();
+        $this->routeExtend = new RouteExtend($this);
     }
 
 
 
     /**
-     * @return TreeVertex<RouteNode, string>
+     * @return TreeVertex<RouteNode, RouteSegment>
      */
     public function getRoot(): TreeVertex {
         return $this->root;
     }
 
-    public function search(Path $path): null {
-        $vertexes = $this->search->search($this->root, $path);
-        return null;
+    /**
+     * @param TreeVertex<RouteNode, RouteSegment> $root
+     * @param Path $path
+     * @return array<TreeVertex<RouteNode, RouteSegment>>
+     */
+    public function search(TreeVertex $root, Path $path): array {
+        if ($path->getDepth() === 0) {
+            return [$root];
+        }
+
+        /** @var TreeVertex<RouteNode, RouteSegment>[] $layer */
+        $layer = [$root];
+
+        /** @var TreeVertex<RouteNode, RouteSegment>[] $layerNext */
+        $layerNext = [];
+
+        /** @var TreeVertex<RouteNode, RouteSegment>[] $terminal */
+        $terminal = [];
+
+        $maxDepth = $path->getDepth() - 1;
+
+        foreach ($path->getSegments() as $i => $segment) {
+            if (empty($layer)) {
+                break;
+            }
+
+            foreach ($layer as $vertex) {
+                $edges = $vertex->getEdges();
+
+                if (empty($edges)) {
+                    $terminal[] = $vertex;
+                    continue;
+                }
+
+                foreach ($edges as $edge) {
+                    if ($edge->get()->test($segment)) {
+                        $layerNext[] = $edge->getVertex();
+                    }
+                }
+            }
+
+            $layer = $layerNext;
+            $layerNext = [];
+        }
+
+        return array_merge($terminal, $layer);
+    }
+
+    /**
+     * @param Path $path
+     * @return Trace<RouteNode, RouteSegment>[]
+     */
+    public function traceSearch(Path $path): array {
+        $vertexes = $this->search($this->root, $path);
+
+        foreach (array_keys($vertexes) as $key) {
+            $vertexes[$key] = Trace::backtrack($this->root, $vertexes[$key]);
+        }
+
+        return array_reverse($vertexes);
     }
 
     /**
      * @param Route $route
      * @return RouteNode
      */
-    public function getVertex(Route $route): RouteNode {
+    public function getTerminalVertex(Route $route): RouteNode {
         $vertex = $this->routeExtend->trace($this->root, $route);
-        return $vertex->getValue();
+        return $vertex->get();
+    }
+
+
+
+    // Graph<RouteNode, RouteSegment>
+    public function createVertex(): Vertex {
+        return RouteNode::createEmpty();
+    }
+
+    public function createEdge(mixed $edge, Vertex $vertex): Edge {
+        return new Edge(new RouteSegment($edge), $vertex);
     }
 }

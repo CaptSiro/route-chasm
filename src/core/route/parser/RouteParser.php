@@ -11,7 +11,7 @@ class RouteParser {
     public const REGEX_IDENT = self::REGEX_ALPHA . self::REGEX_ALPHANUMERIC . '*';
 
     public static function createParameter(string $name, string $regex): string {
-        return "(<$name>$regex)";
+        return "(?<$name>$regex)";
     }
 
 
