@@ -4,7 +4,7 @@ namespace core\communication\parser;
 
 use core\Active;
 use core\App;
-use core\collection\dictionary\StrictMap;
+use core\collections\dictionary\StrictMap;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\UploadedFile;
@@ -44,7 +44,7 @@ class FormBodyParser implements RequestBodyParser {
 
             [$headerString, $value] = explode("\r\n\r\n", $section, 2);
             /**
-             * @var FormDataHeader[] $headers
+             * @var array<FormDataHeader> $headers
              */
             $headers = [];
 

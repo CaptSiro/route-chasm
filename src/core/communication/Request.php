@@ -3,10 +3,10 @@
 namespace core\communication;
 
 use core\App;
-use core\collection\dictionary\Session;
-use core\collection\dictionary\StrictMap;
-use core\collection\dictionary\StrictStack;
-use core\collection\StrictDictionary;
+use core\collections\dictionary\Session;
+use core\collections\dictionary\StrictMap;
+use core\collections\dictionary\StrictStack;
+use core\collections\StrictDictionary;
 use core\http\HttpHeader;
 use core\url\Url;
 
@@ -40,10 +40,17 @@ class Request {
 
     private Session $session;
 
+    /**
+     * @var StrictStack<string>
+     */
     private StrictStack $param;
 
     readonly protected StrictMap $data;
     readonly protected StrictDictionary $body;
+
+    /**
+     * @var StrictDictionary<UploadedFile>
+     */
     readonly protected StrictDictionary $files;
 
 
@@ -91,6 +98,9 @@ class Request {
         return $this->body;
     }
 
+    /**
+     * @return StrictDictionary<UploadedFile>
+     */
     public function getFiles(): StrictDictionary {
         if (!$this->isBodyParsed) {
             $parsed = App::getInstance()->parseBody($this);
@@ -118,6 +128,9 @@ class Request {
         return $this->cookies;
     }
 
+    /**
+     * @return StrictStack<string>
+     */
     public function getParam(): StrictStack {
         return $this->param;
     }

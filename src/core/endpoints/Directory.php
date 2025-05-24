@@ -36,7 +36,7 @@ class Directory implements Endpoint {
     }
 
     /**
-     * @param string[] $defaults
+     * @param array<string> $defaults
      * @return Closure
      */
     public static function showDefaultFile(array $defaults = ['index.html']): Closure {

@@ -2,7 +2,7 @@
 
 namespace core\communication;
 
-use core\collection\Dictionary;
+use core\collections\Dictionary;
 
 interface Format extends LimitedFormat {
     public const IDENT_TEXT = "text/plain";

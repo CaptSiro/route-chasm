@@ -25,8 +25,8 @@ class FormDataHeader implements JsonSerializable {
 
 
     /**
-     * @param string[] $literals
-     * @param string[] $pairs
+     * @param array<string> $literals
+     * @param array<string> $pairs
      */
     public function __construct(
         protected array $literals,

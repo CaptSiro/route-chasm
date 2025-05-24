@@ -39,7 +39,7 @@ class Segment {
 
 
 
-    /** @var Part[] $parts */
+    /** @var array<Part> $parts */
     private array $parts;
 
 

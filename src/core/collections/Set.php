@@ -1,6 +1,6 @@
 <?php
 
-namespace core\collection;
+namespace core\collections;
 
 /**
  * @template T

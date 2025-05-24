@@ -116,7 +116,7 @@ class Path implements Pipeline {
 
 
 
-    /** @var Segment[] $segments */
+    /** @var array<Segment> $segments */
     protected array $segments;
     private int $index;
 

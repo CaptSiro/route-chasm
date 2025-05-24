@@ -11,7 +11,7 @@ class MultiSubmit implements View {
     use Renderer, FormControl;
 
     /**
-     * @param FormAction[] $actions
+     * @param array<FormAction> $actions
      */
     public function __construct(
         private array $actions = []

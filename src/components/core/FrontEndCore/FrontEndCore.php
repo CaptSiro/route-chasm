@@ -2,7 +2,7 @@
 
 namespace components\core\FrontEndCore;
 
-use core\config\AppConfig;
+use core\configs\AppConfig;
 use core\path\Path;
 use core\view\View;
 use core\view\Renderer;

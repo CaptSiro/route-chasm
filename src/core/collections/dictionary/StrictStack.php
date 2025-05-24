@@ -1,13 +1,17 @@
 <?php
 
-namespace core\collection\dictionary;
+namespace core\collections\dictionary;
 
-use core\collection\StrictDictionary;
+use core\collections\StrictDictionary;
 use core\utils\Arrays;
 
+/**
+ * @template T
+ * @template-implements StrictDictionary<T>
+ */
 class StrictStack implements StrictDictionary {
     /**
-     * @var array<array<string, mixed>>
+     * @var array<array<string, T>>
      */
     private array $stack;
 
@@ -95,6 +99,9 @@ class StrictStack implements StrictDictionary {
         return null;
     }
 
+    /**
+     * @return $this<T>
+     */
     public function copy(): static {
         $instance = new static();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\config;
+namespace core\configs;
 
 use core\App;
 use core\database\sql\Config as SqlConfig;

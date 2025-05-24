@@ -3,7 +3,7 @@
 namespace core\route;
 
 use core\actions\Action;
-use core\collection\graph\TreeVertex;
+use core\collections\graph\TreeVertex;
 
 class RouteNode {
     /**

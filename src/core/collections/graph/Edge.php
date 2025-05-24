@@ -1,6 +1,6 @@
 <?php
 
-namespace core\collection\graph;
+namespace core\collections\graph;
 
 /**
  * @template V

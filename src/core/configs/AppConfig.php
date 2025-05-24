@@ -1,6 +1,6 @@
 <?php
 
-namespace core\config;
+namespace core\configs;
 
 use core\Singleton;
 

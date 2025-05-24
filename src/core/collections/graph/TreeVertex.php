@@ -1,6 +1,6 @@
 <?php
 
-namespace core\collection\graph;
+namespace core\collections\graph;
 
 use core\InstanceCounter;
 
@@ -42,7 +42,7 @@ class TreeVertex extends Vertex {
     }
 
     /**
-     * @return Vertex<V, E>|null
+     * @return ?Vertex<V, E>
      */
     public function getParentVertex(): ?Vertex {
         if (is_null($this->parent)) {

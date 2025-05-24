@@ -11,11 +11,11 @@ use core\path\Segment;
 class Node {
     protected ?Segment $segment;
 
-    /** @var Node[] $children */
+    /** @var array<Node> $children */
     protected array $children;
     protected int $insert;
 
-    /** @var Endpoint[] $endpoints */
+    /** @var array<Endpoint> $endpoints */
     protected array $endpoints;
 
     protected ?Node $parent;

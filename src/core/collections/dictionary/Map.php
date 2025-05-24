@@ -1,15 +1,22 @@
 <?php
 
-namespace core\collection\dictionary;
+namespace core\collections\dictionary;
 
-use core\collection\Dictionary;
+use core\collections\Dictionary;
 use core\Flags;
 use core\utils\Arrays;
 use JsonSerializable;
 
+/**
+ * @template T
+ * @template-implements Dictionary<T>
+ */
 class Map implements Dictionary, JsonSerializable {
     use Flags;
 
+    /**
+     * @var array<string, T>
+     */
     private array $map;
 
 

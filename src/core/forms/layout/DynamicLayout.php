@@ -6,7 +6,7 @@ use core\view\View;
 
 trait DynamicLayout {
     /**
-     * @var View[] $children
+     * @var array<View> $children
      */
     private array $children;
     private float $widthPercentage;

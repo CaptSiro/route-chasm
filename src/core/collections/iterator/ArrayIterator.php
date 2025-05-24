@@ -1,6 +1,6 @@
 <?php
 
-namespace core\collection\iterator;
+namespace core\collections\iterator;
 
 use Iterator;
 

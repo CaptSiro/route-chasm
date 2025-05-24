@@ -26,7 +26,8 @@ class RouteCompiler {
         $route = new Route();
         $segment = '';
 
-        /** @var Token[] $tokens */
+        /** @var array<Token> $tokens
+         */
         $tokens = [...(new Tokenizer($pattern))->tokenize()];
         $count = count($tokens);
 

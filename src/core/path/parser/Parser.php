@@ -12,7 +12,7 @@ class Parser {
         $p = new Path();
         $segment = new Segment();
 
-        /** @var Token[] $tokens */
+        /** @var array<Token> $tokens */
         $tokens = [...(new Tokenizer($path))->tokenize()];
         $count = count($tokens);
 

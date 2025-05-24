@@ -6,7 +6,7 @@ use ErrorException;
 use sptf\interfaces\Assertion;
 
 class Context {
-    /** @var Assertion[] $assertions */
+    /** @var array<Assertion> $assertions */
     static private array $assertions = [];
     static private float $start = 0.;
     static private float $end = 0.;

@@ -1,11 +1,16 @@
 <?php
 
-namespace core\collection\dictionary;
+namespace core\collections\dictionary;
 
-use core\collection\StrictDictionary;
+use core\collections\StrictDictionary;
 use JsonSerializable;
 
+/**
+ * @template T
+ * @template-implements StrictDictionary<T>
+ */
 class StrictMap implements StrictDictionary, JsonSerializable {
+    /** @var Map<T> */
     protected Map $map;
 
 

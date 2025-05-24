@@ -2,8 +2,8 @@
 
 namespace core\route;
 
-use core\collection\iterator\ArrayIterator;
-use core\collection\iterator\ArrayIteratorTrait;
+use core\collections\iterator\ArrayIterator;
+use core\collections\iterator\ArrayIteratorTrait;
 use core\route\compiler\RouteCompiler;
 
 /**

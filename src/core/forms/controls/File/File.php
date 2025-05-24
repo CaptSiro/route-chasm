@@ -15,7 +15,7 @@ class File extends Input {
     /**
      * @param string $name
      * @param string $label
-     * @param string[] $files
+     * @param array<string> $files
      */
     public function __construct(
         string $name = self::class,

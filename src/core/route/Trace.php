@@ -2,8 +2,8 @@
 
 namespace core\route;
 
-use core\collection\graph\TreeVertex;
-use core\collection\graph\WeightedEdge;
+use core\collections\graph\TreeVertex;
+use core\collections\graph\WeightedEdge;
 
 /**
  * @template V

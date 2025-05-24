@@ -1,6 +1,6 @@
 <?php
 
-namespace core\collection\graph;
+namespace core\collections\graph;
 
 /**
  * @template V
@@ -8,7 +8,7 @@ namespace core\collection\graph;
  */
 class Vertex {
     /**
-     * @var Edge<V, E>[] $edges
+     * @var array<Edge<V, E>> $edges
      */
     protected array $edges;
 
@@ -33,7 +33,7 @@ class Vertex {
     }
 
     /**
-     * @return Edge<V, E>[]
+     * @return array<Edge<V, E>>
      */
     public function getEdges(): array {
         return $this->edges;

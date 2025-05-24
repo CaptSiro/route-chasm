@@ -2,8 +2,8 @@
 
 namespace core\route;
 
-use core\collection\graph\Graph;
-use core\collection\graph\Vertex;
+use core\collections\graph\Graph;
+use core\collections\graph\Vertex;
 
 class RouteExtend {
     /**

@@ -6,7 +6,7 @@ use components\core\SaveError\SaveError;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
-use core\collection\dictionary\Session;
+use core\collections\dictionary\Session;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;

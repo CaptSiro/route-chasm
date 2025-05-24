@@ -3,8 +3,8 @@
 namespace core;
 
 use Closure;
-use core\collection\dictionary\Map;
-use core\collection\dictionary\StrictMap;
+use core\collections\dictionary\Map;
+use core\collections\dictionary\StrictMap;
 use core\communication\FormatMatcher;
 use core\communication\parser\FormBodyParser;
 use core\communication\parser\JsonBodyParser;
@@ -15,8 +15,8 @@ use core\communication\Request;
 use core\communication\RequestFormat;
 use core\communication\Response;
 use core\communication\ResponseFormat;
-use core\config\AppConfig;
-use core\config\Config;
+use core\configs\AppConfig;
+use core\configs\Config;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;

@@ -2,7 +2,7 @@
 
 namespace core\route;
 
-use core\collection\graph\WeightedEdge;
+use core\collections\graph\WeightedEdge;
 use core\route\compiler\RouteCompilerOptions;
 use core\utils\Regex;
 

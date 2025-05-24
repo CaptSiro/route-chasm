@@ -1,9 +1,12 @@
 <?php
 
-namespace core\collection\dictionary;
+namespace core\collections\dictionary;
 
-use core\collection\StrictDictionary;
+use core\collections\StrictDictionary;
 
+/**
+ * @template-implements StrictDictionary<mixed>
+ */
 class Session implements StrictDictionary {
     protected bool $isStarted = false;
 
