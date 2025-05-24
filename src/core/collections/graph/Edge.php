@@ -31,4 +31,11 @@ class Edge {
     public function getVertex(): Vertex {
         return $this->vertex;
     }
+
+    /**
+     * @param Vertex<V, E> $vertex
+     */
+    public function setVertex(Vertex $vertex): void {
+        $this->vertex = $vertex;
+    }
 }

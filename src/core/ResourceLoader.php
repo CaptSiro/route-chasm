@@ -2,6 +2,8 @@
 
 namespace core;
 
+use core\utils\Objects;
+
 trait ResourceLoader {
     public static function getClassResource(string $path = ''): string {
         return App::getInstance()
@@ -31,6 +33,6 @@ trait ResourceLoader {
     }
 
     public function getClass(): string {
-        return basename(get_class($this));
+        return Objects::getClass($this);
     }
 }

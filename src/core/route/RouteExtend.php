@@ -5,6 +5,9 @@ namespace core\route;
 use core\collections\graph\Graph;
 use core\collections\graph\Vertex;
 
+/**
+ * @template-covariant T
+ */
 class RouteExtend {
     /**
      * @param Graph<RouteNode, RouteSegment> $graph
@@ -18,7 +21,7 @@ class RouteExtend {
     /**
      * @param Vertex<RouteNode, RouteSegment> $root
      * @param Route $route
-     * @return Vertex<RouteNode, RouteSegment>
+     * @return T
      */
     public function trace(Vertex $root, Route $route): Vertex {
         $current = $root;

@@ -13,6 +13,7 @@ use core\route\compiler\TokenType;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
+use core\route\Router;
 use core\route\RouteTree;
 use core\route\RouteSegment;
 use core\route\Trace;
@@ -232,8 +233,8 @@ Sptf::test("should create vertex", function () {
     $b = Route::from("/[foo]/bar", ["foo" => $foo]);
 
     $tree = new RouteTree();
-    $tree->getTerminalVertex($a);
-    $tree->getTerminalVertex($b);
+    $tree->getNode($a);
+    $tree->getNode($b);
 
     $root = $tree->getRoot();
 
@@ -258,6 +259,7 @@ function perform_actions(array $traces): void {
     foreach ($traces as $trace) {
         foreach ($trace->getVertexes() as $vertex) {
             foreach ($vertex->get()->getActions() as $action) {
+                var_dump("performing ". $action->getActorName());
                 $action->perform($q, $p);
             }
         }
@@ -270,6 +272,10 @@ function assert_counts(array $counters, bool $reset = false): void {
         [$counter, $count] = $tuple;
         Sptf::expect($counter->getN())->toBe($count);
 
+        if ($counter->getN() !== $count) {
+            var_dump($counter->getActorName() ." assertion failed (n != $count)");
+        }
+
         if ($reset) {
             $counter->setN(0);
         }
@@ -281,32 +287,32 @@ Sptf::test("should find correct vertexes", function () {
 
     $root = new ActCounter("root");
     $tree
-        ->getTerminalVertex(Route::from("/"))
+        ->getNode(Route::from("/"))
         ->addAction($root);
 
     $any = new ActCounter("any");
     $tree
-        ->getTerminalVertex(Route::from("/**"))
+        ->getNode(Route::from("/**"))
         ->addAction($any);
 
     $foo = new ActCounter("foo");
     $tree
-        ->getTerminalVertex(Route::from("/foo"))
+        ->getNode(Route::from("/foo"))
         ->addAction($foo);
 
     $fooBar = new ActCounter("fooBar");
     $tree
-        ->getTerminalVertex(Route::from("/foo/bar"))
+        ->getNode(Route::from("/foo/bar"))
         ->addAction($fooBar);
 
     $dynamicFoo = new ActCounter("dynamicFoo");
     $tree
-        ->getTerminalVertex(Route::from("/[foo]", ["foo" => "fo+"]))
+        ->getNode(Route::from("/[foo]", ["foo" => "fo+"]))
         ->addAction($dynamicFoo);
 
     $dynamicFooBar = new ActCounter("dynamicFooBar");
     $tree
-        ->getTerminalVertex(Route::from("/[foo]/[bar]", ["foo" => "fo+", "bar" => "ba?r"]))
+        ->getNode(Route::from("/[foo]/[bar]", ["foo" => "fo+", "bar" => "ba?r"]))
         ->addAction($dynamicFooBar);
 
     perform_actions($tree->traceSearch(Path::from("/")));
@@ -401,19 +407,19 @@ Sptf::test("should find RouteNodes in correct order", function () {
     $foo = new ActCounter("foo");
 
     $tree0
-        ->getTerminalVertex(Route::from("/**"))
+        ->getNode(Route::from("/**"))
         ->addAction($any);
 
     $tree0
-        ->getTerminalVertex(Route::from("/foo"))
+        ->getNode(Route::from("/foo"))
         ->addAction($foo);
 
     $tree1
-        ->getTerminalVertex(Route::from("/foo"))
+        ->getNode(Route::from("/foo"))
         ->addAction($foo);
 
     $tree1
-        ->getTerminalVertex(Route::from("/**"))
+        ->getNode(Route::from("/**"))
         ->addAction($any);
 
     perform_first_action($tree0->traceSearch(Path::from("/foo")));
@@ -427,4 +433,46 @@ Sptf::test("should find RouteNodes in correct order", function () {
         [$any, 0],
         [$foo, 1]
     ], true);
+});
+
+Sptf::test("should bind Action objects correctly", function () {
+    $router = new Router();
+
+    $foo = new ActCounter("foo");
+    $bar = new ActCounter("bar");
+
+    $router->use("/foo/bar", $foo, $bar);
+
+    perform_actions($router->find(Path::from("/foo/bar")));
+    assert_counts([
+        [$foo, 1],
+        [$bar, 1]
+    ]);
+});
+
+Sptf::test("should bind Router correctly", function () {
+    Sptf::allowPrinting();
+
+    $any = new ActCounter("any");
+    $foo = new ActCounter("foo");
+    $bar = new ActCounter("bar");
+
+    $router0 = new Router();
+
+    $router0
+        ->use("/**", $any)
+        ->use("/foo", $foo);
+
+    $router1 = new Router();
+    $router1
+        ->use("/bar", $bar)
+        ->bind("/bar", $router0);
+
+    var_dump($router1->find(Path::from("/bar/foo")));
+    perform_actions($router1->find(Path::from("/bar/foo")));
+    assert_counts([
+        [$bar, 2],
+        [$any, 1],
+        [$foo, 1],
+    ]);
 });

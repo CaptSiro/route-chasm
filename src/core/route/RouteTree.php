@@ -64,7 +64,7 @@ class RouteTree implements Graph {
     /** @var TreeVertex<RouteNode, RouteSegment> */
     protected TreeVertex $root;
 
-    /** @var RouteExtend<RouteNode, RouteSegment> */
+    /** @var RouteExtend<TreeVertex<RouteNode, RouteSegment>> */
     protected RouteExtend $routeExtend;
 
 
@@ -86,6 +86,13 @@ class RouteTree implements Graph {
      */
     public function getRoot(): TreeVertex {
         return $this->root;
+    }
+
+    /**
+     * @param TreeVertex<RouteNode, RouteSegment> $root
+     */
+    public function setRoot(TreeVertex $root): void {
+        $this->root = $root;
     }
 
     /**
@@ -120,9 +127,17 @@ class RouteTree implements Graph {
      * @param Route $route
      * @return RouteNode
      */
-    public function getTerminalVertex(Route $route): RouteNode {
+    public function getNode(Route $route): RouteNode {
         $vertex = $this->routeExtend->trace($this->root, $route);
         return $vertex->get();
+    }
+
+    /**
+     * @param Route $route
+     * @return TreeVertex<RouteNode, RouteSegment>
+     */
+    public function getVertex(Route $route): TreeVertex {
+        return $this->routeExtend->trace($this->root, $route);
     }
 
 

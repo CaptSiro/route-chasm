@@ -118,10 +118,6 @@ class Router {
         return $this->node->getPathToSelf();
     }
 
-    public function isMiddleware(): bool {
-        return false;
-    }
-
     public function execute(Request $request, Response $response): void {
         $trail = $this->findPath($request->getUrl()->getPath());
         if (is_null($trail)) {

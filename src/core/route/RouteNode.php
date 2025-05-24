@@ -55,6 +55,12 @@ class RouteNode {
         $this->vertex = $vertex;
     }
 
+    /**
+     * @return TreeVertex<RouteNode, ?>|null
+     */
+    public function getVertex(): ?TreeVertex {
+        return $this->vertex;
+    }
 
     /**
      * @return array<Action>
@@ -78,5 +84,13 @@ class RouteNode {
         return $this->vertex
             ?->getParentEdge()
             ?->get();
+    }
+
+    public function getRouter(): ?Router {
+        if (is_null($this->vertex)) {
+            return null;
+        }
+
+        return new Router(new RouteTree($this->vertex));
     }
 }

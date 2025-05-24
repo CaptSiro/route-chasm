@@ -33,6 +33,13 @@ class Vertex {
     }
 
     /**
+     * @param V $value
+     */
+    public function set(mixed $value): void {
+        $this->value = $value;
+    }
+
+    /**
      * @return array<Edge<V, E>>
      */
     public function getEdges(): array {

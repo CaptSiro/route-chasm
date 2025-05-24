@@ -4,12 +4,14 @@ namespace core\route;
 
 use core\collections\iterator\ArrayIterator;
 use core\collections\iterator\ArrayIteratorTrait;
+use core\Copy;
 use core\route\compiler\RouteCompiler;
+use core\utils\Arrays;
 
 /**
  * @template-implements ArrayIterator<int, string>
  */
-class Route implements ArrayIterator {
+class Route implements ArrayIterator, Copy {
     use ArrayIteratorTrait;
 
     /**
@@ -22,6 +24,14 @@ class Route implements ArrayIterator {
         // get app Route compiler
         $parser = new RouteCompiler();
         return $parser->parse($route, $parameters);
+    }
+
+    public static function resolve(Route|string $route): static {
+        if ($route instanceof Route) {
+            return $route;
+        }
+
+        return self::from($route);
     }
 
 
@@ -58,6 +68,11 @@ class Route implements ArrayIterator {
         return $this->segments;
     }
 
+    public function extend(self $route): static {
+        $this->segments = array_merge($this->segments, $route->segments);
+        return $this;
+    }
+
 
 
     // ArrayIterator
@@ -67,5 +82,12 @@ class Route implements ArrayIterator {
 
     public function key(): int {
         return $this->arrayIterator;
+    }
+
+    // Copy
+    public function copy(): static {
+        $copy = new static();
+        $copy->segments = Arrays::copy($this->segments);
+        return $copy;
     }
 }
