@@ -4,7 +4,7 @@ namespace core\route;
 
 use core\collection\iterator\ArrayIterator;
 use core\collection\iterator\ArrayIteratorTrait;
-use core\route\parser\RouteParser;
+use core\route\compiler\RouteCompiler;
 
 /**
  * @template-implements ArrayIterator<int, string>
@@ -19,15 +19,15 @@ class Route implements ArrayIterator {
      */
     public static function from(string $route, array $parameters = []): static {
         // todo
-        // get app Route parser
-        $parser = new RouteParser();
+        // get app Route compiler
+        $parser = new RouteCompiler();
         return $parser->parse($route, $parameters);
     }
 
 
 
     /**
-     * @var string[]
+     * @var array<RouteSegment>
      */
     protected array $segments;
 
@@ -43,7 +43,7 @@ class Route implements ArrayIterator {
 
 
 
-    public function add(string $segment): void {
+    public function add(RouteSegment $segment): void {
         $this->segments[] = $segment;
     }
 
@@ -52,7 +52,7 @@ class Route implements ArrayIterator {
     }
 
     /**
-     * @return array<string>
+     * @return array<RouteSegment>
      */
     public function getSegments(): array {
         return $this->segments;

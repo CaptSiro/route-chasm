@@ -2,19 +2,18 @@
 
 namespace core\route;
 
-class RouteSegment {
-    public static function createRegex(string $pattern): string {
-        return "/^$pattern$/";
-    }
+use core\collection\graph\WeightedEdge;
+use core\route\compiler\RouteCompilerOptions;
+use core\utils\Regex;
 
-
-
+class RouteSegment implements WeightedEdge {
     protected string $regex;
 
     public function __construct(
-        protected string $pattern
+        protected string $pattern,
+        protected float $weight = RouteCompilerOptions::WEIGHT_DEFAULT
     ) {
-        $this->regex = self::createRegex($this->pattern);
+        $this->regex = Regex::create($this->pattern);
     }
 
     public function __toString(): string {
@@ -33,5 +32,9 @@ class RouteSegment {
 
     public function getRegex(): string {
         return $this->regex;
+    }
+
+    public function getWeight(): float {
+        return $this->weight;
     }
 }

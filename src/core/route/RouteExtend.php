@@ -25,7 +25,7 @@ class RouteExtend {
 
         foreach ($route->getSegments() as $segment) {
             foreach ($current->getEdges() as $edge) {
-                if ($edge->get()->getPattern() === $segment) {
+                if ($edge->get()->getPattern() === $segment->getPattern()) {
                     $current = $edge->getVertex();
                     continue 2;
                 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\route\parser;
+namespace core\route\compiler;
 
 readonly class Token {
     public const LITERAL_EOF = "\0";

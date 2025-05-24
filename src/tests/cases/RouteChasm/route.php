@@ -4,17 +4,19 @@ use core\actions\ActCounter;
 use core\actions\Action;
 use core\communication\Request;
 use core\communication\Response;
-use core\route\parser\RouteParser;
-use core\route\parser\RouteParsingException;
-use core\route\parser\Token;
-use core\route\parser\Tokenizer;
-use core\route\parser\TokenType;
+use core\route\compiler\RouteCompiler;
+use core\route\compiler\RouteCompilerException;
+use core\route\compiler\RouteCompilerOptions;
+use core\route\compiler\Token;
+use core\route\compiler\Tokenizer;
+use core\route\compiler\TokenType;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
 use core\route\RouteTree;
 use core\route\RouteSegment;
 use core\route\Trace;
+use core\utils\Regex;
 use sptf\Sptf;
 
 Sptf::test("should tokenize routes correctly", function () {
@@ -115,10 +117,10 @@ Sptf::test("should parse routes", function () {
     $anyGroup = "$any";
 
     $foo = "foo+";
-    $fooGroup = RouteParser::createParameter("foo", $foo);
+    $fooGroup = Regex::createNamedGroup("foo", $foo);
 
     $bar = "ba+r";
-    $barGroup = RouteParser::createParameter("bar", $bar);
+    $barGroup = Regex::createNamedGroup("bar", $bar);
 
     $routes = [
         ["", [], "/"],
@@ -138,9 +140,10 @@ Sptf::test("should parse routes", function () {
         ["/@[foo]//**", ["foo" => $foo], "/@$fooGroup/$any"],
     ];
 
-    $parser = new RouteParser(
-        anyRegex: $any,
-        mergeConsecutiveSlashes: true
+    $parser = new RouteCompiler(
+        (new RouteCompilerOptions())
+            ->setAnyRegex($any)
+            ->setMergeConsecutiveSlashes(true)
     );
 
     foreach ($routes as $tuple) {
@@ -160,13 +163,16 @@ Sptf::test("refuse to parse consecutive slashes in route", function () {
         "/[foo]////[bar]",
     ];
 
-    $parser = new RouteParser(mergeConsecutiveSlashes: false);
+    $parser = new RouteCompiler(
+        (new RouteCompilerOptions())
+            ->setMergeConsecutiveSlashes(false)
+    );
 
     foreach ($routes as $route) {
         try {
             $parser->parse($route);
             Sptf::fail();
-        } catch (RouteParsingException $ignored) {
+        } catch (RouteCompilerException $ignored) {
             Sptf::pass();
         }
     }
@@ -184,13 +190,13 @@ Sptf::test("fail parsing routes", function () {
         "[ ]", "/[ ]", "/foo[ ]",
     ];
 
-    $parser = new RouteParser();
+    $parser = new RouteCompiler();
 
     foreach ($routes as $route) {
         try {
             $parser->parse($route);
             Sptf::fail("Should have failed parsing path: '$route'");
-        } catch (RouteParsingException) {
+        } catch (RouteCompilerException) {
             Sptf::pass();
         }
     }
@@ -207,7 +213,7 @@ Sptf::test("should return correct depth of route", function () {
         "/@[foo]/[bar]/fizz" => 3,
     ];
 
-    $parser = new RouteParser();
+    $parser = new RouteCompiler();
 
     foreach ($routes as $route => $depth) {
         Sptf::expect($parser->parse($route)->getDepth())
@@ -219,8 +225,8 @@ Sptf::test("should create vertex", function () {
     Sptf::allowPrinting();
 
     $foo = "foo+";
-    $fooSegment = RouteSegment::createRegex(RouteParser::createParameter("foo", $foo));
-    $barSegment = RouteSegment::createRegex("bar");
+    $fooSegment = Regex::create(Regex::createNamedGroup("foo", $foo));
+    $barSegment = Regex::create("bar");
 
     $a = Route::from("/[foo]", ["foo" => $foo]);
     $b = Route::from("/[foo]/bar", ["foo" => $foo]);
@@ -245,63 +251,65 @@ Sptf::test("should create vertex", function () {
  * @param array<Trace<RouteNode, RouteSegment>> $traces
  * @return void
  */
-function call_actions(array $traces): void {
+function perform_actions(array $traces): void {
     $q = Request::test();
     $p = Response::test();
 
     foreach ($traces as $trace) {
         foreach ($trace->getVertexes() as $vertex) {
             foreach ($vertex->get()->getActions() as $action) {
-                var_dump("act id=". $vertex->getInstanceId() .' '. $vertex->getParentEdge()?->get()->getRegex());
-                $action->act($q, $p);
+                $action->perform($q, $p);
             }
         }
     }
 }
 
-function assert_counts(array $counters): void {
+function assert_counts(array $counters, bool $reset = false): void {
     foreach ($counters as $tuple) {
+        /** @var ActCounter $counter */
         [$counter, $count] = $tuple;
         Sptf::expect($counter->getN())->toBe($count);
+
+        if ($reset) {
+            $counter->setN(0);
+        }
     }
 }
 
 Sptf::test("should find correct vertexes", function () {
-    Sptf::allowPrinting();
-
     $tree = new RouteTree();
 
-    $root = new ActCounter();
+    $root = new ActCounter("root");
     $tree
         ->getTerminalVertex(Route::from("/"))
         ->addAction($root);
 
-    $any = new ActCounter();
+    $any = new ActCounter("any");
     $tree
         ->getTerminalVertex(Route::from("/**"))
         ->addAction($any);
 
-    $foo = new ActCounter();
+    $foo = new ActCounter("foo");
     $tree
         ->getTerminalVertex(Route::from("/foo"))
         ->addAction($foo);
 
-    $fooBar = new ActCounter();
+    $fooBar = new ActCounter("fooBar");
     $tree
         ->getTerminalVertex(Route::from("/foo/bar"))
         ->addAction($fooBar);
 
-    $dynamicFoo = new ActCounter();
+    $dynamicFoo = new ActCounter("dynamicFoo");
     $tree
         ->getTerminalVertex(Route::from("/[foo]", ["foo" => "fo+"]))
         ->addAction($dynamicFoo);
 
-    $dynamicFooBar = new ActCounter();
+    $dynamicFooBar = new ActCounter("dynamicFooBar");
     $tree
         ->getTerminalVertex(Route::from("/[foo]/[bar]", ["foo" => "fo+", "bar" => "ba?r"]))
         ->addAction($dynamicFooBar);
 
-    call_actions($tree->traceSearch(Path::from("/")));
+    perform_actions($tree->traceSearch(Path::from("/")));
     assert_counts([
         [$root, 1],
         [$any, 0],
@@ -309,55 +317,114 @@ Sptf::test("should find correct vertexes", function () {
         [$fooBar, 0],
         [$dynamicFoo, 0],
         [$dynamicFooBar, 0],
-    ]);
+    ], true);
 
-    call_actions($tree->traceSearch(Path::from("/non-existent")));
+    perform_actions($tree->traceSearch(Path::from("/non-existent")));
     assert_counts([
-        [$root, 2],
+        [$root, 1],
         [$any, 1],
         [$foo, 0],
         [$fooBar, 0],
         [$dynamicFoo, 0],
         [$dynamicFooBar, 0],
-    ]);
+    ], true);
 
-    call_actions($tree->traceSearch(Path::from("/foo")));
+    perform_actions($tree->traceSearch(Path::from("/foo")));
     assert_counts([
-        [$root, 5],
-        [$any, 2],
+        [$root, 3],
+        [$any, 1],
         [$foo, 1],
         [$fooBar, 0],
         [$dynamicFoo, 1],
         [$dynamicFooBar, 0],
-    ]);
+    ], true);
 
-    call_actions($tree->traceSearch(Path::from("/foo/bar")));
+    perform_actions($tree->traceSearch(Path::from("/foo/bar")));
     assert_counts([
-        [$root, 8],
-        [$any, 3],
-        [$foo, 2],
+        [$root, 3],
+        [$any, 1],
+        [$foo, 1],
         [$fooBar, 1],
-        [$dynamicFoo, 2],
+        [$dynamicFoo, 1],
         [$dynamicFooBar, 1],
-    ]);
+    ], true);
 
-    call_actions($tree->traceSearch(Path::from("/foooo")));
+    perform_actions($tree->traceSearch(Path::from("/foooo")));
     assert_counts([
-        [$root, 10],
-        [$any, 4],
-        [$foo, 2],
-        [$fooBar, 1],
-        [$dynamicFoo, 3],
+        [$root, 2],
+        [$any, 1],
+        [$foo, 0],
+        [$fooBar, 0],
+        [$dynamicFoo, 1],
+        [$dynamicFooBar, 0],
+    ], true);
+
+    perform_actions($tree->traceSearch(Path::from("/foooo/br")));
+    assert_counts([
+        [$root, 2],
+        [$any, 1],
+        [$foo, 0],
+        [$fooBar, 0],
+        [$dynamicFoo, 1],
         [$dynamicFooBar, 1],
-    ]);
+    ], true);
+});
 
-    call_actions($tree->traceSearch(Path::from("/foooo/br")));
+/**
+ * @param array<Trace<RouteNode, RouteSegment>> $traces
+ * @return void
+ */
+function perform_first_action(array $traces): void {
+    $q = Request::test();
+    $p = Response::test();
+
+    Sptf::expect(count($traces) > 0)->toBe(true);
+    if (count($traces) === 0) {
+        return;
+    }
+
+    $trace = array_shift($traces);
+    foreach ($trace->getVertexes() as $vertex) {
+        foreach ($vertex->get()->getActions() as $action) {
+            $action->perform($q, $p);
+        }
+    }
+}
+
+Sptf::test("should find RouteNodes in correct order", function () {
+    Sptf::allowPrinting();
+
+    $tree0 = new RouteTree();
+    $tree1 = new RouteTree();
+
+    $any = new ActCounter("any");
+    $foo = new ActCounter("foo");
+
+    $tree0
+        ->getTerminalVertex(Route::from("/**"))
+        ->addAction($any);
+
+    $tree0
+        ->getTerminalVertex(Route::from("/foo"))
+        ->addAction($foo);
+
+    $tree1
+        ->getTerminalVertex(Route::from("/foo"))
+        ->addAction($foo);
+
+    $tree1
+        ->getTerminalVertex(Route::from("/**"))
+        ->addAction($any);
+
+    perform_first_action($tree0->traceSearch(Path::from("/foo")));
     assert_counts([
-        [$root, 12],
-        [$any, 5],
-        [$foo, 2],
-        [$fooBar, 1],
-        [$dynamicFoo, 4],
-        [$dynamicFooBar, 2],
-    ]);
+        [$any, 0],
+        [$foo, 1]
+    ], true);
+
+    perform_first_action($tree1->traceSearch(Path::from("/foo")));
+    assert_counts([
+        [$any, 0],
+        [$foo, 1]
+    ], true);
 });

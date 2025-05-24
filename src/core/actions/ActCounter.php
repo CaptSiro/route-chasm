@@ -12,6 +12,7 @@ class ActCounter implements Action {
 
 
     public function __construct(
+        protected string $name,
         protected int $n = 0,
         protected bool $isMiddleware = false,
     ) {}
@@ -22,6 +23,10 @@ class ActCounter implements Action {
         return $this->n;
     }
 
+    public function setN(int $n): void {
+        $this->n = $n;
+    }
+
 
     // Action
     public function isMiddleware(): bool {
@@ -29,14 +34,14 @@ class ActCounter implements Action {
     }
 
     public function getActorName(): string {
-        return 'ActCounter';
+        return 'ActCounter:'. $this->name;
     }
 
     public function onBind(RouteNode $bindingPoint): void {
         $this->bindRouteNode($bindingPoint);
     }
 
-    public function act(Request $request, Response $response): void {
+    public function perform(Request $request, Response $response): void {
         $this->n++;
     }
 }

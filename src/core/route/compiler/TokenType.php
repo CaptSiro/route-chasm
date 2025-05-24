@@ -1,6 +1,6 @@
 <?php
 
-namespace core\route\parser;
+namespace core\route\compiler;
 
 enum TokenType: string {
     case IDENT = "ident";

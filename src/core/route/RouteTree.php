@@ -97,7 +97,9 @@ class RouteTree implements Graph {
             $vertexes[$key] = Trace::backtrack($this->root, $vertexes[$key]);
         }
 
-        return array_reverse($vertexes);
+        // Descending order
+        usort($vertexes, fn(Trace $a, Trace $b) => $b->getWeight() <=> $a->getWeight());
+        return $vertexes;
     }
 
     /**
@@ -117,6 +119,6 @@ class RouteTree implements Graph {
     }
 
     public function createEdge(mixed $edge, Vertex $vertex): Edge {
-        return new Edge(new RouteSegment($edge), $vertex);
+        return new Edge($edge, $vertex);
     }
 }

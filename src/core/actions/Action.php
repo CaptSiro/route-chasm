@@ -17,7 +17,7 @@ interface Action {
 
     public function onBind(RouteNode $bindingPoint): void;
 
-    public function act(Request $request, Response $response): void;
+    public function perform(Request $request, Response $response): void;
 
 
 

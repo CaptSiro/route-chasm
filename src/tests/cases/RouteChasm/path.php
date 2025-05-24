@@ -5,10 +5,10 @@ use core\path\Path;
 use core\patterns\Charset;
 use core\patterns\Ident;
 use core\patterns\Number;
-use core\route\parser\RouteParser;
-use core\route\parser\Token;
-use core\route\parser\Tokenizer;
-use core\route\parser\TokenType;
+use core\route\compiler\RouteCompiler;
+use core\route\compiler\Token;
+use core\route\compiler\Tokenizer;
+use core\route\compiler\TokenType;
 use core\utils\Strings;
 use sptf\Sptf;
 
