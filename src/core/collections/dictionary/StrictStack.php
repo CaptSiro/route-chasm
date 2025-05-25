@@ -99,6 +99,10 @@ class StrictStack implements StrictDictionary {
         return null;
     }
 
+    public function clear(): void {
+        $this->stack = [];
+    }
+
     /**
      * @return $this<T>
      */

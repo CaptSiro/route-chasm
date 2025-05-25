@@ -25,24 +25,20 @@ class Map implements Dictionary, JsonSerializable {
         $this->map = $array;
     }
 
-    function get(string $name, $or = null): mixed {
+    public function get(string $name, $or = null): mixed {
         return $this->map[$name] ?? $or;
     }
 
-    function set(string $name, mixed $value): void {
+    public function set(string $name, mixed $value): void {
         $this->map[$name] = $value;
     }
 
-    function exists(string $name): bool {
+    public function exists(string $name): bool {
         return isset($this->map[$name]);
     }
 
-    function load(array $array): void {
+    public function load(array $array): void {
         $this->map = array_merge($this->map, $array);
-    }
-
-    function clear(): void {
-        $this->map = [];
     }
 
     public function toArray(): array {
@@ -57,6 +53,10 @@ class Map implements Dictionary, JsonSerializable {
         $value = $this->get($name);
         unset($this->map[$name]);
         return $value;
+    }
+
+    public function clear(): void {
+        $this->map = [];
     }
 
     public function copy(): static {

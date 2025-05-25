@@ -4,12 +4,17 @@ namespace core\route;
 
 use core\collections\graph\TreeVertex;
 use core\collections\graph\WeightedEdge;
+use core\collections\iterator\ArrayIterator;
+use core\collections\iterator\ArrayIteratorTrait;
 
 /**
  * @template V
  * @template E
+ * @template-implements ArrayIterator<TreeVertex<V, E>>
  */
-class Trace {
+class Trace implements ArrayIterator {
+    use ArrayIteratorTrait;
+
     /**
      * @param TreeVertex<V, WeightedEdge> $root
      * @param TreeVertex<V, WeightedEdge> $target
@@ -67,5 +72,16 @@ class Trace {
 
     public function getWeight(): float {
         return $this->weight;
+    }
+
+
+
+    // ArrayIterator
+    public function arrayIterator(): array {
+        return $this->vertexes;
+    }
+
+    public function key(): int {
+        return $this->arrayIterator;
     }
 }

@@ -69,4 +69,11 @@ class Session implements StrictDictionary {
     public function copy(): static {
         return new static();
     }
+
+    public function clear(): void {
+        // todo
+        //  - Add enum SessionPolicy that is configurable to either call session_unset(), call session_destroy(),
+        //    or throw NotAllowedException
+        session_unset();
+    }
 }

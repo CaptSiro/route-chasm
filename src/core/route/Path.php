@@ -40,4 +40,8 @@ class Path {
     public function getSegments(): array {
         return $this->segments;
     }
+
+    public function getSegment(int $index): ?string {
+        return $this->segments[$index] ?? null;
+    }
 }

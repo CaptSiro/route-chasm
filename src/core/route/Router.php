@@ -5,6 +5,7 @@ namespace core\route;
 use Closure;
 use core\actions\Action;
 use core\actions\Procedure;
+use core\collections\dictionary\StrictStack;
 use core\collections\graph\TreeVertex;
 use core\communication\Request;
 use core\communication\Response;
@@ -70,5 +71,36 @@ class Router {
      */
     public function find(Path $path): array {
         return $this->structure->traceSearch($path);
+    }
+
+    public function performActions(Path $path, Request $request, Response $response): void {
+        $traces = $this->find($path);
+
+        foreach ($traces as $trace) {
+            /** @var StrictStack<?> $parameters */
+            $parameters = $request->getParam();
+            $first = true;
+
+            $i = 0;
+            foreach ($trace->getVertexes() as $vertex) {
+                /** @var TreeVertex<RouteNode, RouteSegment> $vertex */
+
+                if (!$first) {
+                    $parent = $vertex->getParentEdge()?->get();
+                    if (!is_null($parent)) {
+                        $parent->match($path->getSegment($i), $parameters);
+                    }
+                }
+
+                foreach ($vertex->get()->getActions() as $action) {
+                    $action->perform($request, $response);
+                }
+
+                $first = false;
+                $i++;
+            }
+
+            $parameters->clear();
+        }
     }
 }

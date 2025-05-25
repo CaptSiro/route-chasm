@@ -2,6 +2,7 @@
 
 namespace core\route;
 
+use core\collections\dictionary\StrictStack;
 use core\collections\graph\WeightedEdge;
 use core\route\compiler\RouteCompilerOptions;
 use core\utils\Regex;
@@ -22,8 +23,18 @@ class RouteSegment implements WeightedEdge {
 
 
 
-    public function test($literal): bool {
+    public function test(string $literal): bool {
         return preg_match($this->regex, $literal);
+    }
+
+    // todo
+    //  - Change to interface Stack: push(item) pop()->item clear() getSize()
+    public function match(string $literal, StrictStack $parameters): void {
+        $groups = [];
+
+        if (preg_match($this->regex, $literal, $groups)) {
+            $parameters->push($groups);
+        }
     }
 
     public function getPattern(): string {

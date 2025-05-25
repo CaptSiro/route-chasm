@@ -61,6 +61,10 @@ class StrictMap implements StrictDictionary, JsonSerializable {
         return $this->map->remove($name);
     }
 
+    public function clear(): void {
+        $this->map->clear();
+    }
+
     public function copy(): static {
         $instance = new static();
         $instance->map = $this->map->copy();

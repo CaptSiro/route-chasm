@@ -30,6 +30,8 @@ interface Dictionary extends Copy {
      */
     public function remove(string $name): mixed;
 
+    public function clear(): void;
+
     /**
      * @param array<T> $array
      * @return void
