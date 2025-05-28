@@ -6,7 +6,7 @@ use core\communication\Request;
 use core\communication\Response;
 use core\route\compiler\RouteCompiler;
 use core\route\compiler\RouteCompilerException;
-use core\route\compiler\RouteCompilerOptions;
+use core\route\compiler\RouteCompilerConfig;
 use core\route\compiler\Token;
 use core\route\compiler\Tokenizer;
 use core\route\compiler\TokenType;
@@ -142,7 +142,7 @@ Sptf::test("should parse routes", function () {
     ];
 
     $parser = new RouteCompiler(
-        (new RouteCompilerOptions())
+        (new RouteCompilerConfig())
             ->setAnyRegex($any)
             ->setMergeConsecutiveSlashes(true)
     );
@@ -165,7 +165,7 @@ Sptf::test("refuse to parse consecutive slashes in route", function () {
     ];
 
     $parser = new RouteCompiler(
-        (new RouteCompilerOptions())
+        (new RouteCompilerConfig())
             ->setMergeConsecutiveSlashes(false)
     );
 

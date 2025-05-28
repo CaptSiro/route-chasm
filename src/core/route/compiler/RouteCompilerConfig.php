@@ -2,21 +2,17 @@
 
 namespace core\route\compiler;
 
-class RouteCompilerOptions {
+class RouteCompilerConfig {
     public const REGEX_ANY = '.*';
     public const REGEX_ALPHA = '[a-zA-Z]';
     public const REGEX_ALPHANUMERIC = '[a-zA-Z0-9]';
     public const REGEX_IDENT = self::REGEX_ALPHA . self::REGEX_ALPHANUMERIC . '*';
-
-    public const WEIGHT_ANY_TERMINATOR = 0.5;
-    public const WEIGHT_DEFAULT = 1;
 
 
 
     protected string $identRegex = self::REGEX_IDENT;
     protected string $anyRegex = self::REGEX_ANY;
     protected bool $mergeConsecutiveSlashes = true;
-    protected float $anyTerminatorWeight = self::WEIGHT_ANY_TERMINATOR;
 
 
 
@@ -34,26 +30,6 @@ class RouteCompilerOptions {
      */
     public function setAnyRegex(string $anyRegex): self {
         $this->anyRegex = $anyRegex;
-        return $this;
-    }
-
-    public function getAnyTerminatorWeight(): float {
-        return $this->anyTerminatorWeight;
-    }
-
-    /**
-     * Set weight for any terminated route. Any route that ends with '/my/route/**'. Weight modifies the ordering
-     * of searched routes. If '/my/route/foo' path is searched and '/my/route/foo' route exists it will be ordered before
-     * '/my/route/**' route. To disable this feature, set default weight.
-     *
-     * @param float $anyTerminatorWeight
-     * @return self
-     *
-     * @see self::WEIGHT_ANY_TERMINATOR
-     * @see self::WEIGHT_DEFAULT
-     */
-    public function setAnyTerminatorWeight(float $anyTerminatorWeight): self {
-        $this->anyTerminatorWeight = $anyTerminatorWeight;
         return $this;
     }
 

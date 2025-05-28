@@ -13,6 +13,7 @@ use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\TextField;
+use core\utils\Strings;
 use core\view\View;
 use models\extensions\Editable\Editable;
 use models\extensions\Editable\EditableExtension;
@@ -83,7 +84,7 @@ final class Setting extends Model implements Editable {
     }
 
     public function toBoolean(): bool {
-        return filter_var($this->value, FILTER_VALIDATE_BOOLEAN);
+        return Strings::asHumanReadableBoolean($this->value);
     }
 
     public function toFloat(): float {

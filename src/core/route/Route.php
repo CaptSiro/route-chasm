@@ -2,8 +2,10 @@
 
 namespace core\route;
 
+use core\App;
 use core\collections\iterator\ArrayIterator;
 use core\collections\iterator\ArrayIteratorTrait;
+use core\configs\AppConfig;
 use core\Copy;
 use core\route\compiler\RouteCompiler;
 use core\utils\Arrays;
@@ -20,9 +22,9 @@ class Route implements ArrayIterator, Copy {
      * @return static
      */
     public static function from(string $route, array $parameters = []): static {
-        // todo
-        // get app Route compiler
-        $parser = new RouteCompiler();
+        $parser = App::getInstance()
+            ->getRouteCompiler();
+
         return $parser->parse($route, $parameters);
     }
 

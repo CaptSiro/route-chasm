@@ -3,12 +3,10 @@
 namespace core\route;
 
 use core\collections\dictionary\StrictStack;
-use core\collections\graph\WeightedEdge;
 use core\Flags;
-use core\route\compiler\RouteCompilerOptions;
 use core\utils\Regex;
 
-class RouteSegment implements WeightedEdge {
+class RouteSegment {
     use Flags;
 
     public const FLAG_IS_TERMINAL = 1;
@@ -18,8 +16,7 @@ class RouteSegment implements WeightedEdge {
     protected string $regex;
 
     public function __construct(
-        protected string $pattern,
-        protected float $weight = RouteCompilerOptions::WEIGHT_DEFAULT
+        protected string $pattern
     ) {
         $this->regex = Regex::create($this->pattern);
     }
@@ -50,9 +47,5 @@ class RouteSegment implements WeightedEdge {
 
     public function getRegex(): string {
         return $this->regex;
-    }
-
-    public function getWeight(): float {
-        return $this->weight;
     }
 }

@@ -118,7 +118,7 @@ class RouteTree implements Graph {
         }
 
         // Descending order
-        usort($vertexes, fn(Trace $a, Trace $b) => $b->getWeight() <=> $a->getWeight());
+        usort($vertexes, fn(Trace $a, Trace $b) => $b->getDepth() <=> $a->getDepth());
         return $vertexes;
     }
 

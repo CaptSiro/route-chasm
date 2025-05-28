@@ -3,6 +3,7 @@
 namespace core\utils;
 
 use core\Init;
+use core\path\Path;
 use core\patterns\Charset;
 
 class Strings extends Init {
@@ -182,5 +183,9 @@ class Strings extends Init {
 
     public static function urlPathSegment(string $segment): string {
         return str_replace(' ', '-', strtolower($segment));
+    }
+
+    public static function asHumanReadableBoolean(string $string): bool {
+        return filter_var($string, FILTER_VALIDATE_BOOLEAN);
     }
 }

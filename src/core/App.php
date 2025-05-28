@@ -23,6 +23,7 @@ use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
 use core\path\Path;
+use core\route\compiler\RouteCompiler;
 use core\route\RouteNode;
 use core\route\Router as RouterV2;
 use core\route\RouteSegment;
@@ -249,6 +250,12 @@ class App implements Loader {
     public static function getConfig(): ?Config {
         return AppConfig::getInstance()
             ->get();
+    }
+
+    public function getRouteCompiler(): RouteCompiler {
+        return AppConfig::getInstance()
+            ->get()
+            ->getRouteCompiler();
     }
 
     /**

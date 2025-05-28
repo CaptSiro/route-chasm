@@ -6,12 +6,33 @@ use core\App;
 use core\database\sql\Config as SqlConfig;
 use core\http\HttpCode;
 use core\path\Path;
+use core\route\compiler\RouteCompiler;
+use core\route\compiler\RouteCompilerConfig;
+use core\utils\Strings;
 use dotenv\Env;
 
 class EnvConfig implements Config {
+    protected RouteCompiler $routeCompiler;
+
+
+
     public function __construct(
         protected Env $env
-    ) {}
+    ) {
+        $routeCompilerConfig = new RouteCompilerConfig();
+        $routeCompilerConfig
+            ->setAnyRegex(
+                $this->env->get("ROUTING_ANY") ?? RouteCompilerConfig::REGEX_ANY
+            )
+            ->setMergeConsecutiveSlashes(Strings::asHumanReadableBoolean(
+                $this->env->get("ROUTING_MERGE_SLASHES") ?? true
+            ))
+            ->setIdentRegex(
+                $this->env->get("ROUTING_IDENT") ?? RouteCompilerConfig::REGEX_IDENT
+            );
+
+        $this->routeCompiler = new RouteCompiler($routeCompilerConfig);
+    }
 
 
 
@@ -48,5 +69,9 @@ class EnvConfig implements Config {
 
         return App::getInstance()
             ->getSource(Path::join('..', $dir));
+    }
+
+    public function getRouteCompiler(): RouteCompiler {
+        return $this->routeCompiler;
     }
 }

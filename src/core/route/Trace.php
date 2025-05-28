@@ -16,14 +16,13 @@ class Trace implements ArrayIterator {
     use ArrayIteratorTrait;
 
     /**
-     * @param TreeVertex<V, WeightedEdge> $root
-     * @param TreeVertex<V, WeightedEdge> $target
+     * @param TreeVertex<V, E> $root
+     * @param TreeVertex<V, E> $target
      * @return self
      */
     public static function backtrack(TreeVertex $root, TreeVertex $target): self {
         $trace = [$target];
         $current = $target;
-        $weight = 0;
 
         while ($current->getInstanceId() !== $root->getInstanceId()) {
             $edge = $current->getParentEdge();
@@ -31,12 +30,11 @@ class Trace implements ArrayIterator {
                 break;
             }
 
-            $weight += $edge->get()->getWeight();
             $current = $edge->getVertex();
             $trace[] = $current;
         }
 
-        return new self(array_reverse($trace), $weight);
+        return new self(array_reverse($trace));
     }
 
 
@@ -46,22 +44,9 @@ class Trace implements ArrayIterator {
      */
     public function __construct(
         protected array $vertexes,
-        protected ?float $weight = null
-    ) {
-        $this->weight ??= $this->calculateWeight();
-    }
+    ) {}
 
 
-
-    protected function calculateWeight(): float {
-        $weight = 0;
-
-        for ($i = 1; $i < count($this->vertexes); $i++) {
-            $weight += $this->vertexes[$i]->getParentEdge()?->get()->getWeight() ?? 1;
-        }
-
-        return $weight;
-    }
 
     /**
      * @return array<TreeVertex<V, E>>
@@ -70,8 +55,8 @@ class Trace implements ArrayIterator {
         return $this->vertexes;
     }
 
-    public function getWeight(): float {
-        return $this->weight;
+    public function getDepth(): int {
+        return count($this->vertexes);
     }
 
 

@@ -8,7 +8,7 @@ use core\utils\Regex;
 
 class RouteCompiler {
     public function __construct(
-        protected RouteCompilerOptions $options = new RouteCompilerOptions()
+        protected RouteCompilerConfig $config = new RouteCompilerConfig()
     ) {}
 
 
@@ -45,13 +45,13 @@ class RouteCompiler {
                     }
 
                     $ident = $tokens[$position + 1]->literal;
-                    $identRegex = Regex::create($this->options->getIdentRegex());
+                    $identRegex = Regex::create($this->config->getIdentRegex());
 
                     if (!preg_match($identRegex, $ident)) {
                         throw new RouteCompilerException("'$ident' is not valid parameter name");
                     }
 
-                    $regex = $parameters[$ident] ?? $this->options->getAnyRegex();
+                    $regex = $parameters[$ident] ?? $this->config->getAnyRegex();
                     $segment .= Regex::createNamedGroup($ident, $regex);
                     $position += 2;
                     break;
@@ -66,7 +66,7 @@ class RouteCompiler {
                     $isPreviousSlash = isset($tokens[$position - 1])
                         && $tokens[$position - 1]->type === TokenType::SLASH;
                     if ($isPreviousSlash) {
-                        if ($this->options->isMergeConsecutiveSlashes()) {
+                        if ($this->config->isMergeConsecutiveSlashes()) {
                             break;
                         }
 
@@ -83,14 +83,14 @@ class RouteCompiler {
                 }
 
                 case TokenType::ANY: {
-                    $segment .= $this->options->getAnyRegex();
+                    $segment .= $this->config->getAnyRegex();
                     break;
                 }
 
                 case TokenType::ANY_TERMINATOR: {
-                    $segment .= $this->options->getAnyRegex();
+                    $segment .= $this->config->getAnyRegex();
 
-                    $routeSegment = new RouteSegment($segment, $this->options->getAnyTerminatorWeight());
+                    $routeSegment = new RouteSegment($segment);
                     $routeSegment->setFlag(RouteSegment::FLAG_IS_TERMINAL);
                     $route->add($routeSegment);
                     break 2;
