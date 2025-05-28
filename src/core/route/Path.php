@@ -3,7 +3,7 @@
 namespace core\route;
 
 class Path {
-    public static function from(string $literal): self {
+    public static function from(string $literal, int $start = 0): self {
         $segments = [];
 
         foreach (explode('/', $literal) as $segment) {
@@ -12,7 +12,7 @@ class Path {
             }
         }
 
-        return new self($segments);
+        return new self($segments, $start);
     }
 
 
@@ -21,7 +21,8 @@ class Path {
      * @param array<string> $segments
      */
     public function __construct(
-        protected array $segments
+        protected array $segments,
+        protected int $start = 0
     ) {}
 
     public function __toString(): string {
@@ -31,7 +32,7 @@ class Path {
 
 
     public function getDepth(): int {
-        return count($this->segments);
+        return count($this->segments) - $this->start;
     }
 
     /**
@@ -42,6 +43,10 @@ class Path {
     }
 
     public function getSegment(int $index): ?string {
-        return $this->segments[$index] ?? null;
+        return $this->segments[$this->start + $index] ?? null;
+    }
+
+    public function toString(): string {
+        return (string)$this;
     }
 }

@@ -4,10 +4,17 @@ namespace core\route;
 
 use core\collections\dictionary\StrictStack;
 use core\collections\graph\WeightedEdge;
+use core\Flags;
 use core\route\compiler\RouteCompilerOptions;
 use core\utils\Regex;
 
 class RouteSegment implements WeightedEdge {
+    use Flags;
+
+    public const FLAG_IS_TERMINAL = 1;
+
+
+
     protected string $regex;
 
     public function __construct(

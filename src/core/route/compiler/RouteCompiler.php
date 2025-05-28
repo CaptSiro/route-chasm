@@ -89,7 +89,10 @@ class RouteCompiler {
 
                 case TokenType::ANY_TERMINATOR: {
                     $segment .= $this->options->getAnyRegex();
-                    $route->add(new RouteSegment($segment, $this->options->getAnyTerminatorWeight()));
+
+                    $routeSegment = new RouteSegment($segment, $this->options->getAnyTerminatorWeight());
+                    $routeSegment->setFlag(RouteSegment::FLAG_IS_TERMINAL);
+                    $route->add($routeSegment);
                     break 2;
                 }
 

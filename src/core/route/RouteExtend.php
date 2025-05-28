@@ -27,6 +27,11 @@ class RouteExtend {
         $current = $root;
 
         foreach ($route->getSegments() as $segment) {
+            if ($segment->hasFlag(RouteSegment::FLAG_IS_TERMINAL)) {
+                $current->get()->setFlag(RouteSegment::FLAG_IS_TERMINAL);
+                break;
+            }
+
             foreach ($current->getEdges() as $edge) {
                 if ($edge->get()->getPattern() === $segment->getPattern()) {
                     $current = $edge->getVertex();

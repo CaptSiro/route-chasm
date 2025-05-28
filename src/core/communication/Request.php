@@ -8,6 +8,7 @@ use core\collections\dictionary\StrictMap;
 use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
+use core\route\Path;
 use core\url\Url;
 
 class Request {
@@ -37,6 +38,8 @@ class Request {
     public string $httpMethod;
 
     private ?array $headers;
+
+    protected int $pathIndex;
 
     private Session $session;
 
@@ -110,6 +113,15 @@ class Request {
         }
 
         return $this->files;
+    }
+
+    public function setPathIndex(int $pathIndex): static {
+        $this->pathIndex = $pathIndex;
+        return $this;
+    }
+
+    public function getRemainingPath(): Path {
+        return Path::from($this->url->getPath(), $this->pathIndex);
     }
 
     public function getDomain(): StrictDictionary {

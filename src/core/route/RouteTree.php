@@ -40,15 +40,14 @@ class RouteTree implements Graph {
             foreach ($layer as $vertex) {
                 $edges = $vertex->getEdges();
 
-                if (empty($edges)) {
-                    $terminal[] = $vertex;
-                    continue;
-                }
-
                 foreach ($edges as $edge) {
                     if ($edge->get()->test($segment)) {
                         $layerNext[] = $edge->getVertex();
                     }
+                }
+
+                if (empty($edges) || $vertex->get()->hasFlag(RouteNode::FLAG_IS_TERMINAL)) {
+                    $terminal[] = $vertex;
                 }
             }
 

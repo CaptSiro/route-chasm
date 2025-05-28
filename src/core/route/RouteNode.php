@@ -4,8 +4,15 @@ namespace core\route;
 
 use core\actions\Action;
 use core\collections\graph\TreeVertex;
+use core\Flags;
 
 class RouteNode {
+    use Flags;
+
+    public const FLAG_IS_TERMINAL = 1;
+
+
+
     /**
      * @return TreeVertex<RouteNode, ?>
      */
@@ -49,17 +56,17 @@ class RouteNode {
 
 
     /**
-     * @param TreeVertex<RouteNode, ?> $vertex
-     */
-    public function setVertex(TreeVertex $vertex): void {
-        $this->vertex = $vertex;
-    }
-
-    /**
      * @return TreeVertex<RouteNode, ?>|null
      */
     public function getVertex(): ?TreeVertex {
         return $this->vertex;
+    }
+
+    /**
+     * @param TreeVertex<RouteNode, ?> $vertex
+     */
+    public function setVertex(TreeVertex $vertex): void {
+        $this->vertex = $vertex;
     }
 
     /**

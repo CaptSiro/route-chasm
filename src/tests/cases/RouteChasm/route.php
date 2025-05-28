@@ -283,6 +283,8 @@ function assert_counts(array $counters, bool $reset = false): void {
 }
 
 Sptf::test("should find correct vertexes", function () {
+    Sptf::allowPrinting();
+
     $tree = new RouteTree();
 
     $root = new ActCounter("root");
@@ -318,7 +320,7 @@ Sptf::test("should find correct vertexes", function () {
     perform_actions($tree->traceSearch(Path::from("/")));
     assert_counts([
         [$root, 1],
-        [$any, 0],
+        [$any, 1],
         [$foo, 0],
         [$fooBar, 0],
         [$dynamicFoo, 0],
@@ -338,7 +340,7 @@ Sptf::test("should find correct vertexes", function () {
     perform_actions($tree->traceSearch(Path::from("/foo")));
     assert_counts([
         [$root, 3],
-        [$any, 1],
+        [$any, 3],
         [$foo, 1],
         [$fooBar, 0],
         [$dynamicFoo, 1],
@@ -348,7 +350,7 @@ Sptf::test("should find correct vertexes", function () {
     perform_actions($tree->traceSearch(Path::from("/foo/bar")));
     assert_counts([
         [$root, 3],
-        [$any, 1],
+        [$any, 3],
         [$foo, 1],
         [$fooBar, 1],
         [$dynamicFoo, 1],
@@ -358,7 +360,7 @@ Sptf::test("should find correct vertexes", function () {
     perform_actions($tree->traceSearch(Path::from("/foooo")));
     assert_counts([
         [$root, 2],
-        [$any, 1],
+        [$any, 2],
         [$foo, 0],
         [$fooBar, 0],
         [$dynamicFoo, 1],
@@ -368,7 +370,7 @@ Sptf::test("should find correct vertexes", function () {
     perform_actions($tree->traceSearch(Path::from("/foooo/br")));
     assert_counts([
         [$root, 2],
-        [$any, 1],
+        [$any, 2],
         [$foo, 0],
         [$fooBar, 0],
         [$dynamicFoo, 1],
@@ -380,7 +382,7 @@ Sptf::test("should find correct vertexes", function () {
  * @param array<Trace<RouteNode, RouteSegment>> $traces
  * @return void
  */
-function perform_first_action(array $traces): void {
+function perform_first_non_middleware_action(array $traces): void {
     $q = Request::test();
     $p = Response::test();
 
@@ -392,7 +394,9 @@ function perform_first_action(array $traces): void {
     $trace = array_shift($traces);
     foreach ($trace->getVertexes() as $vertex) {
         foreach ($vertex->get()->getActions() as $action) {
-            $action->perform($q, $p);
+            if (!$action->isMiddleware()) {
+                $action->perform($q, $p);
+            }
         }
     }
 }
@@ -403,8 +407,8 @@ Sptf::test("should find RouteNodes in correct order", function () {
     $tree0 = new RouteTree();
     $tree1 = new RouteTree();
 
-    $any = new ActCounter("any");
-    $foo = new ActCounter("foo");
+    $any = new ActCounter("any", isMiddleware: true);
+    $foo = new ActCounter("foo", isMiddleware: false);
 
     $tree0
         ->getNode(Route::from("/**"))
@@ -422,13 +426,13 @@ Sptf::test("should find RouteNodes in correct order", function () {
         ->getNode(Route::from("/**"))
         ->addAction($any);
 
-    perform_first_action($tree0->traceSearch(Path::from("/foo")));
+    perform_first_non_middleware_action($tree0->traceSearch(Path::from("/foo")));
     assert_counts([
         [$any, 0],
         [$foo, 1]
     ], true);
 
-    perform_first_action($tree1->traceSearch(Path::from("/foo")));
+    perform_first_non_middleware_action($tree1->traceSearch(Path::from("/foo")));
     assert_counts([
         [$any, 0],
         [$foo, 1]
@@ -468,11 +472,17 @@ Sptf::test("should bind Router correctly", function () {
         ->use("/bar", $bar)
         ->bind("/bar", $router0);
 
-    var_dump($router1->find(Path::from("/bar/foo")));
     perform_actions($router1->find(Path::from("/bar/foo")));
     assert_counts([
-        [$bar, 2],
+        [$bar, 1],
         [$any, 1],
         [$foo, 1],
-    ]);
+    ], true);
+
+    perform_actions($router1->find(Path::from("/bar")));
+    assert_counts([
+        [$bar, 1],
+        [$any, 1],
+        [$foo, 0],
+    ], true);
 });
