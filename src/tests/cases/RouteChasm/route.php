@@ -1,12 +1,11 @@
 <?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
-use core\actions\ActCounter;
-use core\actions\Action;
+use core\collections\dictionary\StrictMap;
 use core\communication\Request;
 use core\communication\Response;
 use core\route\compiler\RouteCompiler;
-use core\route\compiler\RouteCompilerException;
 use core\route\compiler\RouteCompilerConfig;
+use core\route\compiler\RouteCompilerException;
 use core\route\compiler\Token;
 use core\route\compiler\Tokenizer;
 use core\route\compiler\TokenType;
@@ -14,11 +13,14 @@ use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
-use core\route\RouteTree;
 use core\route\RouteSegment;
+use core\route\RouteTree;
 use core\route\Trace;
+use core\url\Url;
 use core\utils\Regex;
 use sptf\Sptf;
+use tests\utils\RouteChasm\actions\ActCounter;
+use tests\utils\RouteChasm\actions\MatchRemainingPath;
 
 Sptf::test("should tokenize routes correctly", function () {
     $routes = [
@@ -99,8 +101,6 @@ Sptf::test("should tokenize routes correctly", function () {
             new Token(TokenType::ANY_TERMINATOR, "**"),
         ],
     ];
-
-    Sptf::allowPrinting();
 
     foreach ($routes as $route => $expected) {
         $tokenized = [...(new Tokenizer($route))->tokenize()];
@@ -223,8 +223,6 @@ Sptf::test("should return correct depth of route", function () {
 });
 
 Sptf::test("should create vertex", function () {
-    Sptf::allowPrinting();
-
     $foo = "foo+";
     $fooSegment = Regex::create(Regex::createNamedGroup("foo", $foo));
     $barSegment = Regex::create("bar");
@@ -250,18 +248,26 @@ Sptf::test("should create vertex", function () {
 
 /**
  * @param array<Trace<RouteNode, RouteSegment>> $traces
+ * @param Request|null $request
+ * @param Response|null $response
  * @return void
  */
-function perform_actions(array $traces): void {
-    $q = Request::test();
-    $p = Response::test();
+function perform_actions(array $traces, ?Request $request = null, ?Response $response = null): void {
+    $request ??= Request::test();
+    $response ??= Response::test();
 
     foreach ($traces as $trace) {
+        $index = 0;
+
         foreach ($trace->getVertexes() as $vertex) {
+            $request->set(Request::PATH_INDEX, $index);
+
             foreach ($vertex->get()->getActions() as $action) {
                 var_dump("performing ". $action->getActorName());
-                $action->perform($q, $p);
+                $action->perform($request, $response);
             }
+
+            $index++;
         }
     }
 }
@@ -283,8 +289,6 @@ function assert_counts(array $counters, bool $reset = false): void {
 }
 
 Sptf::test("should find correct vertexes", function () {
-    Sptf::allowPrinting();
-
     $tree = new RouteTree();
 
     $root = new ActCounter("root");
@@ -402,8 +406,6 @@ function perform_first_non_middleware_action(array $traces): void {
 }
 
 Sptf::test("should find RouteNodes in correct order", function () {
-    Sptf::allowPrinting();
-
     $tree0 = new RouteTree();
     $tree1 = new RouteTree();
 
@@ -455,8 +457,6 @@ Sptf::test("should bind Action objects correctly", function () {
 });
 
 Sptf::test("should bind Router correctly", function () {
-    Sptf::allowPrinting();
-
     $any = new ActCounter("any");
     $foo = new ActCounter("foo");
     $bar = new ActCounter("bar");
@@ -485,4 +485,33 @@ Sptf::test("should bind Router correctly", function () {
         [$any, 1],
         [$foo, 0],
     ], true);
+});
+
+Sptf::test("should return expected remaining paths", function () {
+    $url = new Url(
+        "http", "localhost", "request/path/to/file.txt", new StrictMap()
+    );
+
+    $request = Request::test(url: $url);
+    $path = Path::from($request->getUrl()->getRealPath());
+
+    $tests = [
+        "/**" => "/request/path/to/file.txt",
+        "/request/**" => "/path/to/file.txt",
+        "/request/path/**" => "/to/file.txt",
+        "/request/path/to/**" => "/file.txt",
+    ];
+
+    $actions = [];
+    $router = new Router();
+
+    foreach ($tests as $route => $expected) {
+        $router->use($route, $actions[] = new MatchRemainingPath($expected));
+    }
+
+    perform_actions($router->find($path), $request);
+
+    foreach ($actions as $action) {
+        Sptf::expect($action->isPerformed())->toBe(true);
+    }
 });

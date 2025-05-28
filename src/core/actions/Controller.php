@@ -5,7 +5,7 @@ namespace core\actions;
 use core\route\RouteNode;
 
 abstract class Controller implements Action {
-    use BindRouteNode, ClassActorName;
+    use ActionBindRouteNode, ActorClassName;
 
 
 

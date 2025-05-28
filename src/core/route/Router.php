@@ -92,7 +92,7 @@ class Router {
                     }
                 }
 
-                $request->setPathIndex($i);
+                $request->set(Request::PATH_INDEX, $i);
 
                 foreach ($vertex->get()->getActions() as $action) {
                     $action->perform($request, $response);

@@ -4,7 +4,7 @@ namespace core\actions;
 
 use core\route\RouteNode;
 
-trait BindRouteNode {
+trait ActionBindRouteNode {
     protected ?RouteNode $node = null;
 
     public function getRouteNode(): ?RouteNode {

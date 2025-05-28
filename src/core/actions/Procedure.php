@@ -8,7 +8,7 @@ use core\communication\Response;
 use core\route\RouteNode;
 
 class Procedure implements Action {
-    use BindRouteNode, ClassActorName;
+    use ActionBindRouteNode, ActorClassName;
 
     public static function middleware(Closure $closure): static {
         return new static($closure, true);

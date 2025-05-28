@@ -26,7 +26,7 @@ class Path {
     ) {}
 
     public function __toString(): string {
-        return implode('/', $this->segments);
+        return '/'. implode('/', array_slice($this->segments, $this->start));
     }
 
 
@@ -47,6 +47,6 @@ class Path {
     }
 
     public function toString(): string {
-        return (string)$this;
+        return (string) $this;
     }
 }

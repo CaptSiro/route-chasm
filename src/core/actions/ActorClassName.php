@@ -4,7 +4,7 @@ namespace core\actions;
 
 use core\utils\Objects;
 
-trait ClassActorName {
+trait ActorClassName {
     public function getActorName(): string {
         return Objects::getClass($this);
     }

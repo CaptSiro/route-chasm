@@ -1,13 +1,15 @@
 <?php
 
-namespace core\actions;
+namespace tests\utils\RouteChasm\actions;
 
+use core\actions\Action;
+use core\actions\ActionBindRouteNode;
 use core\communication\Request;
 use core\communication\Response;
 use core\route\RouteNode;
 
 class ActCounter implements Action {
-    use BindRouteNode;
+    use ActionBindRouteNode;
 
 
 

@@ -12,6 +12,8 @@ use core\route\Path;
 use core\url\Url;
 
 class Request {
+    public const PATH_INDEX = '__path_index';
+
     public const PARAM_ANY = "*";
     public const PARAM_ANY_TERMINATOR = "**";
 
@@ -38,8 +40,6 @@ class Request {
     public string $httpMethod;
 
     private ?array $headers;
-
-    protected int $pathIndex;
 
     private Session $session;
 
@@ -115,13 +115,9 @@ class Request {
         return $this->files;
     }
 
-    public function setPathIndex(int $pathIndex): static {
-        $this->pathIndex = $pathIndex;
-        return $this;
-    }
-
     public function getRemainingPath(): Path {
-        return Path::from($this->url->getPath(), $this->pathIndex);
+        $index = $this->data->get(self::PATH_INDEX, 0);
+        return Path::from($this->url->getRealPath(), $index);
     }
 
     public function getDomain(): StrictDictionary {
