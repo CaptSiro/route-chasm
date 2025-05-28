@@ -2,6 +2,8 @@
 
 namespace core\actions\Assets;
 
+use core\actions\Assets\servers\FileServer;
+use core\actions\Assets\servers\Server;
 use core\actions\Controller;
 use core\actions\Assets\policy\DirectoryPolicy;
 use core\actions\Assets\policy\NotAccessiblePolicy;
@@ -12,7 +14,6 @@ use core\http\Cors;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\utils\Files;
 
 class Assets extends Controller {
     use Flags;
@@ -20,6 +21,7 @@ class Assets extends Controller {
 
 
     protected DirectoryPolicy $directoryPolicy;
+    protected Server $server;
 
     public function __construct(
         protected string $directory
@@ -27,6 +29,7 @@ class Assets extends Controller {
         parent::__construct();
         $this->directory = realpath($this->directory);
         $this->directoryPolicy = new NotAccessiblePolicy();
+        $this->server = new FileServer();
     }
 
 
@@ -37,6 +40,10 @@ class Assets extends Controller {
 
     public function setDirectoryPolicy(DirectoryPolicy $directoryPolicy): void {
         $this->directoryPolicy = $directoryPolicy;
+    }
+
+    public function setServer(Server $server): void {
+        $this->server = $server;
     }
 
     public function perform(Request $request, Response $response): void {
@@ -54,8 +61,7 @@ class Assets extends Controller {
             }
 
             case HttpMethod::GET: {
-                // todo
-                $remaining = urldecode($request->getAnyParam() ?? "");
+                $remaining = $request->getRemainingPath()->toString();
                 $path = realpath($this->directory .'/'. $remaining);
 
                 if ($path === false) {
@@ -66,7 +72,7 @@ class Assets extends Controller {
                     break;
                 }
 
-                if (!str_contains($path, $this->directory)) {
+                if (!str_starts_with($path, $this->directory)) {
                     $response->sendMessage(
                         "Request references outside of given scope",
                         HttpCode::CE_BAD_REQUEST
@@ -79,7 +85,7 @@ class Assets extends Controller {
                     break;
                 }
 
-                $this->serve($path, $request, $response);
+                $this->server->serve($path, $request, $response);
             }
 
             default: {
@@ -90,22 +96,5 @@ class Assets extends Controller {
                 break;
             }
         }
-    }
-
-    public function serve(string $path, Request $request, Response $response): void {
-        $response->setHeaders([
-            Cors::ORIGIN => "*",
-            HttpHeader::CONTENT_TYPE => Files::mimeType($path),
-        ]);
-
-        // todo
-        //                                               v   Add as web setting (default=false)   v
-        if (Files::extension($path) === "php" && $request->getUrl()->getQuery()->exists("x")) {
-            $response->generateHeaders();
-            require $path;
-            $response->flush();
-        }
-
-        $response->readFile($path);
     }
 }
