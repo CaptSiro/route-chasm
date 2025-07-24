@@ -42,6 +42,10 @@ class Assets extends Controller {
         $this->directoryPolicy = $directoryPolicy;
     }
 
+    public function getServer(): Server {
+        return $this->server;
+    }
+
     public function setServer(Server $server): void {
         $this->server = $server;
     }

@@ -1,6 +1,5 @@
-<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+<?php
 
-use core\collections\dictionary\StrictMap;
 use core\communication\Request;
 use core\communication\Response;
 use core\route\compiler\RouteCompiler;
@@ -17,7 +16,6 @@ use core\route\RouteSegment;
 use core\route\RouteTree;
 use core\route\Trace;
 use core\url\Url;
-use core\url\UrlV2;
 use core\utils\Regex;
 use sptf\Sptf;
 use tests\utils\RouteChasm\actions\ActCounter;
@@ -516,7 +514,7 @@ Sptf::test("should bind Router correctly", function () {
 });
 
 Sptf::test("should return expected remaining paths", function () {
-    $url = UrlV2::from("http://localhost/request/path/to/file.txt");
+    $url = Url::from("http://localhost/request/path/to/file.txt");
 
     $request = Request::test(url: $url);
     $path = Path::from($request->getUrl()->getPath()->toString());

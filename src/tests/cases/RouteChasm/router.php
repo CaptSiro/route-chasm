@@ -1,6 +1,5 @@
 <?php
 
-use core\App;
 use core\communication\FormatMatcher;
 use core\communication\Request;
 use core\communication\RequestFormat;
@@ -9,11 +8,9 @@ use core\http\Http;
 use core\path\Path;
 use core\patterns\Ident;
 use core\patterns\Number;
-use core\Resource;
 use core\Router;
 use core\utils\Arrays;
 use sptf\Sptf;
-use tests\utils\RouteChasm\TestResource;
 
 require_once __DIR__ ."/../../utils/RouteChasm/bind.php";
 $compare = fn($a, $b) => Arrays::equal($a, $b);
@@ -143,45 +140,6 @@ Sptf::test("find path for deeply nested dynamic Routers", function () {
     Sptf::expect($ret)
         ->toBe([0, 1, 2])
         ->compare(fn($a, $b) => Arrays::equal($a, $b));
-});
-
-
-
-Sptf::test("get correct url path for Resource", function () {
-    $r0 = new Router();
-    $r1 = new Router();
-
-    $t0 = new TestResource();
-    $t1 = new TestResource();
-
-    $r0->bind(
-        "/a",
-        $r1
-    );
-
-    $r0->resource(
-        "/",
-        $t0
-    );
-
-    $r1->resource(
-        "/b",
-        $t1
-    );
-
-    App::getInstance()
-        ->getOptions()
-        ->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, false);
-
-    Sptf::expect($t0->getUrl(Resource::URL_READ)->build())
-        ->toBe("/[unique]");
-
-    Sptf::expect($t1->getUrl(Resource::URL_READ)->build())
-        ->toBe("/a/b/[unique]");
-
-    App::getInstance()
-        ->getOptions()
-        ->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 });
 
 Sptf::test("handle any terminated paths", function () {

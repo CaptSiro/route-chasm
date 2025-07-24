@@ -11,14 +11,14 @@ class ShowDefaultFilePolicy implements DirectoryPolicy {
         protected array $defaultFiles = ['index.html']
     ) {}
 
-    public function handle(Assets $directory, string $path): void {
+    public function handle(Assets $assets, string $path): void {
         foreach ($this->defaultFiles as $file) {
             if (!file_exists($path .'/'. $file)) {
                 continue;
             }
 
             $app = App::getInstance();
-            $directory->serve($path .'/'. $file, $app->getRequest(), $app->getResponse());
+            $assets->getServer()->serve($path .'/'. $file, $app->getRequest(), $app->getResponse());
         }
 
         App::getInstance()

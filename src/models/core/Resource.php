@@ -15,6 +15,10 @@ use core\database\sql\Table;
 use core\forms\description\TextField;
 use core\view\View;
 
+/**
+ * @property int $id
+ */
+
 #[Grid]
 #[Table('core_resource')]
 #[Database(App::DATABASE)]

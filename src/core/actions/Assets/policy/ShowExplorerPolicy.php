@@ -7,18 +7,17 @@ use core\actions\Assets\Assets;
 use core\App;
 
 class ShowExplorerPolicy implements DirectoryPolicy {
-    public function handle(Assets $directory, string $path): void {
+    public function handle(Assets $assets, string $path): void {
         $app = App::getInstance();
 
-        // todo
         $remaining = urldecode($app->getRequest()->getAnyParam() ?? '');
 
         $app->getResponse()
             ->renderRoot(new Explorer(
                 $path,
-                basename($directory->getDirectory()) .'/'. $remaining,
-                $app->getRequest()->getUrl()->getRealPath(),
-                $directory->getDirectory() !== $path
+                basename($assets->getDirectory()) .'/'. $remaining,
+                $app->getRequest()->getUrl()->getPath()->toString(),
+                $assets->getDirectory() !== $path
             ));
     }
 }

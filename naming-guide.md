@@ -71,20 +71,20 @@
 
 ## Summary Sheet (Quick Reference)
 
-| Type               | Convention          | Example                    |
-|--------------------|---------------------|----------------------------|
-| PHP Class          | PascalCase          | `UserManager`              |
-| PHP Constant       | SCREAM_CASE         | `MAX_LENGTH`               |
-| PHP Method/Var     | camelCase           | `fetchData()`              |
-| PHP Function       | snake_case          | `create_token()`           |
-| PHP Namespace      | folder-based        | `models\User`             |
-| SQL Table          | snake_case + prefix | `core_user`                |
-| SQL MxN Table      | table_x_table       | `user_x_role`              |
-| SQL Column/Key     | snake_case          | `id_user`                  |
-| CSS Class          | kebab-case          | `.input-field`             |
-| JS Variable        | camelCase           | `formValue`                |
-| JS Constant        | SCREAM_CASE         | `BASE_URL`                 |
-| JS Function        | namespace_function  | `form_extract()`           |
-| JS Class           | PascalCase          | `ModalDialog`              |
+| Type           | Convention          | Example          |
+|----------------|---------------------|------------------|
+| PHP Class      | PascalCase          | `UserManager`    |
+| PHP Constant   | SCREAM_CASE         | `MAX_LENGTH`     |
+| PHP Method/Var | camelCase           | `fetchData()`    |
+| PHP Function   | snake_case          | `create_token()` |
+| PHP Namespace  | folder-based        | `models\User`    |
+| SQL Table      | snake_case + prefix | `core_user`      |
+| SQL MxN Table  | table_x_table       | `user_x_role`    |
+| SQL Column/Key | snake_case          | `id_user`        |
+| CSS Class      | kebab-case          | `.input-field`   |
+| JS Variable    | camelCase           | `formValue`      |
+| JS Constant    | SCREAM_CASE         | `BASE_URL`       |
+| JS Function    | namespace_function  | `form_extract()` |
+| JS Class       | PascalCase          | `ModalDialog`    |
 
 *(Generated with ChatGPT, modified by CaptSiro)*

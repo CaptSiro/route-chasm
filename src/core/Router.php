@@ -97,10 +97,6 @@ class Router {
         $this->use($parsed->merge("/**"), $endpoint);
     }
 
-    public function resource(Path|string $path, Resource $resource): void {
-        $this->bind($path, $resource->getRouter());
-    }
-
     public function findPath(string $path): ?Trail {
         $snapshots = new SnapshotStack();
 

@@ -2,7 +2,6 @@
 
 namespace core\endpoints;
 
-use core\App;
 use core\path\Segment;
 use core\Router;
 use core\tree\Node;
@@ -14,9 +13,7 @@ trait SimpleEndpoint {
 
 
     public function getUrl(): Url {
-        $base = clone App::getInstance()->getRequest()->getUrl();
-        $base->setPath($this->getUrlPath());
-        return $base;
+        return new Url();
     }
 
     // maybe to-do: Change to generic Node::getPathToSelf() -> map($n -> $n->getSegment()) -> str

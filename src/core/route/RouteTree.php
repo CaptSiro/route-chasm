@@ -6,7 +6,6 @@ use core\collections\graph\Edge;
 use core\collections\graph\Graph;
 use core\collections\graph\TreeVertex;
 use core\collections\graph\Vertex;
-use core\utils\Arrays;
 
 /**
  * @template-implements Graph<RouteNode, RouteSegment>

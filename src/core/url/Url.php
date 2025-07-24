@@ -2,76 +2,42 @@
 
 namespace core\url;
 
-use core\App;
 use core\collections\dictionary\StrictMap;
 use core\collections\StrictDictionary;
 use core\Copy;
+use core\route\Path;
+use core\utils\Arrays;
 use core\utils\Strings;
+use Exception;
 
 class Url implements Copy {
-    public const PARAM_REGEX = "/\[([^\]]+)\]/";
     public const SEPARATOR_PROTOCOL = '://';
     public const SEPARATOR_PATH = '/';
+    public const REGEX_URL = "/^(([^:\/?#]+):)?(\/\/(([^:\/?#\n]*):?([0-9]*)))?([^?#\n]*)(\?([^#\n]*))?(#([^\n]*))?/";
 
 
 
-    public static function set(string $url, string $parameter, string $value): string {
-        return str_replace("[$parameter]", $value, $url);
-    }
-
-    public static function parseQuery(string $literal): StrictDictionary {
-        $map = new StrictMap();
-
-        foreach (explode('&', $literal) as $pair) {
-            $x = explode('=', $pair, 2);
-            $map->set($x[0], $x[1] ?? null);
+    /**
+     * @throws Exception
+     */
+    public static function from(string $literal): static {
+        $valid = preg_match(self::REGEX_URL, $literal, $matches);
+        if (!$valid) {
+            throw new Exception("Not a valid URL literal: $literal");
         }
 
-        return $map;
+        $protocol = $matches[2] ?? 'http';
+        $port = intval($matches[6] ?? -1);
+
+        return (new static())
+            ->setProtocol($protocol)
+            ->setDomain($matches[5] ?? 'localhost')
+            ->setPort($port)
+            ->setPath(Path::from($matches[7] ?? ''))
+            ->setQuery(new StrictMap(Strings::parseUrlEncoded($matches[9] ?? '')));
     }
 
-    public static function from(string $fullyQualifiedUrl): Url {
-        $protocol = Strings::split($fullyQualifiedUrl, self::SEPARATOR_PROTOCOL, $rest) ?? 'http';
-        $host = Strings::split($rest, '/', $rest)
-            ?? App::getInstance()
-                ->getRequest()
-                ->getUrl()
-                ->host;
-        $path = Strings::split($rest, '?', $query);
-        $queryDictionary = self::parseQuery($query);
-
-        return new Url(
-            $protocol,
-            $host,
-            '/'. $path,
-            $queryDictionary
-        );
-    }
-
-    public static function relative(
-        string $path,
-        ?string $protocol = null,
-        ?string $host = null,
-        ?string $query = null
-    ): Url {
-        $request = App::getInstance()
-            ->getRequest();
-
-        if (str_starts_with($path, './') || str_starts_with($path, '../')) {
-            $path = $request->getUrl()->getPath() .'/'. $path;
-        }
-
-        return new Url(
-            $protocol ?? $request->getUrl()->getProtocol(),
-            $host ?? $request->getUrl()->getDomain(),
-            $path,
-            $query === null
-                ? new StrictMap()
-                : self::parseQuery($query)
-        );
-    }
-
-    public static function fromRequest(): self {
+    public static function fromRequest(): static {
         $path = $_SERVER['REQUEST_URI'];
         $hostStart = strpos($path, $_SERVER['HTTP_HOST']);
 
@@ -85,110 +51,127 @@ class Url implements Copy {
             $path = substr($path, 0, $queryStart);
         }
 
-        return new self(
-            $_SERVER['REQUEST_SCHEME'] ?? "http",
-            $_SERVER['HTTP_HOST'] ?? "localhost",
-            $path,
-            new StrictMap($_GET)
-        );
+        return (new static())
+            ->setProtocol($_SERVER['REQUEST_SCHEME'] ?? "http")
+            ->setDomain($_SERVER['HTTP_HOST'] ?? "localhost")
+            ->setPath(Path::from($path))
+            ->setQuery(new StrictMap($_GET));
     }
 
 
 
-    function __construct(
-        protected string $protocol,
-        protected string $host,
-        protected string $path,
-        protected readonly StrictDictionary $query
-    ) {}
+
+    protected string $protocol;
+    protected string $domain;
+    protected int $port;
+    protected Path $path;
+    protected StrictDictionary $query;
 
 
-
-    public function getQuery(): StrictDictionary {
-        return $this->query;
+    public function __construct() {
+        $this->protocol = 'http';
+        $this->domain = 'localhost';
+        $this->port = -1;
+        $this->path = new Path([]);
+        $this->query = new StrictMap();
     }
 
-    public function getQueryString(): string {
-        $query = '';
-
-        $first = true;
-        foreach ($this->query->toArray() as $key => $value) {
-            if (!$first) {
-                $query .= '&';
-            }
-
-            $query .= is_null($value)
-                ? urlencode($key)
-                : urlencode($key) .'='. urlencode($value);
-
-            $first = false;
-        }
-
-        return $query;
+    public function __toString(): string {
+        return $this->toString();
     }
 
-    public function full(): string {
-        $queryString = $this->getQueryString();
-        $query = $queryString === ''
-            ? ''
-            : '?' . $queryString;
 
-        return $this->protocol ."://". $this->host . $this->path . $query;
-    }
-
-    public function setPath(string $path): void {
-        $this->path = $path;
-    }
-
-    public function setParam(string $param, string $value): void {
-        $this->path = str_replace("[$param]", $value, $this->path);
-    }
-
-    public function hasParam(string $param): bool {
-        return str_contains($this->path, "[$param]");
-    }
-
-    public function getHost(): string {
-        return $this->host;
-    }
-
-    /**
-     * If option for removing home from is set it will perform such action
-     * @see App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH
-     * @return string
-     */
-    public function getPath(): string {
-        $app = App::getInstance();
-        if ($app->getOptions()->get(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH)) {
-            return substr($this->path, strlen($app->getHome()));
-        }
-
-        return $this->path;
-    }
-
-    /**
-     * Ignores option for home removal
-     * @see App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH
-     * @return string
-     */
-    public function getRealPath(): string {
-        return $this->path;
-    }
 
     public function getProtocol(): string {
         return $this->protocol;
     }
 
-    public function copy(): static {
-        return new static(
-            $this->protocol,
-            $this->host,
-            $this->path,
-            $this->query->copy()
-        );
+    public function setProtocol(string $protocol): static {
+        $this->protocol = $protocol;
+        return $this;
     }
 
-    public function __toString(): string {
-        return $this->full();
+    public function getDomain(): string {
+        return $this->domain;
+    }
+
+    public function setDomain(string $domain): static {
+        $this->domain = $domain;
+        return $this;
+    }
+
+    public function getPort(): int {
+        return $this->port;
+    }
+
+    public function setPort(int $port): static {
+        $this->port = $port;
+        return $this;
+    }
+
+    public function getPath(): Path {
+        return $this->path;
+    }
+
+    public function setPath(Path $path): static {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * @return StrictDictionary<string>
+     */
+    public function getQuery(): StrictDictionary {
+        return $this->query;
+    }
+
+    public function getQueryString(): string {
+        $queryArray = $this->query->toArray();
+        if (empty($queryArray)) {
+            return '';
+        }
+
+        return Arrays::urlEncode($queryArray);
+    }
+
+    public function setQuery(StrictDictionary $query): static {
+        $this->query = $query;
+        return $this;
+    }
+
+    public function setQueryArgument(string $name, string $value): static {
+        $this->query->set($name, $value);
+        return $this;
+    }
+
+    public function toString(): string {
+        $port = $this->port < 0
+            ? ''
+            : ':'. $this->port;
+
+        $url = $this->protocol .'://'. $this->domain . $port . $this->path;
+
+        $queryArray = $this->query->toArray();
+        if (empty($queryArray)) {
+            return $url;
+        }
+
+        return $url .'?'. Arrays::urlEncode($queryArray);
+    }
+
+
+
+    // Copy
+    public function copy(): static {
+        $instance = new static();
+
+        $instance
+            ->setProtocol($this->protocol)
+            ->setDomain($this->domain)
+            ->setPort($this->port)
+            ->setPath(Path::from($this->path->toString()))
+            ->setQuery(new StrictMap([...$this->query->toArray()]));
+
+        return $instance;
     }
 }

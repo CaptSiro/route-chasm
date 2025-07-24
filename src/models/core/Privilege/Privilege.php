@@ -18,6 +18,11 @@ use core\view\View;
 use models\extensions\Editable\Editable;
 use models\extensions\Editable\EditableExtension;
 
+/**
+ * @property int $id
+ * @property string $name
+ */
+
 #[Grid(new PrivilegeProxy())]
 #[Table('core_privilege')]
 #[Database(App::DATABASE)]

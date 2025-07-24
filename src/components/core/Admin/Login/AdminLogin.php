@@ -17,7 +17,7 @@ use core\forms\Form;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\url\UrlV2;
+use core\url\Url;
 use core\view\ContainerContent;
 use core\view\View;
 use models\core\Setting\Setting;
@@ -35,7 +35,7 @@ class AdminLogin extends ContainerContent {
     private const FIELD_TAG = 'tag';
     private const FIELD_PASSWORD = 'password';
 
-    public static function createLogoutUrl(UrlV2 $url): string {
+    public static function createLogoutUrl(Url $url): string {
         $copy = $url->copy();
         $copy->getQuery()->set(self::QUERY_LOGOUT, "");
         return $copy->toString();
@@ -113,7 +113,7 @@ class AdminLogin extends ContainerContent {
             if ($logout) {
                 $url->getQuery()->remove(self::QUERY_LOGOUT);
                 User::logout();
-                $response->redirect($url->full());
+                $response->redirect($url->toString());
             }
 
             if (!$loggedIn->isAdmin()) {
@@ -156,7 +156,7 @@ class AdminLogin extends ContainerContent {
                     User::fromTag(User::TAG_ROOT)?->login();
 
                     $response->setStatus(HttpCode::S_OK);
-                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->full());
+                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->toString());
                     $response->flush();
                 }
 
@@ -177,7 +177,7 @@ class AdminLogin extends ContainerContent {
                     $user->login();
 
                     $response->setStatus(HttpCode::S_OK);
-                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->full());
+                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->toString());
                     $response->flush();
                 }
 

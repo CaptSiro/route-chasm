@@ -8,7 +8,6 @@ use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\core\Message\Message;
 use components\core\SaveError\SaveError;
 use components\layout\Accordion\Accordion;
-use components\layout\Tabs\Tabs;
 use core\App;
 use core\database\sql\Model;
 use core\forms\controls\MultiSelect\MultiSelect;

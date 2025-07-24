@@ -1,14 +1,8 @@
 <?php
 
-use core\path\PartType;
 use core\path\Path;
-use core\patterns\Charset;
 use core\patterns\Ident;
 use core\patterns\Number;
-use core\route\compiler\RouteCompiler;
-use core\route\compiler\Token;
-use core\route\compiler\Tokenizer;
-use core\route\compiler\TokenType;
 use core\utils\Strings;
 use sptf\Sptf;
 

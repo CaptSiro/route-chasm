@@ -29,7 +29,7 @@ class Directory implements Endpoint {
                 ->renderRoot(new Explorer(
                     $path,
                     basename($directory->getDirectory()) .'/'. $remaining,
-                    $app->getRequest()->getUrl()->getRealPath(),
+                    $app->getRequest()->getUrl()->getPath()->toString(),
                     $directory->getDirectory() !== $path
                 ));
         };

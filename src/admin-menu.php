@@ -2,7 +2,6 @@
 
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Nexus\AdminNexus;
-use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Admin\SptfTests\SptfTests;
 use components\core\Icon;
 use components\core\Modules\Modules;

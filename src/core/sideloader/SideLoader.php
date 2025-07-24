@@ -12,11 +12,11 @@ use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\module\Loader;
 use core\patterns\Ident;
+use core\route\Path;
 use core\Router;
 use core\sideloader\api\SideLoaderApi;
 use core\sideloader\importers\FileImporter;
 use core\Singleton;
-use core\url\UrlBuilder;
 use core\utils\Files;
 use core\view\BufferTransform;
 use core\view\Renderer;
@@ -289,10 +289,16 @@ class SideLoader implements View {
         $path = App::getInstance()
             ->prependHome($this->router->getUrlPath());
 
-        return (new UrlBuilder(path: $path))
-            ->setQuery('type', $type)
-            ->setQuery('files', $this->joinHashed($files))
-            ->build();
+        $url = App::getInstance()
+            ->getRequest()
+            ->getUrl()
+            ->copy();
+
+        return $url
+            ->setPath(Path::from($path))
+            ->setQueryArgument('type', $type)
+            ->setQueryArgument('files', $this->joinHashed($files))
+            ->toString();
     }
 
     public function createSourceAttribute(string $type, array $files, string $attribute = 'src'): string {

@@ -9,7 +9,7 @@ use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
 use core\route\Path;
-use core\url\UrlV2;
+use core\url\Url;
 
 class Request {
     public const PATH_INDEX = '__path_index';
@@ -19,14 +19,14 @@ class Request {
 
     
     
-    public static function test(?App $app = null, ?UrlV2 $url = null, ?string $httpMethod = "GET"): self {
+    public static function test(?App $app = null, ?Url $url = null, ?string $httpMethod = "GET"): self {
         $format = new RequestFormat();
         $format->setFormatMatcher(new FormatMatcher());
 
         $ret = new self(
             $app ?? new App(),
             $format,
-            $url ?? UrlV2::fromRequest(),
+            $url ?? Url::fromRequest(),
             new StrictMap(),
             new StrictMap(),
         );
@@ -65,7 +65,7 @@ class Request {
     public function __construct(
         readonly protected App $app,
         readonly protected LimitedFormat $format,
-        readonly protected UrlV2 $url,
+        readonly protected Url $url,
         readonly protected StrictDictionary $cookies,
         readonly protected StrictDictionary $domain,
     ) {
@@ -82,7 +82,7 @@ class Request {
         return $this->format->getIdentifier($this);
     }
 
-    public function getUrl(): UrlV2 {
+    public function getUrl(): Url {
         return $this->url;
     }
 

@@ -11,7 +11,7 @@ class NotAccessiblePolicy implements DirectoryPolicy {
         protected int $code = HttpCode::CE_FORBIDDEN
     ) {}
 
-    public function handle(Assets $directory, string $path): void {
+    public function handle(Assets $assets, string $path): void {
         App::getInstance()
             ->getResponse()
             ->sendMessage(

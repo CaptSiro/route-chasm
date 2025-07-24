@@ -23,7 +23,7 @@ use core\module\Module;
 use core\path\Path;
 use core\route\compiler\RouteCompiler;
 use core\route\Router as RouterV2;
-use core\url\UrlV2;
+use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
 use models\core\ModuleRecord;
@@ -129,7 +129,7 @@ class App implements Loader {
         $this->request = new Request(
             $this,
             (new RequestFormat())->setFormatMatcher($this->matcher),
-            UrlV2::fromRequest(),
+            Url::fromRequest(),
             new StrictMap(),
             new StrictMap(),
         );
