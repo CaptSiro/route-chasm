@@ -9,8 +9,6 @@ use core\route\RouteNode;
 interface Action {
     public function getRouteNode(): ?RouteNode;
 
-
-
     public function isMiddleware(): bool;
 
     public function getActorName(): string;
@@ -18,9 +16,4 @@ interface Action {
     public function onBind(RouteNode $bindingPoint): void;
 
     public function perform(Request $request, Response $response): void;
-
-
-
-    // todo
-    // add something like getUrl(): Url but it is on Request. The Request should be responsible how deep the action is
 }

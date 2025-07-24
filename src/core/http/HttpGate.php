@@ -2,23 +2,24 @@
 
 namespace core\http;
 
+use core\actions\Action;
+use core\actions\ActionBindRouteNode;
 use core\communication\Request;
 use core\communication\Response;
-use core\endpoints\Endpoint;
-use core\endpoints\SimpleEndpoint;
-use core\path\Path;
 use core\patterns\AnyString;
 use core\patterns\Pattern;
+use core\route\Path;
+use core\route\RouteNode;
 
-class HttpGate implements Endpoint {
-    use SimpleEndpoint;
+class HttpGate implements Action {
+    use ActionBindRouteNode;
 
 
 
     /**
-     * @var array<Endpoint> $endpoints
+     * @var array<Action> $actions
      */
-    private array $endpoints;
+    private array $actions;
     /**
      * @var array<Pattern> $queryGuards
      */
@@ -48,8 +49,12 @@ class HttpGate implements Endpoint {
         return $this->httpMethod;
     }
 
-    public function setEndpoints(array $endpoints): self {
-        $this->endpoints = $endpoints;
+    /**
+     * @param array<Action> $actions
+     * @return $this
+     */
+    public function setActions(array $actions): self {
+        $this->actions = $actions;
         return $this;
     }
 
@@ -88,12 +93,20 @@ class HttpGate implements Endpoint {
         return $this->httpMethod === HttpMethod::ANY || $httpMethod === $this->httpMethod;
     }
 
+
+
+    // Action
     public function isMiddleware(): bool {
         return $this->isMiddleware;
     }
 
-    public function execute(Request $request, Response $response): void {
-        if (Path::depth($request->getUrl()->getPath()) !== Path::depth($this->getUrlPath()) && !$this->isMiddleware) {
+    public function onBind(RouteNode $bindingPoint): void {
+        $this->bindRouteNode($bindingPoint);
+    }
+
+    public function perform(Request $request, Response $response): void {
+        $isLast = Path::depth($request->getRemainingPath()) === 0;
+        if ($isLast && !$this->isMiddleware) {
             return;
         }
 
@@ -101,12 +114,12 @@ class HttpGate implements Endpoint {
             return;
         }
 
-        foreach ($this->endpoints as $endpoint) {
+        foreach ($this->actions as $endpoint) {
             $endpoint->execute($request, $response);
         }
     }
 
-    public function getEndpointLabel(): string {
+    public function getActorName(): string {
         return "HTTP ". $this->httpMethod;
     }
 }

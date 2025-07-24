@@ -27,6 +27,10 @@ class Route implements ArrayIterator, Copy {
     }
 
     public static function format(string $route, array $parameters = []): Path {
+        if (empty($parameters)) {
+            return Path::from($route);
+        }
+
         $compiler = App::getInstance()
             ->getRouteCompiler();
 
@@ -106,6 +110,14 @@ class Route implements ArrayIterator, Copy {
         return self::format($this->source, $parameters);
     }
 
+    public function toStaticPath(): Path {
+        if ($this->hasDynamicBehaviour()) {
+            throw new DynamicRouteException("Trying to format dynamic route as a static route: '$this'");
+        }
+
+        return self::format($this->source);
+    }
+
     public function extend(self $route): static {
         $this->segments = array_merge($this->segments, $route->segments);
         return $this;
@@ -114,12 +126,12 @@ class Route implements ArrayIterator, Copy {
 
 
     // ArrayIterator
-    public function arrayIterator(): array {
+    public function getArrayIterator(): array {
         return $this->segments;
     }
 
     public function key(): int {
-        return $this->arrayIterator;
+        return $this->arrayIteratorIndex;
     }
 
     // Copy

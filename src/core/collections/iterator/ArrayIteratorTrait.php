@@ -3,21 +3,21 @@
 namespace core\collections\iterator;
 
 trait ArrayIteratorTrait {
-    protected int $arrayIterator;
+    protected int $arrayIteratorIndex;
 
     public function current(): string {
-        return $this->arrayIterator()[$this->key()];
+        return $this->getArrayIterator()[$this->key()];
     }
 
     public function next(): void {
-        $this->arrayIterator++;
+        $this->arrayIteratorIndex++;
     }
 
     public function valid(): bool {
-        return $this->arrayIterator < count($this->arrayIterator());
+        return $this->arrayIteratorIndex < count($this->getArrayIterator());
     }
 
     public function rewind(): void {
-        $this->arrayIterator = 0;
+        $this->arrayIteratorIndex = 0;
     }
 }

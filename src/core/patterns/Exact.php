@@ -21,7 +21,7 @@ class Exact implements Pattern {
         $len = strlen($this->match);
 
         for ($i = 0; $i < $len && !$pipeline->isExhausted(); $i++) {
-            $char = $pipeline->current();
+            $char = $pipeline->peak();
             if ($this->match[$i] === $char) {
                 $match .= $char;
                 $pipeline->next();

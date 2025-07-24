@@ -41,11 +41,11 @@ class HashSet implements Set, ArrayIterator {
 
 
     // ArrayIterator
-    public function arrayIterator(): array {
+    public function getArrayIterator(): array {
         return $this->items;
     }
 
     public function key(): string {
-        return array_keys($this->items)[$this->arrayIterator];
+        return array_keys($this->items)[$this->arrayIteratorIndex];
     }
 }

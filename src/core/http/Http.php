@@ -3,71 +3,71 @@
 namespace core\http;
 
 use Closure;
-use core\endpoints\Endpoint;
-use core\endpoints\Procedure;
+use core\actions\Action;
+use core\actions\Procedure;
 
 class Http {
     /**
-     * @param array<Endpoint|Closure> $endpoints
-     * @return array<Endpoint>
+     * @param array<Action|Closure> $actions
+     * @return array<Action>
      */
-    protected static function createHandles(array &$endpoints): array {
-        foreach ($endpoints as $i => $endpoint) {
-            if ($endpoint instanceof Closure) {
-                $endpoints[$i] = new Procedure($endpoint);
+    protected static function resolve(array &$actions): array {
+        foreach ($actions as $i => $action) {
+            if ($action instanceof Closure) {
+                $actions[$i] = new Procedure($action);
             }
         }
 
-        return $endpoints;
+        return $actions;
     }
 
-    public static function connect(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function connect(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::CONNECT))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function delete(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function delete(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::DELETE))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function get(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function get(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::GET))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function head(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function head(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::HEAD))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function options(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function options(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::OPTIONS))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function patch(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function patch(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::PATCH))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function post(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function post(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::POST))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function put(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function put(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::PUT))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function trace(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function trace(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::TRACE))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 
-    public static function any(Endpoint|Closure ...$endpoints): HttpGate {
+    public static function any(Action|Closure ...$endpoints): HttpGate {
         return (new HttpGate(HttpMethod::ANY))
-            ->setEndpoints(self::createHandles($endpoints));
+            ->setActions(self::resolve($endpoints));
     }
 }

@@ -62,7 +62,7 @@ class Charset implements Pattern {
         $match ??= "";
 
         for ($i = 0; $i < $length && !$pipeline->isExhausted(); $i++) {
-            $char = $pipeline->current();
+            $char = $pipeline->peak();
             if (!$this->contains($char)) {
                 break;
             }

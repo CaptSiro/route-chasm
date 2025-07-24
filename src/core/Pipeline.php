@@ -9,7 +9,7 @@ interface Pipeline {
      */
     function next(): mixed;
 
-    function current(): mixed;
+    function peak(): mixed;
 
     /**
      * Returns whether current element is still valid element of sequence or if it is end of pipeline.
@@ -19,4 +19,6 @@ interface Pipeline {
      * @return bool
      */
     function isExhausted(): bool;
+
+    function reset(): void;
 }

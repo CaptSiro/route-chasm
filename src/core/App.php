@@ -20,9 +20,9 @@ use core\configs\Config;
 use core\http\HttpCode;
 use core\module\Loader;
 use core\module\Module;
-use core\path\Path;
 use core\route\compiler\RouteCompiler;
-use core\route\Router as RouterV2;
+use core\route\Path;
+use core\route\Router;
 use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
@@ -78,7 +78,6 @@ class App implements Loader {
 
 
     private Router $router;
-    private RouterV2 $routerV2;
     private Request $request;
     private Response $response;
     private string $src;
@@ -108,7 +107,6 @@ class App implements Loader {
         ]);
 
         $this->router = new Router();
-        $this->routerV2 = new RouterV2();
         $this->matcher = new FormatMatcher();
         $this->initCommunication();
 
@@ -169,10 +167,6 @@ class App implements Loader {
 
     public function getMainRouter(): Router {
         return $this->router;
-    }
-
-    public function getMainRouterV2(): RouterV2 {
-        return $this->routerV2;
     }
 
     public function getRequest(): Request {
@@ -316,16 +310,11 @@ class App implements Loader {
         }
     }
 
-    public function serve(?Request $request = null): void {
-        $req = $request ?? $this->request;
-        $this->router->execute($req, $this->response);
-    }
-
-    public function serveV2(?Request $request = null, ?Response $response = null): void {
+    public function serve(?Request $request = null, ?Response $response = null): void {
         $request ??= $this->request;
 
-        $this->routerV2->performActions(
-            \core\route\Path::from($request->getUrl()->getPath()),
+        $this->router->performActions(
+            Path::from($request->getUrl()->getPath()),
             $request,
             $response ?? $this->response
         );

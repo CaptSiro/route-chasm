@@ -16,6 +16,8 @@ class ContainerContent extends Component {
 
 
     public function __construct(?Container $container = null) {
+        parent::__construct();
+
         $this->container = $container ?? self::getDefaultContainer();
         $this->container->addContent($this);
     }
@@ -26,7 +28,7 @@ class ContainerContent extends Component {
         return $this->container;
     }
 
-    public function execute(Request $request, Response $response): void {
+    public function perform(Request $request, Response $response): void {
         $response->renderRoot($this);
     }
 }

@@ -2,25 +2,38 @@
 
 namespace core\view;
 
+use core\actions\Action;
+use core\actions\ActionBindRouteNode;
+use core\actions\ActorClassName;
 use core\communication\Request;
 use core\communication\Response;
-use core\endpoints\Endpoint;
-use core\endpoints\SimpleEndpoint;
+use core\route\RouteNode;
 
-class Component implements View, Endpoint {
-    use Renderer, SimpleEndpoint;
+class Component implements View, Action {
+    use Renderer, ActionBindRouteNode, ActorClassName;
 
 
+
+    public function __construct(
+        protected bool $isMiddleware = false
+    ) {}
 
     public function __toString(): string {
         return $this->render();
     }
 
+
+
+    // Action
     public function isMiddleware(): bool {
-        return false;
+        return $this->isMiddleware;
     }
 
-    public function execute(Request $request, Response $response): void {
+    public function onBind(RouteNode $bindingPoint): void {
+        $this->bindRouteNode($bindingPoint);
+    }
+
+    public function perform(Request $request, Response $response): void {
         $response->renderRoot($this);
     }
 }

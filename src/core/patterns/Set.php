@@ -23,7 +23,7 @@ class Set implements Pattern {
         $i = 0;
 
         while (!empty($queue) && !$pipeline->isExhausted()) {
-            $char = $pipeline->current();
+            $char = $pipeline->peak();
 
             $key = array_unshift($queue);
             if ($i < strlen($this->set[$key])) {

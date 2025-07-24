@@ -38,8 +38,9 @@ class Assets extends Controller {
         return $this->directory;
     }
 
-    public function setDirectoryPolicy(DirectoryPolicy $directoryPolicy): void {
+    public function setDirectoryPolicy(DirectoryPolicy $directoryPolicy): static {
         $this->directoryPolicy = $directoryPolicy;
+        return $this;
     }
 
     public function getServer(): Server {

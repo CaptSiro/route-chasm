@@ -92,14 +92,14 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         return $title;
     }
 
-    public function execute(Request $request, Response $response): void {
+    public function perform(Request $request, Response $response): void {
         $this->page
             ->getHead()
             ->setTitle($this->getTitle());
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::execute($request, $response);
+                parent::perform($request, $response);
             }
 
             case HttpMethod::POST: {

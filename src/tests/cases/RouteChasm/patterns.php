@@ -18,7 +18,7 @@ Sptf::test("correct order of Stream elements", function () {
     $stream = new Stream($resource);
 
     for ($i = 0; $i < strlen($resource) && !$stream->isExhausted(); $i++) {
-        Sptf::expect($stream->current())->toBe($resource[$i]);
+        Sptf::expect($stream->peak())->toBe($resource[$i]);
         $stream->next();
     }
 

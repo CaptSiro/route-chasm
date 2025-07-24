@@ -17,6 +17,7 @@ class WebPage extends Component implements Container {
         protected ?string $language = null,
         protected ?Head $head = null,
     ) {
+        parent::__construct();
         $env = App::getInstance()->getEnv();
 
         // todo

@@ -139,7 +139,7 @@ class Url implements Copy {
         return $this;
     }
 
-    public function setQueryArgument(string $name, string $value): static {
+    public function setQueryArgument(string $name, string $value = ''): static {
         $this->query->set($name, $value);
         return $this;
     }

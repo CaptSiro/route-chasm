@@ -31,6 +31,8 @@ class Terminal extends Component {
 
     private bool $hasBeenRendered = false;
     public function __construct() {
+        parent::__construct();
+
         App::getInstance()
             ->on(Response::EVENT_OB_TRANSFORM, function (BufferTransform $buffer) {
                 if (!$this->hasBeenRendered) {

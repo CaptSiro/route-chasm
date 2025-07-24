@@ -2,7 +2,32 @@
 
 namespace core\route;
 
-class Path {
+use core\collections\iterator\ArrayIterator;
+use core\collections\iterator\ArrayIteratorTrait;
+
+/**
+ * @template-implements ArrayIterator<int, string>
+ */
+class Path implements ArrayIterator {
+    use ArrayIteratorTrait;
+
+
+
+    public static function depth(string $literal): int {
+        $literalLength = strlen($literal);
+        if ($literalLength === 0) {
+            return 0;
+        }
+
+        if ($literalLength === 1) {
+            return intval($literal !== "/");
+        }
+
+        $start = intval($literal[0] === '/');
+        $length = $literalLength - $start - intval($literal[$literalLength - 1] === '/');
+        return 1 + substr_count($literal, '/', $start, $length);
+    }
+
     public static function from(string $literal, int $offset = 0): self {
         $segments = [];
 
@@ -13,6 +38,44 @@ class Path {
         }
 
         return new self($segments, $offset);
+    }
+
+    public static function join(string ...$segments): string {
+        return self::joinArray($segments);
+    }
+
+    /**
+     * @param array<string> $segments
+     * @return string
+     */
+    public static function joinArray(array $segments): string {
+        $segments = array_values(array_filter($segments, fn($x) => $x !== ''));
+
+        if (empty($segments)) {
+            return '';
+        }
+
+        $count = count($segments);
+        if ($count === 1) {
+            return $segments[0];
+        }
+
+        $start = array_shift($segments);
+        $end = array_pop($segments);
+        $count -= 2;
+
+        if ($count === 0) {
+            return rtrim($start, '/\\')
+                .'/'. ltrim($end, '/\\');
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            $segments[$i] = trim($segments[$i], '/\\');
+        }
+
+        return rtrim($start, '/\\')
+            .'/'. implode('/', $segments)
+            .'/'. ltrim($end, '/\\');
     }
 
 
@@ -59,5 +122,16 @@ class Path {
 
     public function toString(): string {
         return (string) $this;
+    }
+
+
+
+    // ArrayIterator
+    public function getArrayIterator(): array {
+        return $this->segments;
+    }
+
+    public function key(): int {
+        return $this->arrayIteratorIndex;
     }
 }

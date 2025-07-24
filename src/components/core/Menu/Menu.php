@@ -5,7 +5,7 @@ namespace components\core\Menu;
 use components\core\Menu\Item\MenuItem;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
-use core\path\Path;
+use core\route\Path;
 use core\translation\UrlPathTranslator;
 use core\url\UrlGraph;
 use core\view\Renderer;
@@ -70,6 +70,7 @@ class Menu implements View, Attribute {
 
     public function setSelected(?Path $selected): void {
         $this->selected = $selected;
+        $this->selected->rewind();
     }
 
     public function setIsInset(bool $bool): static {
@@ -121,12 +122,12 @@ class Menu implements View, Attribute {
     }
 
     public function isSelected(string $target): bool {
-        if (is_null($this->selected) || $this->selected->isExhausted()) {
+        if (is_null($this->selected) || $this->selected->valid()) {
             return false;
         }
 
         $current = $this->selected->current();
-        return $current->test($target, $ignored);
+        return $current === $target;
     }
 
     public function isSelectedLeaf(): bool {
@@ -134,7 +135,7 @@ class Menu implements View, Attribute {
             return false;
         }
 
-        return $this->selected->isExhausted();
+        return $this->selected->valid();
     }
 
     public function createItem(string $target): MenuItem {

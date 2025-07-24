@@ -62,11 +62,11 @@ class Trace implements ArrayIterator {
 
 
     // ArrayIterator
-    public function arrayIterator(): array {
+    public function getArrayIterator(): array {
         return $this->vertexes;
     }
 
     public function key(): int {
-        return $this->arrayIterator;
+        return $this->arrayIteratorIndex;
     }
 }

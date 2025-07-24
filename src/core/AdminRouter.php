@@ -5,14 +5,15 @@ namespace core;
 use components\core\Admin\Login\AdminLogin;
 use components\core\Admin\Menu\AdminMenu;
 use components\core\Message\Message;
+use core\actions\Action;
+use core\actions\Procedure;
 use core\communication\Request;
 use core\communication\Response;
-use core\endpoints\Endpoint;
-use core\endpoints\Procedure;
 use core\http\HttpCode;
+use core\route\Router;
 
 /**
- * You may pass <code>Endpoint</code> to <code>AdminRouter::getInstance</code> set as admin home page
+ * You may pass <code>Action</code> to <code>AdminRouter::getInstance</code> set as admin home page
  */
 class AdminRouter extends Router {
     use Singleton;
@@ -27,7 +28,7 @@ class AdminRouter extends Router {
 
     protected ?string $path = null;
 
-    public function __construct(?Endpoint $home = null) {
+    public function __construct(?Action $home = null) {
         parent::__construct();
 
         $this->use('/',
@@ -49,7 +50,7 @@ class AdminRouter extends Router {
 
     public function getPath(): string {
         if (is_null($this->path)) {
-            $this->path = $this->getUrlPath();
+            $this->path = $this->getRoute()->toStaticPath()->toString();
         }
 
         return $this->path;

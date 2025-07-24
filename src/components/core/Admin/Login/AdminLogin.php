@@ -36,9 +36,10 @@ class AdminLogin extends ContainerContent {
     private const FIELD_PASSWORD = 'password';
 
     public static function createLogoutUrl(Url $url): string {
-        $copy = $url->copy();
-        $copy->getQuery()->set(self::QUERY_LOGOUT, "");
-        return $copy->toString();
+        return $url
+            ->copy()
+            ->setQueryArgument(self::QUERY_LOGOUT)
+            ->toString();
     }
 
 
@@ -105,7 +106,7 @@ class AdminLogin extends ContainerContent {
         ]);
     }
 
-    public function execute(Request $request, Response $response): void {
+    public function perform(Request $request, Response $response): void {
         $loggedIn = User::fromSession($request->getSession());
         if (!is_null($loggedIn)) {
             $url = $request->getUrl();
@@ -121,7 +122,7 @@ class AdminLogin extends ContainerContent {
                     $this->getResource('AdminLogin.permissionDenied.phtml')
                 );
 
-                parent::execute($request, $response);
+                parent::perform($request, $response);
             }
 
             return;
@@ -133,7 +134,7 @@ class AdminLogin extends ContainerContent {
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::execute($request, $response);
+                parent::perform($request, $response);
                 break;
             }
 

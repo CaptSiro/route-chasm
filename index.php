@@ -6,6 +6,8 @@ use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
 use components\layout\Accordion\Accordion;
 use components\layout\Tabs\Tabs;
+use core\actions\Assets\Assets;
+use core\actions\Assets\policy\ShowExplorerPolicy;
 use core\AdminRouter;
 use core\App;
 use core\communication\Request;
@@ -55,8 +57,8 @@ $router->bind('/admin', AdminRouter::getInstance(new AdminHome()));
 
 
 
-$router->expose("/public", (new \core\endpoints\Directory(__DIR__ . "/public"))
-    ->onDirectory(\core\endpoints\Directory::showExplorer()));
+$router->expose('public', (new Assets(__DIR__ .'/public'))
+    ->setDirectoryPolicy(new ShowExplorerPolicy()));
 
 $router->use(
     "/error",
@@ -150,7 +152,10 @@ $router->use('/select',
 );
 
 // $router->resource("/cards", Cards::getInstance());
-$router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
+
+// todo
+//  - Router::map()
+//  $router->use("/map", fn(Request $request, Response $response) => $response->send($router->map()));
 
 
 

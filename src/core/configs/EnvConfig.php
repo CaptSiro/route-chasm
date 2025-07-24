@@ -5,9 +5,9 @@ namespace core\configs;
 use core\App;
 use core\database\sql\Config as SqlConfig;
 use core\http\HttpCode;
-use core\path\Path;
 use core\route\compiler\RouteCompiler;
 use core\route\compiler\RouteCompilerConfig;
+use core\route\Path;
 use core\utils\Strings;
 use dotenv\Env;
 

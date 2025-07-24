@@ -5,7 +5,7 @@ namespace components\core\Admin\Menu\Item;
 use components\core\Menu\Item\MenuItem;
 use core\AdminRouter;
 use core\App;
-use core\path\Path;
+use core\route\Path;
 
 class AdminMenuItem extends MenuItem {
     public function __construct(

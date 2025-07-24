@@ -14,6 +14,8 @@ class HtmlHead extends Component implements Head {
     public function __construct(
         protected string $title = "",
     ) {
+        parent::__construct();
+
         $this->meta = [];
 
         $env = App::getInstance()->getEnv();

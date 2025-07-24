@@ -13,8 +13,7 @@ class Stream implements Seek, Pipeline {
     public function __construct(
         protected string $resource
     ) {
-        $this->pointer = 0;
-        $this->resourceLength = strlen($this->resource);
+        $this->reset();
     }
 
 
@@ -39,7 +38,7 @@ class Stream implements Seek, Pipeline {
         return $this->pointer;
     }
 
-    function current(): string {
+    function peak(): string {
         return $this->resource[$this->pointer];
     }
 
@@ -49,5 +48,10 @@ class Stream implements Seek, Pipeline {
             . ($this->resource[$this->pointer] ?? "\\0")
             . " <]"
             . substr($this->resource, $this->pointer + 1);
+    }
+
+    function reset(): void {
+        $this->pointer = 0;
+        $this->resourceLength = strlen($this->resource);
     }
 }

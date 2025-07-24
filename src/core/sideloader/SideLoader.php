@@ -13,7 +13,7 @@ use core\http\HttpHeader;
 use core\module\Loader;
 use core\patterns\Ident;
 use core\route\Path;
-use core\Router;
+use core\route\Router;
 use core\sideloader\api\SideLoaderApi;
 use core\sideloader\importers\FileImporter;
 use core\Singleton;
@@ -50,7 +50,9 @@ class SideLoader implements View {
 
     public static function getApi(): View {
         $instance = self::getInstance();
-        return new SideLoaderApi(App::getInstance()->prependHome($instance->router->getUrlPath()));
+        return new SideLoaderApi(
+            App::getInstance()->prependHome($instance->router->getRoute()->toStaticPath()->toString())
+        );
     }
 
 
@@ -287,7 +289,7 @@ class SideLoader implements View {
 
     public function createImportUrl(string $type, array $files): string {
         $path = App::getInstance()
-            ->prependHome($this->router->getUrlPath());
+            ->prependHome($this->router->getRoute()->toStaticPath()->toString());
 
         $url = App::getInstance()
             ->getRequest()

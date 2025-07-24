@@ -10,5 +10,5 @@ use Iterator;
  * @template-implements Iterator<TKey, TValue>
  */
 interface ArrayIterator extends Iterator {
-    public function arrayIterator(): array;
+    public function getArrayIterator(): array;
 }

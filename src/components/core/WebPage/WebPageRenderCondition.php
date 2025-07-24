@@ -25,9 +25,9 @@ trait WebPageRenderCondition {
         $this->condition = $condition;
     }
 
-    public function execute(Request $request, Response $response): void {
+    public function perform(Request $request, Response $response): void {
         if (($this->condition)()) {
-            parent::execute($request, $response);
+            parent::perform($request, $response);
             return;
         }
 

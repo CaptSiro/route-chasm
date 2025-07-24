@@ -62,6 +62,7 @@ class Form extends Component {
         protected readonly ?string $action = null,
         protected ?string $namespace = null,
     ) {
+        parent::__construct();
         $this->elements = [];
         $this->bodyTransformer = FormTransformer::TRANSFORMER_FORM_DATA;
     }

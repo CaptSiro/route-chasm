@@ -18,6 +18,11 @@ class RouteCompiler {
         return strlen($segment) !== 0;
     }
 
+    public function isIdentValid(string $ident): bool {
+        $identRegex = Regex::create($this->config->getIdentRegex());
+        return preg_match($identRegex, $ident);
+    }
+
     /**
      * @param string $pattern
      * @param array<string, string> $parameters Identifier => REGEX

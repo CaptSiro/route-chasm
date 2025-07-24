@@ -14,8 +14,9 @@ use core\database\sql\ModelDescription;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
-use core\path\Path;
-use core\Router;
+use core\route\Path;
+use core\route\Route;
+use core\route\RouteNode;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
@@ -93,23 +94,26 @@ class AdminNexus extends ContainerContent {
         return $this->title;
     }
 
-    public function onContextBind(Router $leaf): void {
-        $this->urlPath = App::getInstance()->prependHome($leaf->getUrlPath());
+    public function onBind(RouteNode $bindingPoint): void {
+        parent::onBind($bindingPoint);
 
-        $leaf->use('/create', $this->editor);
+        $router = $bindingPoint->getRouter();
+
+        $this->urlPath = App::getInstance()->prependHome($router->getRoute()->toStaticPath());
+        $router->use('/create', $this->editor);
 
         $factory = $this->modelDescription->getFactory();
 
-        $leaf->use(
-            Path::from('/update/[id]'),
+        $router->use(
+            Route::from('/update/[id]'),
             fn(Request $request, Response $response) => $this->editor
                 ->setModel($factory->fromId(
                     $request->getParam()->get('id')
                 ))
         );
 
-        $leaf->use(
-            Path::from('/[id]'),
+        $router->use(
+            Route::from('/[id]'),
             Http::delete(function (Request $request, Response $response) use ($factory) {
                 $model = $factory->fromId(
                     $request->getParam()->get('id')
@@ -151,14 +155,14 @@ class AdminNexus extends ContainerContent {
         return Path::join($this->urlPath, $id);
     }
 
-    public function execute(Request $request, Response $response): void {
+    public function perform(Request $request, Response $response): void {
         $this->page
             ->getHead()
             ->setTitle($this->getTitle());
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::execute($request, $response);
+                parent::perform($request, $response);
             }
 
             default: {

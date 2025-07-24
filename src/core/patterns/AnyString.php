@@ -35,7 +35,7 @@ class AnyString implements Pattern {
         $match ??= "";
 
         while (!$pipeline->isExhausted()) {
-            $match .= $pipeline->current();
+            $match .= $pipeline->peak();
             $pipeline->next();
         }
 

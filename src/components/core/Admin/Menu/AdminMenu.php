@@ -7,10 +7,10 @@ use components\core\Admin\Menu\Item\AdminMenuItem;
 use components\core\BreadCrumbs\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Menu\Menu;
+use core\actions\Action;
 use core\AdminRouter;
 use core\App;
-use core\endpoints\Endpoint;
-use core\path\Path;
+use core\route\Path;
 use core\Singleton;
 use core\url\UrlGraph;
 use core\utils\Arrays;
@@ -91,26 +91,26 @@ class AdminMenu implements View {
         $this->menu->setIsInset(false);
         $this->menu->setIsExpanded(true);
         $this->menu->setSelected(
-            Path::fromStringArray(Arrays::explode('/', self::getRequestPath()))
+            Path::from(self::getRequestPath())
         );
     }
 
-    public function add(string $path, Closure|Endpoint ...$endpoints): static {
+    public function add(string $path, Closure|Action ...$actions): static {
         $this->menu->add($path, true);
 
         $urlPath = implode('/', $this->menu->translatePathToTarget($path));
         AdminRouter::getInstance()
-            ->use($urlPath, ...$endpoints);
+            ->use($urlPath, ...$actions);
 
         return $this;
     }
 
     /**
      * @param array<AdminMenuLabel> $path
-     * @param Closure|Endpoint ...$endpoints
+     * @param Closure|Action ...$actions
      * @return static
      */
-    public function addIcons(array $path, Closure|Endpoint ...$endpoints): static {
+    public function addIcons(array $path, Closure|Action ...$actions): static {
         $labels = '';
 
         foreach ($path as $item) {
@@ -121,7 +121,7 @@ class AdminMenu implements View {
             $labels .= '/'. $item->getLabel();
         }
 
-        return $this->add($labels, ...$endpoints);
+        return $this->add($labels, ...$actions);
     }
 
     public function addIcon(string $label, string $icon): static {
