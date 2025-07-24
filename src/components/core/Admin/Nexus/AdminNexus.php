@@ -156,14 +156,14 @@ class AdminNexus extends ContainerContent {
             ->getHead()
             ->setTitle($this->getTitle());
 
-        switch ($request->httpMethod) {
+        switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
                 parent::execute($request, $response);
             }
 
             default: {
                 $response->sendMessage(
-                    'Invalid HTTP method ' . $request->httpMethod,
+                    'Invalid HTTP method ' . $request->getHttpMethod(),
                     HttpCode::CE_BAD_REQUEST
                 );
             }

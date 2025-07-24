@@ -17,6 +17,7 @@ use core\route\RouteSegment;
 use core\route\RouteTree;
 use core\route\Trace;
 use core\url\Url;
+use core\url\UrlV2;
 use core\utils\Regex;
 use sptf\Sptf;
 use tests\utils\RouteChasm\actions\ActCounter;
@@ -141,7 +142,7 @@ Sptf::test("should parse routes", function () {
         ["/@[foo]//**", ["foo" => $foo], "/@$fooGroup/$any"],
     ];
 
-    $parser = new RouteCompiler(
+    $compiler = new RouteCompiler(
         (new RouteCompilerConfig())
             ->setAnyRegex($any)
             ->setMergeConsecutiveSlashes(true)
@@ -149,8 +150,33 @@ Sptf::test("should parse routes", function () {
 
     foreach ($routes as $tuple) {
         [$pattern, $parameters, $expected] = $tuple;
-        $route = $parser->parse($pattern, $parameters);
+        $route = $compiler->parse($pattern, $parameters);
         Sptf::expect("$route")->toBe($expected);
+    }
+});
+
+Sptf::test("should reconstruct source", function () {
+    $routes = [
+        "/",
+        "/foo",
+        "/foo/bar",
+        "/[foo]",
+        "/@[foo]/[bar]/fizz",
+        "/@[foo]/*/bar",
+        "/@[foo]/**",
+    ];
+
+    $compiler = new RouteCompiler(
+        (new RouteCompilerConfig())
+            ->setAnyRegex(".+")
+            ->setMergeConsecutiveSlashes(true)
+    );
+
+    foreach ($routes as $pattern) {
+        $route = $compiler->parse($pattern, []);
+
+        $v = '/'. implode('/', array_map(fn(RouteSegment $x) => $x->getSource(), $route->getSegments()));
+        Sptf::expect($pattern)->toBe($v);
     }
 });
 
@@ -461,39 +487,39 @@ Sptf::test("should bind Router correctly", function () {
     $foo = new ActCounter("foo");
     $bar = new ActCounter("bar");
 
-    $router0 = new Router();
-
-    $router0
+    $router1 = new Router();
+    $router1
         ->use("/**", $any)
         ->use("/foo", $foo);
 
-    $router1 = new Router();
-    $router1
+    $router0 = new Router();
+    $router0
         ->use("/bar", $bar)
-        ->bind("/bar", $router0);
+        ->bind("/bar", $router1);
 
-    perform_actions($router1->find(Path::from("/bar/foo")));
+    perform_actions($router0->find(Path::from("/bar/foo")));
     assert_counts([
         [$bar, 1],
         [$any, 1],
         [$foo, 1],
     ], true);
 
-    perform_actions($router1->find(Path::from("/bar")));
+    perform_actions($router0->find(Path::from("/bar")));
     assert_counts([
         [$bar, 1],
         [$any, 1],
         [$foo, 0],
     ], true);
+
+    Sptf::expect($router0->getRoute()->toPath()->toString())->toBe("/");
+    Sptf::expect($router1->getRoute()->toPath()->toString())->toBe("/bar");
 });
 
 Sptf::test("should return expected remaining paths", function () {
-    $url = new Url(
-        "http", "localhost", "request/path/to/file.txt", new StrictMap()
-    );
+    $url = UrlV2::from("http://localhost/request/path/to/file.txt");
 
     $request = Request::test(url: $url);
-    $path = Path::from($request->getUrl()->getRealPath());
+    $path = Path::from($request->getUrl()->getPath()->toString());
 
     $tests = [
         "/**" => "/request/path/to/file.txt",

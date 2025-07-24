@@ -1,6 +1,7 @@
 <?php
 
 use components\core\Admin\Home\AdminHome;
+use components\core\Admin\SptfTests\SptfTests;
 use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
 use components\layout\Accordion\Accordion;
@@ -169,5 +170,10 @@ $router->use("/map", fn(Request $request, Response $response) => $response->send
 //$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
 
 
+
+if (isset($_GET['_test'])) {
+    echo (new SptfTests(__DIR__ .'/src/tests/cases/RouteChasm'))->getRoot()->render();
+    exit();
+}
 
 $app->serve();

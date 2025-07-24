@@ -97,7 +97,7 @@ class HttpGate implements Endpoint {
             return;
         }
 
-        if (!($this->checkHttpMethod($request->httpMethod) && $this->checkGuards($request))) {
+        if (!($this->checkHttpMethod($request->getHttpMethod()) && $this->checkGuards($request))) {
             return;
         }
 

@@ -2,6 +2,8 @@
 
 namespace core\utils;
 
+use Closure;
+use core\Copy;
 use Generator;
 
 class Arrays {
@@ -24,13 +26,37 @@ class Arrays {
     }
 
     /**
+     * @param array $array
+     * @param array $values
+     * @return Closure Rewert changes to previous state
+     */
+    public static function set(array &$array, array $values): Closure {
+        $copy = [...$array];
+
+        $array = [];
+        foreach ($values as $name => $value) {
+            $array[$name] = $value;
+        }
+
+        return function () use ($copy, &$array) {
+            $array = $copy;
+        };
+    }
+
+    /**
      * @template S
      * @template T
      * @param array<S, T> $array
      * @return array<S, T>
      */
     public static function copy(array $array): array {
-        return array_merge([], $array);
+        return array_map(function ($x) {
+            if ($x instanceof Copy) {
+                return $x->copy();
+            }
+
+            return $x;
+        }, array_merge([], $array));
     }
 
     public static function push(array|null &$array, mixed $element): void {
@@ -72,6 +98,10 @@ class Arrays {
         return $buffer;
     }
 
+    /**
+     * @param array $array
+     * @return Generator
+     */
     public static function reversed(array $array): Generator {
         $keys = array_keys($array);
 
@@ -105,7 +135,7 @@ class Arrays {
         $buffer = "";
 
         foreach ($array as $name => $value) {
-            if (is_null($value)) {
+            if (empty($value)) {
                 $buffer .= ($first ? '' : '&') . urlencode($name);
                 $first = false;
                 continue;

@@ -5,8 +5,6 @@ namespace core;
 use Closure;
 use core\collections\dictionary\Map;
 use core\collections\dictionary\StrictMap;
-use core\collections\dictionary\StrictStack;
-use core\collections\graph\TreeVertex;
 use core\communication\FormatMatcher;
 use core\communication\parser\FormBodyParser;
 use core\communication\parser\JsonBodyParser;
@@ -24,11 +22,8 @@ use core\module\Loader;
 use core\module\Module;
 use core\path\Path;
 use core\route\compiler\RouteCompiler;
-use core\route\RouteNode;
 use core\route\Router as RouterV2;
-use core\route\RouteSegment;
-use core\tree\SnapshotStack;
-use core\url\Url;
+use core\url\UrlV2;
 use core\utils\Strings;
 use dotenv\Env;
 use models\core\ModuleRecord;
@@ -134,7 +129,7 @@ class App implements Loader {
         $this->request = new Request(
             $this,
             (new RequestFormat())->setFormatMatcher($this->matcher),
-            Url::fromRequest(),
+            UrlV2::fromRequest(),
             new StrictMap(),
             new StrictMap(),
         );

@@ -9,7 +9,6 @@ use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
 use core\App;
 use core\sideloader\Css;
-use core\url\UrlBuilder;
 
 Css::import($this->getResource('admin-page.css'));
 $request = App::getInstance()->getRequest();
@@ -41,7 +40,7 @@ $request = App::getInstance()->getRequest();
                     <?= Icon::nf('nf-fa-power_off', '<') ?>
                 </span>
 
-                <a href="<?= AdminLogin::createLogoutUrl(UrlBuilder::fromUrl($request->getUrl())) ?>">
+                <a href="<?= AdminLogin::createLogoutUrl($request->getUrl()) ?>">
                     Logout
                 </a>
             </div>

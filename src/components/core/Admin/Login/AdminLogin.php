@@ -17,7 +17,7 @@ use core\forms\Form;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\url\UrlBuilder;
+use core\url\UrlV2;
 use core\view\ContainerContent;
 use core\view\View;
 use models\core\Setting\Setting;
@@ -35,9 +35,10 @@ class AdminLogin extends ContainerContent {
     private const FIELD_TAG = 'tag';
     private const FIELD_PASSWORD = 'password';
 
-    public static function createLogoutUrl(UrlBuilder $builder): string {
-        $builder->setQuery(self::QUERY_LOGOUT);
-        return $builder->build();
+    public static function createLogoutUrl(UrlV2 $url): string {
+        $copy = $url->copy();
+        $copy->getQuery()->set(self::QUERY_LOGOUT, "");
+        return $copy->toString();
     }
 
 
@@ -130,7 +131,7 @@ class AdminLogin extends ContainerContent {
             ->getHead()
             ->setTitle('Login');
 
-        switch ($request->httpMethod) {
+        switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
                 parent::execute($request, $response);
                 break;
@@ -187,7 +188,7 @@ class AdminLogin extends ContainerContent {
 
             default: {
                 $response->sendMessage(
-                    'Invalid HTTP method ' . $request->httpMethod,
+                    'Invalid HTTP method ' . $request->getHttpMethod(),
                     HttpCode::CE_BAD_REQUEST
                 );
             }

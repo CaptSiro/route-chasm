@@ -47,7 +47,7 @@ class Assets extends Controller {
     }
 
     public function perform(Request $request, Response $response): void {
-        switch ($request->httpMethod) {
+        switch ($request->getHttpMethod()) {
             case HttpMethod::OPTIONS: {
                 $response->setHeaders([
                     Cors::METHODS => "GET",
@@ -89,8 +89,9 @@ class Assets extends Controller {
             }
 
             default: {
+                $httpMethod = $request->getHttpMethod();
                 $response->sendMessage(
-                    "HTTP method $request->httpMethod is not allowed",
+                    "HTTP method $httpMethod is not allowed",
                     HttpCode::CE_METHOD_NOT_ALLOWED
                 );
                 break;

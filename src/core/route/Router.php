@@ -15,7 +15,9 @@ class Router {
 
 
 
-    public function __construct(?RouteTree $structure = null) {
+    public function __construct(
+        ?RouteTree $structure = null
+    ) {
         $this->structure = $structure ?? new RouteTree();
     }
 
@@ -81,7 +83,7 @@ class Router {
             $parameters = $request->getParam();
             $first = true;
 
-            $i = 0;
+            $i = $path->getOffset();
             foreach ($trace->getVertexes() as $vertex) {
                 /** @var TreeVertex<RouteNode, RouteSegment> $vertex */
 
@@ -104,5 +106,9 @@ class Router {
 
             $parameters->clear();
         }
+    }
+
+    public function getRoute(): Route {
+        return $this->structure->getRoute();
     }
 }

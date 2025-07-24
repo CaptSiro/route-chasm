@@ -100,4 +100,8 @@ class RouteNode {
 
         return new Router(new RouteTree($this->vertex));
     }
+
+    public function getRoute(): Route {
+        return Route::fromSegments(RouteTree::getRouteSegments($this->vertex));
+    }
 }

@@ -3,19 +3,29 @@
 namespace core\route;
 
 use core\collections\dictionary\StrictStack;
+use core\Copy;
 use core\Flags;
 use core\utils\Regex;
 
-class RouteSegment {
+class RouteSegment implements Copy {
     use Flags;
 
     public const FLAG_IS_TERMINAL = 1;
+
+    /**
+     * @param array<RouteSegment> $segments
+     * @return string
+     */
+    public static function source(array $segments): string {
+        return '/'. implode('/', array_map(fn(RouteSegment $x) => $x->getSource(), $segments));
+    }
 
 
 
     protected string $regex;
 
     public function __construct(
+        protected string $source,
         protected string $pattern
     ) {
         $this->regex = Regex::create($this->pattern);
@@ -31,8 +41,6 @@ class RouteSegment {
         return preg_match($this->regex, $literal);
     }
 
-    // todo
-    //  - Change to interface Stack: push(item) pop()->item clear() getSize()
     public function match(string $literal, StrictStack $parameters): void {
         $groups = [];
 
@@ -41,11 +49,25 @@ class RouteSegment {
         }
     }
 
+    public function getSource(): string {
+        return $this->source;
+    }
+
     public function getPattern(): string {
         return $this->pattern;
     }
 
     public function getRegex(): string {
         return $this->regex;
+    }
+
+
+
+    // Copy
+    public function copy(): static {
+        return new static(
+            $this->source,
+            $this->pattern
+        );
     }
 }

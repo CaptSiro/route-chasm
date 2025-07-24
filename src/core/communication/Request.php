@@ -9,7 +9,7 @@ use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
 use core\route\Path;
-use core\url\Url;
+use core\url\UrlV2;
 
 class Request {
     public const PATH_INDEX = '__path_index';
@@ -19,14 +19,14 @@ class Request {
 
     
     
-    public static function test(?App $app = null, ?Url $url = null, ?string $httpMethod = "GET"): self {
+    public static function test(?App $app = null, ?UrlV2 $url = null, ?string $httpMethod = "GET"): self {
         $format = new RequestFormat();
         $format->setFormatMatcher(new FormatMatcher());
 
         $ret = new self(
             $app ?? new App(),
             $format,
-            $url ?? Url::fromRequest(),
+            $url ?? UrlV2::fromRequest(),
             new StrictMap(),
             new StrictMap(),
         );
@@ -37,16 +37,16 @@ class Request {
 
 
 
-    public string $httpMethod;
+    protected string $httpMethod;
 
-    private ?array $headers;
+    protected ?array $headers;
 
-    private Session $session;
+    protected Session $session;
 
     /**
      * @var StrictStack<string>
      */
-    private StrictStack $param;
+    protected StrictStack $param;
 
     readonly protected StrictMap $data;
     readonly protected StrictDictionary $body;
@@ -64,10 +64,10 @@ class Request {
 
     public function __construct(
         readonly protected App $app,
-        readonly private LimitedFormat $format,
-        readonly private Url $url,
-        readonly private StrictDictionary $cookies,
-        readonly private StrictDictionary $domain,
+        readonly protected LimitedFormat $format,
+        readonly protected UrlV2 $url,
+        readonly protected StrictDictionary $cookies,
+        readonly protected StrictDictionary $domain,
     ) {
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
@@ -82,7 +82,7 @@ class Request {
         return $this->format->getIdentifier($this);
     }
 
-    public function getUrl(): Url {
+    public function getUrl(): UrlV2 {
         return $this->url;
     }
 
@@ -117,7 +117,7 @@ class Request {
 
     public function getRemainingPath(): Path {
         $index = $this->data->get(self::PATH_INDEX, 0);
-        return Path::from($this->url->getRealPath(), $index);
+        return Path::from($this->url->getPath()->toString(), $index);
     }
 
     public function getDomain(): StrictDictionary {
@@ -197,7 +197,7 @@ class Request {
             return [
                 'httpMethod' => $this->httpMethod,
                 'headers' => $this->headers,
-                'url' => $this->url->full(),
+                'url' => $this->url->toString(),
                 'body' => '*not-parsed*',
                 'files' => '*not-parsed*',
                 'cookies' => $this->cookies,
@@ -208,7 +208,7 @@ class Request {
         return [
             'httpMethod' => $this->httpMethod,
             'headers' => $this->headers,
-            'url' => $this->url->full(),
+            'url' => $this->url->toString(),
             'body' => $this->body,
             'files' => $this->files,
             'cookies' => $this->cookies,

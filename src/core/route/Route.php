@@ -5,9 +5,7 @@ namespace core\route;
 use core\App;
 use core\collections\iterator\ArrayIterator;
 use core\collections\iterator\ArrayIteratorTrait;
-use core\configs\AppConfig;
 use core\Copy;
-use core\route\compiler\RouteCompiler;
 use core\utils\Arrays;
 
 /**
@@ -22,10 +20,34 @@ class Route implements ArrayIterator, Copy {
      * @return static
      */
     public static function from(string $route, array $parameters = []): static {
-        $parser = App::getInstance()
+        $compiler = App::getInstance()
             ->getRouteCompiler();
 
-        return $parser->parse($route, $parameters);
+        return $compiler->parse($route, $parameters);
+    }
+
+    public static function format(string $route, array $parameters = []): Path {
+        $compiler = App::getInstance()
+            ->getRouteCompiler();
+
+        return $compiler->format($route, $parameters);
+    }
+
+    public static function isDynamic(string $route): bool {
+        $compiler = App::getInstance()
+            ->getRouteCompiler();
+
+        return $compiler->isDynamic($route);
+    }
+
+    /**
+     * @param array<RouteSegment> $segments
+     * @return static
+     */
+    public static function fromSegments(array $segments): static {
+        $route = new static(RouteSegment::source($segments));
+        $route->segments = $segments;
+        return $route;
     }
 
     public static function resolve(Route|string $route): static {
@@ -45,7 +67,9 @@ class Route implements ArrayIterator, Copy {
 
 
 
-    public function __construct() {
+    public function __construct(
+        protected string $source
+    ) {
         $this->segments = [];
     }
 
@@ -59,6 +83,10 @@ class Route implements ArrayIterator, Copy {
         $this->segments[] = $segment;
     }
 
+    public function getSource(): string {
+        return $this->source;
+    }
+
     public function getDepth(): int {
         return count($this->segments);
     }
@@ -68,6 +96,14 @@ class Route implements ArrayIterator, Copy {
      */
     public function getSegments(): array {
         return $this->segments;
+    }
+
+    public function hasDynamicBehaviour(): bool {
+        return self::isDynamic($this->source);
+    }
+
+    public function toPath(array $parameters = []): Path {
+        return self::format($this->source, $parameters);
     }
 
     public function extend(self $route): static {
@@ -88,7 +124,7 @@ class Route implements ArrayIterator, Copy {
 
     // Copy
     public function copy(): static {
-        $copy = new static();
+        $copy = new static($this->source);
         $copy->segments = Arrays::copy($this->segments);
         return $copy;
     }

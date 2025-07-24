@@ -62,8 +62,8 @@ class Url implements Copy {
         }
 
         return new Url(
-            $protocol ?? $request->getUrl()->protocol,
-            $host ?? $request->getUrl()->host,
+            $protocol ?? $request->getUrl()->getProtocol(),
+            $host ?? $request->getUrl()->getDomain(),
             $path,
             $query === null
                 ? new StrictMap()

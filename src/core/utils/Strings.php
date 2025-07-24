@@ -3,7 +3,6 @@
 namespace core\utils;
 
 use core\Init;
-use core\path\Path;
 use core\patterns\Charset;
 
 class Strings extends Init {
@@ -127,35 +126,14 @@ class Strings extends Init {
     }
 
     public static function parseUrlEncoded(string $string): array {
-        $array = [];
-        $length = strlen($string);
-        $name = "";
-        $value = "";
-        $isValueTarget = false;
+        $ret = [];
 
-        for ($i = 0; $i < $length; $i++) {
-            if ($string[$i] === '=') {
-                $isValueTarget = true;
-                continue;
-            }
-
-            if ($string[$i] == "&") {
-                $array[$name] = urldecode($value);
-                $name = "";
-                $value = "";
-                $isValueTarget = false;
-                continue;
-            }
-
-            if ($isValueTarget) {
-                $value .= $string[$i];
-                continue;
-            }
-
-            $name .= $string[$i];
+        foreach (explode('&', $string) as $pair) {
+            $x = explode('=', $pair, 2);
+            $ret[$x[0]] = $x[1] ?? "";
         }
 
-        return $array;
+        return $ret;
     }
 
     public static function toBytes(string $formattedBytes): ?int {

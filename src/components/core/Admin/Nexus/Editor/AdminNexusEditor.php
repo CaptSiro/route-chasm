@@ -97,7 +97,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             ->getHead()
             ->setTitle($this->getTitle());
 
-        switch ($request->httpMethod) {
+        switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
                 parent::execute($request, $response);
             }
@@ -152,7 +152,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
             default:
                 $response->sendMessage(
-                    'Invalid HTTP method '. $request->httpMethod,
+                    'Invalid HTTP method '. $request->getHttpMethod(),
                     HttpCode::CE_BAD_REQUEST
                 );
         }

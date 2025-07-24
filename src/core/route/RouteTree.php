@@ -6,6 +6,7 @@ use core\collections\graph\Edge;
 use core\collections\graph\Graph;
 use core\collections\graph\TreeVertex;
 use core\collections\graph\Vertex;
+use core\utils\Arrays;
 
 /**
  * @template-implements Graph<RouteNode, RouteSegment>
@@ -58,6 +59,25 @@ class RouteTree implements Graph {
         return array_merge($terminal, $layer);
     }
 
+    /**
+     * @param TreeVertex<RouteNode, RouteSegment> $root
+     * @return array<RouteSegment>
+     */
+    public static function getRouteSegments(TreeVertex $root): array {
+        $current = $root;
+        $ret = [];
+
+        while (true) {
+            $edge = $current->getParentEdge();
+            if (is_null($edge)) {
+                return array_reverse($ret);
+            }
+
+            $ret[] = $edge->get();
+            $current = $edge->getVertex();
+        }
+    }
+
 
 
     /** @var TreeVertex<RouteNode, RouteSegment> */
@@ -92,6 +112,10 @@ class RouteTree implements Graph {
      */
     public function setRoot(TreeVertex $root): void {
         $this->root = $root;
+    }
+
+    public function getRoute(): Route {
+        return Route::fromSegments(self::getRouteSegments($this->root));
     }
 
     /**
