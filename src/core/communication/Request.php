@@ -10,6 +10,7 @@ use core\collections\StrictDictionary;
 use core\http\HttpHeader;
 use core\route\Path;
 use core\url\Url;
+use models\core\Domain\Domain;
 
 class Request {
     public const PATH_INDEX = '__path_index';
@@ -50,6 +51,7 @@ class Request {
 
     readonly protected StrictMap $data;
     readonly protected StrictDictionary $body;
+    readonly protected Domain $domain;
 
     /**
      * @var StrictDictionary<UploadedFile>
@@ -67,13 +69,13 @@ class Request {
         readonly protected LimitedFormat $format,
         readonly protected Url $url,
         readonly protected StrictDictionary $cookies,
-        readonly protected StrictDictionary $domain,
     ) {
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
         $this->param = new StrictStack();
         $this->data = new StrictMap();
         $this->session = new Session();
+        $this->domain = Domain::fromUrl($this->url);
     }
 
 
@@ -120,7 +122,7 @@ class Request {
         return Path::from($this->url->getPath()->toString(), $index);
     }
 
-    public function getDomain(): StrictDictionary {
+    public function getDomain(): Domain {
         return $this->domain;
     }
 

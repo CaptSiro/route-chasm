@@ -145,8 +145,16 @@ class Model implements JsonSerializable, Identifier {
         $this->origin = $origin;
     }
 
+    public function notSavable(): void {
+        $this->origin = Origin::UNKNOWN;
+    }
+
     public function isNewRecord(): bool {
         return $this->origin === Origin::APPLICATION;
+    }
+
+    public function isSavable(): bool {
+        return $this->origin !== Origin::UNKNOWN;
     }
 
     private function insert(): DatabaseAction|View {
@@ -181,6 +189,10 @@ class Model implements JsonSerializable, Identifier {
     }
 
     public function save(): DatabaseAction|View {
+        if (!$this->isSavable()) {
+            return DatabaseAction::NONE;
+        }
+
         if ($this->isNewRecord()) {
             return $this->insert();
         }

@@ -26,6 +26,7 @@ use core\route\Router;
 use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
+use models\core\Domain\Domain;
 use models\core\ModuleRecord;
 
 class App implements Loader {
@@ -128,7 +129,6 @@ class App implements Loader {
             $this,
             (new RequestFormat())->setFormatMatcher($this->matcher),
             Url::fromRequest(),
-            new StrictMap(),
             new StrictMap(),
         );
 
@@ -313,8 +313,13 @@ class App implements Loader {
     public function serve(?Request $request = null, ?Response $response = null): void {
         $request ??= $this->request;
 
+        $path = Path::from(
+            $request->getUrl()->getPath(),
+            $request->getDomain()->getPath()->getDepth()
+        );
+
         $this->router->performActions(
-            Path::from($request->getUrl()->getPath()),
+            $path,
             $request,
             $response ?? $this->response
         );

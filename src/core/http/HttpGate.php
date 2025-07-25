@@ -105,8 +105,8 @@ class HttpGate implements Action {
     }
 
     public function perform(Request $request, Response $response): void {
-        $isLast = Path::depth($request->getRemainingPath()) === 0;
-        if ($isLast && !$this->isMiddleware) {
+        $notLast = Path::depth($request->getRemainingPath()) !== 0;
+        if ($notLast && !$this->isMiddleware) {
             return;
         }
 
@@ -115,7 +115,7 @@ class HttpGate implements Action {
         }
 
         foreach ($this->actions as $endpoint) {
-            $endpoint->execute($request, $response);
+            $endpoint->perform($request, $response);
         }
     }
 

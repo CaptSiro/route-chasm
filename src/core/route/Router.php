@@ -87,13 +87,6 @@ class Router {
             foreach ($trace->getVertexes() as $vertex) {
                 /** @var TreeVertex<RouteNode, RouteSegment> $vertex */
 
-                if (!$first) {
-                    $parent = $vertex->getParentEdge()?->get();
-                    if (!is_null($parent)) {
-                        $parent->match($path->getSegment($i), $parameters);
-                    }
-                }
-
                 $request->set(Request::PATH_INDEX, $i);
 
                 foreach ($vertex->get()->getActions() as $action) {

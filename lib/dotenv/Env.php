@@ -2,6 +2,9 @@
 
 namespace dotenv;
 
+
+use RuntimeException;
+
 readonly class Env {
     public static function fromFile(string $file): ?Env {
         $map = [
@@ -33,6 +36,14 @@ readonly class Env {
 
     public function get(string $name): ?string {
         return $this->map[$name] ?? null;
+    }
+
+    public function getOrDie(string $name): string {
+        if (!isset($this->map[$name])) {
+            throw new RuntimeException("Environment variable '$name' is not set");
+        }
+
+        return $this->map[$name];
     }
 
 

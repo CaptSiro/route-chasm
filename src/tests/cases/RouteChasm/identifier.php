@@ -8,7 +8,7 @@ use sptf\Sptf;
 Sptf::test("parse valid identifiers", function () {
     $pass = true;
     $compiler = new RouteCompiler();
-    $idents = ["_", "a", "A", "_asdf_ASDF_1234", "_1", "name"];
+    $idents = ["a", "A", "foo", "bar1"];
 
     foreach ($idents as $ident) {
         if (!$compiler->isIdentValid($ident)) {

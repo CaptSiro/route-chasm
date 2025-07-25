@@ -6,16 +6,21 @@ use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
+use core\configs\AppConfig;
+use core\configs\EnvConfig;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\Origin;
+use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\NumberField;
 use core\forms\description\TextField;
 use core\guards\Guard;
 use core\guards\NumberGuard;
 use core\route\Path;
+use core\url\Url;
 use core\view\View;
 use models\extensions\Enable\Enable;
 use models\extensions\Enable\EnableExtension;
@@ -46,6 +51,39 @@ class Domain extends Model implements Enable {
         );
     }
 
+    public static function fromEnv(): static {
+        $url = Url::from(
+            App::getEnvStatic()->getOrDie("DOMAIN_URL")
+        );
+
+        $domain = new static();
+
+        $domain->set([
+            'host' => $url->getHost(),
+            'port' => $url->getPort(),
+            'path' => $url->getPath(),
+        ]);
+
+        $domain->notSavable();
+        return $domain;
+    }
+
+    public static function fromUrl(Url $url): static {
+        return self::fromUrlString($url->toString());
+    }
+
+    public static function fromUrlString(string $url): static {
+        $domains = self::all(where: Query::static("is_enabled = 1"));
+
+        foreach ($domains as $domain) {
+            if (str_contains($url, $domain->getLiteral())) {
+                return $domain;
+            }
+        }
+
+        return self::fromEnv();
+    }
+
 
 
     #[Column('id_domain', type: Column::TYPE_INTEGER, primaryKey: true)]
@@ -68,6 +106,10 @@ class Domain extends Model implements Enable {
 
 
 
+    public function __toString(): string {
+        return $this->getLiteral();
+    }
+
     public function save(): DatabaseAction|View {
         $guards = [
             NumberGuard::inRange(
@@ -88,7 +130,7 @@ class Domain extends Model implements Enable {
             return $result;
         }
 
-        $cost = 1 + intval($this->port != 0) + intval($this->path != '');
+        $cost = 1 + intval($this->port > 0) + intval($this->path != '');
         if (!isset($this->cost) || $cost !== $this->cost) {
             $this->cost = $cost;
         }
@@ -96,9 +138,15 @@ class Domain extends Model implements Enable {
         return parent::save();
     }
 
+
+
+    public function getPath(): Path {
+        return Path::from($this->path);
+    }
+
     public function getLiteral(): string {
         $ret = $this->host;
-        if ($this->port !== 0) {
+        if ($this->port > 0) {
             $ret .= ':'. $this->port;
         }
 
@@ -107,9 +155,5 @@ class Domain extends Model implements Enable {
         }
 
         return $ret;
-    }
-
-    public function __toString(): string {
-        return $this->getLiteral();
     }
 }

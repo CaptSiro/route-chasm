@@ -217,7 +217,7 @@ class RouteCompiler {
         $tokenizer = new Tokenizer($pattern);
 
         foreach ($tokenizer->tokenize() as $token) {
-            if ($token->type === TokenType::IDENT) {
+            if ($token->type === TokenType::BRACKET_L) {
                 return true;
             }
         }

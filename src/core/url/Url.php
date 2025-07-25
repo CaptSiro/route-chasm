@@ -8,7 +8,7 @@ use core\Copy;
 use core\route\Path;
 use core\utils\Arrays;
 use core\utils\Strings;
-use Exception;
+use RuntimeException;
 
 class Url implements Copy {
     public const SEPARATOR_PROTOCOL = '://';
@@ -17,13 +17,10 @@ class Url implements Copy {
 
 
 
-    /**
-     * @throws Exception
-     */
     public static function from(string $literal): static {
         $valid = preg_match(self::REGEX_URL, $literal, $matches);
         if (!$valid) {
-            throw new Exception("Not a valid URL literal: $literal");
+            throw new RuntimeException("Not a valid URL literal: $literal");
         }
 
         $protocol = $matches[2] ?? 'http';
@@ -31,7 +28,7 @@ class Url implements Copy {
 
         return (new static())
             ->setProtocol($protocol)
-            ->setDomain($matches[5] ?? 'localhost')
+            ->setHost($matches[5] ?? 'localhost')
             ->setPort($port)
             ->setPath(Path::from($matches[7] ?? ''))
             ->setQuery(new StrictMap(Strings::parseUrlEncoded($matches[9] ?? '')));
@@ -53,7 +50,7 @@ class Url implements Copy {
 
         return (new static())
             ->setProtocol($_SERVER['REQUEST_SCHEME'] ?? "http")
-            ->setDomain($_SERVER['HTTP_HOST'] ?? "localhost")
+            ->setHost($_SERVER['HTTP_HOST'] ?? "localhost")
             ->setPath(Path::from($path))
             ->setQuery(new StrictMap($_GET));
     }
@@ -62,7 +59,7 @@ class Url implements Copy {
 
 
     protected string $protocol;
-    protected string $domain;
+    protected string $host;
     protected int $port;
     protected Path $path;
     protected StrictDictionary $query;
@@ -70,7 +67,7 @@ class Url implements Copy {
 
     public function __construct() {
         $this->protocol = 'http';
-        $this->domain = 'localhost';
+        $this->host = 'localhost';
         $this->port = -1;
         $this->path = new Path([]);
         $this->query = new StrictMap();
@@ -91,12 +88,12 @@ class Url implements Copy {
         return $this;
     }
 
-    public function getDomain(): string {
-        return $this->domain;
+    public function getHost(): string {
+        return $this->host;
     }
 
-    public function setDomain(string $domain): static {
-        $this->domain = $domain;
+    public function setHost(string $host): static {
+        $this->host = $host;
         return $this;
     }
 
@@ -149,7 +146,7 @@ class Url implements Copy {
             ? ''
             : ':'. $this->port;
 
-        $url = $this->protocol .'://'. $this->domain . $port . $this->path;
+        $url = $this->protocol .'://'. $this->host . $port . $this->path;
 
         $queryArray = $this->query->toArray();
         if (empty($queryArray)) {
@@ -167,7 +164,7 @@ class Url implements Copy {
 
         $instance
             ->setProtocol($this->protocol)
-            ->setDomain($this->domain)
+            ->setHost($this->host)
             ->setPort($this->port)
             ->setPath(Path::from($this->path->toString()))
             ->setQuery(new StrictMap([...$this->query->toArray()]));

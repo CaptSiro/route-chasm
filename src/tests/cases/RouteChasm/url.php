@@ -30,7 +30,7 @@ Sptf::test('creates URL from server vars', function () {
 
     $url = Url::fromRequest();
 
-    Sptf::expect($url->getDomain())->toBe("subdomain.localhost.com");
+    Sptf::expect($url->getHost())->toBe("subdomain.localhost.com");
     Sptf::expect($url->getPath()->toString())->toBe("/route-chasm/foo/bar/fizz");
     Sptf::expect($url->getQuery())
         ->toBe(new StrictMap([
@@ -65,7 +65,7 @@ Sptf::test('parse fully qualified URL', function () {
     Sptf::expect($url->getProtocol())
         ->toBe('http');
 
-    Sptf::expect($url->getDomain())
+    Sptf::expect($url->getHost())
         ->toBe('localhost');
 
     Sptf::expect($url->getPath()->toString())

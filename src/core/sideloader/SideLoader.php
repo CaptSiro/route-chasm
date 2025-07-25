@@ -296,6 +296,8 @@ class SideLoader implements View {
             ->getUrl()
             ->copy();
 
+        $url->getQuery()->clear();
+
         return $url
             ->setPath(Path::from($path))
             ->setQueryArgument('type', $type)
