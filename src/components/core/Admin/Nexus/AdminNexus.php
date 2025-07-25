@@ -87,7 +87,7 @@ class AdminNexus extends ContainerContent {
 
     public function getTitle(): string {
         if (is_null($this->title)) {
-            $segments = Arrays::explode('/',  AdminMenu::getRequestPathSource());
+            $segments = AdminMenu::getInstance()->getRequestPathSource()->getSegments();
             return array_pop($segments);
         }
 

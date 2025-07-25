@@ -8,43 +8,86 @@ use components\core\BreadCrumbs\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Menu\Menu;
 use core\actions\Action;
+use core\actions\ActionBindRouteNode;
+use core\actions\ActorClassName;
+use core\actions\Procedure;
 use core\AdminRouter;
 use core\App;
+use core\communication\Request;
+use core\communication\Response;
 use core\route\Path;
+use core\route\RouteNode;
 use core\Singleton;
 use core\url\UrlGraph;
 use core\utils\Arrays;
 use core\view\Renderer;
 use core\view\View;
 
-class AdminMenu implements View {
-    use Renderer, Singleton;
+class AdminMenu implements View, Action {
+    use Renderer, Singleton, ActionBindRouteNode, ActorClassName;
 
     public static function load(string $file): void {
         require_once $file;
     }
 
-    public static function getRequestPath(): string {
-        return substr(
-            App::getInstance()
-                ->getRequest()
-                ->getUrl()
-                ->getPath(),
-            strlen(AdminRouter::getInstance()->getPath())
+
+
+    /**
+     * @var Menu<array<Action>>
+     */
+    protected Menu $menu;
+    protected array $icons;
+    protected Path $requestPath;
+
+    public function __construct() {
+        $this->requestPath = Path::from("");
+        $this->icons = [];
+
+        $this->menu = new Menu(
+            itemTemplate: new AdminMenuItem($this->icons)
         );
+
+        $this->menu->setIsInset(false);
+        $this->menu->setIsExpanded(true);
     }
 
-    public static function getRequestPathSource(): string {
-        return self::getInstance()
-            ->menu
-            ->getGraph()
-            ->getPathSource(self::getRequestPath());
+
+
+    public function add(string|Path $path, Closure|Action ...$actions): static {
+        $this->menu->add(Path::resolve($path), Procedure::resolve($actions));
+        return $this;
     }
 
-    public static function getBreadCrumbs(?string $path = null): BreadCrumbs {
-        if (is_null($path)) {
-            $path = self::getRequestPath();
+    /**
+     * @param array<AdminMenuLabel> $path
+     * @param Closure|Action ...$actions
+     * @return static
+     */
+    public function addIcons(array $path, Closure|Action ...$actions): static {
+        $labels = '';
+
+        foreach ($path as $item) {
+            if ($item->hasIcon()) {
+                $this->addIcon($item->getLabel(), $item->getIcon());
+            }
+
+            $labels .= '/'. $item->getLabel();
         }
+
+        return $this->add($labels, ...$actions);
+    }
+
+    public function addIcon(string $label, string $icon): static {
+        $this->icons[$label] = $icon;
+        return $this;
+    }
+
+    public function getRequestPathSource(): Path {
+        return Path::from($this->menu->getGraph()->getPathSource($this->requestPath));
+    }
+
+    public function getBreadCrumbs(?Path $path = null): BreadCrumbs {
+        $path ??= $this->requestPath;
 
         $admin = AdminRouter::getInstance()->getPath();
         $app = App::getInstance();
@@ -78,54 +121,26 @@ class AdminMenu implements View {
 
 
 
-    protected Menu $menu;
-    protected array $icons;
-
-    public function __construct() {
-        $this->icons = [];
-
-        $this->menu = new Menu(
-            itemTemplate: new AdminMenuItem($this->icons)
-        );
-
-        $this->menu->setIsInset(false);
-        $this->menu->setIsExpanded(true);
-        $this->menu->setSelected(
-            Path::from(self::getRequestPath())
-        );
+    // Action
+    public function isMiddleware(): bool {
+        return false;
     }
 
-    public function add(string $path, Closure|Action ...$actions): static {
-        $this->menu->add($path, true);
-
-        $urlPath = implode('/', $this->menu->translatePathToTarget($path));
-        AdminRouter::getInstance()
-            ->use($urlPath, ...$actions);
-
-        return $this;
+    public function onBind(RouteNode $bindingPoint): void {
+        $this->bindRouteNode($bindingPoint);
     }
 
-    /**
-     * @param array<AdminMenuLabel> $path
-     * @param Closure|Action ...$actions
-     * @return static
-     */
-    public function addIcons(array $path, Closure|Action ...$actions): static {
-        $labels = '';
+    public function perform(Request $request, Response $response): void {
+        $this->requestPath = $request->getRemainingPath();
 
-        foreach ($path as $item) {
-            if ($item->hasIcon()) {
-                $this->addIcon($item->getLabel(), $item->getIcon());
-            }
-
-            $labels .= '/'. $item->getLabel();
+        $this->menu->setSelected($this->requestPath);
+        $actions = $this->menu->getGraph()->get($this->requestPath);
+        if (is_null($actions)) {
+            return;
         }
 
-        return $this->add($labels, ...$actions);
-    }
-
-    public function addIcon(string $label, string $icon): static {
-        $this->icons[$label] = $icon;
-        return $this;
+        foreach ($actions as $action) {
+            $action->perform($request, $response);
+        }
     }
 }

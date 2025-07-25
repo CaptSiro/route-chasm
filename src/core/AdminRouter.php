@@ -7,6 +7,7 @@ use components\core\Admin\Menu\AdminMenu;
 use components\core\Message\Message;
 use core\actions\Action;
 use core\actions\Procedure;
+use core\actions\When;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -30,20 +31,26 @@ class AdminRouter extends Router {
 
     public function __construct(?Action $home = null) {
         parent::__construct();
+        AdminMenu::load(App::getInstance()->getSource('admin-menu.php'));
 
         $this->use('/',
             Procedure::middleware(function (Request $request) {
                 $request->set(self::KEY_IS_ADMIN, true);
-                AdminMenu::load(App::getInstance()->getSource('admin-menu.php'));
             }),
             new AdminLogin(),
-            $home ?? new Message('Admin Home'),
+            new When(
+                fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
+                $home ?? new Procedure(fn() => new Message('Admin Home'))
+            ),
         );
 
-        $this->use('/**', fn(Request $request, Response $response) => $response->sendMessage(
-            'Not found',
-            HttpCode::CE_NOT_FOUND
-        ));
+        $this->use('/**',
+            AdminMenu::getInstance(),
+            fn(Request $request, Response $response) => $response->sendMessage(
+                'Not found',
+                HttpCode::CE_NOT_FOUND
+            )
+        );
     }
 
 

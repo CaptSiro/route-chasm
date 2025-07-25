@@ -2,11 +2,15 @@
 
 namespace core\url;
 
+use core\route\Path;
 use core\translation\StringTranslator;
 use core\translation\Translator;
 use core\utils\Arrays;
 use core\utils\Strings;
 
+/**
+ * @template T
+ */
 class UrlGraph {
     public const KEY_LEAF = 0;
 
@@ -46,10 +50,15 @@ class UrlGraph {
         return static::isLeaf($this->root);
     }
 
-    public function add(string $path, mixed $item): void {
+    /**
+     * @param Path $path
+     * @param T $item
+     * @return void
+     */
+    public function add(Path $path, mixed $item): void {
         $node = &$this->root;
 
-        foreach (Arrays::explode('/', $path) as $segment) {
+        foreach ($path as $segment) {
             $target = $this->segments->add($segment);
 
             if (!isset($node[$target])) {
@@ -62,11 +71,11 @@ class UrlGraph {
         $node[self::KEY_LEAF] = $item;
     }
 
-    public function getPathSource(string $path): string {
+    public function getPathSource(Path $path): string {
         $node = &$this->root;
         $return = [];
 
-        foreach (Arrays::explode('/', $path) as $target) {
+        foreach ($path as $target) {
             if (!isset($node[$target])) {
                 break;
             }
@@ -76,6 +85,24 @@ class UrlGraph {
         }
 
         return implode('/', $return);
+    }
+
+    /**
+     * @param Path $targetPath
+     * @return T
+     */
+    public function get(Path $targetPath): mixed {
+        $node = &$this->root;
+
+        foreach ($targetPath as $target) {
+            if (!isset($node[$target])) {
+                break;
+            }
+
+            $node = &$node[$target];
+        }
+
+        return self::getItem($node);
     }
 
     public function getRoot(): array {
@@ -93,6 +120,9 @@ class UrlGraph {
         return $graph;
     }
 
+    /**
+     * @return T
+     */
     public function getRootItem(): mixed {
         return self::getItem($this->root);
     }

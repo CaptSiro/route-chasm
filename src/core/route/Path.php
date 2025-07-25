@@ -13,6 +13,12 @@ class Path implements ArrayIterator {
 
 
 
+    public static function resolve(Path|string $path): Path {
+        return $path instanceof Path
+            ? $path
+            : Path::from($path);
+    }
+
     public static function depth(string $literal): int {
         $literalLength = strlen($literal);
         if ($literalLength === 0) {
@@ -133,5 +139,9 @@ class Path implements ArrayIterator {
 
     public function key(): int {
         return $this->arrayIteratorIndex;
+    }
+
+    public function rewind(): void {
+        $this->arrayIteratorIndex = $this->offset;
     }
 }

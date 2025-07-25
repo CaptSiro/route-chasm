@@ -176,9 +176,9 @@ $router->use('/select',
 
 
 
-if (isset($_GET['_test'])) {
-    echo (new SptfTests(__DIR__ .'/src/tests/cases/RouteChasm'))->getRoot()->render();
-    exit();
-}
+//if (isset($_GET['_test'])) {
+//    echo (new SptfTests(__DIR__ .'/src/tests/cases/RouteChasm'))->getRoot()->render();
+//    exit();
+//}
 
 $app->serve();

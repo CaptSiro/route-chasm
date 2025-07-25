@@ -3,18 +3,23 @@
 namespace components\core\Menu\Item;
 
 use components\core\Menu\Menu;
+use core\route\Path;
 use core\view\Renderer;
 use core\view\View;
 
+/**
+ * @template T
+ */
 class MenuItem implements View {
     use Renderer;
 
 
 
     protected Menu $context;
-    protected string $path;
+    protected Path $path;
     protected string $label;
     protected bool $hasValue;
+    /** @var T $value */
     protected mixed $value;
 
 
@@ -24,7 +29,7 @@ class MenuItem implements View {
         return $this;
     }
 
-    public function setPath(string $path): static {
+    public function setPath(Path $path): static {
         $this->path = $path;
         return $this;
     }
@@ -46,6 +51,10 @@ class MenuItem implements View {
         return $this;
     }
 
+    /**
+     * @param T $value
+     * @return $this
+     */
     public function setValue(mixed $value): static {
         $this->value = $value;
         return $this;

@@ -6,7 +6,7 @@ trait ArrayIteratorTrait {
     protected int $arrayIteratorIndex;
 
     public function current(): string {
-        return $this->getArrayIterator()[$this->key()];
+        return $this->getArrayIterator()[$this->key()] ?? '';
     }
 
     public function next(): void {

@@ -11,6 +11,9 @@ use core\url\UrlGraph;
 use core\view\Renderer;
 use core\view\View;
 
+/**
+ * @template T
+ */
 class Menu implements View, Attribute {
     use Renderer, HtmlAttribute;
 
@@ -19,13 +22,14 @@ class Menu implements View, Attribute {
     protected bool $isExpanded = false;
     protected ?Menu $root = null;
     protected UrlPathTranslator $paths;
+    /** @var UrlGraph<T> $graph */
     protected UrlGraph $graph;
     protected ?Path $selected = null;
 
 
 
     public function __construct(
-        protected string $path = '',
+        protected ?Path $path = null,
         protected ?MenuItem $itemTemplate = null
     ) {
         $this->paths = new UrlPathTranslator();
@@ -87,7 +91,12 @@ class Menu implements View, Attribute {
         return $this;
     }
 
-    public function add(string $path, mixed $item): static {
+    /**
+     * @param Path $path
+     * @param T $item
+     * @return $this
+     */
+    public function add(Path $path, mixed $item): static {
         $this->graph->add($path, $item);
         return $this;
     }
@@ -117,6 +126,9 @@ class Menu implements View, Attribute {
         return $this->graph->hasItem();
     }
 
+    /**
+     * @return T
+     */
     public function getItem(): mixed {
         return $this->graph->getRootItem();
     }
@@ -153,10 +165,15 @@ class Menu implements View, Attribute {
             return null;
         }
 
-        $menu = new static(
-            Path::join($this->path, $target),
-            $this->itemTemplate
-        );
+        $menu = is_null($this->path)
+            ? new static(
+                Path::from($target),
+                $this->itemTemplate
+            )
+            : new static(
+                Path::from(Path::join($this->path->toString(), $target)),
+                $this->itemTemplate
+            );
 
         $menu->root = $this->root;
 

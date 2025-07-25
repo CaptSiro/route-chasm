@@ -54,7 +54,7 @@ $request = App::getInstance()->getRequest();
     </nav>
 
     <main>
-        <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getBreadCrumbs()) ?>
+        <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getInstance()->getBreadCrumbs()) ?>
         <?php if (count($crumbs->getItems()) > 1): ?>
             <section>
                 <?= $crumbs->render() ?>
