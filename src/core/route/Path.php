@@ -4,11 +4,13 @@ namespace core\route;
 
 use core\collections\iterator\ArrayIterator;
 use core\collections\iterator\ArrayIteratorTrait;
+use core\Copy;
+use core\utils\Arrays;
 
 /**
  * @template-implements ArrayIterator<int, string>
  */
-class Path implements ArrayIterator {
+class Path implements ArrayIterator, Copy {
     use ArrayIteratorTrait;
 
 
@@ -17,6 +19,19 @@ class Path implements ArrayIterator {
         return $path instanceof Path
             ? $path
             : Path::from($path);
+    }
+
+    public static function merge(Path|string ...$paths): Path {
+        $segments = [];
+
+        foreach (array_map(fn($x) => Path::resolve($x), $paths) as $path) {
+            $segments = array_merge(
+                $segments,
+                array_slice($path->getSegments(), $path->getOffset())
+            );
+        }
+
+        return new self($segments);
     }
 
     public static function depth(string $literal): int {
@@ -104,6 +119,11 @@ class Path implements ArrayIterator {
         return $this->offset;
     }
 
+    public function setOffset(int $offset): static {
+        $this->offset = $offset;
+        return $this;
+    }
+
     public function getDepth(): int {
         return count($this->segments) - $this->offset;
     }
@@ -113,6 +133,11 @@ class Path implements ArrayIterator {
      */
     public function getSegments(): array {
         return array_slice($this->segments, $this->offset);
+    }
+
+    public function append(string $segment): static {
+        $this->segments[] = $segment;
+        return $this;
     }
 
     /**
@@ -143,5 +168,12 @@ class Path implements ArrayIterator {
 
     public function rewind(): void {
         $this->arrayIteratorIndex = $this->offset;
+    }
+
+
+
+    // Copy
+    public function copy(): static {
+        return new static(Arrays::copy($this->segments), $this->offset);
     }
 }

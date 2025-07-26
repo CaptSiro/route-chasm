@@ -26,7 +26,6 @@ use core\route\Router;
 use core\url\Url;
 use core\utils\Strings;
 use dotenv\Env;
-use models\core\Domain\Domain;
 use models\core\ModuleRecord;
 
 class App implements Loader {
@@ -58,8 +57,6 @@ class App implements Loader {
 
     public const KEY_LOGGED_IN_USER = 'user';
 
-    public const OPTION_DO_REMOVE_HOME_FROM_URL_PATH = "do_remove_home_from_url_path";
-    public const OPTION_DO_ADD_HOME_TO_URL_PATH = "do_add_home_to_url_path";
     public const OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET = "always_return_html_for_http_get";
     public const OPTION_DO_NOT_AUTOLOAD = 'do_not_autoload';
 
@@ -102,8 +99,6 @@ class App implements Loader {
 
         $this->src = realpath(__DIR__ . "/..");
         $this->options = new Map([
-            App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH => false,
-            App::OPTION_DO_ADD_HOME_TO_URL_PATH => false,
             App::OPTION_ALWAYS_RETURN_HTML_FOR_HTTP_GET => true,
         ]);
 
@@ -211,19 +206,10 @@ class App implements Loader {
         return $home;
     }
 
-    public function prependHome(string $path): string {
-        $doAddHome = $this->options->get(self::OPTION_DO_ADD_HOME_TO_URL_PATH, false);
-
-        if (!$doAddHome) {
-            return $path;
-        }
-
-        $home = $this->getHome();
-        if ($home === "") {
-            return $path;
-        }
-
-        return Strings::prepend('/', Path::join($home, $path));
+    public function attach(Path $relative): Path {
+        return $this->getRequest()
+            ->getDomain()
+            ->attach($relative);
     }
 
     public static function getEnvStatic(): ?Env {

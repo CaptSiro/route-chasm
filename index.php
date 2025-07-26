@@ -45,8 +45,6 @@ Sql::connect(App::DATABASE, new MySqlDriver(
 ));
 
 $app = App::getInstance();
-$app->getOptions()->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
-$app->getOptions()->set(App::OPTION_DO_ADD_HOME_TO_URL_PATH, true);
 
 $router = $app->getMainRouter();
 

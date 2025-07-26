@@ -17,9 +17,8 @@ class AdminMenuItem extends MenuItem {
     }
 
     public function createUrl(): string {
-        return App::getInstance()
-            ->prependHome(
-                Path::join(AdminRouter::getInstance()->getPath(), $this->path)
+        return App::getInstance()->attach(
+                Path::merge(AdminRouter::getInstance()->getPath(), $this->path)
             );
     }
 

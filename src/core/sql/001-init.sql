@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS core_module (
 DROP TABLE IF EXISTS `core_domain`;
 CREATE TABLE IF NOT EXISTS `core_domain` (
     `id_domain` INT NOT NULL AUTO_INCREMENT,
+    `protocol` VARCHAR(8) NOT NULL DEFAULT 'http',
     `host` VARCHAR(255) NOT NULL,
     `port` INT NOT NULL DEFAULT '0',
     `path` VARCHAR(255) NULL DEFAULT NULL,

@@ -90,14 +90,15 @@ class AdminMenu implements View, Action {
         $path ??= $this->requestPath;
 
         $admin = AdminRouter::getInstance()->getPath();
-        $app = App::getInstance();
+        $domain = App::getInstance()->getRequest()->getDomain();
+
         $node = self::getInstance()
             ->menu
             ->getGraph()
             ->getRoot();
 
         $crumbs = [
-            new BreadCrumb('home', $app->prependHome($admin))
+            new BreadCrumb('home', $domain->createUrl($admin)->toString())
         ];
 
         $source = Arrays::explode('/', self::getInstance()
@@ -105,15 +106,15 @@ class AdminMenu implements View, Action {
             ->getGraph()
             ->getPathSource($path));
         $target = Arrays::explode('/', $path);
-        $accumulated = $app->prependHome($admin);
+        $accumulated = $domain->attach($admin);
 
         for ($i = 0; $i < count($source); $i++) {
             if (!is_null($node)) {
                 $node = $node[$target[$i]] ?? null;
             }
 
-            $accumulated .= '/' . $target[$i];
-            $crumbs[] = new BreadCrumb($source[$i], UrlGraph::isLeaf($node) ? $accumulated : null);
+            $accumulated->append($target[$i]);
+            $crumbs[] = new BreadCrumb($source[$i], UrlGraph::isLeaf($node) ? $accumulated->toString() : null);
         }
 
         return new BreadCrumbs($crumbs);

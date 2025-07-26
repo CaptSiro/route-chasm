@@ -51,7 +51,7 @@ class SideLoader implements View {
     public static function getApi(): View {
         $instance = self::getInstance();
         return new SideLoaderApi(
-            App::getInstance()->prependHome($instance->router->getRoute()->toStaticPath()->toString())
+            App::getInstance()->attach($instance->router->getRoute()->toStaticPath())
         );
     }
 
@@ -288,8 +288,7 @@ class SideLoader implements View {
     }
 
     public function createImportUrl(string $type, array $files): string {
-        $path = App::getInstance()
-            ->prependHome($this->router->getRoute()->toStaticPath()->toString());
+        $path = App::getInstance()->attach($this->router->getRoute()->toStaticPath());
 
         $url = App::getInstance()
             ->getRequest()

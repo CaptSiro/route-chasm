@@ -99,7 +99,7 @@ class AdminNexus extends ContainerContent {
 
         $router = $bindingPoint->getRouter();
 
-        $this->urlPath = App::getInstance()->prependHome($router->getRoute()->toStaticPath());
+        $this->urlPath = App::getInstance()->attach($router->getRoute()->toStaticPath());
         $router->use('/create', $this->editor);
 
         $factory = $this->modelDescription->getFactory();

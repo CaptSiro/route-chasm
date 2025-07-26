@@ -12,7 +12,6 @@ use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
-use core\database\sql\Origin;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\NumberField;
@@ -27,6 +26,7 @@ use models\extensions\Enable\EnableExtension;
 
 /**
  * @property int $id
+ * @property string $protocol
  * @property string $host
  * @property int $port
  * @property string $path
@@ -59,6 +59,7 @@ class Domain extends Model implements Enable {
         $domain = new static();
 
         $domain->set([
+            'protocol' => $url->getProtocol(),
             'host' => $url->getHost(),
             'port' => $url->getPort(),
             'path' => $url->getPath(),
@@ -89,6 +90,10 @@ class Domain extends Model implements Enable {
     #[Column('id_domain', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
+    #[TextField('Protocol')]
+    #[Column(type: Column::TYPE_STRING)]
+    protected string $protocol;
+
     #[TextField('Host')]
     #[Column(type: Column::TYPE_STRING)]
     protected string $host;
@@ -100,6 +105,7 @@ class Domain extends Model implements Enable {
     #[TextField('Path')]
     #[Column(type: Column::TYPE_STRING)]
     protected string $path;
+    private ?Path $pathObject;
 
     #[Column(type: Column::TYPE_INTEGER)]
     protected int $cost;
@@ -141,11 +147,63 @@ class Domain extends Model implements Enable {
 
 
     public function getPath(): Path {
-        return Path::from($this->path);
+        if (!isset($this->pathObject)) {
+            $this->pathObject = Path::from($this->path);
+        }
+
+        return $this->pathObject;
+    }
+
+    /**
+     * Prepends the domain path to a relative path, producing a full path.
+     *
+     * This method does not modify the provided $relative object.
+     * It returns a new Path instance representing the merged result.
+     *
+     * @param Path $relative The relative path to attach to the domain path.
+     * @return Path A new Path instance with the domain path prepended.
+     */
+    public function attach(Path $relative): Path {
+        return Path::merge($this->getPath(), $relative);
+    }
+
+    /**
+     * Removes the domain path prefix from a full path, producing a relative path.
+     *
+     * This method does not modify the provided $full object.
+     * It returns a new Path instance with the offset adjusted to skip the domain prefix.
+     *
+     * @param Path $full The full path containing the domain prefix.
+     * @return Path A new Path instance with the domain path detached.
+     */
+    public function detach(Path $full): Path {
+        return $full
+            ->copy()
+            ->setOffset($this->getPath()->getOffset());
+    }
+
+    public function createUrl(?Path $relative = null): Url {
+        $url = new Url();
+
+        $url
+            ->setProtocol($this->protocol)
+            ->setHost($this->host);
+
+        if ($this->port > 0) {
+            $url->setPort($this->port);
+        }
+
+        $url->setPath(
+            is_null($relative)
+                ? $this->getPath()->copy()
+                : $this->attach($relative)
+        );
+
+        return $url;
     }
 
     public function getLiteral(): string {
-        $ret = $this->host;
+        $ret = $this->protocol .'://'. $this->host;
         if ($this->port > 0) {
             $ret .= ':'. $this->port;
         }

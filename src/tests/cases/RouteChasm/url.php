@@ -24,10 +24,6 @@ Sptf::test('creates URL from server vars', function () {
         "buzz" => ""
     ]);
 
-    App::getInstance()
-        ->getOptions()
-        ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
-
     $url = Url::fromRequest();
 
     Sptf::expect($url->getHost())->toBe("subdomain.localhost.com");
@@ -45,20 +41,12 @@ Sptf::test('creates URL from server vars', function () {
 
     $server_reset();
     $get_reset();
-
-    App::getInstance()
-        ->getOptions()
-        ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 });
 
 
 
 Sptf::test('parse fully qualified URL', function () {
     Sptf::allowPrinting();
-
-    App::getInstance()
-        ->getOptions()
-        ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, false);
 
     $url = Url::from('http://localhost/route-chasm/fizz/buzz?ping=pong&foo=bar&fizz');
 
@@ -74,8 +62,4 @@ Sptf::test('parse fully qualified URL', function () {
     Sptf::expect($url->getQuery())
         ->toBe(new StrictMap(["ping" => "pong", "foo" => "bar", "fizz" => ""]))
         ->compare(fn(StrictDictionary $a, StrictDictionary $b) => Arrays::equal($a->toArray(), $b->toArray()));
-
-    App::getInstance()
-        ->getOptions()
-        ->set(App::OPTION_DO_REMOVE_HOME_FROM_URL_PATH, true);
 });

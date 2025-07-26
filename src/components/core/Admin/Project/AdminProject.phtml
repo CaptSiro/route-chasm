@@ -11,7 +11,7 @@ use core\App;
         <h2>
             <a
                 class="no-link"
-                href="<?= $app->prependHome(AdminRouter::getInstance()->getPath()) ?>"
+                href="<?= $app->attach(AdminRouter::getInstance()->getPath()) ?>"
             >
                 <?= $project ?>
             </a>

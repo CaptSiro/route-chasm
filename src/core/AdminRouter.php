@@ -11,6 +11,7 @@ use core\actions\When;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
+use core\route\Path;
 use core\route\Router;
 
 /**
@@ -27,7 +28,7 @@ class AdminRouter extends Router {
 
 
 
-    protected ?string $path = null;
+    protected ?Path $path = null;
 
     public function __construct(?Action $home = null) {
         parent::__construct();
@@ -55,9 +56,9 @@ class AdminRouter extends Router {
 
 
 
-    public function getPath(): string {
+    public function getPath(): Path {
         if (is_null($this->path)) {
-            $this->path = $this->getRoute()->toStaticPath()->toString();
+            $this->path = $this->getRoute()->toStaticPath();
         }
 
         return $this->path;
