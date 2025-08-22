@@ -5,7 +5,6 @@ namespace core\url;
 use core\route\Path;
 use core\translation\StringTranslator;
 use core\translation\Translator;
-use core\utils\Arrays;
 use core\utils\Strings;
 
 /**

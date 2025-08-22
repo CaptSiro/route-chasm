@@ -17,7 +17,6 @@ use core\http\HttpMethod;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
-use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
 

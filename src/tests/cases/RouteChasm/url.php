@@ -1,6 +1,5 @@
 <?php
 
-use core\App;
 use core\collections\dictionary\StrictMap;
 use core\collections\StrictDictionary;
 use core\url\Url;

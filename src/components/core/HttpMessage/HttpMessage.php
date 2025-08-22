@@ -33,7 +33,7 @@ class HttpMessage extends ContainerContent {
 
         $this->formatter = new Formatter(fn(string $format) => match ($format) {
             Format::IDENT_HTML => parent::render(),
-            Format::IDENT_XML => parent::renderTemplated($this->getResource("HttpError.xml.phtml")),
+            Format::IDENT_XML => parent::renderTemplated($this->getResource("HttpMessage.xml.phtml")),
             Format::IDENT_JSON => json_encode([
                 "isError" => $this->code >= 400,
                 "message" => $this->message,

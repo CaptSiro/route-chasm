@@ -1,7 +1,6 @@
 <?php
 
 use components\core\Admin\Home\AdminHome;
-use components\core\Admin\SptfTests\SptfTests;
 use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
 use components\layout\Accordion\Accordion;
@@ -57,6 +56,9 @@ $router->bind('/admin', AdminRouter::getInstance(new AdminHome()));
 
 $router->expose('public', (new Assets(__DIR__ .'/public'))
     ->setDirectoryPolicy(new ShowExplorerPolicy()));
+
+
+$router->use('/', new \components\Home\Home());
 
 $router->use(
     "/error",

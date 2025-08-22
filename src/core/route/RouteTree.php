@@ -169,6 +169,11 @@ class RouteTree implements Graph {
         return RouteNode::createEmpty();
     }
 
+    /**
+     * @param RouteSegment $edge
+     * @param Vertex $vertex
+     * @return Edge
+     */
     public function createEdge(mixed $edge, Vertex $vertex): Edge {
         return new Edge($edge, $vertex);
     }

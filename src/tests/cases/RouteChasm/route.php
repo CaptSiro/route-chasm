@@ -171,7 +171,7 @@ Sptf::test("should reconstruct source", function () {
     );
 
     foreach ($routes as $pattern) {
-        $route = $compiler->parse($pattern, []);
+        $route = $compiler->parse($pattern);
 
         $v = '/'. implode('/', array_map(fn(RouteSegment $x) => $x->getSource(), $route->getSegments()));
         Sptf::expect($pattern)->toBe($v);

@@ -81,19 +81,22 @@ class Router {
         foreach ($traces as $trace) {
             /** @var StrictStack<?> $parameters */
             $parameters = $request->getParam();
-            $first = true;
 
             $i = $path->getOffset();
-            foreach ($trace->getVertexes() as $vertex) {
+            $vertexes = $trace->getVertexes();
+            $last = array_key_last($vertexes);
+
+            foreach ($vertexes as $key => $vertex) {
                 /** @var TreeVertex<RouteNode, RouteSegment> $vertex */
 
                 $request->set(Request::PATH_INDEX, $i);
 
                 foreach ($vertex->get()->getActions() as $action) {
-                    $action->perform($request, $response);
+                    if ($action->isMiddleware() || $last === $key) {
+                        $action->perform($request, $response);
+                    }
                 }
 
-                $first = false;
                 $i++;
             }
 

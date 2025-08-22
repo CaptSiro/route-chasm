@@ -29,7 +29,6 @@ class Request {
             $format,
             $url ?? Url::fromRequest(),
             new StrictMap(),
-            new StrictMap(),
         );
 
         $ret->httpMethod = $httpMethod;
