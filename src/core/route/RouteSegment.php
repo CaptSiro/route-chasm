@@ -23,6 +23,8 @@ class RouteSegment implements Copy {
 
 
     protected string $regex;
+    protected ?string $label;
+    protected ?string $icon;
 
     public function __construct(
         protected string $source,
@@ -59,6 +61,22 @@ class RouteSegment implements Copy {
 
     public function getRegex(): string {
         return $this->regex;
+    }
+
+    public function getLabel(): ?string {
+        return $this->label;
+    }
+
+    public function setLabel(?string $label): void {
+        $this->label = $label;
+    }
+
+    public function getIcon(): ?string {
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): void {
+        $this->icon = $icon;
     }
 
 

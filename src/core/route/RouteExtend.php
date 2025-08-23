@@ -17,7 +17,6 @@ class RouteExtend {
     ) {}
 
 
-
     /**
      * @param Vertex<RouteNode, RouteSegment> $root
      * @param Route $route

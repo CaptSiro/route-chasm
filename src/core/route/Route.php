@@ -83,8 +83,34 @@ class Route implements ArrayIterator, Copy {
 
 
 
+    public function get(string $segment): ?RouteSegment {
+        foreach ($this->segments as $x) {
+            if ($x->getSource() === $segment) {
+                return $x;
+            }
+        }
+
+        return null;
+    }
+
     public function add(RouteSegment $segment): void {
         $this->segments[] = $segment;
+    }
+
+    public function label(string $segment, ?string $label = null): static {
+        if (!is_null($x = $this->get($segment))) {
+            $x->setLabel($label);
+        }
+
+        return $this;
+    }
+
+    public function icon(string $segment, ?string $icon = null): static {
+        if (!is_null($x = $this->get($segment))) {
+            $x->setIcon($icon);
+        }
+
+        return $this;
     }
 
     public function getSource(): string {

@@ -91,10 +91,11 @@ class RouteTree implements Graph {
      * @param ?TreeVertex<RouteNode, RouteSegment> $root
      */
     public function __construct(
-        ?TreeVertex $root = null
+        ?TreeVertex $root = null,
+        ?RouteExtend $extend = null,
     ) {
         $this->root = $root ?? RouteNode::createEmpty();
-        $this->routeExtend = new RouteExtend($this);
+        $this->routeExtend = $extend ?? new RouteExtend($this);
     }
 
 
