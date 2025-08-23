@@ -2,11 +2,16 @@
 
 namespace components\Home;
 
+use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\ContextAwareWebPage;
+use core\view\ContainerContent;
 
-class Home extends ContextAwareWebPage {
+class Home extends ContainerContent {
     public function __construct() {
-        parent::__construct();
-        $this->setTemplate($this->getResource("Home"));
+        parent::__construct(
+            new ContextAwareWebPage(
+                head: new HtmlHead("Home")
+            )
+        );
     }
 }
