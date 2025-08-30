@@ -4,6 +4,9 @@ namespace core\translation;
 
 use Closure;
 
+/**
+ * @template-implements Translator<string>
+ */
 class StringTranslator implements Translator {
     protected array $sourceToTarget = [];
     protected array $targetToSource = [];

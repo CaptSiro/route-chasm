@@ -5,13 +5,13 @@ namespace core\actions;
 use core\route\RouteNode;
 
 trait ActionBindRouteNode {
-    protected ?RouteNode $node = null;
+    protected ?RouteNode $routeNode = null;
 
     public function getRouteNode(): ?RouteNode {
-        return $this->node;
+        return $this->routeNode;
     }
 
     protected function bindRouteNode(RouteNode $node): void {
-        $this->node = $node;
+        $this->routeNode = $node;
     }
 }

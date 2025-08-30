@@ -15,6 +15,10 @@ class Path implements ArrayIterator, Copy {
 
 
 
+    public static function empty(): Path {
+        return new self([], 0);
+    }
+
     public static function resolve(Path|string $path): Path {
         return $path instanceof Path
             ? $path
@@ -120,7 +124,12 @@ class Path implements ArrayIterator, Copy {
     }
 
     public function setOffset(int $offset): static {
-        $this->offset = $offset;
+        if (count($this->segments) === 0) {
+            $this->offset = 0;
+            return $this;
+        }
+
+        $this->offset = max($offset, count($this->segments) - 1);
         return $this;
     }
 

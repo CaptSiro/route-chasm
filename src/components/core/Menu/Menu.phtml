@@ -1,41 +1,21 @@
-<?php /** @var Menu $this */
+<?php /** @var \components\core\Menu\Menu $this */
 
-use components\core\Icon;
-use components\core\Menu\Menu;
 use core\sideloader\Css;
 use core\sideloader\Javascript;
-use core\url\UrlGraph;
 
 Javascript::import($this->getResource('menu.js'));
 Css::import($this->getResource('menu.css'));
 
 ?>
-<?php if (!$this->isEmpty()): ?>
+<?php if ($this->item->hasChildren()): ?>
     <div
-        class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isExpanded ? '' : 'hide' ?>"
-        x-init="menu_init"
+        class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isRoot() ? '' : 'hide' ?>"
         style="--menu-level: <?= $this->level ?>"
     >
-        <?php foreach ($this->graph->getRoot() as $target => $v): ?>
-            <?php if ($target === UrlGraph::KEY_LEAF) continue; ?>
-            <?php $subMenu = $this->createSubMenu($target) ?>
-            <div
-                class="menu-item <?= $subMenu->getStateClasses() ?>"
-            >
-                <div class="head">
-                    <?= $subMenu->createItem($target) ?>
-                    <?php if (!$subMenu->isEmpty()): ?>
-                        <div class="dropdown-control">
-                            <div class="<?= $subMenu->isExpanded ? 'hide' : '' ?>" data-action="show">
-                                <?= Icon::nf('nf-fa-angle_right', '>') ?>
-                            </div>
-                            <div class="<?= $subMenu->isExpanded ? '' : 'hide' ?>" data-action="hide">
-                                <?= Icon::nf('nf-fa-angle_down', 'v') ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
+        <?php foreach ($this->item->getChildren() as $child): ?>
+            <?php $subMenu = $this->createSubMenu($child) ?>
+            <div class="menu-item <?= $subMenu->getStateClasses() ?>">
+                <?= $subMenu->createItem() ?>
                 <?= $subMenu ?>
             </div>
         <?php endforeach; ?>

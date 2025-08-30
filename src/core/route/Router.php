@@ -23,7 +23,17 @@ class Router {
 
 
 
-    public function use(Route|string $route, Action|Closure ...$actions): static {
+    public function getStructure(): RouteTree {
+        return $this->structure;
+    }
+
+    public function get(Route|string $route): Router {
+        return new static(
+            $this->structure->getSubTree(Route::resolve($route))
+        );
+    }
+
+    public function use(Route|string $route, Closure|Action ...$actions): static {
         $node = $this->structure->getNode(Route::resolve($route));
 
         foreach (Procedure::resolve($actions) as $action) {
@@ -37,7 +47,7 @@ class Router {
      * @param TreeVertex<RouteNode, ?> $destination
      * @return void
      */
-    protected function move(TreeVertex $destination): void {
+    private function move(TreeVertex $destination): void {
         $root = $this->structure->getRoot();
         foreach ($root->getEdges() as $edge) {
             // TreeVertex implements setting parent Edge in addEdge(Edge)
@@ -50,7 +60,10 @@ class Router {
         }
 
         $this->structure->setRoot($destination);
+        $this->onBind($destinationNode);
     }
+
+    protected function onBind(RouteNode $bindingPoint): void {}
 
     public function bind(Route|string $route, Router $router): static {
         $vertex = $this->structure->getVertex(Route::resolve($route));
@@ -76,20 +89,26 @@ class Router {
     }
 
     public function performActions(Path $path, Request $request, Response $response): void {
+        /** @var StrictStack<?> $parameters */
+        $parameters = $request->getParam();
         $traces = $this->find($path);
 
         foreach ($traces as $trace) {
-            /** @var StrictStack<?> $parameters */
-            $parameters = $request->getParam();
-
-            $i = $path->getOffset();
+            $index = -1;
+            $pathIndex = $path->getOffset();
+            $pop = 0;
             $vertexes = $trace->getVertexes();
             $last = array_key_last($vertexes);
 
             foreach ($vertexes as $key => $vertex) {
                 /** @var TreeVertex<RouteNode, RouteSegment> $vertex */
 
-                $request->set(Request::PATH_INDEX, $i);
+                $request->set(Request::PATH_INDEX, $pathIndex);
+                if (!is_null($segment = $vertex->getParentEdge()?->get())) {
+                    if ($segment->match($path->getSegment($index), $parameters)) {
+                        $pop++;
+                    }
+                }
 
                 foreach ($vertex->get()->getActions() as $action) {
                     if ($action->isMiddleware() || $last === $key) {
@@ -97,10 +116,13 @@ class Router {
                     }
                 }
 
-                $i++;
+                $pathIndex++;
+                $index++;
             }
 
-            $parameters->clear();
+            for ($j = 0; $j < $pop; $j++) {
+                $parameters->pop();
+            }
         }
     }
 

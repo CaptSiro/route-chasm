@@ -5,10 +5,11 @@ namespace core\route;
 use core\collections\dictionary\StrictStack;
 use core\Copy;
 use core\Flags;
+use core\Metadata;
 use core\utils\Regex;
 
 class RouteSegment implements Copy {
-    use Flags;
+    use Flags, Metadata;
 
     public const FLAG_IS_TERMINAL = 1;
 
@@ -23,8 +24,8 @@ class RouteSegment implements Copy {
 
 
     protected string $regex;
-    protected ?string $label;
-    protected ?string $icon;
+    protected ?string $label = null;
+    protected ?string $icon = null;
 
     public function __construct(
         protected string $source,
@@ -43,16 +44,23 @@ class RouteSegment implements Copy {
         return preg_match($this->regex, $literal);
     }
 
-    public function match(string $literal, StrictStack $parameters): void {
+    public function match(string $literal, StrictStack $parameters): bool {
         $groups = [];
 
-        if (preg_match($this->regex, $literal, $groups)) {
-            $parameters->push($groups);
+        if (!preg_match($this->regex, $literal, $groups)) {
+            return false;
         }
+
+        $parameters->push($groups);
+        return true;
     }
 
     public function getSource(): string {
         return $this->source;
+    }
+
+    public function setSource(string $source): void {
+        $this->source = $source;
     }
 
     public function getPattern(): string {

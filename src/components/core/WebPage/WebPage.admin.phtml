@@ -2,11 +2,11 @@
 
 use components\core\Admin\Home\AdminHome;
 use components\core\Admin\Login\AdminLogin;
-use components\core\Admin\Menu\AdminMenu;
 use components\core\Admin\Project\AdminProject;
 use components\core\Icon;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
+use core\admin\AdminRouter;
 use core\App;
 use core\sideloader\Css;
 
@@ -31,7 +31,7 @@ $request = App::getInstance()->getRequest();
     <nav>
         <div class="start">
             <?= new AdminProject() ?>
-            <?= AdminMenu::getInstance() ?>
+            <?= AdminRouter::getInstance()->getMenu() ?>
         </div>
 
         <div class="end">
@@ -54,12 +54,13 @@ $request = App::getInstance()->getRequest();
     </nav>
 
     <main>
-        <?php $crumbs = AdminHome::changeHomeLabel(AdminMenu::getInstance()->getBreadCrumbs()) ?>
-        <?php if (count($crumbs->getItems()) > 1): ?>
-            <section>
-                <?= $crumbs->render() ?>
-            </section>
-        <?php endif; ?>
+<!--    todo    -->
+<!--        --><?php //$crumbs = AdminHome::changeHomeLabel(AdminMenu::getInstance()->getBreadCrumbs()) ?>
+<!--        --><?php //if (count($crumbs->getItems()) > 1): ?>
+<!--            <section>-->
+<!--                --><?php //= $crumbs->render() ?>
+<!--            </section>-->
+<!--        --><?php //endif; ?>
 
         <?php foreach ($this->children as $child): ?>
             <?= $child->render() ?>

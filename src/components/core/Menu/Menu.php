@@ -2,66 +2,48 @@
 
 namespace components\core\Menu;
 
-use components\core\Menu\Item\MenuItem;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
 use core\route\Path;
-use core\translation\UrlPathTranslator;
-use core\url\UrlGraph;
-use core\view\Renderer;
-use core\view\View;
+use core\view\Component;
 
 /**
  * @template T
  */
-class Menu implements View, Attribute {
-    use Renderer, HtmlAttribute;
+class Menu extends Component implements Attribute {
+    use HtmlAttribute;
+
+
 
     protected int $level = 0;
     protected bool $isInset = true;
     protected bool $isExpanded = false;
+    /** @var Menu<T>|null  */
     protected ?Menu $root = null;
-    protected UrlPathTranslator $paths;
-    /** @var UrlGraph<T> $graph */
-    protected UrlGraph $graph;
     protected ?Path $selected = null;
 
-
-
+    /**
+     * @param MenuItem<T> $item
+     */
     public function __construct(
-        protected ?Path $path = null,
-        protected ?MenuItem $itemTemplate = null
+        protected MenuItem $item,
+        protected ?Path $path = null
     ) {
-        $this->paths = new UrlPathTranslator();
-        $this->graph = new UrlGraph(
-            $this->paths->getSegments()
-        );
-
-        $this->root = $this;
-
-        if (is_null($this->itemTemplate)) {
-            $this->itemTemplate = new MenuItem();
-        }
+        parent::__construct();
+        $this->root = null;
+        $this->path ??= Path::empty();
     }
 
 
-
-    public function getPath(): string {
-        return $this->path;
-    }
-
-    public function getRootMenu(): Menu {
-        return $this->root;
-    }
 
     public function getStateClasses(): string {
         $classes = '';
 
-        if ($this->hasItem()) {
+        if ($this->item->hasItem()) {
             $classes .= ' has-item';
         }
 
-        if (!$this->isEmpty()) {
+        if ($this->item->hasChildren()) {
             $classes .= ' has-sub-menu';
         }
 
@@ -75,6 +57,14 @@ class Menu implements View, Attribute {
     public function setSelected(?Path $selected): void {
         $this->selected = $selected;
         $this->selected->rewind();
+    }
+
+    public function getPath(): ?Path {
+        return $this->path;
+    }
+
+    public function setPath(?Path $path): void {
+        $this->path = $path;
     }
 
     public function setIsInset(bool $bool): static {
@@ -91,46 +81,8 @@ class Menu implements View, Attribute {
         return $this;
     }
 
-    /**
-     * @param Path $path
-     * @param T $item
-     * @return $this
-     */
-    public function add(Path $path, mixed $item): static {
-        $this->graph->add($path, $item);
-        return $this;
-    }
-
-    public function translatePathToTarget(string $path): array {
-        return $this->paths->getTarget($path);
-    }
-
-    public function getGraph(): UrlGraph {
-        return $this->graph;
-    }
-
-    public function isEmpty(): bool {
-        $keys = array_keys($this->graph->getRoot());
-        if (empty($keys)) {
-            return true;
-        }
-
-        if (count($keys) === 1 && $keys[0] === UrlGraph::KEY_LEAF) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function hasItem(): bool {
-        return $this->graph->hasItem();
-    }
-
-    /**
-     * @return T
-     */
-    public function getItem(): mixed {
-        return $this->graph->getRootItem();
+    public function isRoot(): bool {
+        return is_null($this->root);
     }
 
     public function isSelected(string $target): bool {
@@ -150,38 +102,18 @@ class Menu implements View, Attribute {
         return $this->selected->valid();
     }
 
-    public function createItem(string $target): MenuItem {
-        return $this->itemTemplate
-            ->setContext($this)
-            ->setPath($this->path)
-            ->setHasValue($this->hasItem())
-            ->setValue($this->getItem())
-            ->setLabel($this->paths->getSegments()->getSource($target));
+    public function createItem(): MenuItem {
+        return $this->item->setContext($this);
     }
 
-    public function createSubMenu(string $target): ?static {
-        $subGraph = $this->graph->getSubGraph($target);
-        if (is_null($subGraph)) {
-            return null;
-        }
+    public function createSubMenu(MenuItem $child): ?static {
+        $menu = new static($child);
 
-        $menu = is_null($this->path)
-            ? new static(
-                Path::from($target),
-                $this->itemTemplate
-            )
-            : new static(
-                Path::from(Path::join($this->path->toString(), $target)),
-                $this->itemTemplate
-            );
-
-        $menu->root = $this->root;
-
-        $menu->graph = $subGraph;
-        $menu->paths = $this->paths;
+        $menu->root = $this->root ?? $this;
         $menu->level = $this->level + 1;
+        $menu->path = Path::merge($this->path, $child->getMenuSegment());
 
-        if ($this->isSelected($target)) {
+        if ($this->isSelected($child->getLabel())) {
             $menu->selected = $this->selected;
             $this->selected = null;
 

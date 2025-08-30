@@ -1,9 +1,9 @@
 <?php
 
-namespace core;
+namespace core\admin;
 
 use components\core\Admin\Login\AdminLogin;
-use components\core\Admin\Menu\AdminMenu;
+use components\core\Menu\Menu;
 use components\core\Message\Message;
 use core\actions\Action;
 use core\actions\Procedure;
@@ -12,7 +12,9 @@ use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
 use core\route\Path;
+use core\route\RouteNode;
 use core\route\Router;
+use core\Singleton;
 
 /**
  * You may pass <code>Action</code> to <code>AdminRouter::getInstance</code> set as admin home page
@@ -29,10 +31,20 @@ class AdminRouter extends Router {
 
 
     protected ?Path $path = null;
+    protected Menu $menu;
 
-    public function __construct(?Action $home = null) {
+    public function __construct(
+        protected ?Action $home = null
+    ) {
         parent::__construct();
-        AdminMenu::load(App::getInstance()->getSource('admin-menu.php'));
+    }
+
+
+
+    protected function onBind(RouteNode $bindingPoint): void {
+        parent::onBind($bindingPoint);
+
+        $this->menu = \core\admin\AdminMenu::createMenu($this);
 
         $this->use('/',
             Procedure::middleware(function (Request $request) {
@@ -41,12 +53,11 @@ class AdminRouter extends Router {
             new AdminLogin(),
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
-                $home ?? new Procedure(fn() => new Message('Admin Home'))
+                $this->home ?? new Procedure(fn() => new Message('Admin Home'))
             ),
         );
 
         $this->use('/**',
-            AdminMenu::getInstance(),
             fn(Request $request, Response $response) => $response->sendMessage(
                 'Not found',
                 HttpCode::CE_NOT_FOUND
@@ -54,13 +65,15 @@ class AdminRouter extends Router {
         );
     }
 
-
-
     public function getPath(): Path {
         if (is_null($this->path)) {
             $this->path = $this->getRoute()->toStaticPath();
         }
 
         return $this->path;
+    }
+
+    public function getMenu(): Menu {
+        return $this->menu;
     }
 }

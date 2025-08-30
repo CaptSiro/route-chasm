@@ -61,6 +61,10 @@ class Procedure implements Action {
     }
 
     public function perform(Request $request, Response $response): void {
-        ($this->closure)($request, $response);
+        $ret = ($this->closure)($request, $response);
+
+        if ($ret instanceof Action) {
+            $ret->perform($request, $response);
+        }
     }
 }

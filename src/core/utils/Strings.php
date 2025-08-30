@@ -4,6 +4,7 @@ namespace core\utils;
 
 use core\Init;
 use core\patterns\Charset;
+use Transliterator;
 
 class Strings extends Init {
     protected static string $charsAlpha;
@@ -159,8 +160,24 @@ class Strings extends Init {
         return $number * (1024 ** $exponent);
     }
 
-    public static function urlPathSegment(string $segment): string {
-        return str_replace(' ', '-', strtolower($segment));
+    public static function identifier(string $unsafe): ?string {
+        if ($unsafe === "") {
+            return "";
+        }
+
+        $transliterator = Transliterator::create('Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC');
+
+        $ascii = $transliterator
+            ? $transliterator->transliterate($unsafe)
+            : $unsafe;
+
+        $slug = preg_replace('~[^A-Za-z0-9]+~', '-', $ascii);
+        $slug = trim($slug, '-');
+        $slug = strtolower($slug);
+
+        return $slug !== ''
+            ? $slug
+            : null;
     }
 
     public static function asHumanReadableBoolean(string $string): bool {

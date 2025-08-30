@@ -2,7 +2,7 @@
 
 namespace components\core\WebPage;
 
-use core\AdminRouter;
+use core\admin\AdminRouter;
 use core\App;
 
 class ContextAwareWebPage extends WebPage {

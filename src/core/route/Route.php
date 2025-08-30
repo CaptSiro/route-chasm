@@ -7,12 +7,19 @@ use core\collections\iterator\ArrayIterator;
 use core\collections\iterator\ArrayIteratorTrait;
 use core\Copy;
 use core\utils\Arrays;
+use core\utils\Strings;
 
 /**
- * @template-implements ArrayIterator<int, string>
+ * @template-implements ArrayIterator<int, RouteSegment>
  */
 class Route implements ArrayIterator, Copy {
     use ArrayIteratorTrait;
+
+
+
+    public const MENU_ROUTE = "menu-route";
+
+
 
     /**
      * @param string $route
@@ -24,24 +31,6 @@ class Route implements ArrayIterator, Copy {
             ->getRouteCompiler();
 
         return $compiler->parse($route, $parameters);
-    }
-
-    public static function format(string $route, array $parameters = []): Path {
-        if (empty($parameters)) {
-            return Path::from($route);
-        }
-
-        $compiler = App::getInstance()
-            ->getRouteCompiler();
-
-        return $compiler->format($route, $parameters);
-    }
-
-    public static function isDynamic(string $route): bool {
-        $compiler = App::getInstance()
-            ->getRouteCompiler();
-
-        return $compiler->isDynamic($route);
     }
 
     /**
@@ -60,6 +49,43 @@ class Route implements ArrayIterator, Copy {
         }
 
         return self::from($route);
+    }
+
+    public static function menu(string $labeledRoute): Route {
+        $labels = Arrays::explode('/', $labeledRoute);
+        $route = Route::from(implode(
+            '/',
+            array_map(fn($x) => Strings::identifier($x), $labels)
+        ));
+
+        foreach ($route->getSegments() as $i => $segment) {
+            $segment->setLabel($labels[$i]);
+            $segment->setMetadata(self::MENU_ROUTE, true);
+        }
+
+        return $route;
+    }
+
+    public static function isMenu(RouteSegment $segment): bool {
+        return $segment->getMetadata(self::MENU_ROUTE) ?? false;
+    }
+
+    public static function format(string $route, array $parameters = []): Path {
+        if (empty($parameters)) {
+            return Path::from($route);
+        }
+
+        $compiler = App::getInstance()
+            ->getRouteCompiler();
+
+        return $compiler->format($route, $parameters);
+    }
+
+    public static function isDynamic(string $route): bool {
+        $compiler = App::getInstance()
+            ->getRouteCompiler();
+
+        return $compiler->isDynamic($route);
     }
 
 
@@ -85,7 +111,7 @@ class Route implements ArrayIterator, Copy {
 
     public function get(string $segment): ?RouteSegment {
         foreach ($this->segments as $x) {
-            if ($x->getSource() === $segment) {
+            if ($x->getLabel() === $segment || $x->getSource() === $segment) {
                 return $x;
             }
         }

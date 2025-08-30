@@ -7,7 +7,7 @@ use components\layout\Accordion\Accordion;
 use components\layout\Tabs\Tabs;
 use core\actions\Assets\Assets;
 use core\actions\Assets\policy\ShowExplorerPolicy;
-use core\AdminRouter;
+use core\admin\AdminRouter;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;

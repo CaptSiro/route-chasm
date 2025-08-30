@@ -163,6 +163,13 @@ class RouteTree implements Graph {
         return $this->routeExtend->trace($this->root, $route);
     }
 
+    public function getSubTree(Route $route): RouteTree {
+        return new static(
+            $this->getVertex($route),
+            $this->routeExtend
+        );
+    }
+
 
 
     // Graph<RouteNode, RouteSegment>

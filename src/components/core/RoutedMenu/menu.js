@@ -18,6 +18,7 @@ function menu_init(element) {
 
             if (event.target.closest('.dropdown-control') !== null) {
                 event.stopImmediatePropagation();
+                event.preventDefault();
             }
         });
     }
@@ -29,6 +30,10 @@ function menu_init(element) {
         }
 
         item.addEventListener('click', event => {
+            if (event.target.closest('.dropdown-control') !== null) {
+                return;
+            }
+
             event.stopImmediatePropagation();
             a.click();
         });

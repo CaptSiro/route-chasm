@@ -2,7 +2,6 @@
 
 namespace components\core\Admin\Nexus;
 
-use components\core\Admin\Menu\AdminMenu;
 use components\core\Message\Message;
 use components\core\WebPage\AdminWebPage;
 use components\layout\Grid\description\GridDescription;
@@ -86,8 +85,8 @@ class AdminNexus extends ContainerContent {
 
     public function getTitle(): string {
         if (is_null($this->title)) {
-            $segments = AdminMenu::getInstance()->getRequestPathSource()->getSegments();
-            return array_pop($segments);
+            $segment = $this->routeNode->getSegment();
+            return $segment->getLabel() ?? $segment->getSource();
         }
 
         return $this->title;
@@ -105,10 +104,12 @@ class AdminNexus extends ContainerContent {
 
         $router->use(
             Route::from('/update/[id]'),
-            fn(Request $request, Response $response) => $this->editor
-                ->setModel($factory->fromId(
-                    $request->getParam()->get('id')
-                ))
+            function (Request $request, Response $response) use ($factory) {
+                $id = $request->getParam()->get('id');
+
+                return $this->editor
+                    ->setModel($factory->fromId($id));
+            }
         );
 
         $router->use(

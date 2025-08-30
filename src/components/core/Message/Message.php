@@ -2,14 +2,19 @@
 
 namespace components\core\Message;
 
+use core\actions\Action;
+use core\actions\ActionBindRouteNode;
 use core\communication\Format;
+use core\communication\Request;
+use core\communication\Response;
+use core\route\RouteNode;
 use core\view\Formatter;
 use core\view\Renderer;
 use core\view\View;
 use JsonSerializable;
 
-class Message implements View, JsonSerializable {
-    use Renderer;
+class Message implements Action, View, JsonSerializable {
+    use Renderer, ActionBindRouteNode;
 
 
 
@@ -34,5 +39,29 @@ class Message implements View, JsonSerializable {
 
     public function render(): string {
         return $this->formatter->render();
+    }
+
+
+
+    // Action
+    public function isMiddleware(): bool {
+        return false;
+    }
+
+    public function getActorName(): string {
+        if (strlen($this->message <= 16)) {
+            return "Message($this->message)";
+        }
+
+        $sub = substr($this->message, 0, 16);
+        return "Message($sub...)";
+    }
+
+    public function onBind(RouteNode $bindingPoint): void {
+        $this->bindRouteNode($bindingPoint);
+    }
+
+    public function perform(Request $request, Response $response): void {
+        $response->render($this);
     }
 }
