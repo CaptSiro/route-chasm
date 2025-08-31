@@ -26,8 +26,6 @@ use models\extensions\Editable\EditableExtension;
 #[Table('core_group')]
 #[Database(App::DATABASE)]
 class Group extends Model implements Editable {
-    use EditableExtension;
-
     public const DEFAULT = 'Default';
     public const ADMIN = 'Admin';
     public const ROOT = 'Root';
@@ -40,6 +38,8 @@ class Group extends Model implements Editable {
     }
 
 
+
+    use EditableExtension;
 
     #[Column('id_group', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;

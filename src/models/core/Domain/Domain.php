@@ -34,8 +34,6 @@ use models\extensions\Enable\EnableExtension;
 #[Table('core_domain')]
 #[Database(App::DATABASE)]
 class Domain extends Model implements Enable {
-    use EnableExtension;
-
     public static function getGridDescription(): GridDescription {
         $columns = [];
 
@@ -84,6 +82,8 @@ class Domain extends Model implements Enable {
     }
 
 
+
+    use EnableExtension;
 
     #[Column('id_domain', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;

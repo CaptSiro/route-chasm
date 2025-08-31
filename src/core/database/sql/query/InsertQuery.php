@@ -4,6 +4,7 @@ namespace core\database\sql\query;
 
 use core\database\sql\Connection;
 use core\database\sql\Driver;
+use core\database\sql\SideEffect;
 use Exception;
 
 class InsertQuery implements SqlQuery {
@@ -55,7 +56,14 @@ class InsertQuery implements SqlQuery {
     public function empty(): bool {
         return empty($this->values);
     }
+    
+    public function run(Connection $connection): SideEffect {
+        return $connection->run($this->toQuery($connection));
+    }
 
+
+
+    // SqlQuery
     public function toQuery(Connection $connection): Query {
         if (empty($this->columns)) {
             throw new Exception("Cannot insert record without specifying columns");

@@ -100,10 +100,7 @@ class ModelFactory {
         }
 
         $sql->limit(1);
-
-        $record = $description
-            ->connection
-            ->fetch($sql->toQuery($description->connection));
+        $record = $sql->fetch($description->connection);
 
         return $this->fromRecord($record);
     }
@@ -134,9 +131,7 @@ class ModelFactory {
         }
 
         return self::fromRecords(
-            $description
-                ->connection
-                ->fetchAll($sql->toQuery($description->connection))
+            $sql->fetchAll($description->connection)
         );
     }
 }

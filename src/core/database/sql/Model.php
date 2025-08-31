@@ -176,10 +176,8 @@ class Model implements JsonSerializable, Identifier {
 
         $sql->columns($columns);
         $sql->value($record);
-        $sideEffect = $description
-            ->connection
-            ->run($sql->toQuery($description->connection));
 
+        $sideEffect = $sql->run($description->connection);
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
@@ -222,10 +220,7 @@ class Model implements JsonSerializable, Identifier {
             [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
         ));
 
-        $sideEffect = $description
-            ->connection
-            ->run($sql->toQuery($description->connection));
-
+        $sideEffect = $sql->run($description->connection);
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
@@ -244,10 +239,7 @@ class Model implements JsonSerializable, Identifier {
             ))
             ->limit(1);
 
-        $sideEffect = $description
-            ->connection
-            ->run($sql->toQuery($description->connection));
-
+        $sideEffect = $sql->run($description->connection);
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }

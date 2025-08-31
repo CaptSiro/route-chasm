@@ -27,8 +27,6 @@ use models\extensions\Editable\EditableExtension;
 #[Table('core_setting')]
 #[Database(App::DATABASE)]
 final class Setting extends Model implements Editable {
-    use EditableExtension;
-
     /**
      * Returns setting that saved under given name. Use <code>create: true</code> and <code>default: <value></code> to
      * create default setting if it is not present
@@ -55,6 +53,8 @@ final class Setting extends Model implements Editable {
     }
 
 
+
+    use EditableExtension;
 
     #[Column('id_setting', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;

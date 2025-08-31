@@ -5,6 +5,7 @@ namespace core\database\sql\query;
 use core\database\sql\Connection;
 use core\database\sql\query\clause\Limit;
 use core\database\sql\query\clause\Where;
+use core\database\sql\SideEffect;
 use core\utils\Arrays;
 use Exception;
 
@@ -19,6 +20,13 @@ class DeleteQuery implements SqlQuery {
 
 
 
+    public function run(Connection $connection): SideEffect {
+        return $connection->run($this->toQuery($connection));
+    }
+
+
+
+    // SqlQuery
     public function toQuery(Connection $connection): Query {
         if (empty($this->where)) {
             throw new Exception("DELETE query without WHERE clause is dangerous. Add WHERE clause and preferably LIMIT clause too");

@@ -4,6 +4,7 @@ namespace core\database\sql\query;
 
 use core\database\sql\Connection;
 use core\database\sql\query\clause\Where;
+use core\database\sql\SideEffect;
 use core\utils\Arrays;
 use Exception;
 
@@ -28,7 +29,13 @@ class UpdateQuery implements SqlQuery {
         return $this;
     }
 
+    public function run(Connection $connection): SideEffect {
+        return $connection->run($this->toQuery($connection));
+    }
 
+
+
+    // SqlQuery
     public function toQuery(Connection $connection): Query {
         if (empty($this->set)) {
             throw new Exception("Nothing to update in SET clause");

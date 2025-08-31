@@ -139,11 +139,9 @@ class User extends Model {
 
         $group->projection($sql);
 
-        $records = $group->connection->fetchAll(
-            $sql->toQuery($group->connection)
+        return $this->groups = Group::fromRecords(
+            $sql->fetchAll($group->connection)
         );
-
-        return $this->groups = Group::fromRecords($records);
     }
 
     public function inGroup(Group $group): bool {
@@ -158,22 +156,15 @@ class User extends Model {
                 [$group->id, $this->id]
             ));
 
-        return !is_null($connection->fetch(
-            $sql->toQuery($connection))
-        );
+        return !is_null($sql->fetch($connection));
     }
 
     public function leaveAllGroups(): SideEffect {
-        $connection = static::getDescription()->connection;
-        $driver = $connection->getDriver();
         $ug = self::TABLE_USERS_X_GROUPS;
 
-        $sql = Sql::delete(self::TABLE_USERS_X_GROUPS)
-            ->where(
-                Query::infer("$ug.id_user = ?", [$this->id])
-            );
-
-        return $connection->run($sql->toQuery($connection));
+        return Sql::delete(self::TABLE_USERS_X_GROUPS)
+            ->where(Query::infer("$ug.id_user = ?", [$this->id]))
+            ->run(static::getDescription()->connection);
     }
 
     /**
@@ -225,7 +216,7 @@ class User extends Model {
             return DatabaseAction::NONE;
         }
 
-        $sideEffect = $connection->run($sql->toQuery($connection));
+        $sideEffect = $sql->run($connection);
 
         return $sideEffect->rowsAffected > 0
             ? DatabaseAction::INSERT
@@ -259,8 +250,6 @@ class User extends Model {
                 )
             );
 
-        return !is_null($connection->fetch(
-            $sql->toQuery($connection)
-        ));
+        return !is_null($sql->fetch($connection));
     }
 }

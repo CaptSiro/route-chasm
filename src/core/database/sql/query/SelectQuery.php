@@ -57,8 +57,17 @@ class SelectQuery implements Portion, SqlQuery {
         return $this->join($table, $condition, JoinClause::TYPE_RIGHT);
     }
 
+    public function fetch(Connection $connection): ?array {
+        return $connection->fetch($this->toQuery($connection));
+    }
+
+    public function fetchAll(Connection $connection): array {
+        return $connection->fetchAll($this->toQuery($connection));
+    }
 
 
+
+    // SqlQuery
     public function toQuery(Connection $connection): Query {
         if (!empty($this->where)) {
             $this->setParameterAccess(Query::getParameterAccess(
