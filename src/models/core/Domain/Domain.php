@@ -17,6 +17,7 @@ use core\forms\description\TextField;
 use core\guards\Guard;
 use core\guards\NumberGuard;
 use core\route\Path;
+use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\view\View;
 use models\extensions\Enable\Enable;
@@ -49,7 +50,7 @@ class Domain extends Model implements Enable {
 
     public static function fromEnv(): static {
         $url = Url::from(
-            App::getEnvStatic()->getOrDie("DOMAIN_URL")
+            App::getEnvStatic()->getOrDie(RouteChasmEnvironment::DOMAIN_URL)
         );
 
         $domain = new static();

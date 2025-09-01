@@ -17,6 +17,7 @@ use core\forms\Form;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\view\ContainerContent;
 use core\view\View;
@@ -24,7 +25,6 @@ use models\core\Setting\Setting;
 use models\core\User\User;
 
 class AdminLogin extends ContainerContent {
-    public const PASSWORD = 'ADMIN_LOGIN_PASSWORD';
     public const QUERY_LOGOUT = '__logout';
     public const SETTING_NAME_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
 
@@ -149,7 +149,7 @@ class AdminLogin extends ContainerContent {
                         $response->renderRoot(new Message('.env password method is not allowed'));
                     }
 
-                    if (App::getInstance()->getEnv()->get(self::PASSWORD) !== $password) {
+                    if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ADMIN_LOGIN_PASSWORD) !== $password) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
                         $response->renderRoot(new Message('The password is wrong'));
                     }

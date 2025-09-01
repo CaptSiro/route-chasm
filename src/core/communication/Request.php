@@ -8,9 +8,13 @@ use core\collections\dictionary\StrictMap;
 use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
+use core\locale\Locale;
+use core\locale\LocaleSelector;
+use core\locale\selectors\AcceptLanguageSelector;
 use core\route\Path;
 use core\url\Url;
 use models\core\Domain\Domain;
+use models\core\Language\Language;
 
 class Request {
     public const PATH_INDEX = '__path_index';
@@ -59,6 +63,8 @@ class Request {
 
 
 
+    protected LocaleSelector $localeSelector;
+    protected ?Locale $locale;
     private bool $isBodyParsed = false;
 
 
@@ -69,6 +75,7 @@ class Request {
         readonly protected Url $url,
         readonly protected StrictDictionary $cookies,
     ) {
+        $this->localeSelector = new AcceptLanguageSelector();
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
         $this->param = new StrictStack();
@@ -123,6 +130,25 @@ class Request {
 
     public function getDomain(): Domain {
         return $this->domain;
+    }
+
+    public function setLocaleSelector(LocaleSelector $localeSelector): void {
+        $this->localeSelector = $localeSelector;
+    }
+
+    public function getLocale(): Locale {
+        if (isset($this->locale)) {
+            return $this->locale;
+        }
+
+        $selected = $this->localeSelector->select($this);
+        if (!is_null($selected)) {
+            $language = Language::fromCode($selected) ?? Language::getDefault() ?? Language::fromEnv();
+            return $this->locale = $language->getLocale();
+        }
+
+        $language = Language::getDefault() ?? Language::fromEnv();
+        return $this->locale = $language->getLocale();
     }
 
     public function getHeaders(): ?array {

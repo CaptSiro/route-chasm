@@ -4,6 +4,7 @@ namespace components\core\WebPage;
 
 use components\core\HtmlHead\HtmlHead;
 use core\App;
+use core\RouteChasmEnvironment;
 use core\view\ArrayContainer;
 use core\view\Component;
 use core\view\Container;
@@ -22,7 +23,7 @@ class WebPage extends Component implements Container {
 
         // todo
         // get from request... (preference, domain, ...)
-        $this->language ??= $env?->get("WEB_LANGUAGE") ?? "en";
+        $this->language ??= $env?->get(RouteChasmEnvironment::LANGUAGE) ?? "en";
         $this->head ??= new HtmlHead();
 
         $this->setTemplate(

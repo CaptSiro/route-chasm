@@ -8,6 +8,7 @@ use core\http\HttpCode;
 use core\route\compiler\RouteCompiler;
 use core\route\compiler\RouteCompilerConfig;
 use core\route\Path;
+use core\RouteChasmEnvironment;
 use core\utils\Strings;
 use dotenv\Env;
 
@@ -55,12 +56,12 @@ class EnvConfig implements Config {
 
     public function getSqlConfig(): SqlConfig {
         return new SqlConfig(
-            $this->getOrDie("DATABASE_HOST"),
-            $this->getOrDie("DATABASE_NAME"),
-            $this->getOrDie("DATABASE_USER"),
-            $this->getOrDie("DATABASE_PASSWORD"),
-            $this->env->get("DATABASE_PORT") ?? "3306",
-            $this->env->get("DATABASE_CHARSET") ?? "UTF8",
+            $this->getOrDie(RouteChasmEnvironment::DATABASE_HOST),
+            $this->getOrDie(RouteChasmEnvironment::DATABASE_NAME),
+            $this->getOrDie(RouteChasmEnvironment::DATABASE_USER),
+            $this->getOrDie(RouteChasmEnvironment::DATABASE_PASSWORD),
+            $this->env->get(RouteChasmEnvironment::DATABASE_PORT) ?? "3306",
+            $this->env->get(RouteChasmEnvironment::DATABASE_CHARSET) ?? "UTF8",
         );
     }
 

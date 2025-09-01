@@ -18,6 +18,7 @@ use core\communication\ResponseFormat;
 use core\configs\AppConfig;
 use core\configs\Config;
 use core\http\HttpCode;
+use core\locale\Locale;
 use core\module\Loader;
 use core\module\Module;
 use core\route\compiler\RouteCompiler;
@@ -26,6 +27,7 @@ use core\route\Router;
 use core\url\Url;
 use dotenv\Env;
 use models\core\ModuleRecord;
+use ReflectionClass;
 
 class App implements Loader {
     private static ?self $instance = null;
@@ -34,6 +36,7 @@ class App implements Loader {
         if (is_null(self::$instance)) {
             self::$instance = new self();
             self::$instance->requireDefaultModules();
+            self::$instance->loadLocales();
         }
 
         return self::$instance;
@@ -49,10 +52,6 @@ class App implements Loader {
 
 
     public const DATABASE = "app";
-    public const ENV = __DIR__ ."/../../.env";
-    public const PROJECT = 'PROJECT';
-    public const PROJECT_AUTHOR = 'PROJECT_AUTHOR';
-    public const PROJECT_AUTHOR_LINK = 'PROJECT_AUTHOR_LINK';
 
     public const KEY_LOGGED_IN_USER = 'user';
 
@@ -88,6 +87,7 @@ class App implements Loader {
     protected array $listeners;
     protected bool $defaultModulesLoaded;
     protected array $modules;
+    protected array $locales = [];
     protected array $loaded = [];
     protected ?string $home;
 
@@ -155,6 +155,30 @@ class App implements Loader {
         exit;
     }
 
+    /**
+     * @return array<string, Locale>
+     */
+    public function getLocales(): array {
+        return $this->locales;
+    }
+
+    public function addLocale(Locale $locale): void {
+        $this->locales[] = $locale;
+    }
+
+    protected function loadLocales(): void {
+        foreach (glob(__DIR__. '/../modules/locales/*.php') as $locale) {
+            [$class, $_] = explode('.', basename($locale), 2);
+            $reflection = new ReflectionClass("\\modules\\locales\\$class");
+
+            if ($reflection->isSubclassOf(Locale::class) && !$reflection->isAbstract()) {
+                /** @var Locale $instance */
+                $instance = $reflection->newInstance();
+                $this->locales[$instance->getIdentifier()] = $instance;
+            }
+        }
+    }
+
     public function getOptions(): Map {
         return $this->options;
     }
@@ -172,15 +196,15 @@ class App implements Loader {
     }
 
     public function getProjectName(): ?string {
-        return $this->env->get(self::PROJECT);
+        return $this->env->get(RouteChasmEnvironment::PROJECT);
     }
 
     public function getProjectAuthor(): ?string {
-        return $this->env->get(self::PROJECT_AUTHOR);
+        return $this->env->get(RouteChasmEnvironment::PROJECT_AUTHOR);
     }
 
     public function getProjectAuthorLink(): ?string {
-        return $this->env->get(self::PROJECT_AUTHOR_LINK);
+        return $this->env->get(RouteChasmEnvironment::PROJECT_AUTHOR_LINK);
     }
 
     public function getSource(string $resource): string {
@@ -212,8 +236,8 @@ class App implements Loader {
     }
 
     public static function getEnvStatic(): ?Env {
-        return file_exists(self::ENV)
-            ? Env::fromFile(self::ENV)
+        return file_exists(RouteChasmEnvironment::ENV_FILE)
+            ? Env::fromFile(RouteChasmEnvironment::ENV_FILE)
             : null;
     }
 
