@@ -1,8 +1,17 @@
 DROP TABLE IF EXISTS core_module;
 CREATE TABLE IF NOT EXISTS core_module (
-    `identifier` VARCHAR(255) NOT NULL ,
-    `version` VARCHAR(255) NOT NULL ,
+    `identifier` VARCHAR(255) NOT NULL,
+    `version` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`identifier`)
+) ENGINE = InnoDB;
+
+
+
+DROP TABLE IF EXISTS core_language;
+CREATE TABLE IF NOT EXISTS core_language (
+    `code` VARCHAR(16) NOT NULL,
+    `is_default` TINYINT(1) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`code`)
 ) ENGINE = InnoDB;
 
 
