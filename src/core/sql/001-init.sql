@@ -9,9 +9,11 @@ CREATE TABLE IF NOT EXISTS core_module (
 
 DROP TABLE IF EXISTS core_language;
 CREATE TABLE IF NOT EXISTS core_language (
+    `id_language` INT NOT NULL AUTO_INCREMENT,
     `code` VARCHAR(16) NOT NULL,
     `is_default` TINYINT(1) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`code`)
+    PRIMARY KEY (`id_language`),
+    UNIQUE (`code`)
 ) ENGINE = InnoDB;
 
 

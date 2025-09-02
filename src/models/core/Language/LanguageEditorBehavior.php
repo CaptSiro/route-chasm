@@ -42,6 +42,7 @@ class LanguageEditorBehavior implements EditorBehavior {
         }
 
         $form->add(new Select(self::NAME_CODE, "Locale", $values));
+        return null;
     }
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {

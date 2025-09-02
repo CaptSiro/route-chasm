@@ -58,8 +58,11 @@ class Language extends Model implements IsDefault {
 
     use IsDefaultExtension;
 
+    #[Column('id_language', type: Column::TYPE_INTEGER, primaryKey: true)]
+    protected int $id;
+
     #[GridColumn]
-    #[Column(type: Column::TYPE_STRING, primaryKey: true)]
+    #[Column(type: Column::TYPE_STRING)]
     protected string $code;
 
 
