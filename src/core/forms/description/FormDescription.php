@@ -57,7 +57,7 @@ class FormDescription implements EditorBehavior {
 
 
 
-    public function initForm(Form $form, ?Model $model): void {
+    public function initForm(Form $form, ?Model $model): ?View {
         $data = $model?->getData() ?? [];
 
         foreach ($this->controls as $property => $control) {
@@ -65,6 +65,8 @@ class FormDescription implements EditorBehavior {
             $view->setValue($data[$property] ?? '');
             $form->add($view);
         }
+
+        return null;
     }
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {

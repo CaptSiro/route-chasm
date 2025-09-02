@@ -9,11 +9,13 @@ use core\Identifier;
 class NexusProxy extends TypeProxy {
     protected AdminNexus $context;
     protected bool $isItemIdentifier = false;
+    protected bool $isNexusProxyItem = false;
 
 
 
     public function setItem(mixed $item): void {
         $this->isItemIdentifier = $item instanceof Identifier;
+        $this->isNexusProxyItem = $item instanceof NexusProxyItem;
         parent::setItem($item);
     }
 
@@ -39,12 +41,20 @@ class NexusProxy extends TypeProxy {
     }
 
     protected function getEditValue(): string {
+        if ($this->isNexusProxyItem && !$this->item->isEditable()) {
+            return '';
+        }
+
         $url = $this->context->getUpdateLink((string) $this->item->getId());
         $content = Icon::nf('nf-oct-pencil', 'Edit');
         return "<a href='$url' class='link no-style'>$content</a>";
     }
 
     protected function getDeleteValue(): string {
+        if ($this->isNexusProxyItem && !$this->item->isDeletable()) {
+            return '';
+        }
+
         $url = $this->context->getDeleteLink((string) $this->item->getId());
         $content = Icon::nf('nf-oct-trash', 'Delete');
         return "<button class='link no-style' x-init='nexus_deleteButton' data-url='$url'>$content</button>";

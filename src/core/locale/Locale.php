@@ -10,6 +10,14 @@ abstract class Locale {
             ->addLocale(new static());
     }
 
+
+
+    public function __toString(): string {
+        return $this->getIdentifier();
+    }
+
+
+
     abstract public function getIdentifier(): string;
 
     abstract public function getName(): string;

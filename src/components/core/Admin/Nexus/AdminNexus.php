@@ -34,7 +34,8 @@ class AdminNexus extends ContainerContent {
         protected ModelDescription $modelDescription,
         protected Editor $editor,
         protected GridDescription $gridDescription,
-        protected ?string $title = null
+        protected ?string $title = null,
+        protected string $createButtonLabel = 'Create'
     ) {
         parent::__construct($this->page = new AdminWebPage());
         $this->editor->setContext($this);

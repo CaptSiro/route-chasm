@@ -67,7 +67,9 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             $modelDescription->idColumn->alias
         ));
 
-        $this->behaviour->initForm($form, $this->model);
+        if (!is_null($error = $this->behaviour->initForm($form, $this->model))) {
+            return $error;
+        }
 
         $submitLabel = $this->getState() === self::STATE_CREATOR
             ? 'Create'

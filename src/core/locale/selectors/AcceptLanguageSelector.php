@@ -27,7 +27,7 @@ class AcceptLanguageSelector implements LocaleSelector {
             // lang-range: "*" or token subtags joined by "-"
             // qvalue: 0..1 with up to 3 decimals (loosely validated)
             if (!preg_match(
-                '/^(?<tag>\*|[A-Za-z0-9]{1,8}(?:-[A-Za-z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(?<q>(?:0(?:\.\d{1,3})?|1(?:\.0{1,3})?)))?$/',
+                '/^(?<tag>\*|[A-Za-z0-9]{1,8}(?:-[A-Za-z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(?<q>0(?:\.\d{1,3})?|1(?:\.0{1,3})?))?$/',
                 $part,
                 $matches
             )) {

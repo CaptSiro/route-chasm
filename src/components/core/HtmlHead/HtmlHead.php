@@ -4,6 +4,7 @@ namespace components\core\HtmlHead;
 
 use components\core\WebPage\Head;
 use core\App;
+use core\RouteChasmEnvironment;
 use core\view\Component;
 
 class HtmlHead extends Component implements Head {
@@ -20,7 +21,7 @@ class HtmlHead extends Component implements Head {
 
         $env = App::getInstance()->getEnv();
         if (!is_null($env)) {
-            $this->addMeta("author", $env->get(App::PROJECT_AUTHOR));
+            $this->addMeta("author", $env->get(RouteChasmEnvironment::PROJECT_AUTHOR));
         }
     }
 

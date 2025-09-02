@@ -23,7 +23,7 @@ class WebPage extends Component implements Container {
 
         // todo
         // get from request... (preference, domain, ...)
-        $this->language ??= $env?->get(RouteChasmEnvironment::LANGUAGE) ?? "en";
+        $this->language ??= App::getInstance()->getRequest()->getLocale()->getIdentifier();
         $this->head ??= new HtmlHead();
 
         $this->setTemplate(

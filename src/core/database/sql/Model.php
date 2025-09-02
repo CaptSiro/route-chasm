@@ -2,13 +2,14 @@
 
 namespace core\database\sql;
 
+use components\core\Admin\Nexus\NexusProxyItem;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\Identifier;
 use core\view\View;
 use JsonSerializable;
 
-class Model implements JsonSerializable, Identifier {
+class Model implements JsonSerializable, Identifier, NexusProxyItem {
     public static function get(?Model $model, string $property, mixed $or = null): mixed {
         if (is_null($model)) {
             return $or;
@@ -155,6 +156,14 @@ class Model implements JsonSerializable, Identifier {
 
     public function isSavable(): bool {
         return $this->origin !== Origin::UNKNOWN;
+    }
+
+    public function isEditable(): bool {
+        return true;
+    }
+
+    public function isDeletable(): bool {
+        return true;
     }
 
     private function insert(): DatabaseAction|View {

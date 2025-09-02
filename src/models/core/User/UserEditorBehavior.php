@@ -15,26 +15,23 @@ use core\forms\controls\PasswordField\PasswordField;
 use core\forms\controls\TextField;
 use core\forms\Form;
 use core\forms\layout\Column\Column;
+use core\utils\Components;
 use core\view\View;
 use models\core\Group\Group;
 
 class UserEditorBehavior implements EditorBehavior {
+    use Editor\GetEditor;
+
     public const NAME_TAG = 'tag';
     public const NAME_USERNAME = 'username';
     public const NAME_PASSWORD = 'password';
     public const NAME_GROUPS = 'groups';
 
-    public static function getEditor(): Editor {
-        return new Editor\AdminNexusEditor(
-            new static()
-        );
-    }
 
 
-
-    public function initForm(Form $form, ?Model $model): void {
+    public function initForm(Form $form, ?Model $model): ?View {
         if (!is_null($model) && !($model instanceof User)) {
-            return;
+            return new Message("Provided resource is not User");
         }
 
         /** @var User|null $model */
@@ -77,6 +74,8 @@ class UserEditorBehavior implements EditorBehavior {
         $column->add(new MultiSelect(self::NAME_GROUPS, 'Groups', $groups, $userGroups));
 
         $form->add(new Accordion('RouteChasm user profile', $column));
+
+        return null;
     }
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
@@ -122,10 +121,6 @@ class UserEditorBehavior implements EditorBehavior {
 
         $model->assignIds($groups);
 
-        if ($error instanceof View) {
-            return $error;
-        }
-
-        return null;
+        return Components::nullifyDatabaseAction($error);
     }
 }

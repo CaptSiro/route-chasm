@@ -15,6 +15,8 @@ use core\route\Route;
 use core\route\Router;
 use models\core\Domain\Domain;
 use models\core\Group\Group;
+use models\core\Language\Language;
+use models\core\Language\LanguageEditorBehavior;
 use models\core\Resource;
 use models\core\Setting\Setting;
 use models\core\User\User;
@@ -31,6 +33,17 @@ class AdminMenu {
                     ModelDescription::extract(Domain::class),
                     FormDescription::getEditor(Domain::class),
                     Domain::getGridDescription()
+                )
+            )
+
+            ->use(
+                Route::menu("/Languages")
+                    ->icon("Languages", Icon::nf("nf-fa-language")),
+                new AdminNexus(
+                    ModelDescription::extract(Language::class),
+                    LanguageEditorBehavior::getEditor(),
+                    Language::getGridDescription(),
+                    createButtonLabel: 'Add'
                 )
             )
 

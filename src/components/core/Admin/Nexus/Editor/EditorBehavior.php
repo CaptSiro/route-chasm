@@ -11,8 +11,9 @@ interface EditorBehavior {
     /**
      * @param Form $form The form to configure
      * @param Model|null $model The updating model (null on creation)
+     * @return ?View Return View to render on error, null on success
      */
-    public function initForm(Form $form, ?Model $model): void;
+    public function initForm(Form $form, ?Model $model): ?View;
 
     /**
      * Called after the form is submitted and the model has been populated/saved.

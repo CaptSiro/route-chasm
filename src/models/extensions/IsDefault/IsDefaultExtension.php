@@ -2,11 +2,14 @@
 
 namespace models\extensions\IsDefault;
 
+use components\layout\Grid\description\GridColumn;
 use core\database\sql\Column;
 use core\database\sql\ModelDescription;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\Sql;
+
+const IS_DEFAULT_PROPERTY = 'default';
 
 /**
  * @property bool $default
@@ -16,6 +19,10 @@ trait IsDefaultExtension {
         return static::first(
             where: Query::infer("is_default = ?", [true])
         );
+    }
+
+    public static function addIsDefaultGridColumn(array &$columns): void {
+        $columns[IS_DEFAULT_PROPERTY] = new GridColumn('Is Default', '96px');
     }
 
 

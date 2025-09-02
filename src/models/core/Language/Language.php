@@ -3,6 +3,8 @@
 namespace models\core\Language;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
+use components\layout\Grid\description\GridDescription;
+use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
@@ -13,6 +15,7 @@ use core\locale\Locale;
 use core\RouteChasmEnvironment;
 use models\extensions\IsDefault\IsDefaultExtension;
 use models\extensions\IsDefault\IsDefault;
+use RuntimeException;
 
 /**
  * @property string $code
@@ -22,6 +25,19 @@ use models\extensions\IsDefault\IsDefault;
 #[Table('core_language')]
 #[Database(App::DATABASE)]
 class Language extends Model implements IsDefault {
+    public static function getGridDescription(): GridDescription {
+        $columns = [];
+
+        static::addIsDefaultGridColumn($columns);
+        $columns[LanguageProxy::COLUMN_LANGUAGE] = new GridColumn('Language');
+
+        return new GridDescription(
+            $columns,
+            new ModelGridLoader(static::class),
+            new LanguageProxy()
+        );
+    }
+
     public static function fromEnv(): static {
         $code = App::getEnvStatic()->getOrDie(RouteChasmEnvironment::LANGUAGE);
         $language = new static();
@@ -48,11 +64,21 @@ class Language extends Model implements IsDefault {
 
 
 
+    public function __toString(): string {
+        return $this->code;
+    }
+
+
+
+    public function isEditable(): bool {
+        return false;
+    }
+
     public function getLocale(): ?Locale {
         $locales = App::getInstance()->getLocales();
 
         if (!isset($locales[$this->code])) {
-            throw new \RuntimeException("Locale '$this->code' is not loaded");
+            throw new RuntimeException("Locale '$this->code' is not loaded");
         }
 
         return $locales[$this->code];
