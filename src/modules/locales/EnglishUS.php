@@ -3,10 +3,13 @@
 namespace modules\locales;
 
 use core\locale\Locale;
-use core\locale\LexiconUnit;
+use core\utils\Regex;
 
 class EnglishUS extends Locale {
-    use LexiconUnit;
+    public const RULE_SINGULAR = Regex::LOCALE_RULE_ONE;
+    public const RULE_PLURAL = Regex::LOCALE_RULE_NOT_ONE;
+
+
 
     public function getIdentifier(): string {
         return 'en-US';

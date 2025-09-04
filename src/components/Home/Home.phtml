@@ -4,3 +4,12 @@
 <a href="https://github.com/CaptSiro/route-chasm">GitHub repository</a>
 
 <p>Navigate to <code>src/components/Home/Home.phtml</code> to edit this page</p>
+
+<hr>
+<h3>Languages</h3>
+<span><?= $this->tr('home', 'Selected') ?>: <?= \core\App::getInstance()->getRequest()->getLanguage()->getLocale()->getName() ?></span>
+<?php foreach (\core\App::getInstance()->getLocales() as $locale): ?>
+    <div>
+        <?= $this->createLanguageLink($locale) ?>
+    </div>
+<?php endforeach; ?>

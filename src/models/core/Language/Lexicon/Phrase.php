@@ -33,7 +33,7 @@ class Phrase extends Model {
             return static::$groups[$group];
         }
 
-        $phrases = static::all(where: Query::infer("group = ?", $group));
+        $phrases = LexiconGroup::fromName($group, create: true)->getPhrases();
         $ret = [];
 
         foreach ($phrases as $phrase) {
@@ -43,45 +43,42 @@ class Phrase extends Model {
         return static::$groups[$group] = $ret;
     }
 
-    public static function create(string $group, string $default, bool $isDynamic = false): static {
-        $instance = new static();
+    public static function createPhrase(string $group, string $default, bool $isDynamic = false): static {
+        $lexiconGroup = LexiconGroup::fromName($group, create: true);
 
-        $instance->set([
-            "group" => $group,
+        return static::create([
+            "groupId" => $lexiconGroup->getId(),
             "default" => $default,
             "isDynamic" => $isDynamic,
         ]);
-
-        $instance->save();
-        return $instance;
     }
 
     /**
      * @param array<string, array<string>> $templates
      */
     public static function createTemplate(string $group, string $default, Language $language, array $templates = []): static {
-        $instance = static::create($group, $default, true);
+        $instance = static::createPhrase($group, $default, true);
 
         foreach ($templates as $template => $rules) {
-            $translation = Translation::create(
+            $translation = Translation::createTranslation(
                 $instance,
                 $language,
                 $template,
             );
 
             foreach ($rules as $rule) {
-                $translation->addRule(Rule::fromRule($rule, doCreate: true));
+                $translation->addRule(Rule::fromRule($rule, create: true));
             }
         }
 
         return $instance;
     }
 
-    public static function fromPair(string $group, string $default, bool $doCreate = false): ?static {
+    public static function fromPair(string $group, string $default, bool $create = false): ?static {
         $g = static::getGroup($group);
         if (!isset($g[$default])) {
-            if ($doCreate) {
-                return static::$groups[$group][$default] = self::create($group, $default);
+            if ($create) {
+                return static::$groups[$group][$default] = self::createPhrase($group, $default);
             }
 
             return null;
@@ -97,8 +94,8 @@ class Phrase extends Model {
 
     #[TextField]
     #[GridColumn]
-    #[Column(type: Column::TYPE_STRING)]
-    protected string $group;
+    #[Column('id_lexicon_group', type: Column::TYPE_STRING)]
+    protected int $groupId;
 
     #[TextField]
     #[GridColumn]
@@ -113,8 +110,17 @@ class Phrase extends Model {
     private array $translations;
     /** @var array<Translation> */
     private array $staticTranslations;
+    private LexiconGroup $group;
 
 
+
+    public function getLexiconGroup(): LexiconGroup {
+        if (!isset($this->group)) {
+            $this->group = LexiconGroup::fromId($this->groupId);
+        }
+
+        return $this->group;
+    }
 
     public function getTranslations(): array {
         if (!isset($this->translations)) {

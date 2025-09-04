@@ -17,8 +17,8 @@ class Lexicon {
             return $default;
         }
 
-        $phrase = Phrase::fromPair($group, $default, doCreate: true);
-        return $phrase->translate($language);
+        $phrase = Phrase::fromPair($group, $default, create: true);
+        return $phrase->translate($language) ?? $default;
     }
 
     /**

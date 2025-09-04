@@ -3,8 +3,8 @@
 namespace core\database\sql;
 
 use core\database\sql\query\SelectQuery;
-use Exception;
 use ReflectionClass;
+use RuntimeException;
 
 class ModelDescription {
     private static array $descriptions = [];
@@ -17,7 +17,7 @@ class ModelDescription {
         $reflection = new ReflectionClass($class);
         $tables = $reflection->getAttributes(Table::class);
         if (empty($tables)) {
-            throw new Exception("Model '$class' must have Table attribute");
+            throw new RuntimeException("Model '$class' must have Table attribute");
         }
 
         $databases = $reflection->getAttributes(Database::class);
@@ -49,7 +49,7 @@ class ModelDescription {
 
             if ($column->primaryKey) {
                 if (!is_null($idColumn)) {
-                    throw new Exception("Only one primary key column is allowed for model '$class'");
+                    throw new RuntimeException("Only one primary key column is allowed for model '$class'");
                 }
 
                 $idColumn = $description;
@@ -57,7 +57,7 @@ class ModelDescription {
         }
 
         if (is_null($idColumn)) {
-            throw new Exception("No primary key found for model '$class'");
+            throw new RuntimeException("No primary key found for model '$class'");
         }
 
         return self::$descriptions[$class] = new ModelDescription(

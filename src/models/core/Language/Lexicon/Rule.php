@@ -12,9 +12,11 @@ use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
 use core\database\sql\Sql;
 use core\database\sql\Table;
+use core\forms\description\TextField;
 
 /**
  * @property string $rule
+ * @property string|null $label
  */
 
 #[Grid]
@@ -23,14 +25,12 @@ use core\database\sql\Table;
 class Rule extends Model {
     use ModelCache;
 
-    public static function fromRule(string $rule, bool $doCreate = false): ?static {
+    public static function fromRule(string $rule, bool $create = false): ?static {
         static::modelCache_loadAll(fn(Rule $x) => $x->rule);
         $instance = static::modelCache_get($rule);
 
-        if (is_null($instance) && $doCreate) {
-            $instance = new static();
-            $instance->set(['rule' => $rule]);
-            $instance->save();
+        if (is_null($instance) && $create) {
+            $instance = static::create(['rule' => $rule]);
             static::modelCache_set($rule, $instance);
         }
 
@@ -66,13 +66,27 @@ class Rule extends Model {
     #[Column('id_rule', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
+    #[TextField]
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     protected string $rule;
+
+    #[TextField]
+    #[GridColumn]
+    #[Column(type: Column::TYPE_STRING)]
+    protected ?string $label;
 
 
 
     public function match(string $value): bool {
         return preg_match($this->rule, $value);
+    }
+
+    public function getLabel(): string {
+        if (is_null($this->label) || $this->label === '') {
+            return $this->rule;
+        }
+
+        return $this->label;
     }
 }

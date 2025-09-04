@@ -32,13 +32,41 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
 
 
-    protected static function createConditionally(?self $instance, bool $create = false): ?static {
+    /**
+     * @param array<string, mixed> $properties
+     * @param bool $save
+     * @return static
+     */
+    public static function create(array $properties, bool $save = true): static {
+        $instance = new static();
+        $instance->set($properties);
+
+        if ($save) {
+            $instance->save();
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param Model|null $instance
+     * @param array<string, mixed> $properties
+     * @param bool $create
+     * @param bool $save
+     * @return static|null
+     */
+    protected static function createConditionally(
+        ?self $instance,
+        array $properties,
+        bool $create = false,
+        bool $save = true
+    ): ?static {
         if (!is_null($instance)) {
             return $instance;
         }
 
         if ($create) {
-            return new static();
+            return self::create($properties, $save);
         }
 
         return null;

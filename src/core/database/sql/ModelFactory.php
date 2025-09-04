@@ -5,6 +5,7 @@ namespace core\database\sql;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
+use core\database\sql\query\SqlQuery;
 
 class ModelFactory {
     private static array $factories = [];
@@ -73,9 +74,10 @@ class ModelFactory {
     }
 
     protected static function addProjection(ModelDescription $description, SelectQuery $sql, ?array $projection = null): void {
+        $driver = $description->connection->getDriver();
         if (is_null($projection)) {
             foreach ($description->columns as $column) {
-                $sql->projection($column->name);
+                $sql->projection($driver->escapeColumn($column->name));
             }
 
             return;
@@ -83,13 +85,13 @@ class ModelFactory {
 
         foreach ($description->columns as $column) {
             if (in_array($column->name, $projection)) {
-                $sql->projection($column->name);
+                $sql->projection($driver->escapeColumn($column->name));
             }
         }
     }
 
 
-    public function first(?array $projection = null, Query|string|null $where = null): ?Model {
+    public function firstQuery(?array $projection = null, Query|string|null $where = null): SqlQuery {
         $description = ModelDescription::extract($this->modelClass);
 
         $sql = Sql::select($description->getEscapedTable());
@@ -100,7 +102,14 @@ class ModelFactory {
         }
 
         $sql->limit(1);
-        $record = $sql->fetch($description->connection);
+        return $sql;
+    }
+
+    public function first(?array $projection = null, Query|string|null $where = null): ?Model {
+        $description = ModelDescription::extract($this->modelClass);
+        $record = $this
+            ->firstQuery($projection, $where)
+            ->fetch($description->connection);
 
         return $this->fromRecord($record);
     }
@@ -109,18 +118,13 @@ class ModelFactory {
         $description = ModelDescription::extract($this->modelClass);
         $idColumnName = $description->getEscapedIdColumnName();
 
-        return self::first($projection, new Query(
-            "$idColumnName = ?",
-            [Parameter::infer($id)]
-        ));
+        return self::first(
+            $projection,
+            where: Query::infer("$idColumnName = ?", $id)
+        );
     }
 
-    /**
-     * @param array|null $projection
-     * @param Query|string|null $where
-     * @return array<Model>
-     */
-    public function all(?array $projection = null, Query|string|null $where = null): array {
+    public function allQuery(?array $projection = null, Query|string|null $where = null): SqlQuery {
         $description = ModelDescription::extract($this->modelClass);
         $sql = Sql::select($description->getEscapedTable());
 
@@ -130,8 +134,20 @@ class ModelFactory {
             $sql->where($where);
         }
 
-        return self::fromRecords(
-            $sql->fetchAll($description->connection)
-        );
+        return $sql;
+    }
+
+    /**
+     * @param array|null $projection
+     * @param Query|string|null $where
+     * @return array<Model>
+     */
+    public function all(?array $projection = null, Query|string|null $where = null): array {
+        $description = ModelDescription::extract($this->modelClass);
+        $records = $this
+            ->allQuery($projection, $where)
+            ->fetchAll($description->connection);
+
+        return self::fromRecords($records);
     }
 }

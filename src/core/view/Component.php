@@ -7,10 +7,11 @@ use core\actions\ActionBindRouteNode;
 use core\actions\ActorClassName;
 use core\communication\Request;
 use core\communication\Response;
+use core\locale\LexiconUnit;
 use core\route\RouteNode;
 
 class Component implements View, Action {
-    use Renderer, ActionBindRouteNode, ActorClassName;
+    use Renderer, ActionBindRouteNode, ActorClassName, LexiconUnit;
 
 
 

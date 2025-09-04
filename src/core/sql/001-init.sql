@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS core_language;
 CREATE TABLE IF NOT EXISTS core_language (
     `id_language` INT NOT NULL AUTO_INCREMENT,
     `code` VARCHAR(16) NOT NULL,
-    `is_default` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_default` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_language`),
     UNIQUE (`code`)
 ) ENGINE = InnoDB;
@@ -21,13 +21,30 @@ CREATE TABLE IF NOT EXISTS core_language (
 DROP TABLE IF EXISTS core_lexicon_translation_x_rule;
 DROP TABLE IF EXISTS core_lexicon_translation;
 DROP TABLE IF EXISTS core_lexicon;
+
+DROP TABLE IF EXISTS core_lexicon_group;
+CREATE TABLE IF NOT EXISTS core_lexicon_group (
+    `id_lexicon_group` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_lexicon_group`),
+    UNIQUE (`name`)
+) ENGINE = InnoDB;
+
+DROP TABLE IF EXISTS core_lexicon_rule;
+CREATE TABLE IF NOT EXISTS core_lexicon_rule (
+    `id_rule` INT NOT NULL AUTO_INCREMENT,
+    `rule` VARCHAR(255) NOT NULL,
+    `label` VARCHAR(32),
+    PRIMARY KEY (`id_rule`)
+) ENGINE = InnoDB;
+
 CREATE TABLE IF NOT EXISTS core_lexicon (
     `id_phrase` INT NOT NULL AUTO_INCREMENT,
-    `group` VARCHAR(255) NOT NULL,
-    `default` TEXT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-    `is_dynamic` TINYINT(1) NOT NULL DEFAULT '0',
+    `id_lexicon_group` INT NOT NULL,
+    `default` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `is_dynamic` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_phrase`),
-    UNIQUE (`group`)
+    FOREIGN KEY (`id_lexicon_group`) REFERENCES `core_lexicon_group` (`id_lexicon_group`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS core_lexicon_translation (
@@ -38,13 +55,6 @@ CREATE TABLE IF NOT EXISTS core_lexicon_translation (
     PRIMARY KEY (`id_translation`),
     FOREIGN KEY (`id_phrase`) REFERENCES `core_lexicon` (`id_phrase`),
     FOREIGN KEY (`id_language`) REFERENCES `core_language` (`id_language`)
-) ENGINE = InnoDB;
-
-DROP TABLE IF EXISTS core_lexicon_rule;
-CREATE TABLE IF NOT EXISTS core_lexicon_rule (
-    `id_rule` INT NOT NULL AUTO_INCREMENT,
-    `rule` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`id_rule`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS core_lexicon_translation_x_rule (
@@ -64,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `core_domain` (
     `port` INT NOT NULL DEFAULT '0',
     `path` VARCHAR(255) NULL DEFAULT NULL,
     `cost` INT NOT NULL DEFAULT '1',
-    `is_enabled` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_enabled` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_domain`)
 ) ENGINE = InnoDB;
 
@@ -74,8 +84,8 @@ DROP TABLE IF EXISTS core_setting;
 CREATE TABLE IF NOT EXISTS core_setting (
     `id_setting` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
-    `value` TEXT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-    `is_editable` TINYINT(1) NOT NULL DEFAULT '0',
+    `value` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `is_editable` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_setting`),
     UNIQUE (`name`)
 ) ENGINE = InnoDB;
@@ -103,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `core_user` (
     PRIMARY KEY (`id_user`),
     INDEX (`username`),
     UNIQUE (`tag`)
-) ENGINE = MyISAM;
+) ENGINE = InnoDB;
 
 INSERT INTO `core_user` (id_user, username, password, tag)
 VALUES (1, 'root', '', 'root');
@@ -115,10 +125,10 @@ DROP TABLE IF EXISTS `core_group`;
 CREATE TABLE IF NOT EXISTS `core_group` (
     `id_group` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(128) NOT NULL,
-    `is_editable` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_editable` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_group`),
     UNIQUE (`name`)
-) ENGINE = MyISAM;
+) ENGINE = InnoDB;
 
 INSERT INTO `core_group` (id_group, name, is_editable)
 VALUES (1, 'Default', 0),
@@ -132,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `core_users_x_groups` (
     `id_group` INT NOT NULL,
     FOREIGN KEY (`id_user`) REFERENCES `core_user` (`id_user`),
     FOREIGN KEY (`id_group`) REFERENCES `core_group` (`id_group`)
-) ENGINE = MyISAM;
+) ENGINE = InnoDB;
 
 INSERT INTO `core_users_x_groups` (id_user, id_group)
 VALUES (1, 2);
@@ -143,10 +153,10 @@ DROP TABLE IF EXISTS `core_privilege`;
 CREATE TABLE IF NOT EXISTS `core_privilege` (
     `id_privilege` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(32) NOT NULL,
-    `is_editable` TINYINT(1) NOT NULL DEFAULT '0',
+    `is_editable` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_privilege`),
     UNIQUE (`name`)
-) ENGINE = MyISAM;
+) ENGINE = InnoDB;
 
 INSERT INTO `core_privilege` (id_privilege, name, is_editable)
 VALUES (1, 'Read', 0),
@@ -161,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `core_resource` (
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id_resource`),
     UNIQUE (`name`)
-) ENGINE = MyISAM;
+) ENGINE = InnoDB;
 
 
 
@@ -173,4 +183,4 @@ CREATE TABLE IF NOT EXISTS `core_groups_x_resources` (
     FOREIGN KEY (`id_group`) REFERENCES `core_group` (`id_group`),
     FOREIGN KEY (`id_resource`) REFERENCES `core_resource` (`id_resource`),
     FOREIGN KEY (`id_privilege`) REFERENCES `core_privilege` (`id_privilege`)
-) ENGINE = MyISAM;
+) ENGINE = InnoDB;

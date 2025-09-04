@@ -31,25 +31,20 @@ class Translation extends Model {
 
 
 
-    public static function create(Phrase $phrase, Language $language, string $translation): static {
-        return static::createRaw(
+    public static function createTranslation(Phrase $phrase, Language $language, string $translation): static {
+        return static::createTranslationRaw(
             $phrase->getId(),
             $language->getId(),
             $translation,
         );
     }
 
-    public static function createRaw(int $phraseId, int $languageId, string $translation): static {
-        $instance = new static();
-
-        $instance->set([
+    public static function createTranslationRaw(int $phraseId, int $languageId, string $translation): static {
+        return static::create([
             'phraseId' => $phraseId,
             'languageId' => $languageId,
             'translation' => $translation,
         ]);
-
-        $instance->save();
-        return $instance;
     }
 
     public static function forPhrase(Phrase $phrase): array {

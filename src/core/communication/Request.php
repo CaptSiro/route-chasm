@@ -8,9 +8,8 @@ use core\collections\dictionary\StrictMap;
 use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
-use core\locale\Locale;
 use core\locale\LanguageSelector;
-use core\locale\selectors\AcceptLanguageSelector;
+use core\locale\selectors\DefaultSelector;
 use core\route\Path;
 use core\url\Url;
 use models\core\Domain\Domain;
@@ -75,7 +74,7 @@ class Request {
         readonly protected Url $url,
         readonly protected StrictDictionary $cookies,
     ) {
-        $this->languageSelector = new AcceptLanguageSelector();
+        $this->languageSelector = new DefaultSelector();
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
         $this->param = new StrictStack();
