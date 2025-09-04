@@ -38,6 +38,13 @@ CREATE TABLE IF NOT EXISTS core_lexicon_rule (
     PRIMARY KEY (`id_rule`)
 ) ENGINE = InnoDB;
 
+INSERT INTO core_lexicon_rule(`rule`, `label`)
+VALUES ('/.*/', '*'),
+       ('/^1$/', '1'),
+       ('/^[2-4]$/', '2-4'),
+       ('/^0|[2-9]|\\d{2,}$/', '0, 2+'),
+       ('/^0|[5-9]|\\d{2,}$/', '0, 5+');
+
 CREATE TABLE IF NOT EXISTS core_lexicon (
     `id_phrase` INT NOT NULL AUTO_INCREMENT,
     `id_lexicon_group` INT NOT NULL,

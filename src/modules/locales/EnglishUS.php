@@ -7,7 +7,7 @@ use core\utils\Regex;
 
 class EnglishUS extends Locale {
     public const RULE_SINGULAR = Regex::LOCALE_RULE_ONE;
-    public const RULE_PLURAL = Regex::LOCALE_RULE_NOT_ONE;
+    public const RULE_PLURAL = Regex::LOCALE_RULE_TWO_AND_UP;
 
 
 
