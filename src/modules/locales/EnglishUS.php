@@ -3,10 +3,10 @@
 namespace modules\locales;
 
 use core\locale\Locale;
-use core\locale\LocaleAutoloader;
+use core\locale\LexiconUnit;
 
 class EnglishUS extends Locale {
-    use LocaleAutoloader;
+    use LexiconUnit;
 
     public function getIdentifier(): string {
         return 'en-US';

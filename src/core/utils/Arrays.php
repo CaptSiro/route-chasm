@@ -26,6 +26,22 @@ class Arrays {
     }
 
     /**
+     * @template T
+     * @param array<T> $array
+     * @param Closure $keyGenerator
+     * @return array<T>
+     */
+    public static function changeKeys(array $array, Closure $keyGenerator): array {
+        $ret = [];
+
+        foreach ($array as $key => $item) {
+            $ret[($keyGenerator)($item, $key)] = $item;
+        }
+
+        return $ret;
+    }
+
+    /**
      * @param array $array
      * @param array $values
      * @return Closure Rewert changes to previous state

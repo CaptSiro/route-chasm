@@ -4,9 +4,9 @@ namespace core\locale\selectors;
 
 use core\communication\Request;
 use core\http\HttpHeader;
-use core\locale\LocaleSelector;
+use core\locale\LanguageSelector;
 
-class AcceptLanguageSelector implements LocaleSelector {
+class AcceptLanguageSelector implements LanguageSelector {
     public function select(Request $request): ?string {
         $value = $request->getHeader(HttpHeader::ACCEPT_LANGUAGE);
         if (is_null($value)) {

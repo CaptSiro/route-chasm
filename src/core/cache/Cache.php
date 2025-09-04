@@ -2,16 +2,28 @@
 
 namespace core\cache;
 
+/**
+ * @template T
+ */
 interface Cache {
     public function has(string $variable): bool;
 
-    public function get(string $variable): string;
+    /**
+     * @param string $variable
+     * @return T
+     */
+    public function get(string $variable): mixed;
 
-    public function set(string $variable, string $value): self;
+    /**
+     * @param string $variable
+     * @param T $value
+     * @return self
+     */
+    public function set(string $variable, mixed $value): static;
 
-    public function delete(string $variable): self;
+    public function delete(string $variable): static;
 
-    public function save(): self;
+    public function save(): static;
 
-    public function asString(): string;
+    public function toString(): string;
 }

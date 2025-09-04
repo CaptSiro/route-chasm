@@ -2,6 +2,9 @@
 
 namespace core\cache;
 
+/**
+ * @template-implements Cache<string>
+ */
 class LazyFileCache implements Cache {
     public const KEY_VALUE_SEPARATOR = '=';
 
@@ -57,19 +60,19 @@ class LazyFileCache implements Cache {
         return $this->internal[$variable];
     }
 
-    public function set(string $variable, string $value): Cache {
+    public function set(string $variable, mixed $value): static {
         $this->load();
         $this->internal[$variable] = $value;
         return $this;
     }
 
-    public function delete(string $variable): Cache {
+    public function delete(string $variable): static {
         $this->load();
         unset($this->internal[$variable]);
         return $this;
     }
 
-    public function save(): Cache {
+    public function save(): static {
         if (!$this->isLoaded) {
             return $this;
         }
@@ -83,12 +86,12 @@ class LazyFileCache implements Cache {
             throw new FileAccessException($this->file);
         }
 
-        fwrite($fp, $this->asString());
+        fwrite($fp, $this->toString());
         fclose($fp);
         return $this;
     }
 
-    public function asString(): string {
+    public function toString(): string {
         $buffer = '';
 
         foreach ($this->internal as $variable => $value) {

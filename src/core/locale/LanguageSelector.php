@@ -4,6 +4,6 @@ namespace core\locale;
 
 use core\communication\Request;
 
-interface LocaleSelector {
+interface LanguageSelector {
     public function select(Request $request): ?string;
 }

@@ -67,10 +67,10 @@ class Domain extends Model implements Enable {
     }
 
     public static function fromUrl(Url $url): static {
-        return self::fromUrlString($url->toString());
+        return self::fromUrlRaw($url->toString());
     }
 
-    public static function fromUrlString(string $url): static {
+    public static function fromUrlRaw(string $url): static {
         $domains = self::all(where: Query::static("is_enabled = 1"));
 
         foreach ($domains as $domain) {

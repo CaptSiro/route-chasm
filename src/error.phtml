@@ -6,6 +6,8 @@
  * @var $line
  */
 
+use components\core\Html\Html;
+
 /**
  * @param array $array
  * @return void
@@ -19,15 +21,15 @@ function dump_array(array $array): void {
         </code>";
     }
 }
-?>
-<!doctype html>
+
+?><!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?= $message ?></title>
+    <title><?= Html::escape($message) ?></title>
 
     <style>
         @import "https://www.nerdfonts.com/assets/css/webfont.css";
@@ -110,12 +112,12 @@ function dump_array(array $array): void {
 </head>
 <body>
     <section>
-        <h1>Error: <?= $message ?></h1>
+        <h1>Error: <?= Html::escape($message) ?></h1>
     </section>
 
     <section>
         <div>
-            at <?= $file ?>:<?= $line ?>
+            at <?= Html::escape($file) ?>:<?= Html::escape($line) ?>
         </div>
     </section>
 

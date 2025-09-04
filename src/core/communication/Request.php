@@ -9,7 +9,7 @@ use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
 use core\locale\Locale;
-use core\locale\LocaleSelector;
+use core\locale\LanguageSelector;
 use core\locale\selectors\AcceptLanguageSelector;
 use core\route\Path;
 use core\url\Url;
@@ -63,8 +63,8 @@ class Request {
 
 
 
-    protected LocaleSelector $localeSelector;
-    protected ?Locale $locale;
+    protected LanguageSelector $languageSelector;
+    protected ?Language $language;
     private bool $isBodyParsed = false;
 
 
@@ -75,7 +75,7 @@ class Request {
         readonly protected Url $url,
         readonly protected StrictDictionary $cookies,
     ) {
-        $this->localeSelector = new AcceptLanguageSelector();
+        $this->languageSelector = new AcceptLanguageSelector();
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
         $this->param = new StrictStack();
@@ -132,23 +132,21 @@ class Request {
         return $this->domain;
     }
 
-    public function setLocaleSelector(LocaleSelector $localeSelector): void {
-        $this->localeSelector = $localeSelector;
+    public function setLanguageSelector(LanguageSelector $languageSelector): void {
+        $this->languageSelector = $languageSelector;
     }
 
-    public function getLocale(): Locale {
-        if (isset($this->locale)) {
-            return $this->locale;
+    public function getLanguage(): Language {
+        if (isset($this->language)) {
+            return $this->language;
         }
 
-        $selected = $this->localeSelector->select($this);
+        $selected = $this->languageSelector->select($this);
         if (!is_null($selected)) {
-            $language = Language::fromCode($selected) ?? Language::getDefault() ?? Language::fromEnv();
-            return $this->locale = $language->getLocale();
+            return $this->language = Language::fromCode($selected) ?? App::getDefaultLanguage();
         }
 
-        $language = Language::getDefault() ?? Language::fromEnv();
-        return $this->locale = $language->getLocale();
+        return $this->language = App::getDefaultLanguage();
     }
 
     public function getHeaders(): ?array {

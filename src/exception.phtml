@@ -1,6 +1,8 @@
 <?php
 /** @var Exception $exception */
 
+use components\core\Html\Html;
+
 /**
  * @param array $array
  * @return void
@@ -15,15 +17,14 @@ function dump_array(array $array): void {
     }
 }
 
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?= $exception->getMessage() ?></title>
+    <title><?= Html::escape($exception->getMessage()) ?></title>
 
     <style>
         @import "https://www.nerdfonts.com/assets/css/webfont.css";
@@ -106,12 +107,12 @@ function dump_array(array $array): void {
 </head>
 <body>
     <section>
-        <h1><?= get_class($exception) ?>: <?= $exception->getMessage() ?></h1>
+        <h1><?= Html::escape(get_class($exception)) ?>: <?= Html::escape($exception->getMessage()) ?></h1>
     </section>
 
     <section>
         <div class="file">
-            at <?= $exception->getFile() ?>:<?= $exception->getLine() ?>
+            at <?= Html::escape($exception->getFile()) ?>:<?= Html::escape($exception->getLine()) ?>
         </div>
 
         <?php foreach ($exception->getTrace() as $trace): ?>

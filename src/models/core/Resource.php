@@ -25,7 +25,7 @@ use core\view\View;
 class Resource extends Model {
     public static function fromName(string $name): ?static {
         return static::first(
-            where: Query::infer('name = ?', [$name])
+            where: Query::infer('name = ?', $name)
         );
     }
 

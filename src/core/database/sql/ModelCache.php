@@ -2,8 +2,18 @@
 
 namespace core\database\sql;
 
+use Closure;
+
 trait ModelCache {
+    private static bool $isModelCacheLoaded = false;
     private static array $modelCache = [];
+    private static array $modelCacheId = [];
+
+
+
+    protected static function modelCache_fromId(int $id): ?static {
+        return static::$modelCacheId[$id];
+    }
 
     protected static function modelCache_get(string $key, ?self $or = null): ?static {
         return static::$modelCache[$key] ?? $or;
@@ -14,6 +24,19 @@ trait ModelCache {
             return null;
         }
 
+        static::$modelCacheId[$value->getId()] = $value;
         return static::$modelCache[$key] = $value;
+    }
+
+    protected static function modelCache_loadAll(Closure $keyGenerator): void {
+        if (static::$isModelCacheLoaded) {
+            return;
+        }
+
+        foreach (static::all() as $record) {
+            static::modelCache_set(($keyGenerator)($record), $record);
+        }
+
+        static::$isModelCacheLoaded = true;
     }
 }

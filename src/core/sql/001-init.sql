@@ -18,6 +18,44 @@ CREATE TABLE IF NOT EXISTS core_language (
 
 
 
+DROP TABLE IF EXISTS core_lexicon_translation_x_rule;
+DROP TABLE IF EXISTS core_lexicon_translation;
+DROP TABLE IF EXISTS core_lexicon;
+CREATE TABLE IF NOT EXISTS core_lexicon (
+    `id_phrase` INT NOT NULL AUTO_INCREMENT,
+    `group` VARCHAR(255) NOT NULL,
+    `default` TEXT CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+    `is_dynamic` TINYINT(1) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id_phrase`),
+    UNIQUE (`group`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_lexicon_translation (
+    `id_translation` INT NOT NULL AUTO_INCREMENT,
+    `id_phrase` INT NOT NULL,
+    `id_language` INT NOT NULL,
+    `translation` TEXT NOT NULL,
+    PRIMARY KEY (`id_translation`),
+    FOREIGN KEY (`id_phrase`) REFERENCES `core_lexicon` (`id_phrase`),
+    FOREIGN KEY (`id_language`) REFERENCES `core_language` (`id_language`)
+) ENGINE = InnoDB;
+
+DROP TABLE IF EXISTS core_lexicon_rule;
+CREATE TABLE IF NOT EXISTS core_lexicon_rule (
+    `id_rule` INT NOT NULL AUTO_INCREMENT,
+    `rule` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_rule`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_lexicon_translation_x_rule (
+    `id_translation` INT NOT NULL,
+    `id_rule` INT NOT NULL,
+    FOREIGN KEY (`id_translation`) REFERENCES `core_lexicon_translation` (`id_translation`),
+    FOREIGN KEY (`id_rule`) REFERENCES `core_lexicon_rule` (`id_rule`)
+) ENGINE = InnoDB;
+
+
+
 DROP TABLE IF EXISTS `core_domain`;
 CREATE TABLE IF NOT EXISTS `core_domain` (
     `id_domain` INT NOT NULL AUTO_INCREMENT,

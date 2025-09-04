@@ -7,7 +7,7 @@ readonly class Query {
         return new Query($sql, []);
     }
 
-    public static function infer(string $sql, array $parameters): Query {
+    public static function infer(string $sql, mixed ...$parameters): Query {
         foreach ($parameters as $i => $parameter) {
             $parameters[$i] = Parameter::infer($parameter);
         }

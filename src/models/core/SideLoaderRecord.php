@@ -20,13 +20,13 @@ use core\utils\Strings;
 class SideLoaderRecord extends Model {
     public static function fromHash(string $hash): ?static {
         return static::first(
-            where: Query::infer('hash = ?', [$hash]),
+            where: Query::infer('hash = ?', $hash),
         );
     }
 
     public static function fromPath(string $path): ?static {
         return static::first(
-            where: Query::infer('path = ?', [$path]),
+            where: Query::infer('path = ?', $path),
         );
     }
 

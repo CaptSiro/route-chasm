@@ -23,7 +23,7 @@ class WebPage extends Component implements Container {
 
         // todo
         // get from request... (preference, domain, ...)
-        $this->language ??= App::getInstance()->getRequest()->getLocale()->getIdentifier();
+        $this->language ??= App::getInstance()->getRequest()->getLanguage()->code;
         $this->head ??= new HtmlHead();
 
         $this->setTemplate(

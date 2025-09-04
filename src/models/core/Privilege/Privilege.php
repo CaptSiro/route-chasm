@@ -53,7 +53,7 @@ class Privilege extends Model implements Editable {
         }
 
         return static::modelCache_set($name, static::first(
-            where: Query::infer('name = ?', [$name])
+            where: Query::infer('name = ?', $name)
         ));
     }
 

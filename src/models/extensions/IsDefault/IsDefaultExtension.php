@@ -17,7 +17,7 @@ const IS_DEFAULT_PROPERTY = 'default';
 trait IsDefaultExtension {
     public static function getDefault(): ?static {
         return static::first(
-            where: Query::infer("is_default = ?", [true])
+            where: Query::infer("is_default = ?", true)
         );
     }
 

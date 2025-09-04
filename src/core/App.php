@@ -26,6 +26,7 @@ use core\route\Path;
 use core\route\Router;
 use core\url\Url;
 use dotenv\Env;
+use models\core\Language\Language;
 use models\core\ModuleRecord;
 use ReflectionClass;
 
@@ -65,6 +66,10 @@ class App implements Loader {
      */
     protected static function getDefaultModules(): array {
         return [];
+    }
+
+    public static function getDefaultLanguage(): Language {
+        return Language::getDefault() ?? Language::fromEnv();
     }
 
     public static function createOptionDoNotAutoload(string $moduleClass): string {

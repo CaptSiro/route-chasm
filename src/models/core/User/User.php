@@ -23,7 +23,6 @@ use models\core\Privilege\Privilege;
 use models\core\Resource;
 
 /**
- * @property int $id
  * @property string $username
  * @property string $password
  * @property string $tag
@@ -38,7 +37,7 @@ class User extends Model {
 
     public static function fromTag(string $tag): ?static {
         return static::first(
-            where: Query::infer('tag = ?', [$tag])
+            where: Query::infer('tag = ?', $tag)
         );
     }
 
@@ -102,7 +101,7 @@ class User extends Model {
     }
 
     public function delete(): DatabaseAction {
-        if (self::fromSessionId(App::getInstance()->getRequest()->getSession()) === $this->id) {
+        if (self::fromSessionId(App::getInstance()->getRequest()->getSession()) === $this->getId()) {
             self::logout();
         }
 
@@ -115,7 +114,7 @@ class User extends Model {
         App::getInstance()
             ->getRequest()
             ->getSession()
-            ->set(App::KEY_LOGGED_IN_USER, $this->id);
+            ->set(App::KEY_LOGGED_IN_USER, $this->getId());
     }
 
     /**
@@ -134,7 +133,7 @@ class User extends Model {
         $sql = Sql::select($groupTable)
             ->join(
                 $driver->escapeTable('core_users_x_groups') ." AS $ug",
-                Query::infer("$ug.id_group = $groupTable.id_group AND $ug.id_user = ?", [$this->id])
+                Query::infer("$ug.id_group = $groupTable.id_group AND $ug.id_user = ?", $this->getId())
             );
 
         $group->projection($sql);
@@ -145,6 +144,10 @@ class User extends Model {
     }
 
     public function inGroup(Group $group): bool {
+        return $this->inGroupRaw($group->id);
+    }
+
+    public function inGroupRaw(int $groupId): bool {
         $connection = static::getDescription()->connection;
         $driver = $connection->getDriver();
         $ug = $driver->escapeTable(self::TABLE_USERS_X_GROUPS);
@@ -153,7 +156,8 @@ class User extends Model {
             ->projection("$ug.id_group")
             ->where(Query::infer(
                 "$ug.id_group = ? AND $ug.id_user = ?",
-                [$group->id, $this->id]
+                $groupId,
+                $this->getId()
             ));
 
         return !is_null($sql->fetch($connection));
@@ -163,7 +167,7 @@ class User extends Model {
         $ug = self::TABLE_USERS_X_GROUPS;
 
         return Sql::delete(self::TABLE_USERS_X_GROUPS)
-            ->where(Query::infer("$ug.id_user = ?", [$this->id]))
+            ->where(Query::infer("$ug.id_user = ?", $this->getId()))
             ->run(static::getDescription()->connection);
     }
 
@@ -194,7 +198,7 @@ class User extends Model {
         $sql = Sql::insert(self::TABLE_USERS_X_GROUPS)
             ->columns(['id_group', 'id_user']);
 
-        $userId = new Parameter($this->id, Parameter::TYPE_INTEGER);
+        $userId = new Parameter($this->getId(), Parameter::TYPE_INTEGER);
 
         $memberOf = [];
         foreach ($this->getGroups() as $group) {
@@ -234,6 +238,10 @@ class User extends Model {
     }
 
     public function hasAccess(Resource $resource, Privilege $privilege): bool {
+        return $this->hasAccessRaw($resource->getId(), $privilege->getId());
+    }
+
+    public function hasAccessRaw(int $resourceId, int $privilegeId): bool {
         $connection = static::getDescription()->connection;
         $driver = $connection->getDriver();
 
@@ -243,10 +251,12 @@ class User extends Model {
         $sql = Sql::select($ug)
             ->projection("$gr.id_privilege")
             ->join(
-                $gr .' AS gr',
+                $gr,
                 Query::infer(
                     "$ug.id_group = $gr.id_group AND $ug.id_user = ? AND $gr.id_resource = ? AND $gr.id_privilege = ?",
-                    [$this->id, $resource->id, $privilege->id]
+                    $this->getId(),
+                    $resourceId,
+                    $privilegeId
                 )
             );
 

@@ -33,7 +33,7 @@ class Group extends Model implements Editable {
 
     public static function fromName(string $name): ?static {
         return static::first(
-            where: Query::infer('name = ?', [$name])
+            where: Query::infer('name = ?', $name)
         );
     }
 

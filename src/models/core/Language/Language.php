@@ -51,7 +51,7 @@ class Language extends Model implements IsDefault {
     }
 
     public static function fromCode(string $code): ?static {
-        return static::first(where: Query::infer("code = ?", [$code]));
+        return static::first(where: Query::infer("code = ?", $code));
     }
 
 
