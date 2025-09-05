@@ -59,15 +59,10 @@ CREATE TABLE IF NOT EXISTS core_lexicon_translation (
     `id_phrase` INT NOT NULL,
     `id_language` INT NOT NULL,
     `translation` TEXT NOT NULL,
+    `id_rule` INT DEFAULT NULL,
     PRIMARY KEY (`id_translation`),
     FOREIGN KEY (`id_phrase`) REFERENCES `core_lexicon` (`id_phrase`),
-    FOREIGN KEY (`id_language`) REFERENCES `core_language` (`id_language`)
-) ENGINE = InnoDB;
-
-CREATE TABLE IF NOT EXISTS core_lexicon_translation_x_rule (
-    `id_translation` INT NOT NULL,
-    `id_rule` INT NOT NULL,
-    FOREIGN KEY (`id_translation`) REFERENCES `core_lexicon_translation` (`id_translation`),
+    FOREIGN KEY (`id_language`) REFERENCES `core_language` (`id_language`),
     FOREIGN KEY (`id_rule`) REFERENCES `core_lexicon_rule` (`id_rule`)
 ) ENGINE = InnoDB;
 

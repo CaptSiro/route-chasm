@@ -26,16 +26,18 @@ class Lexicon {
      * @param string $default
      * @param string $value
      * @param Language|null $targetLanguage
-     * @param array<string, array<string>> $templates
+     * @param array<string, string> $templates
      * @return string
      */
-    public static function translateTemplate(string $group, string $default, string $value, ?Language $targetLanguage = null, array $templates = []): string {
-        if (empty($rules)) {
-            return $value;
-        }
-
+    public static function translateTemplate(
+        string $group,
+        string $default,
+        string $value,
+        ?Language $targetLanguage = null,
+        array $templates = []
+    ): string {
         $language = $targetLanguage ?? App::getInstance()->getRequest()->getLanguage();
-        $phrase = Phrase::fromPair($group, $group);
+        $phrase = Phrase::fromPair($group, $default);
         if (is_null($phrase)) {
             $phrase = Phrase::createTemplate($group, $default, $language, $templates);
         }

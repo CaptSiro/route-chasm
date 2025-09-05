@@ -8,7 +8,6 @@ use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
-use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\TextField;
 use core\locale\Lexicon;
@@ -53,22 +52,23 @@ class Phrase extends Model {
         ]);
     }
 
+
     /**
-     * @param array<string, array<string>> $templates
+     * @param string $group
+     * @param string $default
+     * @param Language $language
+     * @param array<string, string> $templates
+     * @return static
      */
     public static function createTemplate(string $group, string $default, Language $language, array $templates = []): static {
         $instance = static::createPhrase($group, $default, true);
 
-        foreach ($templates as $template => $rules) {
-            $translation = Translation::createTranslation(
-                $instance,
+        foreach ($templates as $rule => $translation) {
+            $instance->addTranslation(
                 $language,
-                $template,
+                $translation,
+                Rule::fromRule($rule, create: true)
             );
-
-            foreach ($rules as $rule) {
-                $translation->addRule(Rule::fromRule($rule, create: true));
-            }
         }
 
         return $instance;
@@ -137,6 +137,39 @@ class Phrase extends Model {
         return $this->translations;
     }
 
+    public function addTranslation(Language $language, string $translation, ?Rule $rule = null): Translation {
+        return $this->addTranslationRaw(
+            $language->getId(),
+            $translation,
+            $rule?->getId()
+        );
+    }
+
+    public function addTranslationRaw(int $languageId, string $translation, ?int $ruleId = null): Translation {
+        foreach ($this->getTranslations() as $t) {
+            $equal = $t->languageId === $languageId
+                && $t->ruleId === $ruleId
+                && $t->translation === $translation;
+            if ($equal) {
+                return $t;
+            }
+        }
+
+        $t = Translation::createTranslationRaw(
+            $this->getId(),
+            $languageId,
+            $translation,
+            $ruleId
+        );
+
+        $this->translations[] = $t;
+        if (!$this->isDynamic) {
+            $this->staticTranslations[$languageId] = $t;
+        }
+
+        return $t;
+    }
+
     public function translate(Language $language): ?string {
         return $this->translateRaw($language->getId());
     }
@@ -164,13 +197,9 @@ class Phrase extends Model {
             }
 
             $translation->setPhraseModel($this);
-            foreach ($translation->getRules() as $rule) {
-                if (!$rule->match($value)) {
-                    continue 2;
-                }
+            if ($translation->getRule()->match($value)) {
+                return $translation->format($value);
             }
-
-            return $translation->format($value);
         }
 
         return null;

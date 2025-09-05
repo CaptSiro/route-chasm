@@ -1,6 +1,8 @@
-<?php /** @var \components\Home\Home $this */ ?>
+<?php /** @var \components\Home\Home $this */
 
-<h1>Route Chasm</h1>
+use modules\locales\EnglishUS;
+
+?><h1>Route Chasm</h1>
 <a href="https://github.com/CaptSiro/route-chasm">GitHub repository</a>
 
 <p>Navigate to <code>src/components/Home/Home.phtml</code> to edit this page</p>
@@ -13,3 +15,10 @@
         <?= $this->createLanguageLink($locale) ?>
     </div>
 <?php endforeach; ?>
+
+<div><?= $this->trt('home', '{} flowers', 0, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trt('home', '{} flowers', 1, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trt('home', '{} flowers', 2, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trt('home', '{} flowers', 3, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trt('home', '{} flowers', 4, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trt('home', '{} flowers', 5, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>

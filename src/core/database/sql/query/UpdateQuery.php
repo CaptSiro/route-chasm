@@ -24,6 +24,11 @@ class UpdateQuery implements SqlQuery {
 
 
 
+    /**
+     * @param string $column Column is escaped automatically on query string creation
+     * @param Parameter $value
+     * @return $this
+     */
     public function set(string $column, Parameter $value): static {
         $this->set[$column] = $value;
         return $this;

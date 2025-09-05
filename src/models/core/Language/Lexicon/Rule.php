@@ -9,8 +9,6 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\ModelCache;
-use core\database\sql\query\Query;
-use core\database\sql\Sql;
 use core\database\sql\Table;
 use core\forms\description\TextField;
 
@@ -35,30 +33,6 @@ class Rule extends Model {
         }
 
         return $instance;
-    }
-
-    public static function forTranslation(Translation $translation): array {
-        return self::forTranslationRaw($translation->getId());
-    }
-
-    public static function forTranslationRaw(int $translationId): array {
-        static::modelCache_loadAll(fn(Rule $x) => $x->rule);
-
-        $description = static::getDescription();
-        $tr = $description->connection->getDriver()->escapeTable(Translation::TABLE_TRANSLATION_X_RULE);
-
-        $ruleIds = Sql::select($tr)
-            ->projection('id_rule')
-            ->where(Query::infer("id_translation = ?", $translationId))
-            ->fetchAll($description->connection);
-
-        $rules = [];
-
-        foreach ($ruleIds as $ruleId) {
-            $rules[] = static::modelCache_fromId($ruleId);
-        }
-
-        return $rules;
     }
 
 

@@ -8,6 +8,7 @@ use core\database\sql\query\Query;
 use core\Identifier;
 use core\view\View;
 use JsonSerializable;
+use RuntimeException;
 
 class Model implements JsonSerializable, Identifier, NexusProxyItem {
     public static function get(?Model $model, string $property, mixed $or = null): mixed {
@@ -159,6 +160,10 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $description = ModelDescription::extract(static::class);
 
         foreach ($data as $property => $value) {
+            if (!isset($description->alias[$property])) {
+                throw new RuntimeException(static::class ." does not have '$property' property");
+            }
+
             $column = $description->alias[$property];
             if (!isset($column)) {
                 continue;

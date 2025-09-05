@@ -9,6 +9,18 @@ class EnglishUS extends Locale {
     public const RULE_SINGULAR = Regex::LOCALE_RULE_ONE;
     public const RULE_PLURAL = Regex::LOCALE_RULE_TWO_AND_UP;
 
+    /**
+     * @param string $singular
+     * @param string $plural
+     * @return array<string>
+     */
+    public static function pluralize(string $singular, string $plural): array {
+        return [
+            self::RULE_SINGULAR => $singular,
+            self::RULE_PLURAL => $plural
+        ];
+    }
+
 
 
     public function getIdentifier(): string {

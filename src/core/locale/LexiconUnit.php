@@ -18,10 +18,22 @@ trait LexiconUnit {
      * @param string $default
      * @param string $value
      * @param Language|null $targetLanguage
-     * @param array<string, array<string>> $templates
+     * @param array<string, string> $templates
      * @return string
      */
-    public function trt(string $group, string $default, string $value, ?Language $targetLanguage = null, array $templates = []): string {
-        return Lexicon::translateTemplate($group, $default, $value, $targetLanguage, $templates);
+    public function trt(
+        string $group,
+        string $default,
+        string $value,
+        ?Language $targetLanguage = null,
+        array $templates = []
+    ): string {
+        return Lexicon::translateTemplate(
+            $group,
+            $default,
+            $value,
+            $targetLanguage,
+            $templates
+        );
     }
 }

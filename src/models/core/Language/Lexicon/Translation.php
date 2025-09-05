@@ -21,17 +21,14 @@ use RuntimeException;
  * @property int $phraseId
  * @property int $languageId
  * @property string $translation
+ * @property ?int $ruleId
  */
 
 #[Grid]
 #[Table('core_lexicon_translation')]
 #[Database(App::DATABASE)]
 class Translation extends Model {
-    public const TABLE_TRANSLATION_X_RULE = 'core_lexicon_translation_x_rule';
-
-
-
-    public static function createTranslation(Phrase $phrase, Language $language, string $translation): static {
+    public static function createTranslation(Phrase $phrase, Language $language, string $translation, ?Rule $rule = null): static {
         return static::createTranslationRaw(
             $phrase->getId(),
             $language->getId(),
@@ -39,12 +36,18 @@ class Translation extends Model {
         );
     }
 
-    public static function createTranslationRaw(int $phraseId, int $languageId, string $translation): static {
-        return static::create([
+    public static function createTranslationRaw(int $phraseId, int $languageId, string $translation, ?int $ruleId = null): static {
+        $properties = [
             'phraseId' => $phraseId,
             'languageId' => $languageId,
             'translation' => $translation,
-        ]);
+        ];
+
+        if (!is_null($ruleId)) {
+            $properties['ruleId'] = $ruleId;
+        }
+
+        return static::create($properties);
     }
 
     public static function forPhrase(Phrase $phrase): array {
@@ -72,9 +75,11 @@ class Translation extends Model {
     #[Column(type: Column::TYPE_STRING)]
     protected string $translation;
 
-    protected array $rules;
+    #[Column('id_rule', type: Column::TYPE_INTEGER)]
+    protected ?int $ruleId;
 
     protected Phrase $phrase;
+    protected ?Rule $rule;
 
 
 
@@ -95,33 +100,29 @@ class Translation extends Model {
         return $this->phrase = $phrase;
     }
 
-    /**
-     * @return array<Rule>
-     */
-    public function getRules(): array {
+    public function getRule(): ?Rule {
         if (!$this->getPhrase()->isDynamic) {
-            return [];
+            return null;
         }
 
-        if (!isset($this->rules)) {
-            $this->rules = Rule::forTranslation($this);
+        if (!isset($this->rule)) {
+            $this->rule = Rule::fromId($this->ruleId);
         }
 
-        return $this->rules;
+        return $this->rule;
     }
 
-    public function addRule(Rule $rule): static {
-        $this->addRuleId($rule->getId());
+    public function setRule(Rule $rule): static {
+        $this->setRuleId($rule->getId());
         return $this;
     }
 
-    public function addRuleId(int $rule): SideEffect {
+    public function setRuleId(int $ruleId): SideEffect {
         $description = static::getDescription();
-        $tr = $description->connection->getDriver()->escapeTable(self::TABLE_TRANSLATION_X_RULE);
 
-        return Sql::insert($tr)
-            ->columns(['id_translation', 'id_rule'])
-            ->value([Parameter::infer($this->getId()), Parameter::infer($rule)])
+        return Sql::update($description->getEscapedTable())
+            ->set('id_rule', Parameter::infer($ruleId))
+            ->where(Query::infer('id_translation = ?', $this->getId()))
             ->run($description->connection);
     }
 
