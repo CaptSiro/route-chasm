@@ -3,8 +3,6 @@
 namespace core\view;
 
 use components\core\WebPage\ContextAwareWebPage;
-use core\communication\Request;
-use core\communication\Response;
 
 class ContainerContent extends Component {
     protected Container $container;
@@ -26,9 +24,5 @@ class ContainerContent extends Component {
 
     public function getRoot(): View {
         return $this->container;
-    }
-
-    public function perform(Request $request, Response $response): void {
-        $response->renderRoot($this);
     }
 }

@@ -5,6 +5,7 @@ namespace core\database\sql;
 use components\core\Admin\Nexus\NexusProxyItem;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
+use core\database\sql\query\SqlQuery;
 use core\Identifier;
 use core\view\View;
 use JsonSerializable;
@@ -197,6 +198,70 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function isDeletable(): bool {
         return true;
+    }
+
+    private function insertQuery(): ?SqlQuery {
+        $description = ModelDescription::extract(static::class);
+        $sql = Sql::insert($description->table);
+
+        $properties = empty($this->updated)
+            ? $description->alias
+            : $this->updated;
+
+        $columns = [];
+        $record = [];
+
+        foreach ($properties as $alias => $ignored) {
+            $column = $description->alias[$alias];
+            $columns[] = $column->name;
+            $record[] = new Parameter($this->{$column->alias}, $column->type);
+        }
+
+        $sql->columns($columns);
+        $sql->value($record);
+
+        return $sql;
+    }
+
+    private function updateQuery(): ?SqlQuery {
+        $description = ModelDescription::extract(static::class);
+        $sql = Sql::update($description->table);
+        $idColumnName = $description->idColumn->name;
+
+        $setClauses = 0;
+
+        foreach ($this->updated as $alias => $ignored) {
+            $column = $description->alias[$alias];
+            if ($column->name === $idColumnName) {
+                continue;
+            }
+
+            $sql->set($column->name, new Parameter($this->{$column->alias}, $column->type));
+            $setClauses++;
+        }
+
+        if ($setClauses === 0) {
+            return null;
+        }
+
+        $sql->where(new Query(
+            $description->getEscapedIdColumnName() ." = ?",
+            [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
+        ));
+
+        return $sql;
+    }
+
+    public function saveQuery(): ?SqlQuery {
+        if (!$this->isSavable()) {
+            return null;
+        }
+
+        if ($this->isNewRecord()) {
+            return $this->insertQuery();
+        }
+
+        return $this->updateQuery();
     }
 
     private function insert(): DatabaseAction|View {

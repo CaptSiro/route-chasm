@@ -4,6 +4,7 @@ namespace core\http;
 
 use core\actions\Action;
 use core\actions\ActionBindRouteNode;
+use core\actions\IsLastAction;
 use core\communication\Request;
 use core\communication\Response;
 use core\patterns\AnyString;
@@ -12,7 +13,7 @@ use core\route\Path;
 use core\route\RouteNode;
 
 class HttpGate implements Action {
-    use ActionBindRouteNode;
+    use ActionBindRouteNode, IsLastAction;
 
 
 
@@ -105,8 +106,7 @@ class HttpGate implements Action {
     }
 
     public function perform(Request $request, Response $response): void {
-        $notLast = Path::depth($request->getRemainingPath()) !== 0;
-        if ($notLast && !$this->isMiddleware) {
+        if (!$this->isLastAction($request)) {
             return;
         }
 

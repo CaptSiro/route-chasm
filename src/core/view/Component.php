@@ -5,13 +5,14 @@ namespace core\view;
 use core\actions\Action;
 use core\actions\ActionBindRouteNode;
 use core\actions\ActorClassName;
+use core\actions\IsLastAction;
 use core\communication\Request;
 use core\communication\Response;
 use core\locale\LexiconUnit;
 use core\route\RouteNode;
 
 class Component implements View, Action {
-    use Renderer, ActionBindRouteNode, ActorClassName, LexiconUnit;
+    use Renderer, ActionBindRouteNode, ActorClassName, IsLastAction, LexiconUnit;
 
 
 
@@ -35,6 +36,10 @@ class Component implements View, Action {
     }
 
     public function perform(Request $request, Response $response): void {
+        if (!$this->isLastAction($request)) {
+            return;
+        }
+
         $response->renderRoot($this);
     }
 }

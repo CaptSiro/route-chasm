@@ -41,6 +41,7 @@ class ModelDescription {
                 $property->getName(),
                 $column->name ?? $property->getName(),
                 $column->type,
+                $column->nullable,
                 $column->transform
             );
 

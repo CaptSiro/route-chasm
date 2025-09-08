@@ -31,6 +31,7 @@ use core\forms\layout\Row\Row;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\navigation\Navigator;
 use core\sideloader\SideLoader;
 
 require_once __DIR__ ."/src/autoload.php";
@@ -173,6 +174,16 @@ $router->use('/select',
 //    ->add('/Item 3/Sub Item 2', 'sub-item-2')
 //;
 //$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
+
+Navigator::register(\core\PageFactory::getInstance());
+
+$router->use('/nav-bind', function (Request $request, Response $response) {
+    $lang = $request->getLanguage();
+    Navigator::add($lang, \core\route\Path::from('my-custom-page'), \core\PageFactory::getInstance(), 'My custom page');
+    $response->send('ok');
+});
+
+$router->bind('/', new Navigator());
 
 
 

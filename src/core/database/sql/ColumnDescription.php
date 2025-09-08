@@ -9,12 +9,17 @@ readonly class ColumnDescription {
         public string $alias,
         public string $name,
         public string $type,
+        public bool $nullable,
         protected ?Closure $transform
     ) {}
 
 
 
     public function transform(mixed $value): mixed {
+        if (is_null($value) && $this->nullable) {
+            return null;
+        }
+
         if (!is_null($this->transform)) {
             return ($this->transform)($value);
         }

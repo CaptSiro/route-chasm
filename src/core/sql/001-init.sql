@@ -68,6 +68,45 @@ CREATE TABLE IF NOT EXISTS core_lexicon_translation (
 
 
 
+DROP TABLE IF EXISTS core_navigation;
+DROP TABLE IF EXISTS core_navigation_context;
+DROP TABLE IF EXISTS core_navigation_factory;
+
+CREATE TABLE IF NOT EXISTS core_navigation_context (
+    `id_navigation_context` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_navigation_context`),
+    UNIQUE (`name`)
+) ENGINE = InnoDB;
+
+INSERT INTO core_navigation_context(`id_navigation_context`, `name`)
+VALUES (1, 'Default');
+
+CREATE TABLE IF NOT EXISTS core_navigation_factory (
+    `id_navigation_factory` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_navigation_factory`),
+    UNIQUE (`name`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_navigation (
+    `id_slug` INT NOT NULL AUTO_INCREMENT,
+    `id_navigation_context` INT NOT NULL,
+    `id_parent` INT DEFAULT NULL,
+    `id_language` INT NOT NULL,
+    `slug` VARCHAR(255) NOT NULL,
+    `id_navigation_factory` INT DEFAULT NULL,
+    `data` VARCHAR(255) DEFAULT '',
+    PRIMARY KEY (`id_slug`),
+    UNIQUE (`id_navigation_context`, `id_parent`, `id_language`, `slug`),
+    FOREIGN KEY (`id_navigation_context`) REFERENCES `core_navigation_context` (`id_navigation_context`),
+    FOREIGN KEY (`id_parent`) REFERENCES `core_navigation` (`id_slug`),
+    FOREIGN KEY (`id_language`) REFERENCES `core_language` (`id_language`),
+    FOREIGN KEY (`id_navigation_factory`) REFERENCES `core_navigation_factory` (`id_navigation_factory`)
+) ENGINE = InnoDB;
+
+
+
 DROP TABLE IF EXISTS `core_domain`;
 CREATE TABLE IF NOT EXISTS `core_domain` (
     `id_domain` INT NOT NULL AUTO_INCREMENT,
