@@ -3,6 +3,7 @@
 namespace core\database\sql;
 
 use components\core\Admin\Nexus\NexusProxyItem;
+use core\database\sql\query\InsertQuery;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;
@@ -200,7 +201,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         return true;
     }
 
-    private function insertQuery(): ?SqlQuery {
+    private function insertQuery(): SqlQuery {
         $description = ModelDescription::extract(static::class);
         $sql = Sql::insert($description->table);
 
@@ -252,6 +253,18 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         return $sql;
     }
 
+    public function deleteQuery(): SqlQuery {
+        $description = ModelDescription::extract(static::class);
+        $idColumnName = $description->getEscapedIdColumnName();
+
+        return Sql::delete($description->table)
+            ->where(new Query(
+                "$idColumnName = ?",
+                [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
+            ))
+            ->limit(1);
+    }
+
     public function saveQuery(): ?SqlQuery {
         if (!$this->isSavable()) {
             return null;
@@ -266,25 +279,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     private function insert(): DatabaseAction|View {
         $description = ModelDescription::extract(static::class);
-        $sql = Sql::insert($description->table);
-
-        $properties = empty($this->updated)
-            ? $description->alias
-            : $this->updated;
-
-        $columns = [];
-        $record = [];
-
-        foreach ($properties as $alias => $ignored) {
-            $column = $description->alias[$alias];
-            $columns[] = $column->name;
-            $record[] = new Parameter($this->{$column->alias}, $column->type);
-        }
-
-        $sql->columns($columns);
-        $sql->value($record);
-
-        $sideEffect = $sql->run($description->connection);
+        $sideEffect = $this->insertQuery()->run($description->connection);
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
@@ -303,29 +298,10 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         }
 
         $description = ModelDescription::extract(static::class);
-        $sql = Sql::update($description->table);
-        $idColumnName = $description->idColumn->name;
-
-        $setClauses = 0;
-
-        foreach ($this->updated as $alias => $ignored) {
-            $column = $description->alias[$alias];
-            if ($column->name === $idColumnName) {
-                continue;
-            }
-
-            $sql->set($column->name, new Parameter($this->{$column->alias}, $column->type));
-            $setClauses++;
-        }
-
-        if ($setClauses === 0) {
+        $sql = $this->updateQuery();
+        if (is_null($sql)) {
             return DatabaseAction::NONE;
         }
-
-        $sql->where(new Query(
-            $description->getEscapedIdColumnName() ." = ?",
-            [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
-        ));
 
         $sideEffect = $sql->run($description->connection);
         if ($sideEffect->rowsAffected === 0) {
@@ -337,16 +313,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function delete(): DatabaseAction {
         $description = ModelDescription::extract(static::class);
-        $idColumnName = $description->getEscapedIdColumnName();
-
-        $sql = Sql::delete($description->table)
-            ->where(new Query(
-                "$idColumnName = ?",
-                [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
-            ))
-            ->limit(1);
-
-        $sideEffect = $sql->run($description->connection);
+        $sideEffect = $this->deleteQuery()->run($description->connection);
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
