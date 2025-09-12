@@ -9,7 +9,7 @@ use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\Sql;
 
-const IS_DEFAULT_PROPERTY = 'default';
+const PROPERTY_IS_DEFAULT = 'default';
 
 /**
  * @property bool $default
@@ -22,7 +22,7 @@ trait IsDefaultExtension {
     }
 
     public static function addIsDefaultGridColumn(array &$columns): void {
-        $columns[IS_DEFAULT_PROPERTY] = new GridColumn('Is Default', '96px');
+        $columns[PROPERTY_IS_DEFAULT] = new GridColumn('Is Default', '96px');
     }
 
 
@@ -37,10 +37,10 @@ trait IsDefaultExtension {
     public function setAsDefault(): void {
         $description = ModelDescription::extract(static::class);
         Sql::update($description->getEscapedTable())
-            ->set('default', Parameter::infer(false))
+            ->set(PROPERTY_IS_DEFAULT, Parameter::infer(false))
             ->run($description->connection);
 
-        $this->set(['default' => true]);
+        $this->set([PROPERTY_IS_DEFAULT => true]);
         $this->save();
     }
 }

@@ -57,6 +57,10 @@ class SelectQuery implements Portion, SqlQuery {
         return $this->join($table, $condition, JoinClause::TYPE_RIGHT);
     }
 
+    public function naturalJoin(string $table): static {
+        return $this->join($table, '1', JoinClause::TYPE_NATURAL);
+    }
+
     public function fetch(Connection $connection): ?array {
         return $connection->fetch($this->toQuery($connection));
     }

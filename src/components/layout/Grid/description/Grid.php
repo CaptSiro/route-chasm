@@ -7,6 +7,7 @@ use components\layout\Grid\Loader\GridLoader;
 use components\layout\Grid\Loader\StaticGridLoader;
 use components\layout\Grid\Proxy\Proxy;
 use ReflectionClass;
+use RuntimeException;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class Grid {
@@ -24,9 +25,7 @@ class Grid {
 
         $class = $reflection->getName();
         if (!method_exists($class, "all")) {
-            // todo
-            // throw warning
-            return;
+            throw new RuntimeException("Cannot create Grid from class '$class' that does not have 'all' static method");
         }
 
         $this->loader = new StaticGridLoader(

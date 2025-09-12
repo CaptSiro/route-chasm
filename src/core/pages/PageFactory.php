@@ -1,9 +1,10 @@
 <?php
 
-namespace core;
+namespace core\pages;
 
 use components\core\Message\Message;
 use core\navigation\NavigationFactory;
+use core\Singleton;
 use core\view\View;
 
 class PageFactory implements NavigationFactory {

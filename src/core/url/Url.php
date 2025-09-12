@@ -23,15 +23,17 @@ class Url implements Copy {
             throw new RuntimeException("Not a valid URL literal: $literal");
         }
 
-        $protocol = $matches[2] ?? 'http';
-        $port = intval($matches[6] ?? -1);
+        $protocol = Strings::nonEmpty($matches[2], 'http');
+        $port = intval(Strings::nonEmpty($matches[6], '-1'));
 
         return (new static())
             ->setProtocol($protocol)
-            ->setHost($matches[5] ?? 'localhost')
+            ->setHost(Strings::nonEmpty($matches[5], 'localhost'))
             ->setPort($port)
-            ->setPath(Path::from($matches[7] ?? ''))
-            ->setQuery(new StrictMap(Strings::parseUrlEncoded($matches[9] ?? '')));
+            ->setPath(Path::from(Strings::nonEmpty($matches[7], '')))
+            ->setQuery(new StrictMap(
+                Strings::parseUrlEncoded(Strings::nonEmpty($matches[9] ?? null, '')))
+            );
     }
 
     public static function fromRequest(): static {

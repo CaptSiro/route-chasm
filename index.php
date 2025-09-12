@@ -175,11 +175,11 @@ $router->use('/select',
 //;
 //$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
 
-Navigator::register(\core\PageFactory::getInstance());
+Navigator::register(\core\pages\PageFactory::getInstance());
 
 $router->use('/nav-bind', function (Request $request, Response $response) {
     $lang = $request->getLanguage();
-    Navigator::add($lang, \core\route\Path::from('my-custom-page'), \core\PageFactory::getInstance(), 'My custom page');
+    Navigator::add($lang, \core\route\Path::from('my-custom-page'), \core\pages\PageFactory::getInstance(), 'My custom page');
     $response->send('ok');
 });
 

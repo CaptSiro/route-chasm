@@ -107,6 +107,64 @@ CREATE TABLE IF NOT EXISTS core_navigation (
 
 
 
+DROP TABLE IF EXISTS ext_page_meta;
+DROP TABLE IF EXISTS core_page_status;
+DROP TABLE IF EXISTS core_page_template;
+DROP TABLE IF EXISTS core_page_localization;
+DROP TABLE IF EXISTS core_page;
+
+CREATE TABLE IF NOT EXISTS core_page_status (
+    `id_page_status` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_page_status`),
+    UNIQUE (`name`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_page_template (
+    `id_page_template` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_page_template`),
+    UNIQUE (`name`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_page (
+    `id_page` INT NOT NULL AUTO_INCREMENT,
+    `id_page_template` INT NOT NULL,
+    `id_page_status` INT NOT NULL,
+    `created` DATETIME DEFAULT NOW(),
+    `updated` DATETIME DEFAULT NOW(),
+    `publish` DATETIME DEFAULT NOW(),
+    `remove` DATETIME NULL DEFAULT NULL,
+    PRIMARY KEY (`id_page`),
+    FOREIGN KEY (`id_page_template`) REFERENCES `core_page_template` (`id_page_template`),
+    FOREIGN KEY (`id_page_status`) REFERENCES `core_page_status` (`id_page_status`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_page_localization (
+    `id_localized_page` INT NOT NULL AUTO_INCREMENT,
+    `id_page` INT NOT NULL,
+    `id_language` INT NOT NULL,
+    `id_slug` INT NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_localized_page`),
+    FOREIGN KEY (`id_page`) REFERENCES `core_page` (`id_page`),
+    FOREIGN KEY (`id_language`) REFERENCES `core_language` (`id_language`),
+    FOREIGN KEY (`id_slug`) REFERENCES `core_navigation` (`id_slug`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS ext_page_meta (
+    `id_page_meta` INT NOT NULL AUTO_INCREMENT,
+    `id_localized_page` INT NOT NULL,
+    `description` TEXT NOT NULL,
+    `keywords` TEXT NOT NULL,
+    `og_title` TEXT NOT NULL,
+    `og_description` TEXT NOT NULL,
+    PRIMARY KEY (`id_page_meta`),
+    FOREIGN KEY (`id_localized_page`) REFERENCES `core_page_localization` (`id_localized_page`)
+) ENGINE = InnoDB;
+
+
+
 DROP TABLE IF EXISTS `core_domain`;
 CREATE TABLE IF NOT EXISTS `core_domain` (
     `id_domain` INT NOT NULL AUTO_INCREMENT,

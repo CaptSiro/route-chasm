@@ -3,7 +3,6 @@
 namespace core\database\sql;
 
 use components\core\Admin\Nexus\NexusProxyItem;
-use core\database\sql\query\InsertQuery;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;

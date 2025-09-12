@@ -205,11 +205,34 @@ function form_formData(form) {
 }
 
 /**
+ * @param json
+ * @param {Set<string>} arrays
+ * @param {string} name
+ * @param value
+ */
+function form_jsonAppend(json, arrays, name, value) {
+    if (arrays.has(name)) {
+        json[name].push(value);
+        return;
+    }
+
+    const x = json[name];
+    if (is(x)) {
+        json[name] = [x, value];
+        arrays.add(name);
+        return;
+    }
+
+    json[name] = value;
+}
+
+/**
  * @param {HTMLElement} form
  * @returns {Payload}
  */
 function form_json(form) {
     const json = {};
+    const arrays = new Set();
 
     for (const control of form.querySelectorAll("[name]")) {
         if (Boolean(control.dataset.skipSubmit)) {
@@ -217,11 +240,11 @@ function form_json(form) {
         }
 
         if (control.type === "checkbox") {
-            json[control.name] = control.checked;
+            form_jsonAppend(json, arrays, control.name, control.checked);
             continue;
         }
 
-        json[control.name] = form_extract(control);
+        form_jsonAppend(json, arrays, control.name, form_extract(control));
     }
 
     return {

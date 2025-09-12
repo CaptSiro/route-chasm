@@ -35,18 +35,6 @@ class Privilege extends Model implements Editable {
     public const CREATE = 'Create';
     public const UPDATE = 'Update';
 
-    public static function read(): ?static {
-        return static::fromName(self::READ);
-    }
-
-    public static function create(): ?static {
-        return static::fromName(self::CREATE);
-    }
-
-    public static function update(): ?static {
-        return static::fromName(self::UPDATE);
-    }
-
     public static function fromName(string $name): ?static {
         if (!is_null($hit = static::modelCache_get($name))) {
             return $hit;

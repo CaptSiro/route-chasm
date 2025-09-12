@@ -27,6 +27,7 @@ class AdminNexus extends ContainerContent {
 
     protected AdminWebPage $page;
     protected ?string $urlPath = null;
+    protected NexusLinkCreator $linkCreator;
 
 
 
@@ -39,9 +40,15 @@ class AdminNexus extends ContainerContent {
     ) {
         parent::__construct($this->page = new AdminWebPage());
         $this->editor->setContext($this);
+        $this->linkCreator = DefaultLinkCreator::getInstance();
     }
 
 
+
+    public function setLinkCreator(NexusLinkCreator $creator): static {
+        $this->linkCreator = $creator;
+        return $this;
+    }
 
     public function getModelDescription(): ModelDescription {
         return $this->modelDescription;
@@ -105,7 +112,7 @@ class AdminNexus extends ContainerContent {
 
         $router->use(
             Route::from('/update/[id]'),
-            function (Request $request, Response $response) use ($factory) {
+            function (Request $request) use ($factory) {
                 $id = $request->getParam()->get('id');
 
                 return $this->editor
@@ -137,15 +144,20 @@ class AdminNexus extends ContainerContent {
             return null;
         }
 
-        return Path::join($this->urlPath, 'create');
+        return $this->linkCreator->getCreateLink(
+            Path::join($this->urlPath, 'create')
+        );
     }
 
-    public function getUpdateLink(string $id): ?string {
+    public function getUpdateLink(mixed $id): ?string {
         if (is_null($this->urlPath)) {
             return null;
         }
 
-        return Path::join($this->urlPath, 'update', $id);
+        return $this->linkCreator->getUpdateLink(
+            Path::join($this->urlPath, 'update', $id),
+            $id
+        );
     }
 
     public function getDeleteLink(string $id): ?string {
@@ -153,7 +165,10 @@ class AdminNexus extends ContainerContent {
             return null;
         }
 
-        return Path::join($this->urlPath, $id);
+        return $this->linkCreator->getDeleteLink(
+            Path::join($this->urlPath, $id),
+            $id
+        );
     }
 
     public function perform(Request $request, Response $response): void {

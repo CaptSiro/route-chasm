@@ -73,6 +73,8 @@ class ModelDescription {
 
 
 
+    protected string $escapedTable;
+
     /**
      * @param string $class
      * @param string $table
@@ -88,14 +90,20 @@ class ModelDescription {
         public readonly ColumnDescription $idColumn,
         public readonly array $columns,
         public readonly array $alias,
-    ) {}
+    ) {
+        $this->escapedTable = $this->connection->getDriver()->escapeTable(
+            $this->table
+        );
+    }
 
 
 
     public function getEscapedTable(): string {
-        return $this->connection->getDriver()->escapeTable(
-            $this->table
-        );
+        return $this->escapedTable;
+    }
+
+    public function getEscapedColumn(string $column): string {
+        return "$this->escapedTable.". $this->connection->getDriver()->escapeColumn($column);
     }
 
     public function getEscapedIdColumnName(): string {

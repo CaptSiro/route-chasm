@@ -4,16 +4,21 @@ namespace models\extensions\Enable;
 
 use components\layout\Grid\description\GridColumn;
 use core\database\sql\Column;
+use core\forms\controls\Control;
 use core\forms\description\Checkbox;
 
-const ENABLE_PROPERTY = 'enabled';
+const PROPERTY_ENABLED = 'enabled';
 
 /**
  * @property bool $enabled
  */
 trait EnableExtension {
     public static function addEnableGridColumn(array &$columns): void {
-        $columns[ENABLE_PROPERTY] = new GridColumn('Enabled', '96px');
+        $columns[PROPERTY_ENABLED] = new GridColumn('Enabled', '96px');
+    }
+
+    public static function getEnableControl(): Control {
+        return new \core\forms\controls\Checkbox\Checkbox(PROPERTY_ENABLED, 'Enabled');
     }
 
 
@@ -28,7 +33,7 @@ trait EnableExtension {
     }
 
     public function enable(bool $enable = true): void {
-        $this->set(['enabled' => $enable]);
+        $this->set([PROPERTY_ENABLED => $enable]);
     }
 
     public function disable(): void {

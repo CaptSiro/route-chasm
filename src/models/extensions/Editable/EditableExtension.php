@@ -4,6 +4,8 @@ namespace models\extensions\Editable;
 
 use core\database\sql\Column;
 
+const PROPERTY_EDITABLE = 'editable';
+
 /**
  * @property bool $editable
  */
@@ -16,6 +18,6 @@ trait EditableExtension {
     }
 
     public function setEditable(bool $editable): void {
-        $this->set(['editable' => $editable]);
+            $this->set([PROPERTY_EDITABLE => $editable]);
     }
 }

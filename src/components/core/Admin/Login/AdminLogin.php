@@ -134,7 +134,7 @@ class AdminLogin extends ContainerContent {
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::perform($request, $response);
+                $response->renderRoot($this);
                 break;
             }
 

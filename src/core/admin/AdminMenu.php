@@ -17,6 +17,7 @@ use models\core\Domain\Domain;
 use models\core\Group\Group;
 use models\core\Language\Language;
 use models\core\Language\LanguageEditorBehavior;
+use models\core\Page\Page;
 use models\core\Resource;
 use models\core\Setting\Setting;
 use models\core\User\User;
@@ -25,6 +26,13 @@ use models\core\User\UserEditorBehavior;
 class AdminMenu {
     public static function createMenu(Router $router): Menu {
         $router
+
+            ->use(
+                Route::menu("/Web/Page")
+                    ->icon("Web", Icon::nf('nf-md-web'))
+                    ->icon("Page", Icon::nf('nf-md-file_document')),
+                Page::getNexus()
+            )
 
             ->use(
                 Route::menu("/Domains")

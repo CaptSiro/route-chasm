@@ -25,6 +25,12 @@ class Strings extends Init {
             ->asString();
     }
 
+    public static function nonEmpty(?string $value, string $or): string {
+        return !empty($value)
+            ? $value
+            : $or;
+    }
+
     public static function CHARS_ALPHA(): string {
         return self::$charsAlpha;
     }
