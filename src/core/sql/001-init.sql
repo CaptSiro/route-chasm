@@ -108,17 +108,23 @@ CREATE TABLE IF NOT EXISTS core_navigation (
 
 
 DROP TABLE IF EXISTS ext_page_meta;
-DROP TABLE IF EXISTS core_page_status;
-DROP TABLE IF EXISTS core_page_template;
 DROP TABLE IF EXISTS core_page_localization;
 DROP TABLE IF EXISTS core_page;
+DROP TABLE IF EXISTS core_page_status;
+DROP TABLE IF EXISTS core_page_template;
 
 CREATE TABLE IF NOT EXISTS core_page_status (
     `id_page_status` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
+    `is_editable` TINYINT NOT NULL DEFAULT '0',
     PRIMARY KEY (`id_page_status`),
     UNIQUE (`name`)
 ) ENGINE = InnoDB;
+
+INSERT INTO core_page_status(id_page_status, name, is_editable)
+VALUES (1, 'Draft', 0),
+       (2, 'Public', 0),
+       (3, 'Archived', 0);
 
 CREATE TABLE IF NOT EXISTS core_page_template (
     `id_page_template` INT NOT NULL AUTO_INCREMENT,
@@ -129,11 +135,12 @@ CREATE TABLE IF NOT EXISTS core_page_template (
 
 CREATE TABLE IF NOT EXISTS core_page (
     `id_page` INT NOT NULL AUTO_INCREMENT,
+    `id_page_parent` INT NULL DEFAULT NULL,
     `id_page_template` INT NOT NULL,
     `id_page_status` INT NOT NULL,
     `created` DATETIME DEFAULT NOW(),
     `updated` DATETIME DEFAULT NOW(),
-    `publish` DATETIME DEFAULT NOW(),
+    `publish` DATETIME NULL DEFAULT NOW(),
     `remove` DATETIME NULL DEFAULT NULL,
     PRIMARY KEY (`id_page`),
     FOREIGN KEY (`id_page_template`) REFERENCES `core_page_template` (`id_page_template`),

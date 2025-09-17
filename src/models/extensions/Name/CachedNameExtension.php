@@ -1,6 +1,6 @@
 <?php
 
-namespace models\extensions;
+namespace models\extensions\Name;
 
 use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
@@ -11,7 +11,7 @@ trait CachedNameExtension {
 
     public static function fromName(string $name): ?static {
         self::modelCache_loadAll(
-            fn(NavigationFactoryRecord $x) => $x->name
+            fn(Name $x) => $x->getName()
         );
 
         $record = static::modelCache_get($name);

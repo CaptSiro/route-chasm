@@ -5,6 +5,8 @@ namespace core\forms\description;
 use components\core\Admin\Nexus\Editor;
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
+use components\core\Terminal\Terminal;
+use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
 use core\forms\Form;
@@ -31,7 +33,13 @@ class FormDescription implements EditorBehavior {
 
                 if ($instance instanceof ControlAttribute) {
                     $instance->bindProperty($property);
-                    $controls[$property->getName()] = $instance;
+
+                    if ($instance->isFirst()) {
+                        $controls = [$property->getName() => $instance] + $controls;
+                    } else {
+                        $controls[$property->getName()] = $instance;
+                    }
+
                     break;
                 }
             }
@@ -58,12 +66,20 @@ class FormDescription implements EditorBehavior {
 
 
     public function initForm(Form $form, ?Model $model): ?View {
+        return null;
+    }
+
+    public function addControls(Layout $layout, ?Model $model): ?View {
         $data = $model?->getData() ?? [];
 
         foreach ($this->controls as $property => $control) {
             $view = $control->getControl();
-            $view->setValue($data[$property] ?? '');
-            $form->add($view);
+
+            if (isset($data[$property])) {
+                $view->setValue($data[$property]);
+            }
+
+            $layout->add($view);
         }
 
         return null;

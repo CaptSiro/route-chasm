@@ -3,10 +3,11 @@
 namespace core\forms;
 
 use components\core\Html\Html;
+use components\layout\Layout;
 use core\view\Component;
 use core\view\View;
 
-class Form extends Component {
+class Form extends Component implements Layout {
     private static ?Form $form = null;
 
     public static function rendering(): ?Form {
@@ -83,8 +84,8 @@ class Form extends Component {
         return $this;
     }
 
-    public function add(View $control): self {
-        $this->elements[] = $control;
+    public function add(View $child): static {
+        $this->elements[] = $child;
         return $this;
     }
 

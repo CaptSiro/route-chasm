@@ -1,0 +1,15 @@
+<?php /** @var AdminPageEditor $this */
+
+use components\core\Admin\Page\AdminPageEditor;
+
+?><section>
+    <h1><?= $this->getTitle() ?></h1>
+
+    <div>
+        <a href="<?= $this->getTemplateEditorLink() ?>" class="button">
+            <?= $this->tr(AdminPageEditor::LEXICON_GROUP, 'Edit page content') ?>
+        </a>
+    </div>
+
+    <?= $this->getForm() ?>
+</section>

@@ -9,6 +9,15 @@ use core\database\sql\Model;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\TextField;
+use models\core\Language\Language;
+use models\core\Navigation\Slug;
+
+/**
+ * @property int $pageId
+ * @property int $languageId
+ * @property int $slugId
+ * @property string $title
+ */
 
 #[Table('core_page_localization')]
 #[Database(App::DATABASE)]
@@ -17,6 +26,16 @@ class LocalizedPage extends Model {
         return self::first(
             where: Query::infer('id_page = ? AND id_language = ?', $pageId, $languageId)
         );
+    }
+
+    public static function forPageRaw(int $pageId): array {
+        return self::all(
+            where: Query::infer('id_page = ?', $pageId)
+        );
+    }
+
+    public static function createSlugLiteral(Language $language, string $title): string {
+        return $language->getLocale()->formatUrlSegment($title);
     }
 
 
@@ -36,4 +55,42 @@ class LocalizedPage extends Model {
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
     protected string $title;
+
+    protected Page $page;
+    protected Slug $slug;
+
+
+
+    public function getSlugLiteral(?Language $language = null): string {
+        return self::createSlugLiteral(
+            $language ?? Language::fromId($this->languageId),
+            $this->title
+        );
+    }
+
+    public function getPage(): Page {
+        if (!isset($this->page)) {
+            $this->page = Page::fromId($this->pageId);
+        }
+
+        return $this->page;
+    }
+
+    public function getSlug(): Slug {
+        if (!isset($this->slug)) {
+            $this->slug = Slug::fromId($this->slugId);
+        }
+
+        return $this->slug;
+    }
+
+    public function setPage(Page $page): void {
+        $this->set(['pageId' => $page->getId()]);
+        $this->page = $page;
+    }
+
+    public function setSlug(Slug $slug): void {
+        $this->set(['slugId' => $slug->getId()]);
+        $this->slug = $slug;
+    }
 }

@@ -17,6 +17,7 @@ use core\forms\FormAction;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\sideloader\Javascript;
 use core\view\ContainerContent;
 use core\view\View;
 
@@ -40,6 +41,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
     public function setContext(AdminNexus $context): static {
         $this->context = $context;
+        Javascript::import($this->context->getResource('nexus.js'));
         return $this;
     }
 
@@ -64,10 +66,17 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new HiddenField(
-            $modelDescription->idColumn->alias
+            $modelDescription->idColumn->alias,
+            $this->getState() === self::STATE_UPDATER
+                ? $this->model->getId()
+                : ''
         ));
 
         if (!is_null($error = $this->behaviour->initForm($form, $this->model))) {
+            return $error;
+        }
+
+        if (!is_null($error = $this->behaviour->addControls($form, $this->model))) {
             return $error;
         }
 

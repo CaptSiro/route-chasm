@@ -23,8 +23,8 @@ trait EnableExtension {
 
 
 
-    #[Checkbox('Enabled')]
-    #[GridColumn('Enabled', '96px')]
+    #[Checkbox('Enabled', isFirst: true)]
+    #[GridColumn('Enabled', '96px', isFirst: true)]
     #[Column('is_enabled', Column::TYPE_BOOLEAN)]
     protected bool $enabled;
 

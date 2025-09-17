@@ -8,13 +8,14 @@ use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\core\Message\Message;
 use components\core\SaveError\SaveError;
 use components\layout\Accordion\Accordion;
+use components\layout\Column\Column;
+use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
 use core\forms\controls\MultiSelect\MultiSelect;
 use core\forms\controls\PasswordField\PasswordField;
 use core\forms\controls\TextField;
 use core\forms\Form;
-use core\forms\layout\Column\Column;
 use core\utils\Components;
 use core\view\View;
 use models\core\Group\Group;
@@ -30,6 +31,10 @@ class UserEditorBehavior implements EditorBehavior {
 
 
     public function initForm(Form $form, ?Model $model): ?View {
+        return null;
+    }
+
+    public function addControls(Layout $layout, ?Model $model): ?View {
         if (!is_null($model) && !($model instanceof User)) {
             return new Message("Provided resource is not User");
         }
@@ -73,7 +78,7 @@ class UserEditorBehavior implements EditorBehavior {
 
         $column->add(new MultiSelect(self::NAME_GROUPS, 'Groups', $groups, $userGroups));
 
-        $form->add(new Accordion('RouteChasm user profile', $column));
+        $layout->add(new Accordion('RouteChasm user profile', $column));
 
         return null;
     }

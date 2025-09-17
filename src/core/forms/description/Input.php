@@ -7,12 +7,13 @@ use core\forms\controls\Control;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Input implements ControlAttribute {
-    use BindProperty;
+    use BindProperty, IsFirst;
 
     public function __construct(
         public string $type = "text",
         public ?string $label = null,
-        public bool $readonly = false
+        public bool $readonly = false,
+        protected bool $isFirst = false
     ) {}
 
 

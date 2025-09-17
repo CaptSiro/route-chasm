@@ -3,6 +3,7 @@
 namespace core\locale;
 
 use core\App;
+use Transliterator;
 
 abstract class Locale {
     public static function autoload(): void {
@@ -24,6 +25,26 @@ abstract class Locale {
 
     public function compare(string $a, string $b): int {
         return strcmp($a, $b);
+    }
+
+    public function formatUrlSegment(string $text): string {
+        if ($text === "") {
+            return "";
+        }
+
+        $transliterator = Transliterator::create('Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC');
+
+        $ascii = $transliterator
+            ? $transliterator->transliterate($text)
+            : $text;
+
+        $slug = preg_replace('~[^A-Za-z0-9]+~', '-', $ascii);
+        $slug = trim($slug, '-');
+        $slug = strtolower($slug);
+
+        return $slug !== ''
+            ? $slug
+            : '';
     }
 
     public function formatNumber(int|float $number): string {

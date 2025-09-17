@@ -6,11 +6,12 @@ use core\App;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\Table;
-use models\extensions\CachedNameExtension;
+use models\extensions\Name\CachedNameExtension;
+use models\extensions\Name\Name;
 
 #[Table('core_navigation_context')]
 #[Database(App::DATABASE)]
-class NavigationContext extends Model {
+class NavigationContext extends Model implements Name {
     use CachedNameExtension;
 
     public const DEFAULT_CONTEXT_ID = 1;

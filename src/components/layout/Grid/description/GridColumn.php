@@ -9,10 +9,15 @@ use ReflectionProperty;
 class GridColumn {
     public function __construct(
         public ?string $label = null,
-        public string $template = '1fr'
+        public string $template = '1fr',
+        protected bool $isFirst = false,
     ) {}
 
     public function bindProperty(ReflectionProperty $property): void {
         $this->label ??= ucfirst($property->getName());
+    }
+
+    public function isFirst(): bool {
+        return $this->isFirst;
     }
 }

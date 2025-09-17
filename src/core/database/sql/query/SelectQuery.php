@@ -41,7 +41,7 @@ class SelectQuery implements Portion, SqlQuery {
     }
 
     public function join(string $table, string|Query $condition, string $type = JoinClause::TYPE_INNER): static {
-        if (isset($this->joins)) {
+        if (!isset($this->joins)) {
             $this->joins = [];
         }
 

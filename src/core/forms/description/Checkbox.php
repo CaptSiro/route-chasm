@@ -8,10 +8,11 @@ use core\forms\controls\Control;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Checkbox implements ControlAttribute {
-    use BindProperty;
+    use BindProperty, IsFirst;
 
     public function __construct(
-        protected ?string $label = null
+        protected ?string $label = null,
+        protected bool $isFirst = false
     ) {}
 
 

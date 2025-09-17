@@ -1,12 +1,13 @@
 <?php
 
-namespace core\forms\layout\Column;
+namespace components\layout\Column;
 
-use core\forms\layout\DynamicLayout;
+use components\layout\DynamicLayout;
+use components\layout\Layout;
 use core\view\Renderer;
 use core\view\View;
 
-class Column implements View {
+class Column implements View, Layout {
     use Renderer, DynamicLayout;
 
     public function __construct(float $widthPercentage = 1) {

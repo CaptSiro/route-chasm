@@ -13,6 +13,14 @@ class Sql {
      */
     private static array $connections;
 
+    public static function dateNow(): string {
+        return date('Y-m-d');
+    }
+
+    public static function datetimeNow(): string {
+        return date('Y-m-d H:i:s');
+    }
+
     public static function connect(string $name, Driver $driver): void {
         static::$connections[$name] = $driver->connect();
     }

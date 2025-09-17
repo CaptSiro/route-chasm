@@ -2,21 +2,36 @@
 
 namespace components\core\Admin\Nexus;
 
+use core\App;
 use core\route\Path;
 use core\Singleton;
+use core\url\Url;
 
 class DefaultLinkCreator implements NexusLinkCreator {
     use Singleton;
 
-    public function getCreateLink(string $path): string {
-        return $path;
+
+
+    protected Url $request;
+
+    public function __construct() {
+        $this->request = App::getInstance()->getRequest()->getUrl();
     }
 
-    public function getUpdateLink(string $path, mixed $id): string {
-        return Path::join($path, (string) $id);
+
+
+    public function getCreateUrl(Path $path): Url {
+        return $this->request->copy()
+            ->setPath($path);
     }
 
-    public function getDeleteLink(string $path, mixed $id): string {
-        return Path::join($path, (string) $id);
+    public function getUpdateUrl(Path $path, mixed $id): Url {
+        return $this->request->copy()
+            ->setPath($path);
+    }
+
+    public function getDeleteUrl(Path $path, mixed $id): Url {
+        return $this->request->copy()
+            ->setPath($path);
     }
 }

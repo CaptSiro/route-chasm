@@ -9,7 +9,6 @@ use core\database\sql\query\SqlQuery;
 use core\Identifier;
 use core\view\View;
 use JsonSerializable;
-use RuntimeException;
 
 class Model implements JsonSerializable, Identifier, NexusProxyItem {
     public static function get(?Model $model, string $property, mixed $or = null): mixed {
@@ -122,18 +121,28 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
 
 
-    private Origin $origin;
-    private array $updated = [];
-    private bool $unsafeAccess = false;
+    private Origin $_origin;
+    private array $_updated = [];
+    private bool $_unsafeAccess = false;
 
     public function __construct() {
-        $this->origin = Origin::APPLICATION;
+        $this->_origin = Origin::APPLICATION;
     }
 
 
 
     public function useUnsafeAccess(bool $access): void {
-        $this->unsafeAccess = $access;
+        $this->_unsafeAccess = $access;
+    }
+
+    public function getUpdatedUnsafe(): array {
+        $ret = [];
+
+        foreach ($this->_updated as $property => $_) {
+            $ret[$property] = $this->$property;
+        }
+
+        return $ret;
     }
 
     public function __get(string $name) {
@@ -146,12 +155,17 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function getId(): mixed {
         $description = ModelDescription::extract(static::class);
-        return $this->{$description->idColumn->alias};
+        $id = $description->idColumn->alias;
+        if (!isset($this->{$id})) {
+            return null;
+        }
+
+        return $this->{$id};
     }
 
     public function __set(string $alias, $value): void {
-        if (!$this->unsafeAccess) {
-            $this->updated[$alias] = 0;
+        if (!$this->_unsafeAccess) {
+            $this->_updated[$alias] = 0;
         }
 
         $this->$alias = $value;
@@ -162,7 +176,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
         foreach ($data as $property => $value) {
             if (!isset($description->alias[$property])) {
-                throw new RuntimeException(static::class ." does not have '$property' property");
+                continue;
             }
 
             $column = $description->alias[$property];
@@ -176,20 +190,20 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         return $this;
     }
 
-    public function setOrigin(Origin $origin): void {
-        $this->origin = $origin;
+    public function setOrigin(Origin $_origin): void {
+        $this->_origin = $_origin;
     }
 
     public function notSavable(): void {
-        $this->origin = Origin::UNKNOWN;
+        $this->_origin = Origin::UNKNOWN;
     }
 
     public function isNewRecord(): bool {
-        return $this->origin === Origin::APPLICATION;
+        return $this->_origin === Origin::APPLICATION;
     }
 
     public function isSavable(): bool {
-        return $this->origin !== Origin::UNKNOWN;
+        return $this->_origin !== Origin::UNKNOWN;
     }
 
     public function isEditable(): bool {
@@ -204,9 +218,9 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $description = ModelDescription::extract(static::class);
         $sql = Sql::insert($description->table);
 
-        $properties = empty($this->updated)
+        $properties = empty($this->_updated)
             ? $description->alias
-            : $this->updated;
+            : $this->_updated;
 
         $columns = [];
         $record = [];
@@ -230,7 +244,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
         $setClauses = 0;
 
-        foreach ($this->updated as $alias => $ignored) {
+        foreach ($this->_updated as $alias => $ignored) {
             $column = $description->alias[$alias];
             if ($column->name === $idColumnName) {
                 continue;
@@ -321,7 +335,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
     }
 
     public function getOrigin(): Origin {
-        return $this->origin;
+        return $this->_origin;
     }
 
     public function jsonSerialize(): object {
@@ -333,7 +347,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $data = [];
 
         foreach ($description->alias as $alias => $ignored) {
-            $data[$alias] = $this->$alias;
+            $data[$alias] = $this->$alias ?? null;
         }
 
         return $data;

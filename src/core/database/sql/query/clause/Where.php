@@ -11,7 +11,7 @@ trait Where {
     protected array $where = [];
 
     public function where(string|Query $condition, string $operator = WhereClause::OPERATOR_AND): static {
-        if (isset($this->where)) {
+        if (!isset($this->where)) {
             $this->where = [];
         }
 

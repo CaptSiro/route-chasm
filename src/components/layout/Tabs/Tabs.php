@@ -24,6 +24,11 @@ class Tabs implements View {
 
 
 
+    public function add(string $label, View $view): static {
+        $this->tabs[$label] = $view;
+        return $this;
+    }
+
     public function select(?string $label): self {
         if (is_null($label) || !in_array($label, array_keys($this->tabs))) {
             // todo warning

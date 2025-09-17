@@ -1,6 +1,6 @@
 <?php
 
-namespace core\forms\layout;
+namespace components\layout;
 
 use core\view\View;
 
@@ -11,8 +11,8 @@ trait DynamicLayout {
     private array $children;
     private float $widthPercentage;
 
-    public function add(View $control): self {
-        $this->children[] = $control;
+    public function add(View $child): static {
+        $this->children[] = $child;
         return $this;
     }
 

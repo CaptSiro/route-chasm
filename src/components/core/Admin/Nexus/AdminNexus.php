@@ -16,6 +16,7 @@ use core\http\HttpMethod;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
+use core\url\Url;
 use core\view\ContainerContent;
 use core\view\View;
 
@@ -25,8 +26,8 @@ class AdminNexus extends ContainerContent {
 
 
 
-    protected AdminWebPage $page;
-    protected ?string $urlPath = null;
+    protected AdminWebPage $webPage;
+    protected ?Path $urlPath = null;
     protected NexusLinkCreator $linkCreator;
 
 
@@ -38,7 +39,7 @@ class AdminNexus extends ContainerContent {
         protected ?string $title = null,
         protected string $createButtonLabel = 'Create'
     ) {
-        parent::__construct($this->page = new AdminWebPage());
+        parent::__construct($this->webPage = new AdminWebPage());
         $this->editor->setContext($this);
         $this->linkCreator = DefaultLinkCreator::getInstance();
     }
@@ -105,7 +106,7 @@ class AdminNexus extends ContainerContent {
 
         $router = $bindingPoint->getRouter();
 
-        $this->urlPath = App::getInstance()->attach($router->getRoute()->toStaticPath());
+        $this->urlPath = Path::from(App::getInstance()->attach($router->getRoute()->toStaticPath()));
         $router->use('/create', $this->editor);
 
         $factory = $this->modelDescription->getFactory();
@@ -135,27 +136,37 @@ class AdminNexus extends ContainerContent {
         );
     }
 
-    public function getLink(): ?string {
-        return $this->urlPath;
-    }
-
-    public function getCreateLink(): ?string {
+    public function getLink(): ?Url {
         if (is_null($this->urlPath)) {
             return null;
         }
 
-        return $this->linkCreator->getCreateLink(
-            Path::join($this->urlPath, 'create')
+        return App::getInstance()->getRequest()->getUrl()
+            ->copy()
+            ->setPath($this->urlPath);
+    }
+
+    public function getEditorLink(): ?Url {
+        return $this->getCreateLink();
+    }
+
+    public function getCreateLink(): ?Url {
+        if (is_null($this->urlPath)) {
+            return null;
+        }
+
+        return $this->linkCreator->getCreateUrl(
+            Path::merge($this->urlPath, 'create')
         );
     }
 
-    public function getUpdateLink(mixed $id): ?string {
+    public function getUpdateLink(mixed $id): ?Url {
         if (is_null($this->urlPath)) {
             return null;
         }
 
-        return $this->linkCreator->getUpdateLink(
-            Path::join($this->urlPath, 'update', $id),
+        return $this->linkCreator->getUpdateUrl(
+            Path::merge($this->urlPath, 'update', $id),
             $id
         );
     }
@@ -165,14 +176,14 @@ class AdminNexus extends ContainerContent {
             return null;
         }
 
-        return $this->linkCreator->getDeleteLink(
-            Path::join($this->urlPath, $id),
+        return $this->linkCreator->getDeleteUrl(
+            Path::merge($this->urlPath, $id),
             $id
         );
     }
 
     public function perform(Request $request, Response $response): void {
-        $this->page
+        $this->webPage
             ->getHead()
             ->setTitle($this->getTitle());
 

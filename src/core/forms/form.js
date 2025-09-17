@@ -171,6 +171,15 @@ function form_extract(control) {
 }
 
 /**
+ * @param {FormData} data
+ * @param name
+ * @param value
+ */
+function form_formDataAppend(data, name, value) {
+
+}
+
+/**
  * @param {HTMLElement} form
  * @returns {Payload}
  */

@@ -8,13 +8,21 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\Table;
-use models\extensions\CachedNameExtension;
 use models\extensions\Editable\EditableExtension;
+use models\extensions\Name\CachedNameExtension;
+use models\extensions\Name\Name;
+use models\extensions\Name\NameValues;
 
 #[Grid]
 #[Table('core_page_status')]
 #[Database(App::DATABASE)]
-class PageStatus extends Model {
+class PageStatus extends Model implements Name {
+    public const ID_DRAFT = 1;
+    public const ID_PUBLIC = 2;
+    public const ID_ARCHIVED = 3;
+
+
+
     use EditableExtension, CachedNameExtension;
 
     #[Column('id_page_status', type: Column::TYPE_INTEGER, primaryKey: true)]

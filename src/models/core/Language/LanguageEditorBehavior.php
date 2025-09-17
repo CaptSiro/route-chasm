@@ -6,6 +6,7 @@ use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\core\Admin\Nexus\Editor\GetEditor;
 use components\core\Message\Message;
+use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
 use core\forms\controls\Select\Select;
@@ -23,6 +24,10 @@ class LanguageEditorBehavior implements EditorBehavior {
 
     // EditorBehavior
     public function initForm(Form $form, ?Model $model): ?View {
+        return null;
+    }
+
+    public function addControls(Layout $layout, ?Model $model): ?View {
         if (!is_null($model)) {
             return new Message("Languages are not editable");
         }
@@ -41,7 +46,7 @@ class LanguageEditorBehavior implements EditorBehavior {
             $values[$locale->getIdentifier()] = $locale->getName();
         }
 
-        $form->add(new Select(self::NAME_CODE, "Locale", $values));
+        $layout->add(new Select(self::NAME_CODE, "Locale", $values));
         return null;
     }
 

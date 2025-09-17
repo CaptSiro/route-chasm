@@ -17,7 +17,11 @@ trait EditableExtension {
         return $this->editable;
     }
 
+    public function isDeletable(): bool {
+        return $this->editable;
+    }
+
     public function setEditable(bool $editable): void {
-            $this->set([PROPERTY_EDITABLE => $editable]);
+        $this->set([PROPERTY_EDITABLE => $editable]);
     }
 }

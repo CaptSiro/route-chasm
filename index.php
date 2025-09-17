@@ -4,6 +4,8 @@ use components\core\Admin\Home\AdminHome;
 use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
 use components\layout\Accordion\Accordion;
+use components\layout\Column\Column;
+use components\layout\Row\Row;
 use components\layout\Tabs\Tabs;
 use core\actions\Assets\Assets;
 use core\actions\Assets\policy\ShowExplorerPolicy;
@@ -26,12 +28,11 @@ use core\forms\controls\TextArea\TextArea;
 use core\forms\controls\TextField;
 use core\forms\Form;
 use core\forms\FormAction;
-use core\forms\layout\Column\Column;
-use core\forms\layout\Row\Row;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\navigation\Navigator;
+use core\pages\Pages;
 use core\sideloader\SideLoader;
 
 require_once __DIR__ ."/src/autoload.php";
@@ -43,6 +44,8 @@ AppConfig::getInstance()->set($config);
 Sql::connect(App::DATABASE, new MySqlDriver(
     $config->getSqlConfig()
 ));
+
+Pages::load();
 
 $app = App::getInstance();
 

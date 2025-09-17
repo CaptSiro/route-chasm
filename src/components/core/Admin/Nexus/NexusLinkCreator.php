@@ -2,10 +2,13 @@
 
 namespace components\core\Admin\Nexus;
 
+use core\route\Path;
+use core\url\Url;
+
 interface NexusLinkCreator {
-    public function getCreateLink(string $path): string;
+    public function getCreateUrl(Path $path): Url;
 
-    public function getUpdateLink(string $path, mixed $id): string;
+    public function getUpdateUrl(Path $path, mixed $id): Url;
 
-    public function getDeleteLink(string $path, mixed $id): string;
+    public function getDeleteUrl(Path $path, mixed $id): Url;
 }

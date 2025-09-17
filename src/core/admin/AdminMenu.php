@@ -18,6 +18,7 @@ use models\core\Group\Group;
 use models\core\Language\Language;
 use models\core\Language\LanguageEditorBehavior;
 use models\core\Page\Page;
+use models\core\Page\PageStatus;
 use models\core\Resource;
 use models\core\Setting\Setting;
 use models\core\User\User;
@@ -28,8 +29,18 @@ class AdminMenu {
         $router
 
             ->use(
-                Route::menu("/Web/Page")
+                Route::menu("Web/Status")
                     ->icon("Web", Icon::nf('nf-md-web'))
+                    ->icon("Status", Icon::nf('nf-md-checkbox_multiple_marked_circle')),
+                new AdminNexus(
+                    ModelDescription::extract(PageStatus::class),
+                    FormDescription::getEditor(PageStatus::class),
+                    GridDescription::extract(PageStatus::class)
+                )
+            )
+
+            ->use(
+                Route::menu("/Web/Page")
                     ->icon("Page", Icon::nf('nf-md-file_document')),
                 Page::getNexus()
             )

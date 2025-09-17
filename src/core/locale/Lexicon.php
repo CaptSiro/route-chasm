@@ -2,6 +2,7 @@
 
 namespace core\locale;
 
+use components\core\Terminal\Terminal;
 use core\App;
 use models\core\Language\Language;
 use models\core\Language\Lexicon\Phrase;
@@ -13,6 +14,7 @@ class Lexicon {
 
     public static function translate(string $group, string $default, ?Language $targetLanguage = null): string {
         $language = $targetLanguage ?? App::getInstance()->getRequest()->getLanguage();
+
         if ($language->code === App::getDefaultLanguage()->code) {
             return $default;
         }

@@ -2,6 +2,7 @@
 
 namespace core\communication\parser;
 
+use components\core\Terminal\Terminal;
 use core\Active;
 use core\App;
 use core\collections\dictionary\StrictMap;

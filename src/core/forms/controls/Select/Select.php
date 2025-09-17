@@ -10,7 +10,7 @@ use core\html\HtmlAttribute;
 use core\view\Renderer;
 
 class Select implements Control, Attribute {
-    use Renderer, FormControl, FormControlInfo, HtmlAttribute;
+    use Renderer, FormControl, HtmlAttribute;
 
 
 
@@ -33,5 +33,24 @@ class Select implements Control, Attribute {
     public function setPlaceholder(string $placeholder): static {
         $this->addAttribute('placeholder', $placeholder);
         return $this;
+    }
+
+
+
+    // Control
+    public function setName(string $name): void {
+        $this->name = $name;
+    }
+
+    public function setLabel(string $label): void {
+        $this->label = $label;
+    }
+
+    public function setValue(mixed $value): void {
+        $this->selected = $value;
+    }
+
+    public function setValues(array $values): void {
+        $this->values = $values;
     }
 }

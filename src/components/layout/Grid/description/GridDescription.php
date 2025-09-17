@@ -39,7 +39,12 @@ class GridDescription {
             /** @var GridColumn $column */
             $column = $attributes[0]->newInstance();
             $column->bindProperty($property);
-            $columns[$property->getName()] = $column;
+
+            if ($column->isFirst()) {
+                $columns = [$property->getName() => $column] + $columns;
+            } else {
+                $columns[$property->getName()] = $column;
+            }
         }
 
         return self::$descriptions[$class] = new static(
