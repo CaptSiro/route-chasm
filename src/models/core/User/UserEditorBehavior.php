@@ -17,6 +17,7 @@ use core\forms\controls\PasswordField\PasswordField;
 use core\forms\controls\TextField;
 use core\forms\Form;
 use core\utils\Components;
+use core\utils\Models;
 use core\view\View;
 use models\core\Group\Group;
 
@@ -58,7 +59,7 @@ class UserEditorBehavior implements EditorBehavior {
             ->add(new TextField(
                 self::NAME_USERNAME,
                 'Username',
-                Model::getString($model, 'username')
+                Models::getString($model, 'username')
             ))
             ->add(new PasswordField(
                 self::NAME_PASSWORD,
