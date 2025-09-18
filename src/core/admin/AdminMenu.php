@@ -17,6 +17,7 @@ use models\core\Domain\Domain;
 use models\core\Group\Group;
 use models\core\Language\Language;
 use models\core\Language\LanguageEditorBehavior;
+use models\core\Language\Lexicon\Phrase;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
 use models\core\Resource;
@@ -56,14 +57,21 @@ class AdminMenu {
             )
 
             ->use(
-                Route::menu("/Languages")
-                    ->icon("Languages", Icon::nf("nf-fa-language")),
+                Route::menu("/Localization/Languages")
+                    ->icon("Localization", Icon::nf("nf-fa-language"))
+                    ->icon("Languages", Icon::nf("nf-md-book_alphabet")),
                 new AdminNexus(
                     ModelDescription::extract(Language::class),
                     LanguageEditorBehavior::getEditor(),
                     Language::getGridDescription(),
                     createButtonLabel: 'Add'
                 )
+            )
+
+            ->use(
+                Route::menu("/Localization/Vocabulary")
+                    ->icon("Vocabulary", Icon::nf("nf-cod-book")),
+                Phrase::getNexus()
             )
 
             ->use(

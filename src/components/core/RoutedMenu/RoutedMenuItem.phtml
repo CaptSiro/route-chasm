@@ -11,9 +11,9 @@ use components\core\RoutedMenu\RoutedMenuItem;
 
     <?php if ($this->hasItem()): ?>
         <a href="<?= $this->createUrl() ?>">
-            <?= $this->label ?>
+            <?= $this->tr($this->label) ?>
         </a>
     <?php else: ?>
-        <span><?= $this->label ?></span>
+        <span><?= $this->tr($this->label) ?></span>
     <?php endif; ?>
 </div>

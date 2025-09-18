@@ -11,7 +11,10 @@ Css::import($this->getResource('nexus.css'));
 <section class="nexus">
     <div class="head">
         <h1><?= $this->getTitle() ?></h1>
-        <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
+
+        <?php if ($this->showCreateButton): ?>
+            <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
+        <?php endif; ?>
     </div>
 
     <?= $this->getGrid() ?>

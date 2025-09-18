@@ -19,13 +19,13 @@ use core\App;
         <?php if (!is_null($author = $app->getProjectAuthor())): ?>
             <span class="author">
                 <?php if (!is_null($authorLink = $app->getProjectAuthorLink())): ?>
-                    by <a
+                    <?= $this->tr('by') ?> <a
                         class="no-link"
                         href="<?= $authorLink ?>"
                         target="_blank"
                     ><?= $author ?></a>
                 <?php else: ?>
-                    by <?= $author ?>
+                    <?= $this->tr('by') ?> <?= $author ?>
                 <?php endif; ?>
             </span>
         <?php endif; ?>

@@ -2,17 +2,21 @@
 
 namespace models\core\Language\Lexicon;
 
+use components\core\Admin\Nexus\AdminNexus;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\ModelDescription;
 use core\database\sql\Table;
+use core\forms\description\FormDescription;
 use core\forms\description\TextField;
 use core\locale\Lexicon;
 use core\utils\Arrays;
 use models\core\Language\Language;
+use models\core\Language\Lexicon\Grid\LexiconGridRow;
 
 /**
  * @property string $group
@@ -24,6 +28,14 @@ use models\core\Language\Language;
 #[Table('core_lexicon')]
 #[Database(App::DATABASE)]
 class Phrase extends Model {
+    public static function getNexus(): AdminNexus {
+        return (new AdminNexus(
+            ModelDescription::extract(Phrase::class),
+            FormDescription::getEditor(Phrase::class),
+            LexiconGridRow::getGridDescription()
+        ))->showCreateButton(false);
+    }
+
     /** @var array<string, array<string, static>> */
     private static array $groups = [];
 

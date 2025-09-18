@@ -20,8 +20,8 @@ class SelectQuery implements Portion, SqlQuery {
      * @var array<JoinClause>
      */
     protected array $joins = [];
-    protected array $groups;
-    protected array $orders;
+    protected ?array $groups;
+    protected ?array $orders;
 
 
 
@@ -123,13 +123,13 @@ class SelectQuery implements Portion, SqlQuery {
         $this->addWhere($sql, $parameters);
 
         if (isset($this->groups)) {
-            $sql .= join(', ', $this->groups);
+            $sql .= ' GROUP BY ' . join(', ', $this->groups);
         }
 
         $this->addHaving($sql, $parameters);
 
         if (isset($this->orders)) {
-            $sql .= join(', ', $this->orders);
+            $sql .= ' ORDER BY ' . join(', ', $this->orders);
         }
 
         $this->addLimit($sql, $parameters);

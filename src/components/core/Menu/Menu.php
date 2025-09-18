@@ -13,6 +13,8 @@ use core\view\Component;
 class Menu extends Component implements Attribute {
     use HtmlAttribute;
 
+    public const LEXICON_GROUP = 'menu';
+
 
 
     protected int $level = 0;

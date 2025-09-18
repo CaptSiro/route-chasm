@@ -40,7 +40,7 @@ $request = App::getInstance()->getRequest();
                 </span>
 
                 <a href="<?= AdminLogin::createLogoutUrl($request->getUrl()) ?>">
-                    Logout
+                    <?= $this->trg(AdminRouter::LEXICON_GROUP, 'Logout') ?>
                 </a>
             </div>
         </div>

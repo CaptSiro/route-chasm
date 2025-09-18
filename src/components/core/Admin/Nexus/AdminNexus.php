@@ -30,6 +30,7 @@ class AdminNexus extends ContainerContent {
     protected AdminWebPage $webPage;
     protected ?Path $urlPath = null;
     protected NexusLinkCreator $linkCreator;
+    protected bool $showCreateButton = true;
 
 
 
@@ -50,6 +51,11 @@ class AdminNexus extends ContainerContent {
     }
 
 
+
+    public function showCreateButton(bool $show): static {
+        $this->showCreateButton = $show;
+        return $this;
+    }
 
     public function setLinkCreator(NexusLinkCreator $creator): static {
         $this->linkCreator = $creator;
@@ -100,7 +106,7 @@ class AdminNexus extends ContainerContent {
     public function getTitle(): string {
         if (is_null($this->title)) {
             $segment = $this->routeNode->getSegment();
-            return $segment->getLabel() ?? $segment->getSource();
+            return $this->tr($segment->getLabel() ?? $segment->getSource());
         }
 
         return $this->title;

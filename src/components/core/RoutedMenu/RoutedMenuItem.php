@@ -2,10 +2,11 @@
 
 namespace components\core\RoutedMenu;
 
+use components\core\Menu\Menu;
 use components\core\Menu\MenuItem;
 use components\core\Menu\MenuItemContext;
 use core\App;
-use core\collections\graph\Edge;
+use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
@@ -15,7 +16,7 @@ use core\view\Renderer;
 use RuntimeException;
 
 class RoutedMenuItem implements MenuItem {
-    use Renderer, MenuItemContext;
+    use Renderer, MenuItemContext, LexiconUnit;
 
     public static function from(Router $router, ?Path $binding = null): static {
         return new static(
@@ -67,6 +68,7 @@ class RoutedMenuItem implements MenuItem {
         protected ?string $label = null,
         protected ?string $icon = null,
     ) {
+        $this->setLexiconGroup(Menu::LEXICON_GROUP);
         $this->children = [];
 
         foreach ($this->node->getVertex()->getEdges() as $edge) {
