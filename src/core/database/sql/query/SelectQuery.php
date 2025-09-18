@@ -3,6 +3,7 @@
 namespace core\database\sql\query;
 
 use core\database\sql\Connection;
+use core\database\sql\query\clause\Having;
 use core\database\sql\query\clause\JoinClause;
 use core\database\sql\query\clause\Limit;
 use core\database\sql\query\clause\Offset;
@@ -10,7 +11,7 @@ use core\database\sql\query\clause\Where;
 use core\utils\Arrays;
 
 class SelectQuery implements Portion, SqlQuery {
-    use AddParameter, Where, Limit, Offset;
+    use AddParameter, Where, Having, Limit, Offset;
 
     protected array $projection = [];
     protected array $from = [];
@@ -19,6 +20,8 @@ class SelectQuery implements Portion, SqlQuery {
      * @var array<JoinClause>
      */
     protected array $joins = [];
+    protected array $groups;
+    protected array $orders;
 
 
 
@@ -61,6 +64,24 @@ class SelectQuery implements Portion, SqlQuery {
         return $this->join($table, '1', JoinClause::TYPE_NATURAL);
     }
 
+    /**
+     * @param string $column Escaping the column is responsibility of the caller
+     * @return $this
+     */
+    public function group(string $column): static {
+        Arrays::push($this->groups, $column);
+        return $this;
+    }
+
+    /**
+     * @param string $column Escaping the column is responsibility of the caller
+     * @return $this
+     */
+    public function order(string $column): static {
+        Arrays::push($this->orders, $column);
+        return $this;
+    }
+
     public function fetch(Connection $connection): ?array {
         return $connection->fetch($this->toQuery($connection));
     }
@@ -100,6 +121,17 @@ class SelectQuery implements Portion, SqlQuery {
         }
 
         $this->addWhere($sql, $parameters);
+
+        if (isset($this->groups)) {
+            $sql .= join(', ', $this->groups);
+        }
+
+        $this->addHaving($sql, $parameters);
+
+        if (isset($this->orders)) {
+            $sql .= join(', ', $this->orders);
+        }
+
         $this->addLimit($sql, $parameters);
         $this->addOffset($sql, $parameters);
 

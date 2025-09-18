@@ -4,30 +4,30 @@ namespace core\database\sql\query\clause;
 
 use core\database\sql\query\Query;
 
-trait Where {
+trait Having {
     /**
      * @var array<Condition>
      */
-    protected array $where = [];
+    protected array $having = [];
 
-    public function where(string|Query $condition, string $operator = Condition::OPERATOR_AND): static {
-        if (!isset($this->where)) {
-            $this->where = [];
+    public function having(string|Query $condition, string $operator = Condition::OPERATOR_AND): static {
+        if (!isset($this->having)) {
+            $this->having = [];
         }
 
-        $this->where[] = new Condition($operator, $condition);
+        $this->having[] = new Condition($operator, $condition);
         return $this;
     }
 
-    protected function addWhere(string &$sql, array &$parameters): void {
-        if (empty($this->where)) {
+    protected function addHaving(string &$sql, array &$parameters): void {
+        if (empty($this->having)) {
             return;
         }
 
-        $sql .= ' WHERE';
+        $sql .= ' HAVING';
         $first = true;
 
-        foreach ($this->where as $clause) {
+        foreach ($this->having as $clause) {
             if (!$first) {
                 $sql .= ' '. strtoupper($clause->joinOperator);
             }
