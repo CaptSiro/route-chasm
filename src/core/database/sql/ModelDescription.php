@@ -116,6 +116,13 @@ class ModelDescription {
         return ModelFactory::extract($this->class);
     }
 
+    public function getColumnAlias(): array {
+        return array_map(
+            fn(ColumnDescription $x) => $x->alias,
+            $this->columns
+        );
+    }
+
     public function projection(SelectQuery $sql): void {
         $table = $this->getEscapedTable();
 

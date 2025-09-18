@@ -6,7 +6,6 @@ use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Message\Message;
-use components\core\Terminal\Terminal;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
