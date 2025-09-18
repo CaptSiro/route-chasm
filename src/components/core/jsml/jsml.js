@@ -468,11 +468,14 @@ window.addEventListener('load', () => {
             if (mutations[i].type === "childList") {
                 for (let j = 0; j < mutations[i].addedNodes.length; j++) {
                     const element = mutations[i].addedNodes[j];
-                    if (element instanceof HTMLElement) {
-                        for (const x of element.querySelectorAll(selector)) {
-                            process(x);
-                        }
+                    if (!(element instanceof HTMLElement)) {
+                        continue;
                     }
+
+                    for (const x of element.querySelectorAll(selector)) {
+                        process(x);
+                    }
+                    process(element);
                 }
             }
         }

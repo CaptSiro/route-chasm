@@ -3,6 +3,7 @@
 namespace models\core\Language\Lexicon;
 
 use components\core\Admin\Nexus\AdminNexus;
+use components\core\Admin\Phrase\AdminPhraseEditor;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
@@ -11,7 +12,6 @@ use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\Table;
-use core\forms\description\FormDescription;
 use core\forms\description\TextField;
 use core\locale\Lexicon;
 use core\utils\Arrays;
@@ -31,7 +31,7 @@ class Phrase extends Model {
     public static function getNexus(): AdminNexus {
         return (new AdminNexus(
             ModelDescription::extract(Phrase::class),
-            FormDescription::getEditor(Phrase::class),
+            new AdminPhraseEditor(new PhraseEditorBehavior()),
             LexiconGridRow::getGridDescription()
         ))->showCreateButton(false);
     }

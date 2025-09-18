@@ -5,6 +5,7 @@ namespace models\core\Language;
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\core\Admin\Nexus\Editor\GetEditor;
+use components\core\Admin\Nexus\Editor\SetEditor;
 use components\core\Message\Message;
 use components\layout\Layout;
 use core\App;
@@ -16,7 +17,7 @@ use core\utils\Components;
 use core\view\View;
 
 class LanguageEditorBehavior implements EditorBehavior {
-    use GetEditor;
+    use GetEditor, SetEditor;
 
     public const NAME_CODE = 'code';
 

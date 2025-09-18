@@ -2,8 +2,10 @@
 
 namespace models\core\Language\Lexicon;
 
+use components\core\Terminal\Terminal;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
+use components\layout\Row\Row;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
@@ -13,7 +15,12 @@ use core\database\sql\query\Query;
 use core\database\sql\SideEffect;
 use core\database\sql\Sql;
 use core\database\sql\Table;
+use core\forms\controls\HiddenField;
+use core\forms\controls\Select\Select;
+use core\forms\controls\TextField;
 use core\locale\Lexicon;
+use core\utils\Models;
+use core\view\View;
 use models\core\Language\Language;
 use RuntimeException;
 
@@ -50,11 +57,50 @@ class Translation extends Model {
         return static::create($properties);
     }
 
-    public static function forPhrase(Phrase $phrase): array {
-        return static::forPhraseId($phrase->getId());
+    public static function createDynamicTranslationControl(int $languageId, ?Translation $translation = null): View {
+        $row = new Row();
+
+        $row->add(new HiddenField('id_translation', $translation?->getId()));
+        $row->add(new HiddenField(
+            'id_language',
+            Models::get($translation, 'languageId', $languageId)
+        ));
+
+        $row->add(new TextField(
+            'translation',
+            'Translation',
+            Models::getString($translation, 'translation')
+        ));
+
+        $row->add(new Select(
+            'rule',
+            'Rule',
+            Rule::options(),
+            Models::get($translation, 'ruleId')
+        ));
+
+        return $row;
     }
 
-    public static function forPhraseId(int $phraseId): array {
+    public static function createStaticTranslationControl(?Translation $translation = null): View {
+        $row = new Row();
+
+        $row->add(new HiddenField('id_translation', $translation?->getId()));
+
+        $row->add(new TextField(
+            'translation',
+            'Translation',
+            Models::getString($translation, 'translation')
+        ));
+
+        return $row;
+    }
+
+    public static function forPhrase(Phrase $phrase): array {
+        return static::forPhraseRaw($phrase->getId());
+    }
+
+    public static function forPhraseRaw(int $phraseId): array {
         return static::all(
             where: Query::infer('id_phrase = ?', $phraseId)
         );

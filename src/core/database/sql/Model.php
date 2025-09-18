@@ -11,18 +11,6 @@ use core\view\View;
 use JsonSerializable;
 
 class Model implements JsonSerializable, Identifier, NexusProxyItem {
-    public static function get(?Model $model, string $property, mixed $or = null): mixed {
-        if (is_null($model)) {
-            return $or;
-        }
-
-        return $model->$property;
-    }
-
-    public static function getString(?Model $model, string $property): string {
-        return self::get($model, $property, '');
-    }
-
     public static function getDescription(): ModelDescription {
         return ModelDescription::extract(static::class);
     }

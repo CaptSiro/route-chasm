@@ -4,6 +4,7 @@ namespace models\core\Page\behavior;
 
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
+use components\core\Admin\Nexus\Editor\SetEditor;
 use components\layout\Layout;
 use core\database\sql\Model;
 use core\forms\description\FormDescription;
@@ -13,6 +14,8 @@ use models\core\Page\LocalizedPage;
 use models\core\Page\PageMeta;
 
 class LocalizedPageEditorBehavior implements EditorBehavior {
+    use SetEditor;
+
     public function initForm(Form $form, ?Model $model): ?View {
         //todo
         //  - add PageMeta->initForm(...)

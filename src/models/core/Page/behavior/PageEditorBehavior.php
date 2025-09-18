@@ -4,6 +4,7 @@ namespace models\core\Page\behavior;
 
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
+use components\core\Admin\Nexus\Editor\SetEditor;
 use components\core\Admin\Page\AdminPageEditor;
 use components\core\Html\Html;
 use components\core\Message\Message;
@@ -13,7 +14,6 @@ use components\layout\Layout;
 use components\layout\Tabs\Tabs;
 use core\App;
 use core\communication\Request;
-use core\database\sql\ColumnDescription;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\Sql;
@@ -33,7 +33,7 @@ use models\core\Page\Page;
 use models\core\Page\PageMeta;
 
 class PageEditorBehavior implements EditorBehavior {
-    use LexiconUnit;
+    use LexiconUnit, SetEditor;
 
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_PARENT_ID = 'parentId';

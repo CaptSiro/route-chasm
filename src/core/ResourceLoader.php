@@ -5,9 +5,26 @@ namespace core;
 use core\utils\Objects;
 
 trait ResourceLoader {
-    public static function getClassResource(string $path = ''): string {
+    private static function getClassResource(string $class, string $path = ''): string {
         return App::getInstance()
-            ->getSource(dirname(self::class) ."/$path");
+            ->getSource(dirname($class) ."/$path");
+    }
+
+    public static function getStaticResource(string $path = ''): string {
+        return static::getClassResource(static::class, $path);
+    }
+
+    public static function getTemplateResourceStatic(): string {
+        return self::getClassResource(static::class, basename(static::class) . '.phtml');
+    }
+
+
+    public static function getSelfResource(string $path = ''): string {
+        return static::getClassResource(self::class, $path);
+    }
+
+    public static function getTemplateResourceSelf(): string {
+        return self::getClassResource(self::class, basename(self::class) . '.phtml');
     }
 
 

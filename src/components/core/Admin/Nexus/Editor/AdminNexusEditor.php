@@ -35,6 +35,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         protected EditorBehavior $behaviour
     ) {
         parent::__construct($this->page = new AdminWebPage());
+        $this->behaviour->setEditor($this);
     }
 
 

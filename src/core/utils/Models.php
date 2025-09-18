@@ -5,6 +5,18 @@ namespace core\utils;
 use core\database\sql\Model;
 
 class Models {
+    public static function get(?Model $model, string $property, mixed $or = null): mixed {
+        if (is_null($model)) {
+            return $or;
+        }
+
+        return $model->$property;
+    }
+
+    public static function getString(?Model $model, string $property): string {
+        return self::get($model, $property, '');
+    }
+
     /**
      * @param array<Model> $models
      * @return array<int, Model>

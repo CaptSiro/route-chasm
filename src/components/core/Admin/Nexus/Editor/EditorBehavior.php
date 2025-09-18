@@ -2,6 +2,7 @@
 
 namespace components\core\Admin\Nexus\Editor;
 
+use components\core\Admin\Nexus\Editor;
 use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
@@ -9,6 +10,8 @@ use core\forms\Form;
 use core\view\View;
 
 interface EditorBehavior {
+    public function setEditor(Editor $editor): void;
+
     /**
      * @param Form $form The form to configure
      * @param Model|null $model The updating model (null on creation)

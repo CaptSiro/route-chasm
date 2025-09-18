@@ -21,7 +21,7 @@ class Input implements Control, Attribute {
         protected string $value = '',
     ) {
         $this->attributes = [];
-        $this->setTemplate(self::getClassResource("Input.phtml"));
+        $this->setTemplate(self::getTemplateResourceSelf());
     }
 
 

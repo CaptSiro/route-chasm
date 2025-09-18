@@ -21,7 +21,7 @@ use core\view\View;
 use models\core\Group\Group;
 
 class UserEditorBehavior implements EditorBehavior {
-    use Editor\GetEditor;
+    use Editor\GetEditor, Editor\SetEditor;
 
     public const NAME_TAG = 'tag';
     public const NAME_USERNAME = 'username';

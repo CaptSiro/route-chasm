@@ -6,7 +6,13 @@ use Closure;
 
 trait ModelCache {
     private static bool $isModelCacheLoaded = false;
+    /**
+     * @var array<static>
+     */
     private static array $modelCache = [];
+    /**
+     * @var array<int, static>
+     */
     private static array $modelCacheId = [];
 
 

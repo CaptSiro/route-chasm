@@ -35,6 +35,17 @@ class Rule extends Model {
         return $instance;
     }
 
+    public static function options(): array {
+        static::modelCache_loadAll(fn(Rule $x) => $x->rule);
+
+        $ret = [];
+        foreach (self::$modelCache as $record) {
+            $ret[$record->getId()] = $record->getLabel();
+        }
+
+        return $ret;
+    }
+
 
 
     #[Column('id_rule', type: Column::TYPE_INTEGER, primaryKey: true)]

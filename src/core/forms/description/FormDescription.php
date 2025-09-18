@@ -5,7 +5,6 @@ namespace core\forms\description;
 use components\core\Admin\Nexus\Editor;
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\core\Terminal\Terminal;
 use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
@@ -14,6 +13,8 @@ use core\view\View;
 use ReflectionClass;
 
 class FormDescription implements EditorBehavior {
+    use Editor\SetEditor;
+
     /**
      * @var array<string, static>
      */
