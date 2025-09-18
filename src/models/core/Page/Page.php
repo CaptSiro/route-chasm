@@ -35,24 +35,9 @@ class Page extends Model {
         return (new AdminNexus(
             ModelDescription::extract(static::class),
             new AdminPageEditor(new PageEditorBehavior()),
-            PageGridRow::getGridDescription()
+            PageGridRow::getGridDescription(),
+            title: '&nbsp;'
         ))->setLinkCreator(new PageLinkCreator());
-    }
-
-    public static function localized(int $pageId, Language $language): ?static {
-        $localization = LocalizedPage::fromPageRaw($pageId, $language->getId());
-        if (is_null($localization)) {
-            return null;
-        }
-
-        $page = static::fromId($pageId);
-        if (is_null($page)) {
-            return null;
-        }
-
-        $page->localization = $localization;
-
-        return $page;
     }
 
 
@@ -88,7 +73,6 @@ class Page extends Model {
 
 
     protected ?Page $parent;
-    protected LocalizedPage $localization;
     /** @var array<LocalizedPage> */
     protected array $localizations;
     protected PageStatus $status;
@@ -109,12 +93,8 @@ class Page extends Model {
         $this->parent = $parent;
     }
 
-    public function getLocalization(): ?LocalizedPage {
-        if (!isset($this->localization)) {
-            return null;
-        }
-
-        return $this->localization;
+    public function getLocalization(Language $language): ?LocalizedPage {
+        return $this->getLocalizations()[$language->getId()] ?? null;
     }
 
     /**

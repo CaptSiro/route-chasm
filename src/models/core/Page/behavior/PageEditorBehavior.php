@@ -35,7 +35,6 @@ use models\core\Page\PageMeta;
 class PageEditorBehavior implements EditorBehavior {
     use LexiconUnit;
 
-    public const LEXICON_GROUP = AdminPageEditor::LEXICON_GROUP;
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_PARENT_ID = 'parentId';
 
@@ -44,7 +43,9 @@ class PageEditorBehavior implements EditorBehavior {
     public function __construct(
         protected ?string $navigationContext = null,
         protected EditorBehavior $localization = new LocalizedPageEditorBehavior()
-    ) {}
+    ) {
+        $this->setLexiconGroup(AdminPageEditor::LEXICON_GROUP);
+    }
 
 
 
@@ -66,7 +67,7 @@ class PageEditorBehavior implements EditorBehavior {
             return $error;
         }
 
-        $layout->add(new Accordion($this->tr(self::LEXICON_GROUP, 'General'), $pageFields));
+        $layout->add(new Accordion($this->tr('General'), $pageFields));
 
         $tabs = [];
         $localizations = is_null($model)
@@ -88,7 +89,7 @@ class PageEditorBehavior implements EditorBehavior {
         }
 
         $layout->add(new Accordion(
-            $this->tr(self::LEXICON_GROUP, 'Localization'),
+            $this->tr('Localization'),
             new Tabs($tabs)
         ));
 
@@ -138,9 +139,7 @@ class PageEditorBehavior implements EditorBehavior {
             $languageId = intval($languageIds[$i]);
             if (!isset($languages[$languageId])) {
                 $safe = Html::escape($title);
-                return new Message(
-                    $this->tr(self::LEXICON_GROUP, "Language for title '$safe' not found")
-                );
+                return new Message($this->tr("Language for title '$safe' not found"));
             }
 
             $hasLocalization = isset($localizations[$languageId]);
@@ -162,9 +161,7 @@ class PageEditorBehavior implements EditorBehavior {
                 }
 
                 $safe = Html::escape($title);
-                return new Message(
-                    $this->tr(self::LEXICON_GROUP, "Title '$safe' is not unique")
-                );
+                return new Message($this->tr("Title '$safe' is not unique"));
             }
         }
 
@@ -176,7 +173,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         $titles = $body->getStrict('title');
         if ($this->emptyTitles($titles)) {
-            return new Message($this->tr(self::LEXICON_GROUP, 'Page must have at least one title'));
+            return new Message($this->tr('Page must have at least one title'));
         }
 
         $defaultLanguageId = App::getDefaultLanguage()->getId();
@@ -185,7 +182,7 @@ class PageEditorBehavior implements EditorBehavior {
             if ($defaultLanguageId === intval($id)) {
                 if (empty($titles[$i])) {
                     return new Message(
-                        $this->tr(self::LEXICON_GROUP, 'Page must have title for default language')
+                        $this->tr('Page must have title for default language')
                     );
                 }
             }
@@ -331,7 +328,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         if (!($model instanceof Page)) {
             return new Message(
-                $this->tr(self::LEXICON_GROUP, 'Model is not type of page')
+                $this->tr('Model is not type of page')
             );
         }
 
@@ -342,7 +339,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         if (is_null($parent) && !empty($parentId)) {
             return new Message(
-                $this->tr(self::LEXICON_GROUP, 'Page parent not found')
+                $this->tr('Page parent not found')
             );
         }
 

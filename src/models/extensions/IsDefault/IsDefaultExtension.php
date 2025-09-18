@@ -15,10 +15,16 @@ const PROPERTY_IS_DEFAULT = 'default';
  * @property bool $default
  */
 trait IsDefaultExtension {
-    public static function getDefault(): ?static {
-        return static::first(
-            where: Query::infer("is_default = ?", true)
-        );
+    private static mixed $defaultModel;
+
+    public static function getDefault(bool $override = false): ?static {
+        if (!isset(static::$defaultModel) || $override) {
+            static::$defaultModel = static::first(
+                where: Query::infer("is_default = ?", true)
+            );
+        }
+
+        return static::$defaultModel;
     }
 
     public static function addIsDefaultGridColumn(array &$columns): void {

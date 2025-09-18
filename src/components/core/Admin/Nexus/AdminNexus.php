@@ -21,6 +21,7 @@ use core\view\ContainerContent;
 use core\view\View;
 
 class AdminNexus extends ContainerContent {
+    public const LEXICON_GROUP = 'admin.nexus';
     public const COLUMN_EDIT = 'nexus_edit';
     public const COLUMN_DELETE = 'nexus_delete';
 
@@ -37,11 +38,15 @@ class AdminNexus extends ContainerContent {
         protected Editor $editor,
         protected GridDescription $gridDescription,
         protected ?string $title = null,
-        protected string $createButtonLabel = 'Create'
+        protected ?string $createButtonLabel = null
     ) {
         parent::__construct($this->webPage = new AdminWebPage());
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+
         $this->editor->setContext($this);
         $this->linkCreator = DefaultLinkCreator::getInstance();
+
+        $this->createButtonLabel ??= $this->tr('Create');
     }
 
 
@@ -83,12 +88,12 @@ class AdminNexus extends ContainerContent {
         $grid = $this->createGrid();
 
         if (is_null($grid)) {
-            return new Message("Could not create table, because the description is empty");
+            return new Message($this->tr("Could not create table, because the description is empty"));
         }
 
         return $grid
-            ->addAsFirst(self::COLUMN_EDIT, 'Edit', '64px')
-            ->add(self::COLUMN_DELETE, 'Delete', '64px')
+            ->addAsFirst(self::COLUMN_EDIT, $this->tr('Edit'), '64px')
+            ->add(self::COLUMN_DELETE, $this->tr('Delete'), '64px')
             ->load($this->gridDescription->getLoader()->load($grid));
     }
 
@@ -99,6 +104,10 @@ class AdminNexus extends ContainerContent {
         }
 
         return $this->title;
+    }
+
+    public function setTitle(?string $title): void {
+        $this->title = $title;
     }
 
     public function onBind(RouteNode $bindingPoint): void {

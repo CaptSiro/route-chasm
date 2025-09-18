@@ -9,19 +9,19 @@ use modules\locales\EnglishUS;
 
 <hr>
 <h3>Languages</h3>
-<span><?= $this->tr('home', 'Selected') ?>: <?= \core\App::getInstance()->getRequest()->getLanguage()->getLocale()->getName() ?></span>
+<span><?= $this->trg('home', 'Selected') ?>: <?= \core\App::getInstance()->getRequest()->getLanguage()->getLocale()->getName() ?></span>
 <?php foreach (\core\App::getInstance()->getLocales() as $locale): ?>
     <div>
         <?= $this->createLanguageLink($locale) ?>
     </div>
 <?php endforeach; ?>
 
-<div><?= $this->trt('home', '{} flowers', 0, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
-<div><?= $this->trt('home', '{} flowers', 1, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
-<div><?= $this->trt('home', '{} flowers', 2, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
-<div><?= $this->trt('home', '{} flowers', 3, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
-<div><?= $this->trt('home', '{} flowers', 4, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
-<div><?= $this->trt('home', '{} flowers', 5, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trtg('home', '{} flowers', 0, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trtg('home', '{} flowers', 1, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trtg('home', '{} flowers', 2, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trtg('home', '{} flowers', 3, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trtg('home', '{} flowers', 4, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div><?= $this->trtg('home', '{} flowers', 5, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
 
 
 

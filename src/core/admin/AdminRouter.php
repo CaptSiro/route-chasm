@@ -22,6 +22,8 @@ use core\Singleton;
 class AdminRouter extends Router {
     use Singleton;
 
+    public const LEXICON_GROUP = 'admin';
+
     protected const KEY_IS_ADMIN = 'isAdmin';
 
     public static function isAdmin(Request $request): bool {
