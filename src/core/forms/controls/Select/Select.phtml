@@ -12,7 +12,7 @@ use core\forms\controls\Select\Select;
             <?php foreach ($this->values as $value => $label): ?>
                 <option
                     value="<?= Html::escapeAttribute($value) ?>"
-                    <?php if ($value === $this->selected): ?>
+                    <?php if ($value == $this->selected): ?>
                         selected
                     <?php endif; ?>
                 >
@@ -45,7 +45,7 @@ use core\forms\controls\Select\Select;
                 <div class="dropdown-items">
                     <?php foreach ($this->values as $value => $label): ?>
                         <div
-                            class="dropdown-item <?= $value === $this->selected ? 'cursor' : '' ?>"
+                            class="dropdown-item <?= $value == $this->selected ? 'cursor' : '' ?>"
                             data-value="<?= Html::escapeAttribute($value) ?>"
                         ><?= Html::escape($label) ?></div>
                     <?php endforeach; ?>

@@ -10,6 +10,7 @@ use components\core\Message\Message;
 use components\layout\Column\Column;
 use components\layout\Layout;
 use components\layout\Tabs\Tabs;
+use core\App;
 use core\database\sql\Model;
 use core\forms\controls\TextField;
 use core\forms\Form;
@@ -31,6 +32,7 @@ class PhraseEditorBehavior implements EditorBehavior {
 
 
     public function initForm(Form $form, ?Model $model): ?View {
+        $form->setBodyTransformer('form_json');
         return null;
     }
 
@@ -72,6 +74,7 @@ class PhraseEditorBehavior implements EditorBehavior {
             foreach ($translations as $translation) {
                 if ($languageId === $translation->languageId) {
                     $column->add(Translation::createStaticTranslationControl(
+                        $languageId,
                         $translation
                     ));
 
@@ -79,7 +82,7 @@ class PhraseEditorBehavior implements EditorBehavior {
                 }
             }
 
-            $column->add(Translation::createStaticTranslationControl());
+            $column->add(Translation::createStaticTranslationControl($languageId));
         }
     }
 
@@ -103,7 +106,82 @@ class PhraseEditorBehavior implements EditorBehavior {
         return null;
     }
 
+    protected function onSubmitStatic(Phrase $phrase, array $objects): ?View {
+        $translations = Models::identity($phrase->getTranslations());
+
+        foreach ($objects as $object) {
+            $translation = !empty($object[Translation::NAME_TRANSLATION_ID])
+                ? ($translations[intval($object[Translation::NAME_TRANSLATION_ID])] ?? null)
+                : new Translation();
+
+            if (is_null($translation)) {
+                continue;
+            }
+
+            $translation->set($object);
+            $translation->setPhrase($phrase);
+            $translation->save();
+        }
+
+        return null;
+    }
+
+    protected function onSubmitDynamic(Phrase $phrase, array $objects): ?View {
+        $translations = Models::identity($phrase->getTranslations());
+
+        foreach ($objects as $object) {
+            if (empty($object[Translation::NAME_TRANSLATION]) && empty($object[Translation::NAME_TRANSLATION_ID])) {
+                continue;
+            }
+
+            $translation = !empty($object[Translation::NAME_TRANSLATION_ID])
+                ? ($translations[intval($object[Translation::NAME_TRANSLATION_ID])] ?? null)
+                : new Translation();
+
+            if (is_null($translation)) {
+                continue;
+            }
+
+            if (empty($object[Translation::NAME_TRANSLATION]) && !is_null($translation->getId())) {
+                $translation->delete();
+                continue;
+            }
+
+            $translation->set($object);
+            $translation->setPhrase($phrase);
+            $translation->save();
+        }
+
+        return null;
+    }
+
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+        /** @var Phrase $model */
+        if ($action === EditorBehaviorAction::CREATE) {
+            return new Message(
+                $this->tr('Creating phrases is not supported')
+            );
+        }
+
+        $request = App::getInstance()->getRequest();
+        $body = $request->getBody();
+
+        $objects = Models::transpose(
+            $body->toArray(),
+            Translation::getControlNames(),
+            count($body->getStrict(Translation::NAME_TRANSLATION_ID))
+        );
+
+        if (!$model->isDynamic) {
+            if (!is_null($error = $this->onSubmitStatic($model, $objects))) {
+                return $error;
+            }
+        } else {
+            if (!is_null($error = $this->onSubmitDynamic($model, $objects))) {
+                return $error;
+            }
+        }
+
         return null;
     }
 }

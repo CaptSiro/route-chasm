@@ -35,6 +35,13 @@ use RuntimeException;
 #[Table('core_lexicon_translation')]
 #[Database(App::DATABASE)]
 class Translation extends Model {
+    public const NAME_TRANSLATION_ID = 'translationId';
+    public const NAME_LANGUAGE_ID = 'languageId';
+    public const NAME_TRANSLATION = 'translation';
+    public const NAME_RULE_ID = 'ruleId';
+
+
+
     public static function createTranslation(Phrase $phrase, Language $language, string $translation, ?Rule $rule = null): static {
         return static::createTranslationRaw(
             $phrase->getId(),
@@ -57,23 +64,32 @@ class Translation extends Model {
         return static::create($properties);
     }
 
+    public static function getControlNames(): array {
+        return [
+            self::NAME_TRANSLATION_ID,
+            self::NAME_LANGUAGE_ID,
+            self::NAME_TRANSLATION,
+            self::NAME_RULE_ID,
+        ];
+    }
+
     public static function createDynamicTranslationControl(int $languageId, ?Translation $translation = null): View {
         $row = new Row();
 
-        $row->add(new HiddenField('id_translation', $translation?->getId()));
+        $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->getId()));
         $row->add(new HiddenField(
-            'id_language',
+            self::NAME_LANGUAGE_ID,
             Models::get($translation, 'languageId', $languageId)
         ));
 
         $row->add(new TextField(
-            'translation',
+            self::NAME_TRANSLATION,
             'Translation',
             Models::getString($translation, 'translation')
         ));
 
         $row->add(new Select(
-            'rule',
+            self::NAME_RULE_ID,
             'Rule',
             Rule::options(),
             Models::get($translation, 'ruleId')
@@ -82,13 +98,17 @@ class Translation extends Model {
         return $row;
     }
 
-    public static function createStaticTranslationControl(?Translation $translation = null): View {
+    public static function createStaticTranslationControl(int $languageId, ?Translation $translation = null): View {
         $row = new Row();
 
-        $row->add(new HiddenField('id_translation', $translation?->getId()));
+        $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->getId()));
+        $row->add(new HiddenField(
+            self::NAME_LANGUAGE_ID,
+            Models::get($translation, 'languageId', $languageId)
+        ));
 
         $row->add(new TextField(
-            'translation',
+            self::NAME_TRANSLATION,
             'Translation',
             Models::getString($translation, 'translation')
         ));
@@ -131,6 +151,13 @@ class Translation extends Model {
 
     public function setPhraseModel(Phrase $phrase): void {
         $this->phrase = $phrase;
+    }
+
+    public function setPhrase(Phrase $phrase): void {
+        $this->setPhraseModel($phrase);
+        $this->set([
+            'phraseId' => $phrase->getId()
+        ]);
     }
 
     public function getPhrase(): Phrase {
