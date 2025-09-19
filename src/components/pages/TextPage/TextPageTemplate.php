@@ -25,4 +25,8 @@ class TextPageTemplate implements PageTemplate {
         $form->add(new TextArea('text', 'Text', 'test'));
         return $form;
     }
+
+    public function delete(Page $page): ?View {
+        return null;
+    }
 }

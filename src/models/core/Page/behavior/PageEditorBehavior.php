@@ -253,8 +253,10 @@ class PageEditorBehavior implements EditorBehavior {
         /** @var array<int, Language> $languages */
         $languages = Models::identity(Language::all());
 
-        $columns = ModelDescription::extract(LocalizedPage::class)->getColumnAlias()
-            + ModelDescription::extract(PageMeta::class)->getColumnAlias();
+        $columns = array_merge(
+            ModelDescription::extract(LocalizedPage::class)->getColumnAlias(),
+            ModelDescription::extract(PageMeta::class)->getColumnAlias()
+        );
         $columns[] = self::NAME_LANGUAGE_ID;
 
         $objects = Models::transpose(

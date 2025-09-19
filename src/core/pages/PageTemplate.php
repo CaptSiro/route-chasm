@@ -11,5 +11,7 @@ interface PageTemplate {
 
     public function create(Page $page): View;
 
+    public function delete(Page $page): ?View;
+
     public function getEditor(Page $page): Action;
 }

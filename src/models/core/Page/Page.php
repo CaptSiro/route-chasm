@@ -7,12 +7,15 @@ use components\core\Admin\Page\AdminPageEditor;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\Table;
 use core\forms\description\DateTime;
 use core\forms\description\select\Select;
 use core\pages\PageLinkCreator;
+use core\pages\Pages;
+use core\pages\PageTemplate;
 use core\utils\Arrays;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
@@ -80,6 +83,21 @@ class Page extends Model {
 
 
 
+    public function delete(): DatabaseAction {
+        $template = $this->getTemplate();
+        if (!is_null($error = $template->delete($this))) {
+            App::getInstance()->getResponse()->renderRoot($error);
+        }
+
+        foreach ($this->getLocalizations() as $localization) {
+            $localization->delete();
+        }
+
+        return parent::delete();
+    }
+
+
+
     public function getParent(): ?Page {
         if (!isset($this->parent)) {
             $this->parent = self::fromId($this->parentId);
@@ -123,11 +141,18 @@ class Page extends Model {
         return $this->status;
     }
 
-    public function getTemplate(): ?PageTemplateRecord {
+    public function getTemplateRecord(): ?PageTemplateRecord {
         if (!isset($this->template)) {
             $this->template = PageTemplateRecord::fromId($this->templateId);
         }
 
         return $this->template;
+    }
+
+    public function getTemplate(): ?PageTemplate {
+        if (is_null($record = $this->getTemplateRecord())) {
+            return null;
+        }
+        return Pages::getTemplate($record->getId());
     }
 }

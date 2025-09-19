@@ -62,7 +62,7 @@ class AdminPageEditor extends AdminNexusEditor {
             }
 
             $page = Page::fromId(intval($pageId));
-            if (is_null($templateRecord = $page->getTemplate())) {
+            if (is_null($templateRecord = $page->getTemplateRecord())) {
                 $response->renderRoot(new Message($this->tr("Template is not set for this page")));
             }
 

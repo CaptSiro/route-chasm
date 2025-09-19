@@ -5,6 +5,7 @@ namespace models\core\Page;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
@@ -57,7 +58,17 @@ class LocalizedPage extends Model {
     protected string $title;
 
     protected Page $page;
+    protected PageMeta $meta;
     protected Slug $slug;
+
+
+
+    public function delete(): DatabaseAction {
+        $this->getMeta()->delete();
+        $status = parent::delete();
+        $this->getSlug()->delete();
+        return $status;
+    }
 
 
 
@@ -82,6 +93,14 @@ class LocalizedPage extends Model {
         }
 
         return $this->slug;
+    }
+
+    public function getMeta(): PageMeta {
+        if (!isset($this->meta)) {
+            $this->meta = PageMeta::fromLocalizedPage($this);
+        }
+
+        return $this->meta;
     }
 
     public function setPage(Page $page): void {
