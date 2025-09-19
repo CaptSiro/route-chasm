@@ -92,7 +92,10 @@ class PhraseEditorBehavior implements EditorBehavior {
         }
 
         /** @var Phrase $model */
-        $layout->add((new TextField('_ignored_', 'Default', $model->default))->readonly());
+        $layout->add((new TextField('_ignored_', $this->tr('Default'), $model->default))
+            ->readonly());
+        $layout->add((new TextField('_ignored_', $this->tr('Group'), $model->getLexiconGroup()->name))
+            ->readonly());
 
         $tabs = [];
 
@@ -110,6 +113,10 @@ class PhraseEditorBehavior implements EditorBehavior {
         $translations = Models::identity($phrase->getTranslations());
 
         foreach ($objects as $object) {
+            if (empty($object[Translation::NAME_TRANSLATION])) {
+                continue;
+            }
+
             $translation = !empty($object[Translation::NAME_TRANSLATION_ID])
                 ? ($translations[intval($object[Translation::NAME_TRANSLATION_ID])] ?? null)
                 : new Translation();

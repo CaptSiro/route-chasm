@@ -25,6 +25,8 @@ use models\core\Setting\Setting;
 use models\core\User\User;
 
 class AdminLogin extends ContainerContent {
+    public const LEXICON_GROUP = 'admin.login';
+
     public const QUERY_LOGOUT = '__logout';
     public const SETTING_NAME_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
 
@@ -48,6 +50,7 @@ class AdminLogin extends ContainerContent {
 
     public function __construct() {
         parent::__construct($this->page = new WebPage());
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
 
@@ -77,13 +80,17 @@ class AdminLogin extends ContainerContent {
 
         $userLogin = new Form(HttpMethod::POST, namespace: self::METHOD_USER);
 
-        $userLogin->add(Form::title('Admin Login'));
-        $userLogin->add(new TextField(self::FIELD_TAG, 'Tag'));
-        $userLogin->add(new PasswordField(self::FIELD_PASSWORD, 'Password'));
+        $userLogin->add(Form::title($this->tr('Admin Login')));
+        $userLogin->add(new TextField(self::FIELD_TAG, $this->tr('Tag')));
+        $userLogin->add(new PasswordField(self::FIELD_PASSWORD, $this->tr('Password')));
         $userLogin->add(new HiddenField(self::FIELD_METHOD, self::METHOD_USER));
 
         if ($useEnvPasswordMethod) {
-            $userLogin->add(new SpotlightSwitchLink('Login with .env password ', 'env', 'here'));
+            $userLogin->add(new SpotlightSwitchLink(
+                $this->tr('Login with .env password '),
+                'env',
+                $this->tr('here')
+            ));
         }
 
         $userLogin->add(new Submit());
@@ -94,10 +101,14 @@ class AdminLogin extends ContainerContent {
 
         $envLogin = new Form(HttpMethod::POST, namespace: self::METHOD_ENV);
 
-        $envLogin->add(Form::title('.env Admin Login'));
-        $envLogin->add(new PasswordField(self::FIELD_PASSWORD, 'Password'));
+        $envLogin->add(Form::title($this->tr('.env Admin Login')));
+        $envLogin->add(new PasswordField(self::FIELD_PASSWORD, $this->tr('Password')));
         $envLogin->add(new HiddenField(self::FIELD_METHOD, self::METHOD_ENV));
-        $envLogin->add(new SpotlightSwitchLink('Login with user account ', 'user', 'here'));
+        $envLogin->add(new SpotlightSwitchLink(
+            $this->tr('Login with user account '),
+            'user',
+            $this->tr('here')
+        ));
         $envLogin->add(new Submit());
 
         return new Spotlight([
@@ -130,7 +141,7 @@ class AdminLogin extends ContainerContent {
 
         $this->page
             ->getHead()
-            ->setTitle('Login');
+            ->setTitle($this->tr('Login'));
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
@@ -146,12 +157,14 @@ class AdminLogin extends ContainerContent {
                 if ($method === self::METHOD_ENV) {
                     if (!$this->useEnvPasswordMethod()) {
                         $response->setStatus(HttpCode::CE_METHOD_NOT_ALLOWED);
-                        $response->renderRoot(new Message('.env password method is not allowed'));
+                        $response->renderRoot(new Message(
+                            $this->tr('.env password method is not allowed')
+                        ));
                     }
 
                     if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ADMIN_LOGIN_PASSWORD) !== $password) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message('The password is wrong'));
+                        $response->renderRoot(new Message($this->tr('The password is wrong')));
                     }
 
                     User::fromTag(User::TAG_ROOT)?->login();
@@ -167,12 +180,14 @@ class AdminLogin extends ContainerContent {
 
                     if (!password_verify($password, $user->password)) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message('The password is wrong'));
+                        $response->renderRoot(new Message($this->tr('The password is wrong')));
                     }
 
                     if (!$user->isAdmin()) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message('The user does not have adequate privilege to login as Admin'));
+                        $response->renderRoot(new Message(
+                            $this->tr('The user does not have adequate privilege to login as Admin')
+                        ));
                     }
 
                     $user->login();
