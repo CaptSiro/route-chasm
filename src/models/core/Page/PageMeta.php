@@ -11,6 +11,13 @@ use core\database\sql\Table;
 use core\forms\description\TextArea;
 use core\forms\description\TextField;
 
+/**
+ * @property string $description
+ * @property string $keywords
+ * @property string $ogTitle
+ * @property string $ogDescription
+ */
+
 #[Table('ext_page_meta')]
 #[Database(App::DATABASE)]
 class PageMeta extends Model {

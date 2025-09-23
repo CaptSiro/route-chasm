@@ -153,6 +153,7 @@ class Page extends Model {
         if (is_null($record = $this->getTemplateRecord())) {
             return null;
         }
+
         return Pages::getTemplate($record->getId());
     }
 }

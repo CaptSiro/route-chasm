@@ -4,6 +4,7 @@ namespace components\core\HtmlHead;
 
 use components\core\WebPage\Head;
 use core\App;
+use core\Metadata;
 use core\RouteChasmEnvironment;
 use core\view\Component;
 
@@ -34,6 +35,14 @@ class HtmlHead extends Component implements Head {
 
         $this->meta[$name] = $content;
         return $this;
+    }
+
+    public function addMetaNonEmpty(string $name, ?string $content): self {
+        if (empty($content)) {
+            return $this;
+        }
+
+        return $this->addMeta($name, $content);
     }
 
     public function setTitle(string $title): void {
