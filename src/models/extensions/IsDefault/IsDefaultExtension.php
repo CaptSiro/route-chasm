@@ -15,10 +15,10 @@ const PROPERTY_IS_DEFAULT = 'default';
  * @property bool $default
  */
 trait IsDefaultExtension {
-    private static mixed $defaultModel;
+    private static mixed $defaultModel = 0; // unset
 
     public static function getDefault(bool $override = false): ?static {
-        if (!isset(static::$defaultModel) || $override) {
+        if (static::$defaultModel === 0 || $override) {
             static::$defaultModel = static::first(
                 where: Query::infer("is_default = ?", true)
             );
