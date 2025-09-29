@@ -1,5 +1,6 @@
 const EVENT_WINDOW_OPENED = 'windowOpened';
 const EVENT_WINDOW_CLOSED = 'windowClosed';
+const EVENT_WINDOW_ISSUE_CLOSE = 'windowIssueClose';
 const EVENT_WINDOW_MINIMIZED = 'windowMinimized';
 const EVENT_WINDOW_MAXIMIZED = 'windowMaximized';
 
@@ -168,6 +169,13 @@ function window_close(element) {
     window.onbeforeunload = null;
 }
 
+/**
+ * @param {HTMLElement} child
+ */
+function window_issueClose(child) {
+    child.dispatchEvent(new CustomEvent(EVENT_WINDOW_ISSUE_CLOSE));
+}
+
 
 
 /**
@@ -262,6 +270,11 @@ function window_init(element) {
         }
 
         element.style.zIndex = String(windows.length + 1);
+    });
+
+    element.addEventListener(EVENT_WINDOW_ISSUE_CLOSE, event => {
+        window_close(element);
+        event.stopImmediatePropagation();
     });
 
     const minimize = $('.minimize', element);

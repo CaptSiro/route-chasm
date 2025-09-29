@@ -80,11 +80,23 @@ button,
     text-decoration: none;
 }
 
+button:disabled {
+    color: var(--text-2);
+    background-color: var(--container-1);
+}
+
 button:hover,
 .button:hover {
     outline: 2px solid var(--accent-3);
     background-color: var(--container-0);
     cursor: pointer;
+    text-decoration: none;
+}
+
+button:disabled:hover {
+    outline: unset;
+    background-color: var(--container-1);
+    cursor: not-allowed;
     text-decoration: none;
 }
 
@@ -107,6 +119,22 @@ button:hover,
 .link.no-style:hover {
     text-decoration: unset !important;
     color: var(--text-0);
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap);
+}
+
+.pad-gap {
+    padding: var(--gap);
 }
 
 

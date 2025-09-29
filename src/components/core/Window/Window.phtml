@@ -6,8 +6,9 @@ use core\sideloader\Css;
 
 Css::import($this->getResource('window.css'));
 
-?>
-<button onclick="window_open($('#<?= $this->id ?>'))">Open <?= $this->title ?></button>
+?><?php if ($this->openButton): ?>
+    <button onclick="window_open($('#<?= $this->id ?>'))">Open <?= $this->title ?></button>
+<?php endif; ?>
 <div
     class="window hide"
     id="<?= $this->id ?>"

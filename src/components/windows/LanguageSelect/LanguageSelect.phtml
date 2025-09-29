@@ -1,0 +1,26 @@
+<?php /** @var LanguageSelect $this */
+
+use components\windows\LanguageSelect\LanguageSelect;
+use core\App;
+use core\sideloader\Javascript;
+use models\core\Language\Language;
+
+Javascript::import($this->getResource("language-select.js"));
+$appLocale = App::getInstance()
+    ->getRequest()
+    ->getLanguage()
+    ->getLocale();
+
+?><div class="language-select column pad-gap">
+    <?php foreach (Language::all() as $language): ?>
+        <?php $locale = $language->getLocale(); ?>
+        <button
+            class="button"
+            <?php if ($appLocale->getIdentifier() === $locale->getIdentifier()): ?>
+                disabled
+            <?php endif; ?>
+            x-init="languageSelect_languageButton"
+            data-code="<?= $locale->getIdentifier() ?>"
+        ><?= $locale->getName() ?></button>
+    <?php endforeach; ?>
+</div>

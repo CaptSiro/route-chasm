@@ -42,6 +42,7 @@ class Window implements View, Attribute {
     public function __construct(
         protected View $content,
         protected string $title = '',
+        protected bool $openButton = true
     ) {
         $this->addJavascriptInit('window_init');
         $this->id = 'window_'. self::generateId();
@@ -53,11 +54,11 @@ class Window implements View, Attribute {
 
 
 
-    public function bindClose(Attribute $trigger, string $event = 'click'): void {
-        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'close')");
-    }
-
-    public function bindOpen(Attribute $trigger, string $event = 'click'): void {
-        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'open')");
-    }
+//    public function bindClose(Attribute $trigger, string $event = 'click'): void {
+//        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'close')");
+//    }
+//
+//    public function bindOpen(Attribute $trigger, string $event = 'click'): void {
+//        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'open')");
+//    }
 }
