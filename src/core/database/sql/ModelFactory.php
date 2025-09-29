@@ -2,6 +2,8 @@
 
 namespace core\database\sql;
 
+use components\core\CallStack\CallStack;
+use components\core\Terminal\Terminal;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
@@ -49,11 +51,11 @@ class ModelFactory {
         $instance->useUnsafeAccess(true);
 
         foreach ($description->columns as $column) {
-            if (!isset($record[$column->name])) {
+            if (!$column->nullable && !isset($record[$column->name])) {
                 continue;
             }
 
-            $instance->{$column->alias} = $record[$column->name];
+            $instance->{$column->alias} = $record[$column->name] ?? null;
         }
 
         $instance->setOrigin($origin);

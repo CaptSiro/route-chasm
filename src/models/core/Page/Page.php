@@ -10,6 +10,7 @@ use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
+use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\DateTime;
 use core\forms\description\select\Select;
@@ -41,6 +42,19 @@ class Page extends Model {
             PageGridRow::getGridDescription(),
             title: '&nbsp;'
         ))->setLinkCreator(new PageLinkCreator());
+    }
+
+    /**
+     * @return array<Page>
+     */
+    public static function children(?Page $parent = null): array {
+        return self::childrenRaw($parent?->getId());
+    }
+
+    public static function childrenRaw(?int $parentId = null): array {
+        return self::all(where: is_null($parentId)
+            ? Query::static('id_page_parent IS NULL')
+            : Query::infer('id_page_parent = ?', $parentId));
     }
 
 
@@ -80,6 +94,7 @@ class Page extends Model {
     protected array $localizations;
     protected PageStatus $status;
     protected PageTemplateRecord $template;
+    protected array $children;
 
 
 
@@ -106,6 +121,24 @@ class Page extends Model {
         return $this->parent;
     }
 
+    /**
+     * @return array<Page>
+     */
+    public function getParents(): array {
+        $ret = [];
+        $current = $this;
+
+        while (true) {
+            if (is_null($parent = $current->getParent())) {
+                break;
+            }
+
+            $ret[] = $current = $parent;
+        }
+
+        return array_reverse($ret);
+    }
+
     public function setParent(?Page $parent): void {
         $this->set(['parentId' => $parent?->getId()]);
         $this->parent = $parent;
@@ -113,6 +146,11 @@ class Page extends Model {
 
     public function getLocalization(Language $language): ?LocalizedPage {
         return $this->getLocalizations()[$language->getId()] ?? null;
+    }
+
+    public function getLocalizationOrDefault(Language $language): ?LocalizedPage {
+        return $this->getLocalization($language)
+            ?? $this->getLocalization(Language::getDefault());
     }
 
     /**
@@ -155,5 +193,16 @@ class Page extends Model {
         }
 
         return Pages::getTemplate($record->getId());
+    }
+
+    /**
+     * @return array<Page>
+     */
+    public function getChildren(): array {
+        if (!isset($this->children)) {
+            $this->children = self::childrenRaw($this->getId());
+        }
+
+        return $this->children;
     }
 }

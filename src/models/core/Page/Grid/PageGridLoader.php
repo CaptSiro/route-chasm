@@ -13,7 +13,7 @@ class PageGridLoader implements GridLoader {
 
         return PageGridRow::children(
             $request->getLanguage(),
-            is_null($parent)
+            empty($parent)
                 ? null
                 : intval($parent)
         );

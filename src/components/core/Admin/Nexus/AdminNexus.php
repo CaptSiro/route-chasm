@@ -2,6 +2,7 @@
 
 namespace components\core\Admin\Nexus;
 
+use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Message\Message;
 use components\core\WebPage\AdminWebPage;
 use components\layout\Grid\description\GridDescription;
@@ -29,6 +30,7 @@ class AdminNexus extends ContainerContent {
 
     protected AdminWebPage $webPage;
     protected ?Path $urlPath = null;
+    protected ?BreadCrumbs $breadCrumbs = null;
     protected NexusLinkCreator $linkCreator;
     protected bool $showCreateButton = true;
 
@@ -68,6 +70,14 @@ class AdminNexus extends ContainerContent {
 
     public function getGridDescription(): GridDescription {
         return $this->gridDescription;
+    }
+
+    public function getBreadCrumbs(): ?BreadCrumbs {
+        return $this->breadCrumbs;
+    }
+
+    public function setBreadCrumbs(?BreadCrumbs $breadCrumbs): void {
+        $this->breadCrumbs = $breadCrumbs;
     }
 
     public function getEditor(): Editor {

@@ -99,6 +99,10 @@ class Navigator extends Router {
 
 
 
+    public function setContext(?string $context): void {
+        $this->context = $context;
+    }
+
     public function resolve(Request $request, Response $response): void {
         $path = $request->getRemainingPath();
         $language = $request->getLanguage();

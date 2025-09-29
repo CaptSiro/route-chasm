@@ -17,5 +17,9 @@ Css::import($this->getResource('nexus.css'));
         <?php endif; ?>
     </div>
 
+    <?php if (!is_null($this->breadCrumbs)): ?>
+        <?= $this->breadCrumbs ?>
+    <?php endif; ?>
+
     <?= $this->getGrid() ?>
 </section>
