@@ -4,7 +4,6 @@ namespace models\extensions\Name;
 
 use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
-use models\core\Navigation\NavigationFactoryRecord;
 
 trait CachedNameExtension {
     use ModelCache, NameExtension;

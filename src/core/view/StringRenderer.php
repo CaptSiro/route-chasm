@@ -7,6 +7,12 @@ class StringRenderer implements View {
         protected string $string
     ) {}
 
+    public function __toString(): string {
+        return $this->string;
+    }
+
+
+
     public function render(): string {
         return $this->string;
     }

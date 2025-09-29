@@ -2,7 +2,6 @@
 
 namespace core\pages;
 
-use components\core\Message\Message;
 use components\pages\Wireframe\Wireframe;
 use core\App;
 use core\http\HttpCode;

@@ -38,7 +38,7 @@ class UrlGraph {
     ) {
         if (is_null($this->segments)) {
             $this->segments = new StringTranslator(
-                fn($x) => Strings::urlPathSegment($x)
+                fn($x) => Strings::identifier($x)
             );
         }
     }

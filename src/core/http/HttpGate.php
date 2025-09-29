@@ -9,7 +9,6 @@ use core\communication\Request;
 use core\communication\Response;
 use core\patterns\AnyString;
 use core\patterns\Pattern;
-use core\route\Path;
 use core\route\RouteNode;
 
 class HttpGate implements Action {

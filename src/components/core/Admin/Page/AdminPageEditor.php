@@ -9,7 +9,6 @@ use components\core\BreadCrumbs\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Icon;
 use components\core\Message\Message;
-use components\core\Terminal\Terminal;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;

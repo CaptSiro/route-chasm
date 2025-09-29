@@ -11,7 +11,6 @@ use core\database\sql\Table;
 use models\extensions\Editable\EditableExtension;
 use models\extensions\Name\CachedNameExtension;
 use models\extensions\Name\Name;
-use models\extensions\Name\NameValues;
 
 #[Grid]
 #[Table('core_page_status')]

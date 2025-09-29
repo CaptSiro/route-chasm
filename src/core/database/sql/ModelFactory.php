@@ -2,9 +2,6 @@
 
 namespace core\database\sql;
 
-use components\core\CallStack\CallStack;
-use components\core\Terminal\Terminal;
-use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
 use core\database\sql\query\SqlQuery;

@@ -2,7 +2,6 @@
 
 namespace models\core\Language\Lexicon;
 
-use components\core\Terminal\Terminal;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Row\Row;

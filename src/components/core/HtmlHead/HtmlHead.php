@@ -4,7 +4,6 @@ namespace components\core\HtmlHead;
 
 use components\core\WebPage\Head;
 use core\App;
-use core\Metadata;
 use core\RouteChasmEnvironment;
 use core\view\Component;
 

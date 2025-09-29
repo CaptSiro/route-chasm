@@ -2,7 +2,6 @@
 
 namespace core\locale;
 
-use components\core\Terminal\Terminal;
 use core\App;
 use models\core\Language\Language;
 use models\core\Language\Lexicon\Phrase;
