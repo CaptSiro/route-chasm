@@ -27,7 +27,6 @@ use models\core\User\User;
 class AdminLogin extends ContainerContent {
     public const LEXICON_GROUP = 'admin.login';
 
-    public const QUERY_LOGOUT = '__logout';
     public const SETTING_NAME_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
 
     private const METHOD_USER = 'user';
@@ -40,7 +39,7 @@ class AdminLogin extends ContainerContent {
     public static function createLogoutUrl(Url $url): string {
         return $url
             ->copy()
-            ->setQueryArgument(self::QUERY_LOGOUT)
+            ->setQueryArgument(RouteChasmEnvironment::QUERY_LOGOUT)
             ->toString();
     }
 
@@ -121,9 +120,9 @@ class AdminLogin extends ContainerContent {
         $loggedIn = User::fromSession($request->getSession());
         if (!is_null($loggedIn)) {
             $url = $request->getUrl();
-            $logout = $url->getQuery()->exists(self::QUERY_LOGOUT);
+            $logout = $url->getQuery()->exists(RouteChasmEnvironment::QUERY_LOGOUT);
             if ($logout) {
-                $url->getQuery()->remove(self::QUERY_LOGOUT);
+                $url->getQuery()->remove(RouteChasmEnvironment::QUERY_LOGOUT);
                 User::logout();
                 $response->redirect($url->toString());
             }
@@ -162,7 +161,7 @@ class AdminLogin extends ContainerContent {
                         ));
                     }
 
-                    if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ADMIN_LOGIN_PASSWORD) !== $password) {
+                    if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ENV_ADMIN_LOGIN_PASSWORD) !== $password) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
                         $response->renderRoot(new Message($this->tr('The password is wrong')));
                     }

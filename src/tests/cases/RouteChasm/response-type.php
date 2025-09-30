@@ -6,6 +6,7 @@ use core\communication\Request;
 use core\communication\Response;
 use core\communication\ResponseFormat;
 use core\http\HttpHeader;
+use core\RouteChasmEnvironment;
 use sptf\Sptf;
 
 function q(Request $request, string $name, string $value): Request {
@@ -21,30 +22,30 @@ function h(Request $request, string $header, string $value): Request {
 Sptf::test("should detect response type from request", function () {
     $requests = [
         Format::IDENT_TEXT => [
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, ''),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 't'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'text'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, ''),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 't'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'text'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, ''),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text/plain'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'undefined'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, ''),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, 't'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, 'text'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, ''),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, 't'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, 'text'),
+            h(Request::test(), HttpHeader::X_RESPONSE_FORMAT, ''),
+            h(Request::test(), HttpHeader::X_RESPONSE_FORMAT, 'text/plain'),
+            h(Request::test(), HttpHeader::X_RESPONSE_FORMAT, 'undefined'),
         ],
         Format::IDENT_HTML => [
             Request::test(),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'h'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'html'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'h'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'html'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'text/html'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, 'h'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, 'html'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, 'h'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, 'html'),
+            h(Request::test(), HttpHeader::X_RESPONSE_FORMAT, 'text/html'),
         ],
         Format::IDENT_JSON => [
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'j'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER, 'json'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'j'),
-            q(Request::test(), ResponseFormat::QUERY_PARAMETER_LONG, 'json'),
-            h(Request::test(), HttpHeader::X_RESPONSE_TYPE, 'application/json'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, 'j'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, 'json'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, 'j'),
+            q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG, 'json'),
+            h(Request::test(), HttpHeader::X_RESPONSE_FORMAT, 'application/json'),
         ]
     ];
 

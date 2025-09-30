@@ -56,12 +56,12 @@ class EnvConfig implements Config {
 
     public function getSqlConfig(): SqlConfig {
         return new SqlConfig(
-            $this->getOrDie(RouteChasmEnvironment::DATABASE_HOST),
-            $this->getOrDie(RouteChasmEnvironment::DATABASE_NAME),
-            $this->getOrDie(RouteChasmEnvironment::DATABASE_USER),
-            $this->getOrDie(RouteChasmEnvironment::DATABASE_PASSWORD),
-            $this->env->get(RouteChasmEnvironment::DATABASE_PORT) ?? "3306",
-            $this->env->get(RouteChasmEnvironment::DATABASE_CHARSET) ?? "UTF8",
+            $this->getOrDie(RouteChasmEnvironment::ENV_DATABASE_HOST),
+            $this->getOrDie(RouteChasmEnvironment::ENV_DATABASE_NAME),
+            $this->getOrDie(RouteChasmEnvironment::ENV_DATABASE_USER),
+            $this->getOrDie(RouteChasmEnvironment::ENV_DATABASE_PASSWORD),
+            $this->env->get(RouteChasmEnvironment::ENV_DATABASE_PORT) ?? "3306",
+            $this->env->get(RouteChasmEnvironment::ENV_DATABASE_CHARSET) ?? "UTF8",
         );
     }
 

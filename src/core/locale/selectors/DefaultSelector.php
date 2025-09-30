@@ -7,13 +7,13 @@ use core\locale\LanguageSelector;
 
 class DefaultSelector implements LanguageSelector {
     protected AcceptLanguageSelector $acceptLanguageSelector;
-    protected QuerySelector $querySelector;
+    protected QueryLanguageSelector $querySelector;
 
 
 
     public function __construct() {
         $this->acceptLanguageSelector = new AcceptLanguageSelector();
-        $this->querySelector = new QuerySelector();
+        $this->querySelector = new QueryLanguageSelector();
     }
 
 

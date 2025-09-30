@@ -5,22 +5,20 @@ namespace core\communication;
 use core\App;
 use core\collections\Dictionary;
 use core\http\HttpHeader;
+use core\RouteChasmEnvironment;
 
 class ResponseFormat implements Format {
     use BaseFormat;
 
-    public const QUERY_PARAMETER = "p";
-    public const QUERY_PARAMETER_LONG = "response-format";
-
 
 
     public function getTypeFromQuery(Dictionary $dictionary): ?string {
-        return $dictionary->get(self::QUERY_PARAMETER)
-            ?? $dictionary->get(self::QUERY_PARAMETER_LONG);
+        return $dictionary->get(RouteChasmEnvironment::QUERY_RESPONSE_FORMAT)
+            ?? $dictionary->get(RouteChasmEnvironment::QUERY_RESPONSE_FORMAT_LONG);
     }
 
     public function getIdentifier(Request $request): string {
-        $header = $request->getHeader(HttpHeader::X_RESPONSE_TYPE);
+        $header = $request->getHeader(HttpHeader::X_RESPONSE_FORMAT);
         if (!is_null($header)) {
             return $this->matcher->matchContentType($header);
         }

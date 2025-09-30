@@ -39,7 +39,7 @@ class Language extends Model implements IsDefault {
     }
 
     public static function fromEnv(): static {
-        $code = App::getEnvStatic()->getOrDie(RouteChasmEnvironment::LANGUAGE);
+        $code = App::getEnvStatic()->getOrDie(RouteChasmEnvironment::ENV_LANGUAGE);
         $language = new static();
 
         $language->set([

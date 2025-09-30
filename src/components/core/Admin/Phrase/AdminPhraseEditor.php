@@ -8,12 +8,11 @@ use core\communication\Request;
 use core\communication\Response;
 use core\http\Http;
 use core\route\RouteNode;
+use core\RouteChasmEnvironment;
 use core\url\Url;
 use models\core\Language\Lexicon\Translation;
 
 class AdminPhraseEditor extends AdminNexusEditor {
-    public const QUERY_LANGUAGE_ID = 'language-id';
-
     public function __construct(EditorBehavior $behaviour) {
         parent::__construct($behaviour);
         $this->setTemplate(AdminNexusEditor::getTemplateResourceStatic());
@@ -26,7 +25,7 @@ class AdminPhraseEditor extends AdminNexusEditor {
 
         $router = $bindingPoint->getRouter();
         $router->use('/translation', Http::get(function (Request $request, Response $response) {
-            $languageId = intval($request->getUrl()->getQuery()->getStrict(self::QUERY_LANGUAGE_ID));
+            $languageId = intval($request->getUrl()->getQuery()->getStrict(RouteChasmEnvironment::QUERY_LANGUAGE_ID));
             $control = Translation::createDynamicTranslationControl($languageId)->render();
             $button = $this->createAddTranslationButton($languageId);
 
@@ -38,7 +37,7 @@ class AdminPhraseEditor extends AdminNexusEditor {
         $url = $this->context->getEditorLink();
 
         $url
-            ->setQueryArgument(self::QUERY_LANGUAGE_ID, $languageId)
+            ->setQueryArgument(RouteChasmEnvironment::QUERY_LANGUAGE_ID, $languageId)
             ->getPath()->append('translation');
 
         return $url;

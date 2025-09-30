@@ -22,6 +22,7 @@ use core\forms\description\FormDescription;
 use core\forms\Form;
 use core\locale\LexiconUnit;
 use core\pages\PageFactory;
+use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\utils\Models;
 use core\view\View;
@@ -55,7 +56,7 @@ class PageEditorBehavior implements EditorBehavior {
             ->getRequest()
             ->getUrl()
             ->getQuery()
-            ->get(AdminPageEditor::QUERY_PARENT, '')));
+            ->get(RouteChasmEnvironment::QUERY_PAGE_PARENT, '')));
         return null;
     }
 

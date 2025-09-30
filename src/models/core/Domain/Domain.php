@@ -50,7 +50,7 @@ class Domain extends Model implements Enable {
 
     public static function fromEnv(): static {
         $url = Url::from(
-            App::getEnvStatic()->getOrDie(RouteChasmEnvironment::DOMAIN_URL)
+            App::getEnvStatic()->getOrDie(RouteChasmEnvironment::ENV_DOMAIN_URL)
         );
 
         $domain = new static();

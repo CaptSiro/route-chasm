@@ -14,6 +14,7 @@ use core\module\Loader;
 use core\patterns\Ident;
 use core\route\Path;
 use core\route\Router;
+use core\RouteChasmEnvironment;
 use core\sideloader\api\SideLoaderApi;
 use core\sideloader\importers\FileImporter;
 use core\Singleton;
@@ -121,12 +122,12 @@ class SideLoader implements View {
     }
 
     public function doSendRequireHeader(Request $request): bool {
-        $type = App::getInstance()
+        $format = App::getInstance()
             ->getResponse()
             ->getFormat($request);
 
-        return $type !== Format::IDENT_HTML
-            || $request->getUrl()->getQuery()->exists(self::QUERY_FORCE);
+        return $format !== Format::IDENT_HTML
+            || $request->getUrl()->getQuery()->exists(RouteChasmEnvironment::QUERY_SIDELOADER_FORCE);
     }
 
     public function isInitialized(): bool {

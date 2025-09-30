@@ -14,13 +14,12 @@ use core\communication\Request;
 use core\communication\Response;
 use core\pages\Pages;
 use core\route\RouteNode;
+use core\RouteChasmEnvironment;
 use core\url\Url;
 use models\core\Page\Page;
 
 class AdminPageEditor extends AdminNexusEditor {
     public const LEXICON_GROUP = 'admin.page.editor';
-    public const QUERY_PARENT = 'parent';
-    public const QUERY_PAGE = 'page';
 
 
 
@@ -42,7 +41,7 @@ class AdminPageEditor extends AdminNexusEditor {
         $url = $request->getUrl();
         $pageLabel = $this->tr('Pages');
 
-        if (empty($parentId = $url->getQuery()->get(self::QUERY_PARENT))) {
+        if (empty($parentId = $url->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE_PARENT))) {
             return $pageLabel;
         }
 
@@ -57,12 +56,12 @@ class AdminPageEditor extends AdminNexusEditor {
 
         $url = $request->getUrl()
             ->copy()
-            ->setQueryArgument(self::QUERY_PARENT);
+            ->setQueryArgument(RouteChasmEnvironment::QUERY_PAGE_PARENT);
         $breadCrumbs = [
             $url->toString() => Icon::nf('nf-fa-home', 'Home')
         ];
 
-        if (empty($parentId = $request->getUrl()->getQuery()->get(self::QUERY_PARENT))) {
+        if (empty($parentId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE_PARENT))) {
             return BreadCrumbs::from($breadCrumbs);
         }
 
@@ -72,7 +71,7 @@ class AdminPageEditor extends AdminNexusEditor {
         foreach ($page->getParents() as $parent) {
             $parentUrl = $url
                 ->copy()
-                ->setQueryArgument(self::QUERY_PARENT, $parent->getId());
+                ->setQueryArgument(RouteChasmEnvironment::QUERY_PAGE_PARENT, $parent->getId());
             $breadCrumbs[$parentUrl->toString()] = $parent->getLocalizationOrDefault($language)->title;
         }
 
@@ -87,10 +86,12 @@ class AdminPageEditor extends AdminNexusEditor {
 
         $router = $bindingPoint->getRouter();
         $router->use('template', function (Request $request, Response $response) {
-            $pageId = $request->getUrl()->getQuery()->get(self::QUERY_PAGE);
+            $pageId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE);
             if (is_null($pageId)) {
-                $page = self::QUERY_PAGE;
-                $response->renderRoot(new Message($this->tr("URL Query parameter '$page' is missing")));
+                $queryParameter = RouteChasmEnvironment::QUERY_PAGE;
+                $response->renderRoot(new Message(
+                    $this->tr("URL Query parameter '$queryParameter' is missing")
+                ));
             }
 
             $page = Page::fromId(intval($pageId));
