@@ -35,18 +35,18 @@ class PdoConnection implements Connection {
     }
 
     protected function createStatement(Query $query): PDOStatement {
-        if (empty($query->parameters)) {
-            return $this->connection->query($query->sql);
+        if (empty($query->getParameters())) {
+            return $this->connection->query($query->getSql());
         }
 
-        $statement = $this->connection->prepare($query->sql);
+        $statement = $this->connection->prepare($query->getSql());
 
-        foreach ($query->parameters as $i => $parameter) {
+        foreach ($query->getParameters() as $i => $parameter) {
             $param = gettype($i) === "integer"
                 ? $i + 1
                 : $i;
 
-            $statement->bindValue($param, $parameter->value, self::TYPES[$parameter->type]);
+            $statement->bindValue($param, $parameter->getValue(), self::TYPES[$parameter->getType()]);
         }
 
         return $statement;

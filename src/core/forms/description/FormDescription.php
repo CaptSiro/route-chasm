@@ -61,10 +61,17 @@ class FormDescription implements EditorBehavior {
      * @param array<string, ControlAttribute> $controls
      */
     public function __construct(
-        public readonly array $controls
+        protected array $controls
     ) {}
 
 
+
+    /**
+     * @return array<string, ControlAttribute>
+     */
+    public function getControls(): array {
+        return $this->controls;
+    }
 
     public function initForm(Form $form, ?Model $model): ?View {
         return null;

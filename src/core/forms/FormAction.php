@@ -25,7 +25,17 @@ class FormAction implements Attribute {
      * @param string $label
      */
     public function __construct(
-        public readonly string $type,
-        public readonly string $label,
+        protected string $type,
+        protected string $label,
     ) {}
+
+
+
+    public function getType(): string {
+        return $this->type;
+    }
+
+    public function getLabel(): string {
+        return $this->label;
+    }
 }

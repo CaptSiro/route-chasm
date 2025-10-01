@@ -38,19 +38,19 @@ class RouteCompiler {
         $count = count($tokens);
 
         for ($position = 0; $position < $count; $position++) {
-            $literal = $tokens[$position]->literal;
+            $literal = $tokens[$position]->getLiteral();
 
-            switch ($tokens[$position]->type) {
+            switch ($tokens[$position]->getType()) {
                 case TokenType::BRACKET_L: {
                     $identAndClosingBracketFollows = ($position + 2 < $count)
-                        && $tokens[$position + 1]->type === TokenType::IDENT
-                        && $tokens[$position + 2]->type === TokenType::BRACKET_R;
+                        && $tokens[$position + 1]->getType() === TokenType::IDENT
+                        && $tokens[$position + 2]->getType() === TokenType::BRACKET_R;
 
                     if (!$identAndClosingBracketFollows) {
                         throw new RouteCompilerException("Illegal token '$literal'");
                     }
 
-                    $ident = $tokens[$position + 1]->literal;
+                    $ident = $tokens[$position + 1]->getLiteral();
                     $identRegex = Regex::create($this->config->getIdentRegex());
 
                     if (!preg_match($identRegex, $ident)) {
@@ -72,7 +72,7 @@ class RouteCompiler {
 
                 case TokenType::SLASH: {
                     $isPreviousSlash = isset($tokens[$position - 1])
-                        && $tokens[$position - 1]->type === TokenType::SLASH;
+                        && $tokens[$position - 1]->getType() === TokenType::SLASH;
                     if ($isPreviousSlash) {
                         if ($this->config->isMergeConsecutiveSlashes()) {
                             break;
@@ -137,19 +137,19 @@ class RouteCompiler {
         $count = count($tokens);
 
         for ($position = 0; $position < $count; $position++) {
-            $literal = $tokens[$position]->literal;
+            $literal = $tokens[$position]->getLiteral();
 
-            switch ($tokens[$position]->type) {
+            switch ($tokens[$position]->getType()) {
                 case TokenType::BRACKET_L: {
                     $identAndClosingBracketFollows = ($position + 2 < $count)
-                        && $tokens[$position + 1]->type === TokenType::IDENT
-                        && $tokens[$position + 2]->type === TokenType::BRACKET_R;
+                        && $tokens[$position + 1]->getType() === TokenType::IDENT
+                        && $tokens[$position + 2]->getType() === TokenType::BRACKET_R;
 
                     if (!$identAndClosingBracketFollows) {
                         throw new RouteCompilerException("Illegal token '$literal'");
                     }
 
-                    $ident = $tokens[$position + 1]->literal;
+                    $ident = $tokens[$position + 1]->getLiteral();
                     if (!isset($parameters[$ident])) {
                         throw new RouteCompilerException("Identifier '$ident' is not present in parameters");
                     }
@@ -166,7 +166,7 @@ class RouteCompiler {
 
                 case TokenType::SLASH: {
                     $isPreviousSlash = isset($tokens[$position - 1])
-                        && $tokens[$position - 1]->type === TokenType::SLASH;
+                        && $tokens[$position - 1]->getType() === TokenType::SLASH;
                     if ($isPreviousSlash) {
                         if ($this->config->isMergeConsecutiveSlashes()) {
                             break;
@@ -217,7 +217,7 @@ class RouteCompiler {
         $tokenizer = new Tokenizer($pattern);
 
         foreach ($tokenizer->tokenize() as $token) {
-            if ($token->type === TokenType::BRACKET_L) {
+            if ($token->getType() === TokenType::BRACKET_L) {
                 return true;
             }
         }

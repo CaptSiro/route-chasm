@@ -2,8 +2,8 @@
 <div class="form-actions">
     <?php foreach ($this->actions as $action): ?>
         <button
-            type="<?= $action->type ?>"
+            type="<?= $action->getType() ?>"
             <?= $action->stringifyAttributes() ?>
-        ><?= $action->label ?></button>
+        ><?= $action->getLabel() ?></button>
     <?php endforeach; ?>
 </div>

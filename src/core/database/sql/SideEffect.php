@@ -2,9 +2,19 @@
 
 namespace core\database\sql;
 
-readonly class SideEffect {
+class SideEffect {
     public function __construct(
-        public mixed $lastInsertedId,
-        public int $rowsAffected,
+        protected mixed $lastInsertedId,
+        protected int $rowsAffected,
     ) {}
+
+
+
+    public function getLastInsertedId(): mixed {
+        return $this->lastInsertedId;
+    }
+
+    public function getRowsAffected(): int {
+        return $this->rowsAffected;
+    }
 }

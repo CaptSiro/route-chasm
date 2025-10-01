@@ -17,14 +17,24 @@ readonly class Parameter {
 
 
 
-    public string $type;
+    protected string $type;
 
     public function __construct(
-        public mixed $value,
+        protected mixed $value,
         string $type
     ) {
         $this->type = $type === self::TYPE_INFER
             ? gettype($this->value)
             : $type;
+    }
+
+
+
+    public function getType(): string {
+        return $this->type;
+    }
+
+    public function getValue(): mixed {
+        return $this->value;
     }
 }

@@ -39,16 +39,16 @@ class ModelDescription {
             $column = $attributes[0]->newInstance();
             $description = new ColumnDescription(
                 $property->getName(),
-                $column->name ?? $property->getName(),
-                $column->type,
-                $column->nullable,
-                $column->transform
+                $column->getName() ?? $property->getName(),
+                $column->getType(),
+                $column->isNullable(),
+                $column->getTransform()
             );
 
             $columns[] = $description;
-            $alias[$description->alias] = $description;
+            $alias[$description->getAlias()] = $description;
 
-            if ($column->primaryKey) {
+            if ($column->isPrimaryKey()) {
                 if (!is_null($idColumn)) {
                     throw new RuntimeException("Only one primary key column is allowed for model '$class'");
                 }
@@ -84,12 +84,12 @@ class ModelDescription {
      * @param array<string, ColumnDescription> $alias
      */
     public function __construct(
-        public readonly string $class,
-        public readonly string $table,
-        public readonly Connection $connection,
-        public readonly ColumnDescription $idColumn,
-        public readonly array $columns,
-        public readonly array $alias,
+        protected string $class,
+        protected string $table,
+        protected Connection $connection,
+        protected ColumnDescription $idColumn,
+        protected array $columns,
+        protected array $alias,
     ) {
         $this->escapedTable = $this->connection->getDriver()->escapeTable(
             $this->table
@@ -97,6 +97,36 @@ class ModelDescription {
     }
 
 
+
+    public function getClass(): string {
+        return $this->class;
+    }
+
+    public function getTable(): string {
+        return $this->table;
+    }
+
+    public function getConnection(): Connection {
+        return $this->connection;
+    }
+
+    public function getIdColumn(): ColumnDescription {
+        return $this->idColumn;
+    }
+
+    /**
+     * @return array<ColumnDescription>
+     */
+    public function getColumns(): array {
+        return $this->columns;
+    }
+
+    /**
+     * @return array<string, ColumnDescription>
+     */
+    public function getAlias(): array {
+        return $this->alias;
+    }
 
     public function getEscapedTable(): string {
         return $this->escapedTable;
@@ -108,7 +138,7 @@ class ModelDescription {
 
     public function getEscapedIdColumnName(): string {
         return $this->connection->getDriver()->escapeColumn(
-            $this->idColumn->name
+            $this->idColumn->getName()
         );
     }
 
@@ -118,7 +148,7 @@ class ModelDescription {
 
     public function getColumnAlias(): array {
         return array_map(
-            fn(ColumnDescription $x) => $x->alias,
+            fn(ColumnDescription $x) => $x->getAlias(),
             $this->columns
         );
     }
@@ -127,7 +157,7 @@ class ModelDescription {
         $table = $this->getEscapedTable();
 
         foreach ($this->columns as $column) {
-            $sql->projection($table .'.'. $column->name);
+            $sql->projection($table .'.'. $column->getName());
         }
     }
 }

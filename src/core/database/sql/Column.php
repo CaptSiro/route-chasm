@@ -7,7 +7,7 @@ use Closure;
 use core\database\sql\query\Parameter;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-readonly class Column {
+class Column {
     public const TYPE_STRING = Parameter::TYPE_STRING;
     public const TYPE_DATE = Parameter::TYPE_STRING;
     public const TYPE_DATETIME = Parameter::TYPE_STRING;
@@ -26,10 +26,36 @@ readonly class Column {
      * @param Closure|null $transform Function signature: fn(mixed $value) => mixed
      */
     public function __construct(
-        public ?string $name = null,
-        public string $type = Parameter::TYPE_INFER,
-        public bool $primaryKey = false,
-        public bool $nullable = false,
-        public ?Closure $transform = null
+        protected ?string $name = null,
+        protected string $type = Parameter::TYPE_INFER,
+        protected bool $primaryKey = false,
+        protected bool $nullable = false,
+        protected ?Closure $transform = null
     ) {}
+
+
+
+    public function getName(): ?string {
+        return $this->name;
+    }
+
+    public function getType(): string {
+        return $this->type;
+    }
+
+    public function isPrimaryKey(): bool {
+        return $this->primaryKey;
+    }
+
+    public function isNullable(): bool {
+        return $this->nullable;
+    }
+
+    public function getTransform(): ?Closure {
+        return $this->transform;
+    }
+
+    public function transform(mixed $value): mixed {
+        return ($this->transform)($value);
+    }
 }

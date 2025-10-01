@@ -195,7 +195,7 @@ class Translation extends Model {
         return Sql::update($description->getEscapedTable())
             ->set('id_rule', Parameter::infer($ruleId))
             ->where(Query::infer('id_translation = ?', $this->getId()))
-            ->run($description->connection);
+            ->run($description->getConnection());
     }
 
     public function format(string $value): string {

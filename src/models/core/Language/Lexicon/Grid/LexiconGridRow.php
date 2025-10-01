@@ -63,8 +63,8 @@ class LexiconGridRow extends Model {
     public static function phrasesRaw(): array {
         $description = self::getDescription();
         return static::fromRecords(
-            self::phrasesQuery($description->connection)
-                ->fetchAll($description->connection)
+            self::phrasesQuery($description->getConnection())
+                ->fetchAll($description->getConnection())
         );
     }
 

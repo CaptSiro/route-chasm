@@ -67,7 +67,7 @@ class PageGridRow extends Model {
         $description = self::getDescription();
         return static::fromRecords(
             self::childrenQuery($languageId, $parentId)
-                ->fetchAll($description->connection)
+                ->fetchAll($description->getConnection())
         );
     }
 

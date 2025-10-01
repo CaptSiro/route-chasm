@@ -106,7 +106,10 @@ Sptf::test("should tokenize routes correctly", function () {
 
         foreach ($expected as $i => $token) {
             Sptf::expect($tokenized[$i])
-                ->compare(fn(Token $a, Token $b) => $a->type === $b->type && $a->literal === $b->literal)
+                ->compare(
+                    fn(Token $a, Token $b) => $a->getType() === $b->getType()
+                        && $a->getLiteral() === $b->getLiteral()
+                )
                 ->toBe($token);
         }
     }

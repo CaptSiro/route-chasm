@@ -67,7 +67,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new HiddenField(
-            $modelDescription->idColumn->alias,
+            $modelDescription->getIdColumn()->getAlias(),
             $this->getState() === self::STATE_UPDATER
                 ? $this->model->getId()
                 : ''

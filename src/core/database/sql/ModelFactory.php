@@ -47,12 +47,12 @@ class ModelFactory {
         $instance = $this->new();
         $instance->useUnsafeAccess(true);
 
-        foreach ($description->columns as $column) {
-            if (!$column->nullable && !isset($record[$column->name])) {
+        foreach ($description->getColumns() as $column) {
+            if (!$column->isNullable() && !isset($record[$column->getName()])) {
                 continue;
             }
 
-            $instance->{$column->alias} = $record[$column->name] ?? null;
+            $instance->{$column->getAlias()} = $record[$column->getName()] ?? null;
         }
 
         $instance->setOrigin($origin);
@@ -73,18 +73,18 @@ class ModelFactory {
     }
 
     protected static function addProjection(ModelDescription $description, SelectQuery $sql, ?array $projection = null): void {
-        $driver = $description->connection->getDriver();
+        $driver = $description->getConnection()->getDriver();
         if (is_null($projection)) {
-            foreach ($description->columns as $column) {
-                $sql->projection($driver->escapeColumn($column->name));
+            foreach ($description->getColumns() as $column) {
+                $sql->projection($driver->escapeColumn($column->getName()));
             }
 
             return;
         }
 
-        foreach ($description->columns as $column) {
-            if (in_array($column->name, $projection)) {
-                $sql->projection($driver->escapeColumn($column->name));
+        foreach ($description->getColumns() as $column) {
+            if (in_array($column->getName(), $projection)) {
+                $sql->projection($driver->escapeColumn($column->getName()));
             }
         }
     }
@@ -104,22 +104,33 @@ class ModelFactory {
         return $sql;
     }
 
-    public function first(?array $projection = null, Query|string|null $where = null): ?Model {
-        $description = ModelDescription::extract($this->modelClass);
-        $record = $this
-            ->firstQuery($projection, $where)
-            ->fetch($description->connection);
-
-        return $this->fromRecord($record);
+    public function firstExecute(SqlQuery $query): ?Model {
+        return $this->fromRecord(
+            $query->fetch(
+                ModelDescription::extract($this->modelClass)->getConnection()
+            )
+        );
     }
 
-    public function fromId(mixed $id, ?array $projection = null): ?Model {
+    public function first(?array $projection = null, Query|string|null $where = null): ?Model {
+        return $this->firstExecute(
+            $this->firstQuery($projection, $where)
+        );
+    }
+
+    public function fromIdQuery(mixed $id, ?array $projection = null): SqlQuery {
         $description = ModelDescription::extract($this->modelClass);
         $idColumnName = $description->getEscapedIdColumnName();
 
-        return self::first(
+        return $this->firstQuery(
             $projection,
             where: Query::infer("$idColumnName = ?", $id)
+        );
+    }
+
+    public function fromId(mixed $id, ?array $projection = null): ?Model {
+        return $this->firstExecute(
+            $this->fromIdQuery($id, $projection)
         );
     }
 
@@ -137,16 +148,24 @@ class ModelFactory {
     }
 
     /**
+     * @return array<Model>
+     */
+    public function allExecute(SqlQuery $query): array {
+        return self::fromRecords(
+            $query->fetchAll(
+                ModelDescription::extract($this->modelClass)->getConnection()
+            )
+        );
+    }
+
+    /**
      * @param array|null $projection
      * @param Query|string|null $where
      * @return array<Model>
      */
     public function all(?array $projection = null, Query|string|null $where = null): array {
-        $description = ModelDescription::extract($this->modelClass);
-        $records = $this
-            ->allQuery($projection, $where)
-            ->fetchAll($description->connection);
-
-        return self::fromRecords($records);
+        return $this->allExecute(
+            $this->allQuery($projection, $where)
+        );
     }
 }

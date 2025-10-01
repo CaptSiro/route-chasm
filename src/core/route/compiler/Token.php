@@ -12,11 +12,19 @@ readonly class Token {
 
 
     public function __construct(
-        public TokenType $type,
-        public string $literal
+        protected TokenType $type,
+        protected string $literal
     ) {}
 
 
+
+    public function getType(): TokenType {
+        return $this->type;
+    }
+
+    public function getLiteral(): string {
+        return $this->literal;
+    }
 
     public function isTerminal(): bool {
         return $this->type === TokenType::EOF

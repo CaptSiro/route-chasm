@@ -10,16 +10,24 @@ class Input implements ControlAttribute {
     use BindProperty, IsFirst;
 
     public function __construct(
-        public string $type = "text",
-        public ?string $label = null,
-        public bool $readonly = false,
+        protected string $type = "text",
+        protected ?string $label = null,
+        protected bool $readonly = false,
         protected bool $isFirst = false
     ) {}
 
 
 
+    public function getType(): string {
+        return $this->type;
+    }
+
+    public function isReadonly(): bool {
+        return $this->readonly;
+    }
+
     public function getLabel(): string {
-        return $this->label;
+        return $this->label ?? "";
     }
 
     public function getControl(): Control {

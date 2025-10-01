@@ -16,7 +16,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
     }
 
     public static function getTable(): string {
-        return ModelDescription::extract(static::class)->table;
+        return ModelDescription::extract(static::class)->getTable();
     }
 
 
@@ -143,7 +143,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function getId(): mixed {
         $description = ModelDescription::extract(static::class);
-        $id = $description->idColumn->alias;
+        $id = $description->getIdColumn()->getAlias();
         if (!isset($this->{$id})) {
             return null;
         }
@@ -163,11 +163,11 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $description = ModelDescription::extract(static::class);
 
         foreach ($data as $property => $value) {
-            if (!isset($description->alias[$property])) {
+            if (!isset($description->getAlias()[$property])) {
                 continue;
             }
 
-            $column = $description->alias[$property];
+            $column = $description->getAlias()[$property];
             if (!isset($column)) {
                 continue;
             }
@@ -204,19 +204,19 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     private function insertQuery(): SqlQuery {
         $description = ModelDescription::extract(static::class);
-        $sql = Sql::insert($description->table);
+        $sql = Sql::insert($description->getTable());
 
         $properties = empty($this->_updated)
-            ? $description->alias
+            ? $description->getAlias()
             : $this->_updated;
 
         $columns = [];
         $record = [];
 
         foreach ($properties as $alias => $ignored) {
-            $column = $description->alias[$alias];
-            $columns[] = $column->name;
-            $record[] = new Parameter($this->{$column->alias}, $column->type);
+            $column = $description->getAlias()[$alias];
+            $columns[] = $column->getName();
+            $record[] = new Parameter($this->{$column->getAlias()}, $column->getType());
         }
 
         $sql->columns($columns);
@@ -227,18 +227,21 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     private function updateQuery(): ?SqlQuery {
         $description = ModelDescription::extract(static::class);
-        $sql = Sql::update($description->table);
-        $idColumnName = $description->idColumn->name;
+        $sql = Sql::update($description->getTable());
+        $idColumnName = $description->getIdColumn()->getName();
 
         $setClauses = 0;
 
         foreach ($this->_updated as $alias => $ignored) {
-            $column = $description->alias[$alias];
-            if ($column->name === $idColumnName) {
+            $column = $description->getAlias()[$alias];
+            if ($column->getName() === $idColumnName) {
                 continue;
             }
 
-            $sql->set($column->name, new Parameter($this->{$column->alias}, $column->type));
+            $sql->set($column->getName(), new Parameter(
+                $this->{$column->getAlias()},
+                $column->getType()
+            ));
             $setClauses++;
         }
 
@@ -248,7 +251,12 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
         $sql->where(new Query(
             $description->getEscapedIdColumnName() ." = ?",
-            [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
+            [
+                new Parameter(
+                    $this->{$description->getIdColumn()->getAlias()},
+                    $description->getIdColumn()->getType()
+                )
+            ]
         ));
 
         return $sql;
@@ -258,10 +266,13 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $description = ModelDescription::extract(static::class);
         $idColumnName = $description->getEscapedIdColumnName();
 
-        return Sql::delete($description->table)
+        return Sql::delete($description->getTable())
             ->where(new Query(
                 "$idColumnName = ?",
-                [new Parameter($this->{$description->idColumn->alias}, $description->idColumn->type)]
+                [new Parameter(
+                    $this->{$description->getIdColumn()->getAlias()},
+                    $description->getIdColumn()->getType()
+                )]
             ))
             ->limit(1);
     }
@@ -280,12 +291,12 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     private function insert(): DatabaseAction|View {
         $description = ModelDescription::extract(static::class);
-        $sideEffect = $this->insertQuery()->run($description->connection);
+        $sideEffect = $this->insertQuery()->run($description->getConnection());
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
 
-        $this->{$description->idColumn->alias} = $sideEffect->lastInsertedId;
+        $this->{$description->getIdColumn()->getAlias()} = $sideEffect->lastInsertedId;
         return DatabaseAction::INSERT;
     }
 
@@ -304,7 +315,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
             return DatabaseAction::NONE;
         }
 
-        $sideEffect = $sql->run($description->connection);
+        $sideEffect = $sql->run($description->getConnection());
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
@@ -314,7 +325,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function delete(): DatabaseAction {
         $description = ModelDescription::extract(static::class);
-        $sideEffect = $this->deleteQuery()->run($description->connection);
+        $sideEffect = $this->deleteQuery()->run($description->getConnection());
         if ($sideEffect->rowsAffected === 0) {
             return DatabaseAction::NONE;
         }
@@ -334,7 +345,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $description = ModelDescription::extract(static::class);
         $data = [];
 
-        foreach ($description->alias as $alias => $ignored) {
+        foreach ($description->getAlias() as $alias => $ignored) {
             $data[$alias] = $this->$alias ?? null;
         }
 

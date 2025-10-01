@@ -40,13 +40,24 @@ readonly class Query {
      * @param array<string|int, Parameter> $parameters
      */
     public function __construct(
-        public string $sql,
-        public array $parameters
+        protected string $sql,
+        protected array $parameters
     ) {}
-
-
 
     public function __toString(): string {
         return $this->sql;
+    }
+
+
+
+    public function getSql(): string {
+        return $this->sql;
+    }
+
+    /**
+     * @return array<string|int, Parameter>
+     */
+    public function getParameters(): array {
+        return $this->parameters;
     }
 }

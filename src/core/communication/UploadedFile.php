@@ -6,14 +6,32 @@ use JsonSerializable;
 use retval\exceptions\Exc;
 use retval\Result;
 
-readonly class UploadedFile implements JsonSerializable {
+class UploadedFile implements JsonSerializable {
     public function __construct(
-        public string $name,
-        public string $type,
-        public int $size,
-        public int $error,
-        private ?string $temporaryName = null,
+        protected string $name,
+        protected string $type,
+        protected int $size,
+        protected int $error,
+        protected ?string $temporaryName = null,
     ) {}
+
+
+
+    public function getName(): string {
+        return $this->name;
+    }
+
+    public function getType(): string {
+        return $this->type;
+    }
+
+    public function getSize(): int {
+        return $this->size;
+    }
+
+    public function getError(): int {
+        return $this->error;
+    }
 
     public function move(string $destination): Result {
         if ($this->error !== UPLOAD_ERR_OK) {

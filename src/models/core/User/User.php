@@ -126,7 +126,7 @@ class User extends Model {
         }
 
         $group = Group::getDescription();
-        $driver = $group->connection->getDriver();
+        $driver = $group->getConnection()->getDriver();
         $groupTable = $group->getEscapedTable();
         $ug = $driver->escapeTable('ug');
 
@@ -139,7 +139,7 @@ class User extends Model {
         $group->projection($sql);
 
         return $this->groups = Group::fromRecords(
-            $sql->fetchAll($group->connection)
+            $sql->fetchAll($group->getConnection())
         );
     }
 
@@ -148,7 +148,7 @@ class User extends Model {
     }
 
     public function inGroupRaw(int $groupId): bool {
-        $connection = static::getDescription()->connection;
+        $connection = static::getDescription()->getConnection();
         $driver = $connection->getDriver();
         $ug = $driver->escapeTable(self::TABLE_USERS_X_GROUPS);
 
@@ -168,7 +168,7 @@ class User extends Model {
 
         return Sql::delete(self::TABLE_USERS_X_GROUPS)
             ->where(Query::infer("$ug.id_user = ?", $this->getId()))
-            ->run(static::getDescription()->connection);
+            ->run(static::getDescription()->getConnection());
     }
 
     /**
@@ -192,7 +192,7 @@ class User extends Model {
             return DatabaseAction::NONE;
         }
 
-        $connection = static::getDescription()->connection;
+        $connection = static::getDescription()->getConnection();
         $driver = $connection->getDriver();
 
         $sql = Sql::insert(self::TABLE_USERS_X_GROUPS)
@@ -222,7 +222,7 @@ class User extends Model {
 
         $sideEffect = $sql->run($connection);
 
-        return $sideEffect->rowsAffected > 0
+        return $sideEffect->getRowsAffected() > 0
             ? DatabaseAction::INSERT
             : DatabaseAction::NONE;
     }
@@ -242,7 +242,7 @@ class User extends Model {
     }
 
     public function hasAccessRaw(int $resourceId, int $privilegeId): bool {
-        $connection = static::getDescription()->connection;
+        $connection = static::getDescription()->getConnection();
         $driver = $connection->getDriver();
 
         $ug = $driver->escapeTable(self::TABLE_USERS_X_GROUPS);
