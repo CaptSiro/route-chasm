@@ -7,8 +7,10 @@ use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
 use core\App;
 use core\database\sql\Column;
+use core\database\sql\Connection;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\ModelFactory;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
 use core\database\sql\Sql;
@@ -34,7 +36,7 @@ class PageGridRow extends Model {
         return new GridDescription(
             $grid->getColumns(),
             new PageGridLoader(),
-            new PageProxy()
+            proxy: new PageProxy()
         );
     }
 
@@ -42,7 +44,7 @@ class PageGridRow extends Model {
         return self::childrenRaw($language->getId(), $parentId);
     }
 
-    public static function childrenQuery(int $languageId, ?int $parentId = null): SelectQuery {
+    public static function childrenBaseQuery(int $languageId, ?int $parentId = null): SelectQuery {
         $page = Page::getDescription();
         $id_parent = $page->getEscapedColumn('id_page_parent');
 
@@ -52,15 +54,34 @@ class PageGridRow extends Model {
         $pageTemplate = PageTemplateRecord::getDescription();
 
         return Sql::select($localizedPage->getEscapedTable())
-            ->projection($localizedPage->getEscapedColumn('id_page'))
-            ->projection($localizedPage->getEscapedColumn('title'))
-            ->projection($pageTemplate->getEscapedColumn('name'))
             ->naturalJoin($page->getEscapedTable())
             ->naturalJoin($pageTemplate->getEscapedTable())
             ->where(is_null($parentId)
                 ? Query::infer("$id_parent IS NULL AND $id_language = ?", $languageId)
                 : Query::infer("$id_parent = ? AND $id_language = ?", $parentId, $languageId)
             );
+    }
+
+    public static function childrenQuery(int $languageId, ?int $parentId = null): SelectQuery {
+        $localizedPage = LocalizedPage::getDescription();
+        $pageTemplate = PageTemplateRecord::getDescription();
+
+        return self::childrenBaseQuery($languageId, $parentId)
+            ->projection($localizedPage->getEscapedColumn('id_page'))
+            ->projection($localizedPage->getEscapedColumn('title'))
+            ->projection($pageTemplate->getEscapedColumn('name'));
+    }
+
+    public static function childrenCountQuery(int $languageId, ?int $parentId = null): SelectQuery {
+        return self::childrenBaseQuery($languageId, $parentId)
+            ->projection(ModelFactory::PROJECTION_COUNT);
+    }
+
+    public static function phrasesCount(int $languageId, ?int $parentId = null): int {
+        return ModelFactory::countExecute(
+            self::childrenCountQuery($languageId, $parentId),
+            self::getDescription()->getConnection()
+        );
     }
 
     public static function childrenRaw(int $languageId, ?int $parentId = null): array {

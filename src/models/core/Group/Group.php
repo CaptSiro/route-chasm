@@ -22,7 +22,7 @@ use models\extensions\Editable\EditableExtension;
  * @property string $name
  */
 
-#[Grid(new GroupProxy())]
+#[Grid(proxy: new GroupProxy())]
 #[Table('core_group')]
 #[Database(App::DATABASE)]
 class Group extends Model implements Editable {

@@ -44,7 +44,7 @@ class Domain extends Model implements Enable {
         return new GridDescription(
             $columns,
             new ModelGridLoader(static::class),
-            new DomainProxy()
+            proxy: new DomainProxy()
         );
     }
 

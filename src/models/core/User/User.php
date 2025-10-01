@@ -28,7 +28,7 @@ use models\core\Resource;
  * @property string $tag
  */
 
-#[Grid(new UserProxy)]
+#[Grid(proxy: new UserProxy)]
 #[Table('core_user')]
 #[Database(App::DATABASE)]
 class User extends Model {

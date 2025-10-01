@@ -11,6 +11,7 @@ use core\database\sql\Column;
 use core\database\sql\Connection;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\ModelFactory;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
 use core\database\sql\Sql;
@@ -29,7 +30,7 @@ class LexiconGridRow extends Model {
         return new GridDescription(
             $grid->getColumns(),
             new LexiconGridLoader(),
-            new NexusProxy()
+            proxy: new NexusProxy()
         );
     }
 
@@ -37,7 +38,7 @@ class LexiconGridRow extends Model {
         return self::phrasesRaw();
     }
 
-    public static function phrasesQuery(Connection $connection): SelectQuery {
+    protected static function phrasesBaseQuery(Connection $connection): SelectQuery {
         $translation = Translation::getDescription();
 
         $inner = Sql::select($translation->getEscapedTable())
@@ -46,18 +47,38 @@ class LexiconGridRow extends Model {
             ->group($id_phrase);
 
         $lexicon = Phrase::getDescription();
-        $group = LexiconGroup::getDescription();
+        $lexicon_id = $lexicon->getEscapedColumn('id_phrase');
 
         return Sql::select($lexicon->getEscapedTable())
-            ->projection($lexicon_id = $lexicon->getEscapedColumn('id_phrase'))
-            ->projection($group->getEscapedColumn('name'))
-            ->projection($lexicon->getEscapedColumn('default'))
-            ->projection('translations')
-            ->naturalJoin($group->getEscapedTable())
+            ->naturalJoin(LexiconGroup::getDescription()->getEscapedTable())
             ->leftJoin(
                 '(' .$inner->toQuery($connection). ') AS translation_count',
                 Query::static("translation_count.id_phrase = $lexicon_id")
             );
+    }
+
+    public static function phrasesCountQuery(Connection $connection): SelectQuery {
+        return self::phrasesBaseQuery($connection)
+            ->projection(ModelFactory::PROJECTION_COUNT);
+    }
+
+    public static function phrasesCount(): int {
+        $connection = self::getDescription()->getConnection();
+        return ModelFactory::countExecute(
+            self::phrasesCountQuery($connection),
+            $connection
+        );
+    }
+
+    public static function phrasesQuery(Connection $connection): SelectQuery {
+        $lexicon = Phrase::getDescription();
+        $group = LexiconGroup::getDescription();
+
+        return self::phrasesBaseQuery($connection)
+            ->projection($lexicon_id = $lexicon->getEscapedColumn('id_phrase'))
+            ->projection($group->getEscapedColumn('name'))
+            ->projection($lexicon->getEscapedColumn('default'))
+            ->projection('translations');
     }
 
     public static function phrasesRaw(): array {

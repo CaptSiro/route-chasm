@@ -1,0 +1,9 @@
+.pagination-control {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pagination-control .current {
+    font-weight: bolder;
+}

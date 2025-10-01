@@ -12,11 +12,24 @@ use RuntimeException;
 #[Attribute(Attribute::TARGET_CLASS)]
 class Grid {
     public function __construct(
+        protected ?string $namespace = null,
         protected ?Proxy $proxy = null,
         protected ?GridLoader $loader = null
     ) {}
 
 
+
+    public function getNamespace(): ?string {
+        return $this->namespace;
+    }
+
+    public function getLoader(): ?GridLoader {
+        return $this->loader;
+    }
+
+    public function getProxy(): ?Proxy {
+        return $this->proxy;
+    }
 
     public function bindClass(ReflectionClass $reflection): void {
         if (!is_null($this->loader)) {
@@ -31,13 +44,5 @@ class Grid {
         $this->loader = new StaticGridLoader(
             fn() => call_user_func("$class::all")
         );
-    }
-
-    public function getLoader(): ?GridLoader {
-        return $this->loader;
-    }
-
-    public function getProxy(): ?Proxy {
-        return $this->proxy;
     }
 }

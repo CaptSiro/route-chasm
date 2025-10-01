@@ -20,6 +20,7 @@ class RouteChasmEnvironment {
      * <code>HEADER_X_REQUIRE</code> will always be set on response
      */
     public const QUERY_SIDELOADER_FORCE = 'f';
+    public const QUERY_GRID_PORTION = 'p';
 
     public const PROJECT = "PROJECT";
     public const PROJECT_AUTHOR = "PROJECT_AUTHOR";
@@ -34,4 +35,6 @@ class RouteChasmEnvironment {
     public const ENV_DATABASE_PORT = "DATABASE_PORT";
     public const ENV_DATABASE_CHARSET = "DATABASE_CHARSET";
     public const ENV_ADMIN_LOGIN_PASSWORD = "ADMIN_LOGIN_PASSWORD";
+
+    public const GRID_DEFAULT_PORTION_SIZE = 20;
 }

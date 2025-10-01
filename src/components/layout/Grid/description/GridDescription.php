@@ -50,7 +50,8 @@ class GridDescription {
         return self::$descriptions[$class] = new static(
             $columns,
             $grid->getLoader(),
-            $grid->getProxy(),
+            $grid->getNamespace(),
+            proxy: $grid->getProxy(),
         );
     }
 
@@ -62,6 +63,7 @@ class GridDescription {
     public function __construct(
         protected array $columns,
         protected GridLoader $loader,
+        protected ?string $namespace = null,
         protected ?Proxy $proxy = null,
     ) {}
 
@@ -84,7 +86,7 @@ class GridDescription {
             return null;
         }
 
-        $table = new Grid($proxy);
+        $table = new Grid($this->namespace, proxy: $proxy);
         return $table->addAll($this->columns);
     }
 }

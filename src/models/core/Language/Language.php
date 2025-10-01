@@ -34,7 +34,7 @@ class Language extends Model implements IsDefault {
         return new GridDescription(
             $columns,
             new ModelGridLoader(static::class),
-            new LanguageProxy()
+            proxy: new LanguageProxy()
         );
     }
 

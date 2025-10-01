@@ -23,7 +23,7 @@ use models\extensions\Editable\EditableExtension;
  * @property string $name
  */
 
-#[Grid(new PrivilegeProxy())]
+#[Grid(proxy: new PrivilegeProxy())]
 #[Table('core_privilege')]
 #[Database(App::DATABASE)]
 class Privilege extends Model implements Editable {

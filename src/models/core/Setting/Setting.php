@@ -23,7 +23,7 @@ use models\extensions\Editable\EditableExtension;
  * @property string|null $value
  */
 
-#[Grid(new SettingProxy())]
+#[Grid(proxy: new SettingProxy())]
 #[Table('core_setting')]
 #[Database(App::DATABASE)]
 final class Setting extends Model implements Editable {

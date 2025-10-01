@@ -14,7 +14,7 @@ Css::import($this->getResource('grid.css'));
         <?php if ($this->hasFlag(Grid::FLAG_SHOW_HEADER)): ?>
             <div class="grid-header">
                 <?php foreach ($this->columns as $column): ?>
-                    <h4><?= $column->label ?></h4>
+                    <h4><?= $column->getLabel() ?></h4>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -32,5 +32,11 @@ Css::import($this->getResource('grid.css'));
                 <?php endforeach; ?>
             </div>
         <?php endforeach; ?>
+
+        <?php if (!is_null($this->footer)): ?>
+            <div class="grid-footer">
+                <?= $this->footer ?>
+            </div>
+        <?php endif; ?>
     </div>
 <?php endif; ?>

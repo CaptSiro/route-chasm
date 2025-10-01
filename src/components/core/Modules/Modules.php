@@ -13,7 +13,7 @@ class Modules extends ContainerContent {
     }
 
     public function getModules(): View {
-        $table = new Grid(new ModulesProxy());
+        $table = new Grid(proxy: new ModulesProxy());
         $table
             ->add('name', 'Name', '128px')
             ->add('identifier', 'Identifier')

@@ -291,12 +291,13 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     private function insert(): DatabaseAction|View {
         $description = ModelDescription::extract(static::class);
+        /** @var SideEffect $sideEffect */
         $sideEffect = $this->insertQuery()->run($description->getConnection());
-        if ($sideEffect->rowsAffected === 0) {
+        if ($sideEffect->getRowsAffected() === 0) {
             return DatabaseAction::NONE;
         }
 
-        $this->{$description->getIdColumn()->getAlias()} = $sideEffect->lastInsertedId;
+        $this->{$description->getIdColumn()->getAlias()} = $sideEffect->getLastInsertedId();
         return DatabaseAction::INSERT;
     }
 
@@ -316,7 +317,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         }
 
         $sideEffect = $sql->run($description->getConnection());
-        if ($sideEffect->rowsAffected === 0) {
+        if ($sideEffect->getRowsAffected() === 0) {
             return DatabaseAction::NONE;
         }
 
@@ -325,8 +326,9 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function delete(): DatabaseAction {
         $description = ModelDescription::extract(static::class);
+        /** @var SideEffect $sideEffect */
         $sideEffect = $this->deleteQuery()->run($description->getConnection());
-        if ($sideEffect->rowsAffected === 0) {
+        if ($sideEffect->getRowsAffected() === 0) {
             return DatabaseAction::NONE;
         }
 

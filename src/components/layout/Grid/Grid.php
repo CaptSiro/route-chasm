@@ -10,8 +10,7 @@ use core\view\Renderer;
 use core\view\View;
 
 class Grid implements View {
-    use Renderer;
-    use Flags;
+    use Renderer, Flags;
 
     public const FLAG_SHOW_HEADER = 1;
 
@@ -24,7 +23,9 @@ class Grid implements View {
     protected array $rows = [];
 
     public function __construct(
-        protected Proxy $proxy = new TypeProxy()
+        protected ?string $namespace = null,
+        protected Proxy $proxy = new TypeProxy(),
+        protected ?View $footer = null,
     ) {
         $this->setFlag(self::FLAG_SHOW_HEADER);
     }
@@ -44,7 +45,7 @@ class Grid implements View {
                 $template .= ' ';
             }
 
-            $template .= $layout->template;
+            $template .= $layout->getTemplate();
             $first = false;
         }
 
@@ -71,6 +72,10 @@ class Grid implements View {
         }
 
         return $this;
+    }
+
+    public function setFooter(?View $footer): void {
+        $this->footer = $footer;
     }
 
     public function load(array $rows): static {
