@@ -2,8 +2,8 @@
 
 namespace components\layout\Grid\Loader;
 
+use components\core\PaginationControl\Pagination;
 use components\core\PaginationControl\PaginationControl;
-use components\core\Terminal\Terminal;
 use components\layout\Grid\Grid;
 use core\App;
 use core\database\sql\ModelFactory;
@@ -17,11 +17,16 @@ class ModelGridLoader implements GridPortionLoader {
         protected string $modelClass,
         protected bool $paginate = true,
         int $portionSize = RouteChasmEnvironment::GRID_DEFAULT_PORTION_SIZE,
+        protected Pagination $pagination = new PaginationControl(),
     ) {
         $this->setPortionSize($portionSize);
     }
 
 
+
+    public function setPagination(Pagination $pagination): void {
+        $this->pagination = $pagination;
+    }
 
     protected function createSelectQuery(ModelFactory $factory): SelectQuery {
         return $factory->allQuery();
@@ -56,14 +61,13 @@ class ModelGridLoader implements GridPortionLoader {
         $portion = min(max(1, GridLoaderUrlCreator::getPortion($request)), $max);
 
         $context->setFooter(
-            new PaginationControl(
-                $portion,
-                $max,
-                new GridLoaderUrlCreator(
+            $this->pagination
+                ->setCurrent($portion)
+                ->setMax($max)
+                ->setUrlCreator(new GridLoaderUrlCreator(
                     $request->getUrl(),
                     $context
-                )
-            )
+                ))
         );
 
         return $factory->allExecute($this->setLimit(

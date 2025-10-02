@@ -2,6 +2,8 @@
 
 namespace models\core\Page\Grid;
 
+use components\core\PaginationControl\Pagination;
+use components\core\PaginationControl\PaginationControl;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\communication\Request;
@@ -25,9 +27,15 @@ class PageGridLoader extends ModelGridLoader {
 
     public function __construct(
         bool $paginate = true,
-        int $portionSize = RouteChasmEnvironment::GRID_DEFAULT_PORTION_SIZE
+        int $portionSize = RouteChasmEnvironment::GRID_DEFAULT_PORTION_SIZE,
+        Pagination $pagination = new PaginationControl()
     ) {
-        parent::__construct(PageGridRow::class, $paginate, $portionSize);
+        parent::__construct(
+            PageGridRow::class,
+            $paginate,
+            $portionSize,
+            $pagination
+        );
     }
 
 
