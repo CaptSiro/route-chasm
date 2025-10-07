@@ -22,6 +22,8 @@ class RouteChasmEnvironment {
     public const QUERY_SIDELOADER_FORCE = 'f';
     public const QUERY_GRID_PORTION = 'p';
 
+    public const DATA_DIRECTORY = __DIR__ . '/../../data';
+
     public const PROJECT = "PROJECT";
     public const PROJECT_AUTHOR = "PROJECT_AUTHOR";
     public const PROJECT_AUTHOR_LINK = "PROJECT_AUTHOR_LINK";
@@ -37,4 +39,5 @@ class RouteChasmEnvironment {
     public const ENV_ADMIN_LOGIN_PASSWORD = "ADMIN_LOGIN_PASSWORD";
 
     public const GRID_DEFAULT_PORTION_SIZE = 20;
+    public const ID_DIGITS = 4;
 }
