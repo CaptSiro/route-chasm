@@ -10,6 +10,10 @@ class ModelFactory {
     public const PROJECTION_COUNT = 'COUNT(*) as n';
     public const PROJECTION_COUNT_COLUMN_NAME = 'n';
 
+
+
+    private static array $factories = [];
+
     public static function countExecute(SqlQuery $query, Connection $connection): int {
         $result = $connection->fetch(
             $query->toQuery($connection)
@@ -22,16 +26,27 @@ class ModelFactory {
         return intval($result[self::PROJECTION_COUNT_COLUMN_NAME]);
     }
 
-
-
-    private static array $factories = [];
-
     public static function extract(string $modelClass): ModelFactory {
         if (isset(self::$factories[$modelClass])) {
             return self::$factories[$modelClass];
         }
 
         return self::$factories[$modelClass] = new static($modelClass);
+    }
+
+    protected static function addProjection(ModelDescription $description, SelectQuery $sql, ?array $projection = null): void {
+        $driver = $description->getConnection()->getDriver();
+        if (is_null($projection)) {
+            foreach ($description->getColumns() as $column) {
+                $sql->projection($driver->escapeColumn($column->getName()));
+            }
+
+            return;
+        }
+
+        foreach ($projection as $column) {
+            $sql->projection($column);
+        }
     }
 
 
@@ -88,22 +103,6 @@ class ModelFactory {
 
         return $records;
     }
-
-    protected static function addProjection(ModelDescription $description, SelectQuery $sql, ?array $projection = null): void {
-        $driver = $description->getConnection()->getDriver();
-        if (is_null($projection)) {
-            foreach ($description->getColumns() as $column) {
-                $sql->projection($driver->escapeColumn($column->getName()));
-            }
-
-            return;
-        }
-
-        foreach ($projection as $column) {
-            $sql->projection($column);
-        }
-    }
-
 
     public function firstQuery(?array $projection = null, Query|string|null $where = null): SelectQuery {
         $description = ModelDescription::extract($this->modelClass);
