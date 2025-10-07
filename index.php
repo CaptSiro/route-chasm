@@ -3,6 +3,7 @@
 use components\core\Admin\Home\AdminHome;
 use components\core\HttpMessage\HttpMessage;
 use components\core\WebPage\WebPage;
+use components\Home\Home;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\layout\Row\Row;
@@ -33,6 +34,7 @@ use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\navigation\Navigator;
 use core\pages\Pages;
+use core\RouteChasmEnvironment;
 use core\sideloader\SideLoader;
 
 require_once __DIR__ ."/src/autoload.php";
@@ -62,7 +64,7 @@ $router->expose('public', (new Assets(__DIR__ .'/public'))
     ->setDirectoryPolicy(new ShowExplorerPolicy()));
 
 
-$router->use('/', new \components\Home\Home());
+$router->use('/', new Home());
 
 $router->use(
     "/error",
@@ -111,49 +113,44 @@ $router->use("/form",
 
 
 
-$router->use('/user', function(Request $request, Response $response) {
-    var_dump(\models\core\User\User::fromTag('root')->getGroups());
-    $response->flush();
-});
-
 $router->use('/exc', fn() => throw new Exception('Test exception'));
 $router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
-$router->use('/select',
-    Http::get(function(Request $request, Response $response) {
-        $countryList = [
-            'cz' => 'The Czech Republic',
-            'uk' => 'The United Kingdom',
-            'au' => 'Australia',
-            'ca' => 'Canada',
-            'me' => 'Mexico',
-            'aa' => 'Andorra',
-            'fr' => 'France',
-            'ch' => 'China',
-            'jp' => 'Japan',
-            'sk' => 'South Korea',
-            'nk' => 'North Korea',
-            'tw' => 'Taiwan',
-            'ge' => 'Germany',
-            'it' => 'Italy',
-            'us' => 'USA',
-            'ph' => 'Philippines',
-            'np' => 'Nepal',
-            'th' => 'Thailand',
-            'vn' => 'Vietnam'
-        ];
-
-        $selectForm = new Form(HttpMethod::POST);
-
-        $selectForm->add(new Select('country', 'Country', $countryList, 'jp'));
-        $selectForm->add(new MultiSelect('countries', 'Countries', $countryList, ['jp', 'sk', 'nk']));
-        $selectForm->add(new Submit());
-
-        $response->renderRoot((new WebPage())->addContent($selectForm));
-    }),
-    Http::post(fn(Request $request, Response $response) => $response->json(
-        $request->getBody()->toArray()
-    ))
-);
+//$router->use('/select',
+//    Http::get(function(Request $request, Response $response) {
+//        $countryList = [
+//            'cz' => 'The Czech Republic',
+//            'uk' => 'The United Kingdom',
+//            'au' => 'Australia',
+//            'ca' => 'Canada',
+//            'me' => 'Mexico',
+//            'aa' => 'Andorra',
+//            'fr' => 'France',
+//            'ch' => 'China',
+//            'jp' => 'Japan',
+//            'sk' => 'South Korea',
+//            'nk' => 'North Korea',
+//            'tw' => 'Taiwan',
+//            'ge' => 'Germany',
+//            'it' => 'Italy',
+//            'us' => 'USA',
+//            'ph' => 'Philippines',
+//            'np' => 'Nepal',
+//            'th' => 'Thailand',
+//            'vn' => 'Vietnam'
+//        ];
+//
+//        $selectForm = new Form(HttpMethod::POST);
+//
+//        $selectForm->add(new Select('country', 'Country', $countryList, 'jp'));
+//        $selectForm->add(new MultiSelect('countries', 'Countries', $countryList, ['jp', 'sk', 'nk']));
+//        $selectForm->add(new Submit());
+//
+//        $response->renderRoot((new WebPage())->addContent($selectForm));
+//    }),
+//    Http::post(fn(Request $request, Response $response) => $response->json(
+//        $request->getBody()->toArray()
+//    ))
+//);
 
 // $router->resource("/cards", Cards::getInstance());
 
@@ -178,15 +175,18 @@ $router->use('/select',
 //;
 //$router->use('/menu', fn(Request $request, Response $response) => $response->render($menu));
 
+//$router->use('/nav-bind', function (Request $request, Response $response) {
+//    $lang = $request->getLanguage();
+//    Navigator::addSlug($lang, \core\route\Path::from('my-custom-page'), \core\pages\PageFactory::getInstance(), 'My custom page');
+//    $response->send('ok');
+//});
+
 Navigator::register(\core\pages\PageFactory::getInstance());
 
-$router->use('/nav-bind', function (Request $request, Response $response) {
-    $lang = $request->getLanguage();
-    Navigator::add($lang, \core\route\Path::from('my-custom-page'), \core\pages\PageFactory::getInstance(), 'My custom page');
-    $response->send('ok');
-});
-
-$router->bind('/', new Navigator());
+$router->bind(
+    Navigator::mount(RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT, '/'),
+    new Navigator()
+);
 
 
 

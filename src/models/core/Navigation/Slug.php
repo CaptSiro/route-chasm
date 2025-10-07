@@ -11,6 +11,7 @@ use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\navigation\NavigationFactory;
 use core\navigation\Navigator;
+use core\route\Route;
 use core\view\View;
 use models\core\Language\Language;
 
@@ -104,4 +105,9 @@ class Slug extends Model {
     public function build(): View {
         return Navigator::build($this->factoryId, $this->data);
     }
+
+//    public function getRoute(): Route {
+//        $context =
+//        $navigator =
+//    }
 }

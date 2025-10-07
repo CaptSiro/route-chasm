@@ -241,8 +241,8 @@ class App implements Loader {
     }
 
     public static function getEnvStatic(): ?Env {
-        return file_exists(RouteChasmEnvironment::ENV_FILE)
-            ? Env::fromFile(RouteChasmEnvironment::ENV_FILE)
+        return file_exists(RouteChasmEnvironment::FILE_ENV)
+            ? Env::fromFile(RouteChasmEnvironment::FILE_ENV)
             : null;
     }
 

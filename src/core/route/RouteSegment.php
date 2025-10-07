@@ -21,6 +21,10 @@ class RouteSegment implements Copy {
         return '/'. implode('/', array_map(fn(RouteSegment $x) => $x->getSource(), $segments));
     }
 
+    public static function static(string $segment): self {
+        return new self($segment, $segment);
+    }
+
 
 
     protected string $regex;

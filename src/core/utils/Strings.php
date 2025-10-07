@@ -132,6 +132,10 @@ class Strings extends Init {
         return $start . $subject;
     }
 
+    public static function lpad(string $padding, string $subject, int $length): string {
+        return str_pad($subject, $length, $padding, STR_PAD_LEFT);
+    }
+
     public static function parseUrlEncoded(string $string): array {
         $ret = [];
 

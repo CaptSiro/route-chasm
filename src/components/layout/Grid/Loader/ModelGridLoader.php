@@ -44,8 +44,9 @@ class ModelGridLoader implements GridPortionLoader {
 
     public function load(Grid $context): array {
         $factory = ModelFactory::extract($this->modelClass);
+        $query = $this->createSelectQuery($factory);
         if (!$this->paginate) {
-            return $factory->all();
+            return $factory->allExecute($query);
         }
 
         $request = App::getInstance()->getRequest();
@@ -55,7 +56,7 @@ class ModelGridLoader implements GridPortionLoader {
 
         $max = intval(ceil($this->getCount($factory) / $portionSize));
         if ($max === 1) {
-            return $factory->all();
+            return $factory->allExecute($query);
         }
 
         $portion = min(max(1, GridLoaderUrlCreator::getPortion($request)), $max);
@@ -71,7 +72,7 @@ class ModelGridLoader implements GridPortionLoader {
         );
 
         return $factory->allExecute($this->setLimit(
-            $this->createSelectQuery($factory),
+            $query,
             $portion,
             $portionSize
         ));

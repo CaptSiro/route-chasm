@@ -6,6 +6,7 @@ use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
 use core\route\Path;
+use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
 use core\route\RouteTree;
@@ -33,7 +34,24 @@ class Navigator extends Router {
         return self::$factories[$factoryId]->createDestination($data);
     }
 
-    public static function add(Language $language, Path $path, NavigationFactory $factory, string $data, ?string $context = null): void {
+
+
+    /**
+     * @var array<string, Route>
+     */
+    protected static array $routes;
+
+    public static function mount(string $alias, Route|string $route): Route {
+        return self::$routes[$alias] = Route::resolve($route);
+    }
+
+    public static function locate(string $alias): ?Route {
+        return self::$routes[$alias]?->copy();
+    }
+
+
+
+    public static function addSlug(Language $language, Path $path, NavigationFactory $factory, string $data, ?string $context = null): void {
         $contextId = NavigationContext::getContextId($context);
         $parentId = null;
         $last = $path->getDepth() - 1;

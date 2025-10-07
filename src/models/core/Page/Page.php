@@ -5,6 +5,7 @@ namespace models\core\Page;
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Page\AdminPageEditor;
 use core\App;
+use core\data\DataItem;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
@@ -14,10 +15,17 @@ use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\DateTime;
 use core\forms\description\select\Select;
+use core\navigation\Destination;
+use core\navigation\Navigator;
 use core\pages\PageLinkCreator;
 use core\pages\Pages;
 use core\pages\PageTemplate;
+use core\route\Route;
+use core\route\RouteSegment;
+use core\RouteChasmEnvironment;
 use core\utils\Arrays;
+use core\utils\Strings;
+use http\Exception\RuntimeException;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
@@ -34,7 +42,11 @@ use models\extensions\Name\NameValues;
 
 #[Table('core_page')]
 #[Database(App::DATABASE)]
-class Page extends Model {
+class Page extends Model implements Destination {
+    public const DATA_NAMESPACE = 'page';
+
+
+
     public static function getNexus(): AdminNexus {
         return (new AdminNexus(
             ModelDescription::extract(static::class),
@@ -204,5 +216,38 @@ class Page extends Model {
         }
 
         return $this->children;
+    }
+
+    public function get(string $item = ''): DataItem {
+        $file = Strings::lpad('0', (string) $this->getId(), RouteChasmEnvironment::ID_DIGITS);
+        if (!empty($item)) {
+            $file .= '_'. $item;
+        }
+
+        return new DataItem(
+            self::DATA_NAMESPACE,
+            $file
+        );
+    }
+
+    public function getRouteToSelf(string $alias): Route {
+        if (is_null($route = Navigator::locate($alias))) {
+            throw new RuntimeException("Alias '$alias' is not mounted properly. Use Navigator::route to create new mounting point");
+        }
+
+        $language = App::getInstance()
+            ->getRequest()
+            ->getLanguage();
+
+        foreach ($this->getParents() as $page) {
+            if (is_null($localization = $page->getLocalizationOrDefault($language))) {
+                $id = $page->getId();
+                throw new RuntimeException("Page($id) does not have title for current or default language");
+            }
+
+            $route->add(RouteSegment::static($localization->getSlug()->slug));
+        }
+
+        return $route;
     }
 }

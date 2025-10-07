@@ -16,8 +16,12 @@ class TextPageTemplate implements PageTemplate {
         return "Text";
     }
 
-    public function create(Page $page): View {
+    public function build(Page $page): View {
         return new Html('p', content: 'test');
+    }
+
+    public function create(Page $page): ?View {
+        return null;
     }
 
     public function getEditor(Page $page): Action {

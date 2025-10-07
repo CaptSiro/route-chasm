@@ -3,7 +3,10 @@
 namespace core;
 
 class RouteChasmEnvironment {
-    public const ENV_FILE = __DIR__ ."/../../.env";
+    public const FILE_ENV = __DIR__ ."/../../.env";
+    public const DIRECTORY_DATA = __DIR__ . '/../../data';
+
+    public const DEFAULT_CONTEXT_MOUNT = '';
 
     public const QUERY_REQUEST_FORMAT = 'i';
     public const QUERY_REQUEST_FORMAT_LONG = 'in';
@@ -21,8 +24,6 @@ class RouteChasmEnvironment {
      */
     public const QUERY_SIDELOADER_FORCE = 'f';
     public const QUERY_GRID_PORTION = 'p';
-
-    public const DATA_DIRECTORY = __DIR__ . '/../../data';
 
     public const PROJECT = "PROJECT";
     public const PROJECT_AUTHOR = "PROJECT_AUTHOR";

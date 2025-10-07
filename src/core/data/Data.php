@@ -7,7 +7,7 @@ use core\RouteChasmEnvironment;
 
 class Data {
     public static function file(string $namespace, string $file): string {
-        $path = Path::join(RouteChasmEnvironment::DATA_DIRECTORY, $namespace, $file);
+        $path = Path::join(RouteChasmEnvironment::DIRECTORY_DATA, $namespace, $file);
         $directory = dirname($path);
 
         if (!file_exists($directory)) {
