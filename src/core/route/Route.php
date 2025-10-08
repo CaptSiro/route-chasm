@@ -121,6 +121,7 @@ class Route implements ArrayIterator, Copy {
 
     public function add(RouteSegment $segment): void {
         $this->segments[] = $segment;
+        $this->source .= $segment->getSource();
     }
 
     public function label(string $segment, ?string $label = null): static {

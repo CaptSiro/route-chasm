@@ -37,16 +37,21 @@ class Navigator extends Router {
 
 
     /**
-     * @var array<string, Route>
+     * @var array<string, Mount>
      */
     protected static array $routes;
 
-    public static function mount(string $alias, Route|string $route): Route {
-        return self::$routes[$alias] = Route::resolve($route);
+    public static function mount(Mount $mount, Route|string $route): Route {
+        $route = Route::resolve($route);
+
+        $mount->setMountingPoint($route);
+        self::$routes[$mount->getAlias()] = $mount;
+
+        return $route;
     }
 
-    public static function locate(string $alias): ?Route {
-        return self::$routes[$alias]?->copy();
+    public static function locate(string $alias): ?Mount {
+        return self::$routes[$alias];
     }
 
 

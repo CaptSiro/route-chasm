@@ -2,8 +2,8 @@
 
 namespace core\navigation;
 
-use core\route\Route;
+use core\route\Path;
 
 interface Destination {
-    public function getRouteToSelf(string $alias): Route;
+    public function getPathToSelf(string $alias): Path;
 }

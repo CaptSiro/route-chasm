@@ -20,6 +20,7 @@ use core\navigation\Navigator;
 use core\pages\PageLinkCreator;
 use core\pages\Pages;
 use core\pages\PageTemplate;
+use core\route\Path;
 use core\route\Route;
 use core\route\RouteSegment;
 use core\RouteChasmEnvironment;
@@ -230,11 +231,12 @@ class Page extends Model implements Destination {
         );
     }
 
-    public function getRouteToSelf(string $alias): Route {
-        if (is_null($route = Navigator::locate($alias))) {
+    public function getPathToSelf(string $alias): Path {
+        if (is_null($mount = Navigator::locate($alias))) {
             throw new RuntimeException("Alias '$alias' is not mounted properly. Use Navigator::route to create new mounting point");
         }
 
+        $route = $mount->getMountingPoint();
         $language = App::getInstance()
             ->getRequest()
             ->getLanguage();
@@ -248,6 +250,12 @@ class Page extends Model implements Destination {
             $route->add(RouteSegment::static($localization->getSlug()->slug));
         }
 
-        return $route;
+        if (is_null($localization = $this->getLocalization($language))) {
+            $id = $this->getId();
+            throw new RuntimeException("Page($id) does not have title for current or default language");
+        }
+
+        $route->add(RouteSegment::static($localization->getSlug()->slug));
+        return $mount->transform($route);
     }
 }

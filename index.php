@@ -20,11 +20,8 @@ use core\database\sql\connections\MySqlDriver;
 use core\database\sql\Sql;
 use core\forms\controls\Checkbox\Checkbox;
 use core\forms\controls\File\File;
-use core\forms\controls\MultiSelect\MultiSelect;
 use core\forms\controls\MultiSubmit\MultiSubmit;
 use core\forms\controls\PasswordField\PasswordField;
-use core\forms\controls\Select\Select;
-use core\forms\controls\Submit\Submit;
 use core\forms\controls\TextArea\TextArea;
 use core\forms\controls\TextField;
 use core\forms\Form;
@@ -32,6 +29,7 @@ use core\forms\FormAction;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\navigation\mounts\StaticMount;
 use core\navigation\Navigator;
 use core\pages\Pages;
 use core\RouteChasmEnvironment;
@@ -184,7 +182,7 @@ $router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
 Navigator::register(\core\pages\PageFactory::getInstance());
 
 $router->bind(
-    Navigator::mount(RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT, '/'),
+    Navigator::mount(new StaticMount(RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT), '/'),
     new Navigator()
 );
 
