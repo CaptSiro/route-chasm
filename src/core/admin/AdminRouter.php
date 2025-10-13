@@ -46,7 +46,7 @@ class AdminRouter extends Router {
     protected function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
 
-        $this->menu = \core\admin\AdminMenu::createMenu($this);
+        $this->menu = \core\admin\Admin::createMenu($this);
 
         $this->use('/',
             Procedure::middleware(function (Request $request) {
@@ -69,7 +69,7 @@ class AdminRouter extends Router {
 
     public function getPath(): Path {
         if (is_null($this->path)) {
-            $this->path = $this->getRoute()->toStaticPath();
+            $this->path = Admin::getMount()->transform($this->getRoute());
         }
 
         return $this->path;

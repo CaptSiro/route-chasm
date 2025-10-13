@@ -17,13 +17,17 @@ use core\route\RouteNode;
 use core\RouteChasmEnvironment;
 use core\url\Url;
 use models\core\Page\Page;
+use RuntimeException;
 
 class AdminPageEditor extends AdminNexusEditor {
     public const LEXICON_GROUP = 'admin.page.editor';
 
 
 
-    public function __construct(EditorBehavior $behaviour) {
+    public function __construct(
+        EditorBehavior $behaviour,
+        protected string $navigatorMountAlias = RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT
+    ) {
         parent::__construct($behaviour);
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }
@@ -34,6 +38,21 @@ class AdminPageEditor extends AdminNexusEditor {
         $context->setTitle($this->getLocalizedTitle());
         $context->setBreadCrumbs($this->getBreadCrumbs());
         return parent::setContext($context);
+    }
+
+    public function getUrlToModel(): string {
+        if (!($this->model instanceof Page)) {
+            throw new RuntimeException("Model is not Page");
+        }
+
+        $request = App::getInstance()->getRequest();
+        $path = $this->model->getPathToSelf($this->navigatorMountAlias);
+        $ret = $request
+            ->getDomain()
+            ->createUrl($path);
+
+        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        return $ret;
     }
 
     public function getLocalizedTitle(): string {

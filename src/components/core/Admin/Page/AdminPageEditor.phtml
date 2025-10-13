@@ -5,7 +5,13 @@ use components\core\Admin\Page\AdminPageEditor;
 ?><section>
     <h1><?= $this->getTitle() ?></h1>
 
-    <div>
+    <div class="row">
+        <?php if (!is_null($this->model)): ?>
+            <a href="<?= $this->getUrlToModel() ?>" target="_blank" class="button">
+                <?= $this->tr('View on web') ?>
+            </a>
+        <?php endif; ?>
+
         <a href="<?= $this->getTemplateEditorLink() ?>" class="button">
             <?= $this->tr('Edit page content') ?>
         </a>

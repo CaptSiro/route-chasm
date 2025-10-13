@@ -11,6 +11,7 @@ use components\core\RoutedMenu\RoutedMenu;
 use components\layout\Grid\description\GridDescription;
 use core\database\sql\ModelDescription;
 use core\forms\description\FormDescription;
+use core\navigation\Mount;
 use core\route\Route;
 use core\route\Router;
 use models\core\Domain\Domain;
@@ -25,7 +26,21 @@ use models\core\Setting\Setting;
 use models\core\User\User;
 use models\core\User\UserEditorBehavior;
 
-class AdminMenu {
+class Admin {
+    private static Mount $mount;
+
+    public static function mount(Mount $mount, Route|string $route): Route {
+        $mount->setMountingPoint($route = Route::resolve($route));
+        self::$mount = $mount;
+        return $route;
+    }
+
+    public static function getMount(): Mount {
+        return self::$mount;
+    }
+
+
+
     public static function createMenu(Router $router): Menu {
         $router
 

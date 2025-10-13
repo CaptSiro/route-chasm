@@ -20,7 +20,7 @@ trait NameExtension {
 
         /** @var ModelDescription $description */
         $description = static::getDescription();
-        $idColumn = $description->idColumn->name;
+        $idColumn = $description->getIdColumn()->getName();
 
         foreach (static::all([$idColumn, 'name'], $where) as $model) {
             $ret[$model->getId()] = $model->name;

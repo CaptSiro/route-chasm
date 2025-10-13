@@ -8,12 +8,13 @@ Css::import($this->getResource('pagination-control.css'));
 ?><div class="pagination-control row">
     <?php if (!is_null($this->creator)): ?>
         <?php for ($i = 1; $i <= $this->max; $i++): ?>
-            <a
-                <?php if ($i === $this->current): ?>
-                    class="current"
-                <?php endif; ?>
-                href="<?= $this->creator->createUrl($i, $this->current, $this->max) ?>"
-            ><?= $i ?></a>
+            <?php if ($i === $this->current): ?>
+                <span class="current"><?= $i ?></span>
+            <?php else: ?>
+                <a
+                    href="<?= $this->creator->createUrl($i, $this->current, $this->max) ?>"
+                ><?= $i ?></a>
+            <?php endif; ?>
         <?php endfor; ?>
     <?php else: ?>
         <?php for ($i = 1; $i <= $this->max; $i++): ?>

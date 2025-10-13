@@ -10,6 +10,7 @@ use components\layout\Row\Row;
 use components\layout\Tabs\Tabs;
 use core\actions\Assets\Assets;
 use core\actions\Assets\policy\ShowExplorerPolicy;
+use core\admin\Admin;
 use core\admin\AdminRouter;
 use core\App;
 use core\communication\Request;
@@ -29,7 +30,7 @@ use core\forms\FormAction;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
-use core\navigation\mounts\StaticMount;
+use core\mounts\StaticMount;
 use core\navigation\Navigator;
 use core\pages\Pages;
 use core\RouteChasmEnvironment;
@@ -54,7 +55,10 @@ $router = $app->getMainRouter();
 
 
 $router->bind('/import', SideLoader::getInstance()->initRouter($app));
-$router->bind('/admin', AdminRouter::getInstance(new AdminHome()));
+$router->bind(
+    Admin::mount(new StaticMount('admin'), '/admin'),
+    AdminRouter::getInstance(new AdminHome())
+);
 
 
 

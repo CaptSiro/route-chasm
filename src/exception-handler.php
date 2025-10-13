@@ -1,13 +1,16 @@
 <?php
-/** @noinspection PhpUnusedParameterInspection */
 
-/** @noinspection PhpUnusedParameterInspection */
+function exc_dump_array(array $array): void {
+    foreach ($array as $key => $value) {
+        echo "<code>
+            <span class=\"key\">$key</span>
+            <span class=\"separator\"> => </span>
+            <span class=\"value\">$value</span>
+        </code>";
+    }
+}
 
-/** @noinspection PhpUnusedParameterInspection */
 
-/** @noinspection PhpUnusedParameterInspection */
-
-/** @noinspection PhpUnusedParameterInspection */
 
 function error_handler($severity, $message, $file, $line): void {
     while (ob_get_level()) {

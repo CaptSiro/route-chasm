@@ -96,7 +96,7 @@ class Navigator extends Router {
                 return null;
             }
 
-            $parentId = $slug->parentId;
+            $parentId = $slug->getId();
         }
 
         return $slug?->build();

@@ -1,19 +1,18 @@
 <?php
 
-namespace core\navigation\mounts;
+namespace core\mounts;
 
 use core\navigation\Mount;
 use core\route\Path;
 use core\route\Route;
 
-class ParametricMount implements Mount {
+class StaticMount implements Mount {
     use MountingPoint;
 
 
 
     public function __construct(
-        protected string $alias,
-        protected array $parameters
+        protected string $alias
     ) {}
 
 
@@ -23,6 +22,6 @@ class ParametricMount implements Mount {
     }
 
     public function transform(Route $route): Path {
-        return $route->toPath($this->parameters);
+        return $route->toStaticPath();
     }
 }

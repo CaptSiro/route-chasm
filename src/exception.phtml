@@ -3,20 +3,6 @@
 
 use components\core\Html\Html;
 
-/**
- * @param array $array
- * @return void
- */
-function dump_array(array $array): void {
-    foreach ($array as $key => $value) {
-        echo "<code>
-                <span class=\"key\">$key</span>
-                <span class=\"separator\"> => </span>
-                <span class=\"value\">$value</span>
-            </code>";
-    }
-}
-
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -116,9 +102,11 @@ function dump_array(array $array): void {
         </div>
 
         <?php foreach ($exception->getTrace() as $trace): ?>
-            <div class="file">
-                at <?= $trace['file'] ?>:<?= $trace['line'] ?>
-            </div>
+            <?php if (isset($trace['file'])): ?>
+                <div class="file">
+                    at <?= $trace['file'] ?>:<?= $trace['line'] ?>
+                </div>
+            <?php endif; ?>
         <?php endforeach; ?>
     </section>
 
@@ -126,21 +114,21 @@ function dump_array(array $array): void {
         <div class="array">
             <h3>$_SERVER</h3>
             <div class="content hide">
-                <?php dump_array($_SERVER); ?>
+                <?php exc_dump_array($_SERVER); ?>
             </div>
         </div>
 
         <div class="array">
             <h3>$_GET</h3>
             <div class="content hide">
-                <?php dump_array($_GET); ?>
+                <?php exc_dump_array($_GET); ?>
             </div>
         </div>
 
         <div class="array">
             <h3>$_POST</h3>
             <div class="content hide">
-                <?php dump_array($_POST); ?>
+                <?php exc_dump_array($_POST); ?>
             </div>
         </div>
     </section>
