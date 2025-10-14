@@ -105,7 +105,11 @@ class Menu extends Component implements Attribute {
     }
 
     public function createItem(): MenuItem {
-        return $this->item->setContext($this);
+        $this->item
+            ->setContext($this)
+            ->setMenuLevel($this->level);
+
+        return $this->item;
     }
 
     public function createSubMenu(MenuItem $child): ?static {

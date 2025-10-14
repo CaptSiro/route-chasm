@@ -1,0 +1,11 @@
+<?php /** @var \components\core\ToolBar\ToolBar $this */
+
+use core\sideloader\Css;
+use core\sideloader\Javascript;
+
+Javascript::import($this->getResource('tool-bar.js'));
+Css::import($this->getResource('tool-bar.css'));
+
+?><nav class="tool-bar" x-init="toolBar_init">
+    <?= $this->menu ?>
+</nav>

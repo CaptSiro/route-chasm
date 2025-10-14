@@ -25,9 +25,12 @@ class Data {
     }
 
     public static function retrieve(string $namespace, string $file): ?string {
-        $contents = file_get_contents(
-            self::file($namespace, $file),
-        );
+        $file = self::file($namespace, $file);
+        if (!file_exists($file)) {
+            return null;
+        }
+
+        $contents = file_get_contents($file);
 
         if ($contents === false) {
             return null;

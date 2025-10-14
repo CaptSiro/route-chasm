@@ -1,0 +1,18 @@
+<?php /** @var Menu $this */
+
+use components\core\Menu\Menu;
+
+?><?php if ($this->item->hasChildren()): ?>
+    <div
+        class="<?= $this->level === 0 ? 'tool-bar' : 'dropdown' ?> <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?>"
+        style="--menu-level: <?= $this->level ?>"
+    >
+        <?php foreach ($this->item->getChildren() as $child): ?>
+            <?php $subMenu = $this->createSubMenu($child)->setTemplate($this->template) ?>
+            <div class="menu-item <?= $subMenu->getStateClasses() ?> <?= $this->level === 0 ? 'menu-item-top' : '' ?>">
+                <?= $subMenu->createItem() ?>
+                <?= $subMenu ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

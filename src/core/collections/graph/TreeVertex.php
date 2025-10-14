@@ -60,4 +60,20 @@ class TreeVertex extends Vertex {
         $edge->getVertex()->setParentEdge($edge->get(), $this);
         parent::addEdge($edge);
     }
+
+    public function depth(): int {
+        $depth = 0;
+        $current = $this;
+
+        while (true) {
+            if (is_null($edge = $current->getParentEdge())) {
+                break;
+            }
+
+            $current = $edge->getVertex();
+            $depth++;
+        }
+
+        return $depth;
+    }
 }

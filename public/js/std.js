@@ -25,6 +25,13 @@ function $$(selector, element = document) {
     return element.querySelectorAll(selector);
 }
 
+class Todo extends Error {}
+
+function todo() {
+    console.log(...arguments);
+    throw new Todo();
+}
+
 
 
 /**

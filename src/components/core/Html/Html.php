@@ -8,7 +8,11 @@ use core\view\Renderer;
 class Html implements View {
     use Renderer;
 
-    public static function escape(string $content): string {
+    public static function escape(?string $content): string {
+        if (is_null($content)) {
+            return '';
+        }
+
         return htmlspecialchars($content);
     }
 

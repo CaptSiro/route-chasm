@@ -2,6 +2,7 @@
 
 namespace components\pages\TextPage;
 
+use components\core\Editor\Editor;
 use components\core\Html\Html;
 use core\actions\Action;
 use core\forms\controls\TextArea\TextArea;
@@ -26,9 +27,7 @@ class TextPageTemplate implements PageTemplate {
     }
 
     public function getEditor(Page $page): Action {
-        $form = new Form(HttpMethod::POST);
-        $form->add(new TextArea('text', 'Text', 'test'));
-        return $form;
+        return new Editor($page->get('content'));
     }
 
     public function delete(Page $page): ?View {

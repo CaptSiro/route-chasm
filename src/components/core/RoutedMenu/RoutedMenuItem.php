@@ -18,6 +18,8 @@ use RuntimeException;
 class RoutedMenuItem implements MenuItem {
     use Renderer, MenuItemContext, LexiconUnit;
 
+
+
     public static function from(Router $router, ?Path $binding = null): static {
         return new static(
             $router->getStructure()->getRoot()->get(),
@@ -113,5 +115,9 @@ class RoutedMenuItem implements MenuItem {
 
     public function getMenuSegment(): Path {
         return $this->segment;
+    }
+
+    public function getStateClasses(): string {
+        return '';
     }
 }
