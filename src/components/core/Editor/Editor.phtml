@@ -1,0 +1,25 @@
+<?php /** @var Editor $this */
+
+use components\core\Editor\Editor;
+use components\core\Html\Html;
+use core\sideloader\Css;
+use core\sideloader\Javascript;
+
+Css::import($this->getResource('editor.css'));
+Javascript::import($this->getResource('editor.js'));
+
+?><section class="editor">
+    <?= $this->toolBar ?>
+
+    <div id="editor-data">
+        <?= Html::escape($this->storage->read()) ?>
+    </div>
+
+    <div class="table">
+        <div class="viewport-mount">
+            <div id="viewport">VIEWPORT</div>
+        </div>
+
+        <div class="inspector">INSPECTOR</div>
+    </div>
+</section>

@@ -100,7 +100,7 @@ function toolBar_item(element) {
     element.addEventListener("click", event => {
         if (is(action)) {
             try {
-                action();
+                action(element);
             } catch (e) {
                 console.error(e);
             }
@@ -109,4 +109,19 @@ function toolBar_item(element) {
         element.dispatchEvent(new CustomEvent(EVENT_TOOL_BAR_ISSUE_STOP_DROP, { bubbles: true }));
         event.stopImmediatePropagation();
     });
+
+    const shortcut = element.dataset.shortcut;
+    if (is(shortcut)) {
+        Shortcut.register(event => {
+            if (!is(action)) {
+                return;
+            }
+
+            try {
+                action(element);
+            } catch (e) {
+                console.error(e);
+            }
+        }, shortcut);
+    }
 }

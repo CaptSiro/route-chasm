@@ -40,19 +40,14 @@ class AdminPageEditor extends AdminNexusEditor {
         return parent::setContext($context);
     }
 
-    public function getUrlToModel(): string {
+    public function getUrlToModel(): Url {
         if (!($this->model instanceof Page)) {
             throw new RuntimeException("Model is not Page");
         }
 
-        $request = App::getInstance()->getRequest();
-        $path = $this->model->getPathToSelf($this->navigatorMountAlias);
-        $ret = $request
-            ->getDomain()
-            ->createUrl($path);
-
-        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
-        return $ret;
+        return $this->model->getUrlToModel(
+            RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT
+        );
     }
 
     public function getLocalizedTitle(): string {

@@ -12,6 +12,7 @@ use components\core\ToolBar\ToolBarItem;
         <?php if (!is_null($this->shortcut)): ?>
             data-shortcut="<?= $this->shortcut ?>"
         <?php endif; ?>
+        <?= $this->stringifyAttributes() ?>
     >
         <span class="content"><?= $this->getLabel() ?></span>
         <?php if (!is_null($this->shortcut)): ?>

@@ -6,13 +6,15 @@ use components\core\Menu\MenuItem;
 use components\core\Menu\MenuItemContext;
 use core\collections\graph\Edge;
 use core\collections\graph\TreeVertex;
+use core\html\Attribute;
+use core\html\HtmlAttribute;
 use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\RouteSegment;
 use core\view\Renderer;
 
-class ToolBarItem implements MenuItem {
-    use Renderer, MenuItemContext, LexiconUnit;
+class ToolBarItem implements MenuItem, Attribute {
+    use Renderer, MenuItemContext, LexiconUnit, HtmlAttribute;
 
     public const LEXICON_GROUP = 'tool-bar';
 

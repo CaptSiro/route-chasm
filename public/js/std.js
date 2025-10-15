@@ -75,6 +75,44 @@ function std_clamp(min, max, x) {
 }
 
 /**
+ * Evaluates a constant mathematical expression string and returns its numeric result.
+ *
+ * This function safely parses and computes expressions containing only
+ * numeric literals and standard arithmetic operators (`+`, `-`, `*`, `/`, `%`, `()`, and `e` for scientific notation).
+ *
+ * Expressions containing variables, function calls, or invalid characters will throw an error.
+ *
+ * @example
+ * std_evaluate("16/9");          // → 1.777...
+ * std_evaluate("2 + 3 * 4");     // → 14
+ * std_evaluate("(1 + 2) / 3");   // → 1
+ * std_evaluate("5e2 + 100");     // → 600
+ *
+ * @throws {TypeError} If the input is not a string.
+ * @throws {Error} If the expression contains invalid characters or cannot be evaluated as a number.
+ *
+ * @param {string} expression - The mathematical expression to evaluate.
+ * @returns {number} The evaluated numeric result of the expression.
+ */
+function std_evaluate(expression) {
+    if (typeof expression !== 'string') {
+        throw new TypeError('Expression must be a string');
+    }
+
+    if (!/^[\d+\-*/().\s%eE]+$/.test(expression)) {
+        throw new Error('Invalid characters in expression');
+    }
+
+    const fn = Function(`"use strict"; return (${expression});`);
+    const number = fn();
+    if (typeof number !== "number") {
+        throw new Error('Invalid numeric expression');
+    }
+
+    return number;
+}
+
+/**
  * Maps value `from` interval `to` interval
  * @param {Number} value
  * @param {Number} fromA

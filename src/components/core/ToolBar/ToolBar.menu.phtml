@@ -9,7 +9,8 @@ use components\core\Menu\Menu;
     >
         <?php foreach ($this->item->getChildren() as $child): ?>
             <?php $subMenu = $this->createSubMenu($child)->setTemplate($this->template) ?>
-            <div class="menu-item <?= $subMenu->getStateClasses() ?> <?= $this->level === 0 ? 'menu-item-top' : '' ?>">
+            <?php $mit = $this->level === 0 ? 'menu-item-top' : '' ?>
+            <div class="menu-item <?= $subMenu->getStateClasses() ?> <?= $mit ?>">
                 <?= $subMenu->createItem() ?>
                 <?= $subMenu ?>
             </div>

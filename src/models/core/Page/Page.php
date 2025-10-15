@@ -23,6 +23,7 @@ use core\pages\PageTemplate;
 use core\route\Path;
 use core\route\RouteSegment;
 use core\RouteChasmEnvironment;
+use core\url\Url;
 use core\utils\Arrays;
 use core\utils\Strings;
 use http\Exception\RuntimeException;
@@ -256,5 +257,16 @@ class Page extends Model implements Destination {
 
         $route->add(RouteSegment::static($localization->getSlug()->slug));
         return $mount->transform($route);
+    }
+
+    public function getUrlToModel(string $navigatorMountAlias): Url {
+        $request = App::getInstance()->getRequest();
+        $path = $this->getPathToSelf($navigatorMountAlias);
+        $ret = $request
+            ->getDomain()
+            ->createUrl($path);
+
+        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        return $ret;
     }
 }
