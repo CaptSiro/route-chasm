@@ -6,6 +6,7 @@ use components\core\Editor\Editor;
 use components\core\Html\Html;
 use components\core\ToolBar\ToolBarItem;
 use core\actions\Action;
+use core\App;
 use core\pages\PageTemplate;
 use core\route\Route;
 use core\RouteChasmEnvironment;
@@ -27,6 +28,9 @@ class TextPageTemplate implements PageTemplate {
 
     public function getEditor(Page $page): Action {
         $editor = new Editor($page->get('content'));
+
+        $localization = $page->getLocalizationOrDefault(App::getInstance()->getRequest()->getLanguage());
+        $editor->setTitle($localization->title .' - Content Editor');
 
         $open = new ToolBarItem('file_open', 'ctrl + o');
         $open->addAttribute(

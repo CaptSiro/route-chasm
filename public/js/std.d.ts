@@ -6,3 +6,5 @@ declare type RelativeTimestamp = {
 }
 
 declare type SkipPredicate<T> = (item: T) => boolean;
+
+declare class Impulse<T> {}

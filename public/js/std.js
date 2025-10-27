@@ -151,8 +151,8 @@ function std_wait(ms) {
 }
 
 /**
- * @param {number} a
- * @param {number} b
+ * @param {number} a inclusive
+ * @param {number} b exclusive
  * @returns {number}
  */
 function std_random(a, b) {
@@ -160,12 +160,70 @@ function std_random(a, b) {
 }
 
 /**
- * @param {number} a
- * @param {number} b
+ * @param {number} a inclusive
+ * @param {number} b exclusive
  * @returns {number}
  */
 function std_randomInt(a, b) {
     return Math.floor(std_random(a, b));
+}
+
+/**
+ * @template T
+ * @param {T[] | string} array
+ * @return {T|null}
+ */
+function std_randomItem(array) {
+    if (array.length === 0) {
+        return null;
+    }
+
+    return array[std_randomInt(0, array.length)];
+}
+
+
+
+const STD_ID_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const STD_ID_CHARSET_SAFE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const STD_ID_POOL = new Set();
+
+/**
+ * Generates a unique Base64-safe identifier of the given length.
+ * The generated ID is guaranteed to be unique until released.
+ *
+ * @param {number} length - Desired length of the identifier (recommended >= 6).
+ * @param {string} charset
+ * @param {Set<string>} pool
+ * @returns {string} A unique Base64-safe identifier.
+ */
+function std_id(length, charset = STD_ID_CHARSET, pool = STD_ID_POOL) {
+    let id;
+
+    do {
+        id = '';
+
+        for (let i = 0; i < length; i++) {
+            id += std_randomItem(charset);
+        }
+
+    } while (pool.has(id));
+
+    pool.add(id);
+    return id;
+}
+
+/**
+ * Releases a previously generated identifier, allowing it to be reused.
+ *
+ * @param {string} id - The identifier to release.
+ * @param {Set<string>} pool
+ */
+function std_id_free(id, pool = STD_ID_POOL) {
+    if (!pool) {
+        return;
+    }
+
+    pool.delete(id);
 }
 
 
@@ -321,6 +379,71 @@ function std_dom_nextChild(child, parent) {
  */
 function std_dom_previousChild(child, parent) {
     return child.previousElementSibling ?? parent.children[parent.children.length - 1];
+}
+
+/**
+ * @param {string} selector
+ * @return {Promise<HTMLElement>}
+ */
+function std_dom_onMount(selector) {
+    return new Promise(resolve => {
+        const element = $(selector);
+        if (is(element)) {
+            return resolve(element);
+        }
+
+        const observer = new MutationObserver(() => {
+            const element = $(selector);
+            if (is(element)) {
+                resolve(element);
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+
+
+/**
+ * @param {Record<string, any>} styles
+ * @returns {string}
+ */
+function std_css(styles) {
+    let buffer = "";
+
+    for (const key in styles) {
+        if (styles[key] === undefined) {
+            continue;
+        }
+
+        buffer += `${std_camelToKebab(key)}: ${styles[key]};`;
+    }
+
+    return buffer;
+}
+
+/**
+ * @param {string} string
+ * @returns {string}
+ */
+function std_camelToKebab(string) {
+    let buffer = "";
+
+    for (let i = 0; i < string.length; i++) {
+        if (uppercase.includesChar(string[i])) {
+            buffer += "-" + string[i].toLowerCase();
+            continue;
+        }
+
+        buffer += string[i];
+    }
+
+    return buffer;
 }
 
 

@@ -1,0 +1,666 @@
+const { div, span, label, input, h3 } = jsml;
+
+/**
+ * @param {Event} evt
+ * @param {Binding<string>} binding
+ * @param {HTMLElement} parent
+ * @param {HTMLCollection} collection
+ * @returns {*}
+ */
+async function choiceChangeListener(evt, binding, parent, collection) {
+    if (!(await binding.set(evt.target.value, parent))) {
+        return evt.target.value;
+    }
+
+    const value = binding.get();
+    if (collection.length === 0) {
+        return value;
+    }
+
+    const attribute = collection[0].tagName === "OPTION"
+        ? "selected"
+        : "checked";
+
+    for (const element of collection) {
+        if (element.value !== value) {
+            element[attribute] = false;
+            continue;
+        }
+
+        element[attribute] = true;
+    }
+
+    return value;
+}
+
+//* basic inspector components
+/**
+ * @param {Binding<boolean>} binding
+ * @param {string} label
+ * @returns {HTMLElement}
+ */
+function CheckboxInspector(binding, label = "") {
+    const checkbox = (
+        CheckBox(binding.get() ?? false, label, {
+            onChange: async evt => {
+                if (!(await binding.set(evt.target.checked, checkbox))) {
+                    return;
+                }
+
+                evt.target.checked = !evt.target.checked;
+            }
+        })
+    );
+
+    checkbox.classList.add("i-checkbox");
+    return checkbox;
+}
+
+/**
+ * @param {string} title
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
+function TitleInspector(title, className = undefined) {
+    return (
+        h3("i-title" + (className !== undefined ? " " + className : ""), title)
+    );
+}
+
+function HRInspector(className = undefined) {
+    return (
+        div("i-hr" + (className !== undefined ? " " + className : ""), "​") //todo does not display without zero-width-character (?)
+    );
+}
+
+/**
+ * @typedef KeyValuePair
+ * @property {string} text
+ * @property {string} value
+ * @property {boolean=} selected
+ */
+/**
+ * @param {Binding<string>} binding
+ * @param {KeyValuePair[]} radios
+ * @param {string} label
+ * @returns {HTMLElement}
+ */
+function RadioGroupInspector(binding, radios, label = undefined) {
+    const name = std_id(8);
+    let lastValue = radios
+        .reduce(
+            (last, current) =>
+                current.selected ? current.value : last,
+            undefined
+        );
+
+    const radioGroup = (
+        div({
+            class: "i-radio-group",
+            onChange: async evt => {
+                lastValue = await choiceChangeListener(evt, binding, radioGroup, radioGroup.querySelectorAll(`input[name=${name}]`));
+            }
+        }, [
+            Optional(label !== undefined,
+                span(_, label)
+            ),
+            ...radios.map(radio => {
+                return (
+                    Radio(radio.text, radio.value, name, _,
+                        radio.selected !== undefined
+                            ? {
+                                attributes: {
+                                    checked: radio.selected
+                                }
+                            }
+                            : undefined
+                    )
+                );
+            })
+        ], )
+    );
+
+    return radioGroup;
+}
+
+/**
+ * @param {KeyValuePair[]} options
+ * @param {string} value
+ * @param {string} defaultValue
+ * @return {KeyValuePair[]}
+ */
+function selectOption(options, value, defaultValue = undefined) {
+    let defaultOption;
+    for (const option of options) {
+        if (option.value === defaultValue) {
+            defaultOption = option;
+        }
+        if (option.value !== value) continue;
+
+        option.selected = true;
+        return options;
+    }
+
+    defaultOption.selected = true;
+    return options;
+}
+
+/**
+ * @template T
+ * @param {string} className
+ * @param {string} label
+ * @param {HTMLElement} component
+ * @param {string | undefined} placeholder
+ * @returns {HTMLElement}
+ */
+function LabelAndComponentInspector(className, label, component, placeholder = undefined) {
+    const id = std_id(8);
+
+    component.id = id;
+    if (placeholder) {
+        component.setAttribute("placeholder", placeholder);
+    }
+
+    return (
+        div(className, [
+            Optional(label !== undefined,
+                jsml.label({ for: id }, label)
+            ),
+            component
+        ])
+    );
+}
+
+/**
+ * @param {string | undefined} label
+ * @param {HTMLElement} elementFor
+ */
+function LabelFactory(label, elementFor) {
+    if (label === undefined) {
+        return;
+    }
+
+    const id = std_id(8);
+
+    elementFor.id = id;
+    return jsml.label({ for: id }, label);
+}
+
+/**
+ * @param {Binding<string>} binding
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function TextAreaInspector(binding, label = undefined, placeholder = undefined, props = {}) {
+    const container = div("i-text-area");
+
+    props.onBlur ??= async event => {
+        if (binding.get() === event.target.value) {
+            return;
+        }
+
+        await binding.set(event.target.value, container);
+    };
+
+    props.onKeydown ??= event => {
+        if (!(event.key === "Enter" && event.ctrlKey)) {
+            return;
+        }
+
+        event.target.dispatchEvent(new Event("blur"));
+    };
+
+    const state = binding.get();
+    if (is(state)) {
+        props.value = state;
+    }
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    const area = jsml.textarea(props, state);
+    const labelElement = LabelFactory(label, area);
+
+    container.append(
+        labelElement,
+        area
+    );
+
+    return container;
+}
+
+/**
+ * @param {Binding<string>} binding
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function TextFieldInspector(binding, label = undefined, placeholder = undefined, props = {}) {
+    const container = div("i-text-field");
+
+    props.onBlur ??= async event => {
+        if (binding.get() === event.target.value) {
+            return;
+        }
+
+        await binding.set(event.target.value, container);
+    };
+
+    props.onKeydown ??= event => {
+        if (event.key !== "Enter") return;
+        event.target.dispatchEvent(new Event("blur"));
+    }
+
+    const state = binding.get();
+    if (is(state)) {
+        props.value = state;
+    }
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    props.type = "text";
+    const textField = jsml.input(props);
+    const labelElement = LabelFactory(label, textField);
+
+    container.append(
+        labelElement,
+        textField
+    );
+
+    return container;
+}
+
+/**
+ * @param {Binding<string | number>} binding
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Content} measurement
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function NumberInspector(binding, label = undefined, placeholder = undefined, measurement = undefined, props = {}) {
+    const id = std_id(8);
+    props.id = id;
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    const state = binding.get();
+    if (is(state)) {
+        props.value = state;
+    }
+
+    props.type = "number";
+
+    return (
+        div("i-number", [
+            Optional(is(label), jsml.label({ for: id }, label)),
+            jsml.input(props),
+            typeof measurement === "string"
+                ? span(_, measurement)
+                : measurement
+        ])
+    );
+}
+
+//TODO: create custom date picker
+/**
+ * @param {Binding<Date>} binding
+ * @param {string} label
+ * @param {boolean} isDateTime
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function DateInspector(binding, label = undefined, isDateTime = false, props = {}) {
+    const input = jsml.input({
+        type: isDateTime ? "datetime-local" : "date"
+    });
+    input.addEventListener("change", async () => {
+        const date = new Date(input.value);
+
+        if (binding.get() === date) {
+            return;
+        }
+
+        await binding.set(date, input.parentElement);
+    });
+
+    const state = binding.get();
+    if (is(state)) {
+        const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+        const localDateTime = new Date(state.getTime() - timezoneOffset);
+        input.value = localDateTime.toISOString().slice(0, 16);
+    }
+
+    return (
+        LabelAndComponentInspector("i-date", label, input)
+    );
+}
+
+/**
+ * @param {Binding<string>} binding
+ * @param {KeyValuePair[]} options
+ * @param {string} label
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
+function SelectInspector(binding, options, label = undefined, className = undefined) {
+    const id = std_id(8);
+    let lastValue = options
+        .reduce(
+            (last, current) =>
+                current.selected ? current.value : last,
+            undefined
+        );
+
+    const container = div("i-select dont-force" + (className !== undefined ? (" " + className) : ""));
+
+    const select = (
+        jsml.select(
+            {
+                onChange: async event => {
+                    lastValue = await choiceChangeListener(event, binding, container, select.children);
+                }
+            },
+            options.map(option =>
+                new Option(option.text, option.value, __, option?.selected)
+            ),
+        )
+    );
+
+    jsml_addContent(container, [
+        Optional(is(label), jsml.label({ for: id }, label)),
+        div("select-container", select)
+    ]);
+
+    return container;
+}
+
+/**
+ * @param {Binding<string>} binding
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function ColorPickerInspector(binding, label = undefined, placeholder = undefined, props = {}) {
+    const state = binding.get();
+    if (is(state)) {
+        props.value = state;
+    }
+
+    props.type = "color";
+    const input = jsml.input(props);
+    const container = LabelAndComponentInspector("i-date", label, input, placeholder);
+
+    input.addEventListener("change", async event => {
+        if (binding.get() === event.target.value) {
+            return;
+        }
+
+        await binding.set(event.target.value, container);
+    });
+
+    return container;
+}
+
+function NotInspectorAble() {
+    return undefined;
+}
+
+
+
+class ColorPicker {
+    #rootElement;
+    get rootElement() {
+        return this.#rootElement;
+    }
+
+    #display;
+    #red;
+    #green;
+    #blue;
+    #alpha;
+    #old;
+    #new;
+
+    constructor(inline = false, cancelAction = () => {}, pickAction = () => {}) {
+        this.#rootElement = ColorPicker.createColorPicker(inline);
+
+        this.#red = this.#rootElement.querySelector(".color-picker-r");
+        this.#red.addEventListener("input", this.onRgbChange("red"));
+
+        this.#green = this.#rootElement.querySelector(".color-picker-g");
+        this.#green.addEventListener("input", this.onRgbChange("green"));
+
+        this.#blue = this.#rootElement.querySelector(".color-picker-b");
+        this.#blue.addEventListener("input", this.onRgbChange("blue"));
+
+        this.#alpha = this.#rootElement.querySelector(".color-picker-a");
+        this.#alpha.addEventListener("input", this.onRgbChange("alpha"));
+
+        this.#display = this.#rootElement.querySelector(".format");
+        this.#display.addEventListener("input", evt => {
+            const color = this.parseColor(evt.target.value);
+            if (color === null) {
+                this.#display.classList.add("invalid");
+                return;
+            }
+
+            this.#display.classList.remove("invalid");
+            this.setNewColor(color);
+        });
+
+        this.#old = this.#rootElement.querySelector(".old");
+        this.#new = this.#rootElement.querySelector(".new");
+
+        this.#rootElement.querySelector(".cancel")?.addEventListener("click", cancelAction);
+        this.#rootElement.querySelector(".pick")?.addEventListener("click", pickAction);
+    }
+
+    static createColorPicker(inline = false) {
+        const guids = Array(5).fill(null).map(() => guid(true));
+
+        return (
+            div("color-picker", [
+                Optional(inline === false,
+                    div("showcase", [
+                        div("transparent"),
+                        div("old"),
+                        div("new")
+                    ])
+                ),
+                div("sliders", [
+                    div("row", [
+                        jsml.label({ for: guids[0] }, "R:"),
+                        jsml.input({
+                            type: "range",
+                            min: "0",
+                            max: "255",
+                            value: "0",
+                            id: guids[0]
+                        }, "color-picker-r")
+                    ]),
+                    div("row", [
+                        jsml.label({ for: guids[1] }, "G:"),
+                        jsml.input({
+                            min: "0",
+                            max: "255",
+                            value: "0",
+                            id: guids[1]
+                        }, "color-picker-g")
+                    ]),
+                    div("row", [
+                        jsml.label({ for: guids[2] }, "B:"),
+                        jsml.input({
+                            type: "range",
+                            min: "0",
+                            max: "255",
+                            value: "0",
+                            id: guids[2]
+                        }, "color-picker-b")
+                    ]),
+                    div("row", [
+                        jsml.label({ for: guids[3] }, "A:"),
+                        jsml.input({
+                            type: "range",
+                            min: "0",
+                            max: "1",
+                            step: "0.01",
+                            value: "0",
+                            id: guids[3]
+                        }, "color-picker-a")
+                    ])
+                ]),
+                div("row", [
+                    jsml.label({ class: "format-label", for: guids[4] }),
+                    jsml.input({ type: "text", id: guids[4] }, "format")
+                ]),
+                Optional(inline === false,
+                    div("controls", [
+                        jsml.button("button-like-main cancel", "Cancel"),
+                        jsml.button("button-like-main pick", "Pick")
+                    ])
+                )
+            ])
+        );
+    }
+
+    /**
+     * @param {Color} color
+     */
+    static toHex(color) {
+        return "#" + [
+            color.red.toString(16),
+            color.green.toString(16),
+            color.blue.toString(16),
+            Math.round(color.alpha * 255).toString(16)
+        ]
+            .map(channel => (channel.length === 1 ? ("0" + channel) : channel))
+            .join("");
+    }
+
+    setChannel(channel, value) {
+        this.#rootElement.style.setProperty("--" + channel, value);
+    }
+
+    onRgbChange(channel) {
+        return evt => {
+            this.setChannel(channel, evt.target.value);
+            this.displayCurrentColor();
+            this.#rootElement.dispatchEvent(new CustomEvent("pick", { detail: this.getCurrentColor() }));
+        };
+    }
+
+    /**
+     * @typedef Color
+     * @property {number} red
+     * @property {number} green
+     * @property {number} blue
+     * @property {number} alpha
+     */
+    /**
+     * @param {string} colorFormat
+     * @return {Color | null}
+     */
+    parseColor(colorFormat) {
+        let values = /^rgba?\((25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}) ?, ?(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}) ?, ?(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2}) ?,? ?(1|0|0\.[0-9]+)?\)$/.exec(colorFormat);
+        if (values !== null) {
+            return {
+                red: +values[1],
+                green: +values[2],
+                blue: +values[3],
+                alpha: +(values[4] ?? 1)
+            };
+        }
+
+        switch (colorFormat.length) {
+            case 4:
+                values = /^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$/.exec(colorFormat);
+                if (values === null) return null;
+                return {
+                    red: parseInt(values[1].repeat(2), 16),
+                    green: parseInt(values[2].repeat(2), 16),
+                    blue: parseInt(values[3].repeat(2), 16),
+                    alpha: 1
+                };
+            case 7:
+                values = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/.exec(colorFormat);
+                if (values === null) return null;
+                return {
+                    red: parseInt(values[1], 16),
+                    green: parseInt(values[2], 16),
+                    blue: parseInt(values[3], 16),
+                    alpha: 1
+                };
+            case 9:
+                values = /^#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/.exec(colorFormat);
+                if (values === null) return null;
+                return {
+                    red: parseInt(values[1], 16),
+                    green: parseInt(values[2], 16),
+                    blue: parseInt(values[3], 16),
+                    alpha: parseInt(values[4], 16) / 255
+                };
+            default:
+                return null;
+        }
+    }
+
+    setOldColor(colorFormat) {
+        const color = this.parseColor(colorFormat);
+        if (color === null) {
+            throw "Unknown color format. Currently supported: RGB, RGBA, HEX(3 letters), HEX (6 letters), HEX + alpha (8 letters)";
+        }
+
+        this.#old.style.backgroundColor = `rgba(${color.red}, ${color.green}, ${color.blue}, ${color.alpha})`;
+        this.setNewColor(color);
+        this.displayCurrentColor();
+    }
+
+    setNewFromFormat(colorFormat) {
+        const color = this.parseColor(colorFormat);
+        if (color === null) {
+            throw "Unknown color format. Currently supported: RGB, RGBA, HEX(3 letters), HEX (6 letters), HEX + alpha (8 letters)";
+        }
+
+        this.setNewColor(color);
+        this.displayCurrentColor();
+    }
+
+    setNewColor(color) {
+        this.#red.value = color.red;
+        this.setChannel("red", color.red);
+
+        this.#green.value = color.green;
+        this.setChannel("green", color.green);
+
+        this.#blue.value = color.blue;
+        this.setChannel("blue", color.blue);
+
+        this.#alpha.value = color.alpha;
+        this.setChannel("alpha", color.alpha);
+
+        this.#rootElement.dispatchEvent(new CustomEvent("pick", { detail: color }));
+    }
+
+    getCurrentColor() {
+        return {
+            red: Number(this.#rootElement.style.getPropertyValue("--red")),
+            green: Number(this.#rootElement.style.getPropertyValue("--green")),
+            blue: Number(this.#rootElement.style.getPropertyValue("--blue")),
+            alpha: Number(this.#rootElement.style.getPropertyValue("--alpha"))
+        };
+    }
+
+    displayCurrentColor(color = undefined) {
+        this.#display.value = ColorPicker.toHex(color ?? this.getCurrentColor());
+    }
+}

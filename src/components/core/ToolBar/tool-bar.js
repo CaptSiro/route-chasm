@@ -119,6 +119,7 @@ function toolBar_item(element) {
 
             try {
                 action(element);
+                event.preventDefault();
             } catch (e) {
                 console.error(e);
             }

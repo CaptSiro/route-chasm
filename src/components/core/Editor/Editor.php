@@ -11,12 +11,16 @@ use core\route\Route;
 use core\view\ContainerContent;
 
 class Editor extends ContainerContent {
+    protected WebPage $webPage;
     protected ToolBar $toolBar;
 
     public function __construct(
         protected DataItem $storage,
+        string $title = "Editor"
     ) {
-        parent::__construct(new WebPage());
+        parent::__construct($this->webPage = new WebPage());
+        $this->webPage->getHead()->setTitle($title);
+
         $this->toolBar = new ToolBar();
         $this->toolBar
             ->add(
@@ -72,6 +76,11 @@ class Editor extends ContainerContent {
         $item->addAttribute("data-aspect-ratio", Html::escapeAttribute($aspectRatio));
 
         $this->toolBar->add(Route::menu("/View/Mode/". Html::escape($label)), $item);
+        return $this;
+    }
+
+    public function setTitle(string $title): static {
+        $this->webPage->getHead()->setTitle($title);
         return $this;
     }
 }

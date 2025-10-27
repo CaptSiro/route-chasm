@@ -1,190 +1,144 @@
 /**
- * @typedef {Impulse<any> | HTMLElement | Node | string | undefined} ContentItem
- *
- * @typedef {ContentItem | ArrayLike<ContentItem> | ContentItem[] | HTMLCollection} Content
- *
- * @typedef {{
- *     [key: string]: ((event: Event) => any) | Impulse<any> | any
- * } & {
- *     style?: Partial<CSSStyleDeclaration>
- * }} Attributes
- *
- * @typedef {Attributes | string | undefined} Props
- *
- * @typedef {{ [key in keyof HTMLElementTagNameMap]: (props?: Props | string, content?: Content) => HTMLElementTagNameMap[key] }} JSML
+ * @param {HTMLElement} element
+ * @param {JsmlContentItem} item
  */
+function jsml_addContentItem(element, item) {
+    if (item === undefined) {
+        return;
+    }
 
-/**
- * @returns {JSML | {}}
- */
-function jsmlInit() {
-    /**
-     * @param {HTMLElement} element
-     * @param {ContentItem} item
-     */
-    function addContentItem(element, item) {
-        if (item === undefined) {
-            return;
-        }
+    if (typeof item === "string") {
+        element.textContent = item;
+        return;
+    }
 
-        if (typeof item === "string") {
-            element.textContent = item;
-            return;
-        }
+    if (item instanceof Impulse) {
+        if (item.value() instanceof Node) {
+            let last = item.value();
+            element.append(last);
 
-        if (item instanceof Impulse) {
-            if (item.value() instanceof Node) {
-                let last = item.value();
-                element.append(last);
-
-                item.listen((n) => {
-                    element.replaceChild(n, last);
-                    last = n;
-                });
-
-                return;
-            }
-
-            const text = document.createTextNode(String(item.value()));
-            element.append(text);
-
-            item.listen(x => {
-                text.textContent = String(x);
+            item.listen((n) => {
+                element.replaceChild(n, last);
+                last = n;
             });
 
             return;
         }
 
-        if (item instanceof Node) {
-            element.append(item);
-        }
+        const text = document.createTextNode(String(item.value()));
+        element.append(text);
+
+        item.listen(x => {
+            text.textContent = String(x);
+        });
+
+        return;
     }
 
-    /**
-     * @param {HTMLElement} element
-     * @param {Content} content
-     */
-    function addContent(element, content) {
-        if (!Array.isArray(content)) {
-            // @ts-ignore Should be just singular object
-            addContentItem(element, content);
-            return;
-        }
+    if (item instanceof Node) {
+        element.append(item);
+    }
+}
 
-        for (const item of content) {
-            addContentItem(element, item);
-        }
+/**
+ * @param {HTMLElement} element
+ * @param {JsmlContent} content
+ */
+function jsml_addContent(element, content) {
+    if (!Array.isArray(content)) {
+        // @ts-ignore Should be just singular object
+        jsml_addContentItem(element, content);
+        return;
     }
 
-    /**
-     * @param {string} key
-     * @returns {string}
-     */
-    function parse(key) {
-        return key.substring(Number(key[0] === "\\"));
+    for (const item of content) {
+        jsml_addContentItem(element, item);
+    }
+}
+
+/**
+ * @param {string} key
+ * @returns {string}
+ */
+function jsml_parse(key) {
+    return key.substring(Number(key[0] === "\\"));
+}
+
+/**
+ * @param {Element} element
+ * @param {string} attribute
+ * @param {any} value
+ */
+function jsml_setAttribute(element, attribute, value) {
+    switch (typeof value) {
+        case "undefined":
+            break;
+        case "boolean":
+            element.toggleAttribute(attribute, value);
+            break;
+        case "string":
+            element.setAttribute(attribute, value);
+            break;
+        default:
+            element.setAttribute(attribute, String(value));
+            break;
+    }
+}
+
+/**
+ * @param {Element} element
+ * @param {JsmlProps | string} props
+ */
+function jsml_addProps(element, props) {
+    if (props === undefined) {
+        return;
     }
 
-    /**
-     * @param {HTMLElement} element
-     * @param {string} attribute
-     * @param {any} value
-     */
-    function setAttribute(element, attribute, value) {
-        switch (typeof value) {
-            case "undefined":
-                break;
-            case "boolean":
-                element.toggleAttribute(attribute, value);
-                break;
-            case "string":
-                element.setAttribute(attribute, value);
-                break;
-            default:
-                element.setAttribute(attribute, String(value));
-                break;
+    if (typeof props === "string") {
+        element.className = String(props);
+    } else if ("class" in props) {
+        element.className = String(props.class);
+        delete props.class;
+    }
+
+    if (props.style !== undefined) {
+        jsml_setAttribute(element, "style", std_css(props.style));
+        delete props.style;
+    }
+
+    for (const key in props) {
+        if (key[0] === "o" && key[1] === "n") {
+            element.addEventListener(key.substring(2).toLowerCase(), props[key]);
+            continue;
         }
-    }
 
-    /**
-     * @param {Record<string, any>} styles
-     * @returns {string}
-     */
-    function createCssString(styles) {
-        let buffer = "";
+        const k = std_camelToKebab(jsml_parse(key));
+        if (typeof props[key] === "boolean") {
+            jsml_setAttribute(element, k, props[key]);
+            continue;
+        }
 
-        for (const key in styles) {
-            if (styles[key] === undefined) {
-                continue;
+        if (props[key] instanceof Impulse) {
+            const v = props[key].value();
+            if (v !== undefined) {
+                jsml_setAttribute(element, k, v);
             }
 
-            buffer += `${camelToKebab(key)}: ${styles[key]};`;
+            props[key].listen((x) => {
+                jsml_setAttribute(element, k, x);
+            });
+
+            continue;
         }
 
-        return buffer;
+        jsml_setAttribute(element, k, props[key]);
     }
+}
 
-    /**
-     * @param {string} string
-     * @returns {string}
-     */
-    function camelToKebab(string) {
-        let buffer = "";
-
-        for (let i = 0; i < string.length; i++) {
-            if (uppercase.includesChar(string[i])) {
-                buffer += "-" + string[i].toLowerCase();
-                continue;
-            }
-
-            buffer += string[i];
-        }
-
-        return buffer;
-    }
-
-    /**
-     * @param {HTMLElement} element
-     * @param {Props | string} props
-     */
-    function addProps(element, props) {
-        if (props === undefined || typeof props === "string") {
-            return;
-        }
-
-        if (props.style !== undefined) {
-            setAttribute(element, "style", createCssString(props.style));
-            delete props.style;
-        }
-
-        for (const key in props) {
-            if (key[0] === "o" && key[1] === "n") {
-                element.addEventListener(key.substring(2).toLowerCase(), props[key]);
-                continue;
-            }
-
-            const k = camelToKebab(parse(key));
-            if (typeof props[key] === "boolean") {
-                setAttribute(element, k, props[key]);
-                continue;
-            }
-
-            if (props[key] instanceof Impulse) {
-                const v = props[key].value();
-                if (v !== undefined) {
-                    setAttribute(element, k, v);
-                }
-
-                props[key].listen((x) => {
-                    setAttribute(element, k, x);
-                });
-
-                continue;
-            }
-
-            setAttribute(element, k, props[key]);
-        }
-    }
-
+/**
+ * @returns {Jsml | {}}
+ */
+function jsml_init() {
     return new Proxy({}, {
         get(_, tag) {
             return (props, content) => {
@@ -195,15 +149,8 @@ function jsmlInit() {
 
                 const element = document.createElement(/** @type {keyof HTMLElementTagNameMap} */ tag);
 
-                if (typeof props === "string") {
-                    element.className = String(props);
-                } else if (props !== undefined && "class" in props) {
-                    element.className = String(props.class);
-                    delete props.class;
-                }
-
-                addProps(element, props);
-                addContent(element, content);
+                jsml_addProps(element, props);
+                jsml_addContent(element, content);
 
                 return element;
             }
@@ -211,46 +158,8 @@ function jsmlInit() {
     });
 }
 
-const jsml = jsmlInit();
+const jsml = jsml_init();
 const _ = undefined;
-
-
-
-/**
- *
- * @param {string} label
- * @param {boolean} isRemovable
- * @param {(element: HTMLElementTagNameMap["div"], event: Event) => boolean} onRemove Return false to cancel removing
- * @return {HTMLDivElement}
- */
-function Tag(label, isRemovable = true, onRemove = () => true) {
-    const tag = jsml.div({ class: 'tag' }, jsml.span(_, label));
-    if (!isRemovable) {
-        return tag;
-    }
-
-    const onClick = event => {
-        if (onRemove(tag, event) === false) {
-            return;
-        }
-
-        tag.remove();
-    }
-
-    const button = jsml.button({ onClick }, '✕');
-    tag.append(button);
-
-    return tag;
-}
-
-/**
- * @param {string} nf
- * @param {string | undefined} fallback
- * @return {HTMLElement}
- */
-function Icon(nf, fallback = undefined) {
-    return jsml.i('nf ' + nf, jsml.span(_, fallback));
-}
 
 
 
