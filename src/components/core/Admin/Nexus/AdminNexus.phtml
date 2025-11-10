@@ -1,8 +1,8 @@
 <?php /** @var AdminNexus $this */
 
 use components\core\Admin\Nexus\AdminNexus;
-use core\sideloader\Css;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 
 Javascript::import($this->getResource('nexus.js'));
 Css::import($this->getResource('nexus.css'));

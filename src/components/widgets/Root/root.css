@@ -1,0 +1,137 @@
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+.gui {
+    visibility: hidden;
+    position: absolute;
+    display: flex;
+    z-index: 2;
+    user-select: none;
+}
+
+.gui > button,
+.gui > .button-like-main {
+    font-size: 20px !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-sizing: unset;
+    height: 32px;
+    width: 32px;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+    display: grid;
+    place-items: center;
+    font-family: monospace;
+}
+
+.edit-controls {
+    top: calc(100% - 16px);
+    right: 12px;
+    padding: 0 4px 8px 8px;
+}
+
+.edit-controls .drag-handle.ff-fix {
+    position: relative;
+}
+
+.edit-controls .drag-handle * {
+    color: var(--text-color-opposite-0) !important;
+}
+
+.edit-controls .drag-handle.ff-fix::after {
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+}
+
+.widget.margin {
+    margin: 8px 16px;
+}
+
+.widget {
+    opacity: 1;
+    transition: opacity 150ms linear;
+}
+
+.widget.selected-widget-for-operation {
+    opacity: 0.6;
+}
+
+.drag-hint {
+    width: 85%;
+    height: 0;
+    background-color: var(--container-opposite-3);
+    margin: 2px auto;
+
+    transition: height 100ms ease-in-out, width 100ms ease-in-out;
+}
+
+.drag-hint.expand {
+    width: 90%;
+    height: 10px;
+}
+
+.widget.edit {
+    outline: 2px solid transparent;
+    transition: outline-color 150ms linear;
+}
+
+.widget.hover > .gui,
+.widget:focus > .gui {
+    visibility: visible;
+    opacity: 1 !important;
+}
+
+.widget.selected-widget-for-operation,
+.widget.edit.hover,
+.widget.edit:focus {
+    outline-color: var(--container-opposite-2);
+    z-index: 3;
+
+    transition: outline-color 0ms linear;
+}
+
+.widget.edit.hover {
+    z-index: 5;
+}
+
+.widget.remove {
+    opacity: 0;
+    transition: opacity 175ms linear;
+}
+
+.gui button {
+    user-select: none;
+    padding: 4px;
+    color: var(--text-color-opposite-0);
+    background-color: var(--container-opposite-2);
+    border: 2px solid var(--container-opposite-3);
+
+    transition: background-color 250ms linear;
+}
+
+.gui button:hover {
+    cursor: pointer;
+    background-color: var(--container-opposite-1);
+
+    transition: background-color 0ms linear;
+}
+
+.gui button > * {
+    color: inherit;
+}
+
+.w-root {
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    /*padding: 0 16px;*/
+
+    background-color: var(--container-0);
+    color: var(--text-color-0);
+}

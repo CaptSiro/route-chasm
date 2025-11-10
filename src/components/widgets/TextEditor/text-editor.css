@@ -1,0 +1,70 @@
+.w-text-editor {
+    line-height: 1.1em;
+    min-height: 1.1em;
+    position: relative;
+    background-color: transparent;
+    outline: 4px solid transparent;
+    font: inherit;
+    color: inherit;
+
+    transition: background-color 250ms linear, outline-width 250ms ease-in-out, outline-color 250ms linear;
+}
+
+.w-text-editor * {
+    font: inherit;
+    color: inherit;
+}
+
+.w-text-editor article {
+    overflow: auto;
+}
+
+.w-text-editor article:focus {
+    outline: unset;
+}
+
+.w-text-editor article > * {
+    margin-bottom: 3px;
+}
+
+.w-text-editor.show-hint::before {
+    content: attr(hint);
+    position: absolute;
+    line-height: 1.1em;
+    color: var(--text-color-2);
+    pointer-events: none;
+}
+
+.w-text-editor.fancy:focus-within {
+    background-color: var(--container-2) !important; /*TODO make var*/
+    outline-color: var(--container-2);
+    outline-width: 8px;
+}
+
+.w-text-editor:focus-within .fancy-controls {
+    visibility: visible;
+    bottom: calc(100% + 2px);
+    opacity: 1;
+
+    transition: bottom 250ms ease-in-out, visibility 0ms, opacity 250ms linear;
+}
+
+.w-text-editor .fancy-controls {
+    left: 0;
+    bottom: calc(100% - 8px);
+    opacity: 0;
+    z-index: 7; /*TODO: z-index above text-decor */
+
+    transition: bottom 250ms ease-in-out, visibility 0ms 250ms, opacity 250ms linear;
+}
+
+.w-text-editor .fancy-controls * {
+    font-family: serif;
+    color: var(--text-color-opposite-0);
+}
+
+.w-text-editor .fancy-controls code {
+    font-family: "Ubuntu Mono", monospace;
+    letter-spacing: 0.15em;
+    margin-left: 0.15em;
+}

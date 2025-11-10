@@ -1,0 +1,26 @@
+.w-command {
+    padding: 16px;
+    line-height: 1.1em;
+    min-height: 1.1em;
+    position: relative;
+    display: block;
+}
+
+.w-command > * {
+    line-height: 1.1em;
+    min-height: 1.1em;
+}
+
+.w-command.show-hint::before {
+    content: "Type '/' to select new widget";
+    position: absolute;
+    line-height: 1.1em;
+    top: 16px;
+    left: 16px;
+    color: var(--text-2);
+    pointer-events: none;
+}
+
+.w-command:focus {
+    outline: unset;
+}

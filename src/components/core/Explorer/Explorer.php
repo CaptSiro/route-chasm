@@ -4,7 +4,7 @@ namespace components\core\Explorer;
 
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\ContextAwareWebPage;
-use core\sideloader\Css;
+use core\sideloader\importers\Css\Css;
 use core\view\ContainerContent;
 
 class Explorer extends ContainerContent {

@@ -1,0 +1,41 @@
+.w-quote {
+    position: relative;
+    padding: 8px;
+}
+
+.w-quote .decorative {
+    user-select: none !important;
+    pointer-events: none !important;
+}
+
+.w-quote > span {
+    font-size: 64px;
+    font-family: "Times New Roman", serif;
+    position: absolute;
+    top: -0.70em;
+    left: 8px;
+}
+
+.w-quote .text {
+    padding-top: 32px;
+    font-style: italic;
+}
+
+.w-quote .author {
+    padding-top: 8px;
+    font-weight: bold;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.w-quote.edit .author {
+    padding-bottom: 8px;
+}
+
+.w-quote .author .decorative {
+    margin-right: 4px;
+}
+
+.w-quote .author .show-hint {
+    min-width: 135px;
+}

@@ -1,7 +1,7 @@
 <?php /** @var \components\core\ToolBar\ToolBar $this */
 
-use core\sideloader\Css;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 
 Javascript::import($this->getResource('tool-bar.js'));
 Css::import($this->getResource('tool-bar.css'));

@@ -96,6 +96,7 @@ function jsml_addProps(element, props) {
 
     if (typeof props === "string") {
         element.className = String(props);
+        return;
     } else if ("class" in props) {
         element.className = String(props.class);
         delete props.class;

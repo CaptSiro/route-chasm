@@ -2,18 +2,28 @@
 
 use components\core\Editor\Editor;
 use components\core\Html\Html;
-use core\sideloader\Css;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 
 Css::import($this->getResource('editor.css'));
 Javascript::import($this->getResource('editor.js'));
+Javascript::import($this->getResource('inspector.js'));
+Javascript::import($this->getResource('widget-core.js'));
 
-?><section class="editor">
-    <?= $this->toolBar ?>
-
-    <div id="editor-data">
+?><section>
+    <div id="editor-data" style="display: none">
         <?= Html::escape($this->storage->read()) ?>
     </div>
+
+    <div id="widgets" style="display: none">
+        <?php foreach ($this->explodeWidgets() as $widget): ?>
+            <?= $this->importWidget($widget) ?>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<section class="editor">
+    <?= $this->toolBar ?>
 
     <div class="table">
         <div class="viewport-mount">

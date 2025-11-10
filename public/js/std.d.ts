@@ -8,3 +8,5 @@ declare type RelativeTimestamp = {
 declare type SkipPredicate<T> = (item: T) => boolean;
 
 declare class Impulse<T> {}
+
+declare type BrowserType = "chrome" | "opera" | "firefox" | "safari" | "internet-explorer" | "edge" | "edge-chromium" | string;

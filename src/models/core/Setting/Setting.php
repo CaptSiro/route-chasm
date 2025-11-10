@@ -34,15 +34,17 @@ final class Setting extends Model implements Editable {
      * @param string $name
      * @param bool $create
      * @param string|null $default
+     * @param array<string, mixed> $properties
      * @return static|null
      */
-    public static function fromName(string $name, bool $create = false, mixed $default = null): ?self {
+    public static function fromName(string $name, bool $create = false, mixed $default = null, array $properties = []): ?self {
         $setting = self::first(where: new Query('name = ?', [Parameter::infer($name)]));
         if (!is_null($setting) || !$create) {
             return $setting;
         }
 
         $setting = new self();
+        $setting->set($properties);
         $setting->set([
             'name' => $name,
             'value' => $default

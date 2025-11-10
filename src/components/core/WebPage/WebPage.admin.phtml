@@ -1,13 +1,6 @@
 <?php /** @var WebPage $this */
 
-use components\core\Admin\Login\AdminLogin;
-use components\core\Admin\Project\AdminProject;
-use components\core\Icon;
-use components\core\Terminal\Terminal;
-use components\core\WebPage\WebPage;
-use components\windows\LanguageSelect\LanguageSelect;use core\admin\AdminRouter;
-use core\App;
-use core\sideloader\Css;
+use components\core\Admin\Login\AdminLogin;use components\core\Admin\Project\AdminProject;use components\core\Icon;use components\core\Terminal\Terminal;use components\core\WebPage\WebPage;use components\windows\LanguageSelect\LanguageSelect;use core\admin\AdminRouter;use core\App;use core\sideloader\importers\Css\Css;
 
 Css::import($this->getResource('admin-page.css'));
 $request = App::getInstance()->getRequest();

@@ -17,7 +17,7 @@ use core\forms\FormAction;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Javascript\Javascript;
 use core\view\ContainerContent;
 use core\view\View;
 

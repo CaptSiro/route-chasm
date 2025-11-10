@@ -5,6 +5,7 @@ namespace components\pages\TextPage;
 use components\core\Editor\Editor;
 use components\core\Html\Html;
 use components\core\ToolBar\ToolBarItem;
+use components\widgets\Code\CodeWidget;
 use core\actions\Action;
 use core\App;
 use core\pages\PageTemplate;

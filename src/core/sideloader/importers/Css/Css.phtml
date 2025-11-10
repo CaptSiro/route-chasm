@@ -1,0 +1,11 @@
+<?php /** @var Css $this */
+
+use core\sideloader\importers\Css\Css;
+use core\sideloader\SideLoader;
+
+$sideLoader = SideLoader::getInstance();
+
+?><link
+    rel="stylesheet"
+    <?= $sideLoader->createSourceAttribute(Css::FILE_EXTENSION, $this->files, 'href') ?>
+>

@@ -1,0 +1,43 @@
+.w-file-download > .container {
+    width: max-content;
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    padding: 4px 0.8em 4px 4px;
+    color: var(--text-0); /* todo accent-text */
+    border-radius: 5px;
+    background-color: var(--accent-2);
+    border: 2px solid var(--accent-3);
+
+    transition: background-color 250ms linear;
+}
+
+.w-file-download > .container * {
+    color: var(--text-0); /* todo accent-text */
+}
+
+.w-file-download.edit > .container:hover {
+    cursor: default;
+}
+
+.cursor-pointer .w-file-download.edit > div:not(.gui):hover,
+.w-file-download > .container:hover {
+    cursor: pointer;
+    background-color: var(--accent-1);
+
+    transition: background-color 0ms linear;
+}
+
+.w-file-download svg {
+    color: var(--text-0) !important; /* todo accent-text */
+    width: 2em;
+    height: 2em;
+}
+
+
+.files-inspector {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}

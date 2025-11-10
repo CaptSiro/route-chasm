@@ -1,8 +1,8 @@
 <?php /** @var Form $this */
 
 use core\forms\Form;
-use core\sideloader\Css;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 
 ?>
 <?php Javascript::import($this->getResource("form.js")); ?>

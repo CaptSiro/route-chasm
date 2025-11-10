@@ -146,7 +146,7 @@ let currentCmd;
 /**
  * @param {boolean} isInSearch
  */
-function setSearchMode(isInSearch) {
+function editor_setSearchMode(isInSearch) {
     isInSearchMode = isInSearch;
     widgetSelect.classList.toggle("search-mode", isInSearch);
 
@@ -161,7 +161,7 @@ function setSearchMode(isInSearch) {
 /**
  * @param {boolean} direction true => Up; false => Down
  */
-function moveSelection(direction) {
+function editor_moveSelection(direction) {
     if (selectedWidget === undefined) {
         const widgetPool = isInSearchMode
             ? widgetSelect.querySelectorAll(".widget-option.search-satisfactory")
@@ -279,7 +279,7 @@ window.addEventListener("load", async () => {
  */
 let widgetSelectAnchor = undefined;
 
-function unfollowWidgetSelect() {
+function editor_unfollowWidgetSelect() {
     widgetSelectAnchor = undefined;
 }
 
@@ -296,7 +296,7 @@ editor_viewport_onResize(() => {
 /**
  * @param {HTMLElement} to
  */
-function moveWidgetSelect(to) {
+function editor_moveWidgetSelect(to) {
     if ("widget" in to) {
         currentCmd = to.widget;
     }
@@ -549,7 +549,7 @@ async function cleanUpAfterDrag() {
 
 window.addEventListener("keydown", evt => {
     if (evt.key === "Escape") {
-        edit_deselectAll();
+        edit_deselect();
     }
 
     if ((evt.key === "Delete" || evt.key === "Backspace") && evt.handledAction !== true) {
@@ -585,27 +585,18 @@ let clipboardBuffer = [];
 function edit_selectAll() {
     if (window.rootWidget === undefined) return;
 
-    edit_deselectAll();
+    edit_deselect();
 
     for (const child of window.rootWidget.page.children) {
         child.select();
     }
 }
 
-function edit_deselectAll() {
+function edit_deselect() {
     for (const selectedElement of $$("." + WIDGET_SELECTION_CLASS)) {
         selectedElement.classList.remove(WIDGET_SELECTION_CLASS);
     }
 }
-
-$("#edit-select-all")?.addEventListener("click", () => {
-    edit_selectAll();
-    stopDropdown();
-});
-$("#edit-deselect-all")?.addEventListener("click", () => {
-    edit_deselectAll();
-    stopDropdown();
-});
 
 function edit_delete() {
     for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
@@ -677,27 +668,6 @@ function edit_paste(evt) {
 
     lastInsertedElement?.classList.add(WIDGET_SELECTION_CLASS);
 }
-
-$("#edit-delete")?.addEventListener("pointerdown", evt => {
-    edit_delete(evt);
-    stopDropdown();
-    // evt.stopImmediatePropagation();
-});
-$("#edit-copy")?.addEventListener("pointerdown", evt => {
-    edit_copy(evt);
-    stopDropdown();
-    // evt.stopImmediatePropagation();
-});
-$("#edit-cut")?.addEventListener("pointerdown", evt => {
-    edit_cut(evt);
-    stopDropdown();
-    // evt.stopImmediatePropagation();
-});
-$("#edit-paste")?.addEventListener("pointerdown", evt => {
-    edit_paste(evt);
-    stopDropdown();
-    // evt.stopImmediatePropagation();
-});
 
 window.addEventListener("cut", edit_cut);
 window.addEventListener("copy", edit_copy);
@@ -789,13 +759,14 @@ editor_inspector.textContent = "";
 let currentlyInspecting;
 
 /**
- * @param {ComponentContent} inspectorHTML
+ * @param {Content} inspectorHTML
  * @param {Widget} widget
  */
 function inspect(inspectorHTML, widget) {
     currentlyInspecting = widget;
     editor_inspector.textContent = "";
-    editor_inspector.append(...parseComponentContent(inspectorHTML));
+
+    jsml_addContent(editor_inspector, inspectorHTML);
 }
 
 
@@ -833,7 +804,7 @@ function file_open(element) {
 
 function file_share() {
     navigator.clipboard.writeText(postLink)
-        .then(() => alert("Link copied."));
+        .then(() => window_alert("Link copied."));
 }
 
 function file_exit() {

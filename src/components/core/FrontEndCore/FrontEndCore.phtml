@@ -1,15 +1,15 @@
 <?php /** @var FrontEndCore $this */
 
 use components\core\FrontEndCore\FrontEndCore;
-use core\sideloader\Css;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 use core\sideloader\SideLoader;
 
 ?><?php if (SideLoader::getInstance()->isInitialized()): ?>
     <script
         <?= SideLoader::getInstance()
             ->createSourceAttribute(
-                Javascript::FILE_TYPE,
+                Javascript::FILE_EXTENSION,
                 $this->getPublicSources('js', '*.js')
             ) ?>
     ></script>
@@ -18,7 +18,7 @@ use core\sideloader\SideLoader;
         rel="stylesheet"
         <?= SideLoader::getInstance()
             ->createSourceAttribute(
-                Css::FILE_TYPE,
+                Css::FILE_EXTENSION,
                 $this->getPublicSources('css', '*.css'),
                 'href'
             ) ?>

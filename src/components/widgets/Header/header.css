@@ -1,0 +1,22 @@
+.w-header {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--container-0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    margin-bottom: 64px;
+}
+
+.w-header .heading-container {
+    width: 80%;
+}
+
+.w-header .heading-container * {
+    color: inherit;
+}
+
+.viewport-smartphone .w-header .heading-container {
+    width: 90%;
+}

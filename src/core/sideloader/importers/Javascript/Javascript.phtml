@@ -1,0 +1,10 @@
+<?php /** @var Javascript $this */
+
+use core\sideloader\importers\Javascript\Javascript;
+use core\sideloader\SideLoader;
+
+$sideLoader = SideLoader::getInstance();
+?><script
+    <?= $sideLoader->createSourceAttribute(Javascript::FILE_EXTENSION, $this->files) ?>
+    defer
+></script>

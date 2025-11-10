@@ -514,3 +514,40 @@ function std_arrayEquals(array1, array2, compareFunction = ((a, b) => a === b)) 
 
     return true;
 }
+
+
+
+/**
+ * @return {BrowserType}
+ */
+function std_browser() {
+    try {
+        if (!!document.documentMode) {
+            return !!window.StyleMedia
+                ? "internet-explorer"
+                : "edge";
+        }
+
+        if (typeof InstallTrigger !== 'undefined') {
+            return "firefox";
+        }
+
+        if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+            return "opera";
+        }
+
+        if (navigator.userAgent.indexOf("Edg") !== -1) {
+            return "edge-chromium";
+        }
+
+        if (/constructor/i.test(window.HTMLElement)
+            || (function (param) {
+                return param.toString() === "[object SafariRemoteNotification]";
+            })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification))) {
+
+            return "safari";
+        }
+    } catch (ignored) {}
+
+    return "chrome";
+}

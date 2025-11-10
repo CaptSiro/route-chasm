@@ -1,0 +1,6 @@
+.w-list {
+    --type: disc;
+
+    padding: 8px;
+    list-style-type: var(--type);
+}

@@ -1,8 +1,8 @@
 <?php /** @var Spotlight $this */
 
 use components\layout\Spotlight\Spotlight;
-use core\sideloader\Css;
-use core\sideloader\Javascript;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 
 Css::import($this->getResource('spotlight.css'));
 Javascript::import($this->getResource('spotlight.js'));

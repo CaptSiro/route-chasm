@@ -1,0 +1,19 @@
+.w-code {
+    display: block;
+    padding: 16px;
+    position: relative;
+    font-family: monospace;
+    border-radius: 8px;
+    background-color: #0b0b0b;
+    color: #0DA017;
+}
+
+.w-code .show-hint::before {
+    color: #5B5B5B !important;
+}
+
+.w-code .w-link {
+    --color: #3465A3;
+    --color-highligh: #0b0b0b;
+    --bg-color: #3465A3;
+}

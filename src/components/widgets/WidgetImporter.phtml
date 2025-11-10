@@ -1,0 +1,19 @@
+<?php /** @var WidgetImporter $this */
+
+use components\widgets\WidgetImporter;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->widget->getScript());
+Css::import($this->widget->getStyles());
+
+?><div
+    class="widget-description"
+    data-is-visible="<?= $this->widget->isVisible() ? 'true' : 'false' ?>"
+    data-name="<?= $this->widget->getName() ?>"
+    data-category="<?= $this->widget->getCategory() ?>"
+>
+    <div class="widget-icon">
+        <?= $this->widget->getIcon() ?>
+    </div>
+</div>

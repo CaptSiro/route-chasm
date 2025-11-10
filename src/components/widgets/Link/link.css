@@ -1,0 +1,26 @@
+.w-link.widget {
+    --color: var(--text-color-2);
+    --color-highligh: var(--text-color-opposite-0);
+    --bg-color: var(--container-opposite-1);
+
+    display: inline-block;
+    text-decoration: underline;
+    font-weight: bold;
+    color: var(--color);
+    cursor: default;
+    outline: 0 solid var(--bg-color);
+}
+
+.w-link.widget.not-edit:hover,
+.cursor-pointer .w-link.widget:hover {
+    cursor: pointer;
+    outline-width: 2px;
+    color: var(--color-highligh);
+    background-color: var(--bg-color);
+}
+
+.w-link.opposite.widget {
+    --color: var(--text-color-opposite-1);
+    --color-highligh: var(--text-color-0);
+    --bg-color: var(--container-2);
+}

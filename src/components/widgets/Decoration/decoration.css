@@ -1,0 +1,29 @@
+.w-text-decoration {
+    position: relative;
+    min-width: 2px;
+    z-index: 5; /*TODO: z-index */
+}
+
+.w-text-decoration.bold {
+    font-weight: 700;
+}
+
+.w-text-decoration.italic {
+    font-style: italic;
+}
+
+.w-text-decoration.underline {
+    text-decoration: underline;
+}
+
+.w-text-decoration.line-through {
+    text-decoration: line-through !important;
+}
+
+.w-text-decoration.code {
+    font-family: monospace;
+    padding: 2px;
+    border-radius: 2px;
+    background-color: #0b0b0b;
+    color: #0DA017;
+}

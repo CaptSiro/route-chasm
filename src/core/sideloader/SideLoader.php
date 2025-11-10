@@ -16,7 +16,8 @@ use core\route\Path;
 use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\sideloader\api\SideLoaderApi;
-use core\sideloader\importers\FileImporter;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 use core\Singleton;
 use core\utils\Files;
 use core\view\BufferTransform;
@@ -34,6 +35,7 @@ class SideLoader implements View {
 
     public const SETTING_HASH_LENGTH = self::IDENTIFIER . '_hash-length';
     public const SETTING_MAX_RETRIES = self::IDENTIFIER . '_max-retries';
+    public const SETTING_ADD_FILE_NAMES = self::IDENTIFIER . '_add-file-names';
 
     public const FILE_SEPARATOR = ',';
     public const DIRECTORY_MERGED = 'merged';
@@ -60,14 +62,15 @@ class SideLoader implements View {
 
     protected array $files;
     /**
-     * @var array<string, FileImporter> $fileImporters
+     * @var array<string, Importer> $importers
      */
-    protected array $fileImporters;
+    protected array $importers;
     protected Router $router;
     protected bool $hasBeenRendered;
 
     protected Setting $hashLength;
     protected Setting $maxRetries;
+    protected Setting $addFileNames;
     protected bool $initialized;
 
 
@@ -75,21 +78,8 @@ class SideLoader implements View {
     public function __construct() {
         $this->files = [];
 
-        $javascript = new FileImporter();
-        $this->addImporter(
-            Javascript::FILE_TYPE,
-            $javascript
-                ->setFileType(Javascript::FILE_MIME_TYPE)
-                ->setTemplate($javascript->getResource("JavascriptImporter.phtml"))
-        );
-
-        $css = new FileImporter();
-        $this->addImporter(
-            Css::FILE_TYPE,
-            $css
-                ->setFileType(Css::FILE_MIME_TYPE)
-                ->setTemplate($css->getResource("CssImporter.phtml"))
-        );
+        $this->addImporter(new Javascript());
+        $this->addImporter(new Css());
 
         $this->router = new Router();
         $this->initialized = false;
@@ -113,12 +103,19 @@ class SideLoader implements View {
         }
 
         $this->maxRetries = $retries;
+
+        $this->addFileNames = Setting::fromName(
+            self::SETTING_ADD_FILE_NAMES,
+            true,
+            true,
+            ['editable' => true]
+        );
     }
 
 
 
-    public function addImporter(string $fileType, FileImporter $importer): void {
-        $this->fileImporters[$fileType] = $importer;
+    public function addImporter(Importer $importer): void {
+        $this->importers[$importer->getFileExtension()] = $importer;
     }
 
     public function doSendRequireHeader(Request $request): bool {
@@ -143,11 +140,11 @@ class SideLoader implements View {
             $replacement = '';
 
             foreach ($this->files as $type => $files) {
-                if (!isset($this->fileImporters[$type])) {
+                if (!isset($this->importers[$type])) {
                     continue;
                 }
 
-                $replacement .= $this->fileImporters[$type]
+                $replacement .= $this->importers[$type]
                     ->setFiles($files)
                     ->render();
             }
@@ -188,7 +185,7 @@ class SideLoader implements View {
             '/',
             Http::get(function (Request $request, Response $response) {
                 $type = $request->getUrl()->getQuery()->getStrict('type');
-                if (!isset($this->fileImporters[$type])) {
+                if (!isset($this->importers[$type])) {
                     $response->sendMessage(
                         "There is not known file importer for type '$type'",
                         HttpCode::CE_BAD_REQUEST
@@ -196,9 +193,10 @@ class SideLoader implements View {
                     return;
                 }
 
+                $importer = $this->importers[$type];
                 $response->setHeaders([
                     Cors::ORIGIN => "*",
-                    HttpHeader::CONTENT_TYPE => $this->fileImporters[$type]->getFileType()
+                    HttpHeader::CONTENT_TYPE => $importer->getFileMimeType()
                 ]);
 
                 $files = $request->getUrl()->getQuery()->getStrict('files');
@@ -211,14 +209,18 @@ class SideLoader implements View {
                         );
                     }
 
+                    $response->send($importer->fileHead($entry->path), false);
                     $response->readFile($entry->path);
                 }
 
                 foreach (explode(self::FILE_SEPARATOR, $files) as $hash) {
                     $entry = SideLoaderRecord::fromHash($hash);
-                    if (!is_null($entry)) {
-                        $response->readFile($entry->path, doFlush: false);
+                    if (is_null($entry)) {
+                        continue;
                     }
+
+                    $response->send($importer->fileHead($entry->path), false);
+                    $response->readFile($entry->path, doFlush: false);
                 }
 
                 $response->flush();
