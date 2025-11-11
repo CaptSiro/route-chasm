@@ -13,6 +13,10 @@ class CodeWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WCode";
+    }
+
     public function isVisible(): bool {
         return true;
     }

@@ -36,7 +36,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
 
             if (this.rootElement.textContent === "") {
                 this.rootElement.classList.add("show-hint");
-                widgetSelect.style.visibility = "hidden";
+                editor_widgetSelect.style.visibility = "hidden";
                 //setSearchMode(false);
                 doRemoveOnNextDelete = true;
 
@@ -62,7 +62,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
             editor_setSearchMode(true);
             let satisfactoryCountGlobal = 0;
             let satisfactoryWidgetGlobal = undefined;
-            for (const category of widgetSelect.children) {
+            for (const category of editor_widgetSelect.children) {
                 let satisfactoryCount = 0;
 
                 for (const widget of category.children[1].children) {
@@ -86,14 +86,14 @@ class WCommand extends Widget { // var is used because it creates reference on g
             }
 
             if (satisfactoryCountGlobal === 0) {
-                widgetSelect.classList.add("no-results");
+                editor_widgetSelect.classList.add("no-results");
             } else {
-                widgetSelect.classList.remove("no-results");
+                editor_widgetSelect.classList.remove("no-results");
                 if (satisfactoryCountGlobal === 1) {
-                    widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
+                    editor_widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
 
-                    selectedWidget = satisfactoryWidgetGlobal;
-                    selectedWidget.classList.add("selected");
+                    editor_selectedWidget = satisfactoryWidgetGlobal;
+                    editor_selectedWidget.classList.add("selected");
                 }
             }
         });
@@ -115,21 +115,21 @@ class WCommand extends Widget { // var is used because it creates reference on g
                 if (this.rootElement.textContent[0] === "/") {
                     evt.preventDefault();
 
-                    if (selectedWidget === undefined) {
+                    if (editor_selectedWidget === undefined) {
                         return;
                     }
 
-                    if (!selectedWidget.classList.contains("search-satisfactory") && isInSearchMode) {
+                    if (!editor_selectedWidget.classList.contains("search-satisfactory") && editor_isInSearchMode) {
                         return;
                     }
 
-                    const defaultWidget = widgets.get(selectedWidget.dataset.class).default(this.parentWidget, true);
+                    const defaultWidget = widgets.get(editor_selectedWidget.dataset.class).default(this.parentWidget, true);
                     this.parentWidget.insertBeforeWidget(defaultWidget, this);
                     editor_unfollowWidgetSelect();
                     this.remove();
 
                     editor_setSearchMode(false);
-                    widgetSelect.style.visibility = "hidden";
+                    editor_widgetSelect.style.visibility = "hidden";
                     defaultWidget.focus();
                     defaultWidget.rootElement.scrollIntoView({ behavior: "smooth" });
 

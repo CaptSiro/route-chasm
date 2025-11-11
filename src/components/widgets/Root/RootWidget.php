@@ -15,6 +15,10 @@ class RootWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WRoot";
+    }
+
     public function isVisible(): bool {
         return false;
     }

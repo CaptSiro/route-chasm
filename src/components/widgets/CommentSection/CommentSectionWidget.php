@@ -13,6 +13,10 @@ class CommentSectionWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WCommentSection";
+    }
+
     public function isVisible(): bool {
         return false;
     }

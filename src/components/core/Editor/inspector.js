@@ -1,28 +1,37 @@
 const { div, span, label, input, h3 } = jsml;
 
+
 /**
- * @param {Event} evt
- * @param {Binding<string>} binding
+ * @template S
+ * @callback Setter
+ * @param {S} value
+ * @param {HTMLElement} parentElement
+ * @returns {boolean | Promise<boolean>}
+ */
+
+/**
+ * @param {Event} event
+ * @param {Setter<string>} setter
+ * @param {string | undefined} lastValue
  * @param {HTMLElement} parent
  * @param {HTMLCollection} collection
- * @returns {*}
+ * @returns {(function(*): (*))|*}
  */
-async function choiceChangeListener(evt, binding, parent, collection) {
-    if (!(await binding.set(evt.target.value, parent))) {
-        return evt.target.value;
+async function choiceChangeListener(event, setter, lastValue, parent, collection) {
+    if (await setter(event.target.value, parent)) {
+        return event.target.value;
     }
 
-    const value = binding.get();
     if (collection.length === 0) {
-        return value;
+        return lastValue;
     }
 
     const attribute = collection[0].tagName === "OPTION"
         ? "selected"
-        : "checked";
+        : "checked"
 
     for (const element of collection) {
-        if (element.value !== value) {
+        if (element.value !== lastValue) {
             element[attribute] = false;
             continue;
         }
@@ -30,24 +39,24 @@ async function choiceChangeListener(evt, binding, parent, collection) {
         element[attribute] = true;
     }
 
-    return value;
+    return lastValue;
 }
 
-//* basic inspector components
 /**
- * @param {Binding<boolean>} binding
+ * @param {boolean} state
+ * @param {Setter<boolean>} setter
  * @param {string} label
  * @returns {HTMLElement}
  */
-function CheckboxInspector(binding, label = "") {
+function CheckboxInspector(state, setter, label = "") {
     const checkbox = (
-        CheckBox(binding.get() ?? false, label, {
-            onChange: async evt => {
-                if (!(await binding.set(evt.target.checked, checkbox))) {
+        CheckBox(state, label, {
+            onChange: async event => {
+                if (!(await setter(event.target.checked, checkbox))) {
                     return;
                 }
 
-                evt.target.checked = !evt.target.checked;
+                event.target.checked = !event.target.checked;
             }
         })
     );
@@ -57,36 +66,19 @@ function CheckboxInspector(binding, label = "") {
 }
 
 /**
- * @param {string} title
- * @param {string} className
- * @returns {HTMLElement}
- */
-function TitleInspector(title, className = undefined) {
-    return (
-        h3("i-title" + (className !== undefined ? " " + className : ""), title)
-    );
-}
-
-function HRInspector(className = undefined) {
-    return (
-        div("i-hr" + (className !== undefined ? " " + className : ""), "​") //todo does not display without zero-width-character (?)
-    );
-}
-
-/**
  * @typedef KeyValuePair
  * @property {string} text
  * @property {string} value
  * @property {boolean=} selected
  */
 /**
- * @param {Binding<string>} binding
+ * @param {Setter<string>} setter
  * @param {KeyValuePair[]} radios
  * @param {string} label
  * @returns {HTMLElement}
  */
-function RadioGroupInspector(binding, radios, label = undefined) {
-    const name = std_id(8);
+function RadioGroupInspector(setter, radios, label = undefined) {
+    const name = std_idHtml(8);
     let lastValue = radios
         .reduce(
             (last, current) =>
@@ -97,8 +89,8 @@ function RadioGroupInspector(binding, radios, label = undefined) {
     const radioGroup = (
         div({
             class: "i-radio-group",
-            onChange: async evt => {
-                lastValue = await choiceChangeListener(evt, binding, radioGroup, radioGroup.querySelectorAll(`input[name=${name}]`));
+            onChange: async event => {
+                lastValue = await choiceChangeListener(event, setter, lastValue, radioGroup, radioGroup.querySelectorAll(`input[name=${name}]`));
             }
         }, [
             Optional(label !== undefined,
@@ -121,6 +113,268 @@ function RadioGroupInspector(binding, radios, label = undefined) {
     );
 
     return radioGroup;
+}
+
+/**
+ * @param {string | undefined} state
+ * @param {Setter<string>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function TextAreaInspector(state, setter, label = undefined, placeholder = undefined, props = {}) {
+    const container = div("i-text-area");
+
+    props.onBlur ??= async event => {
+        if (state === event.target.value) {
+            return;
+        }
+
+        if (await setter(event.target.value, parent)) {
+            state = event.target.value;
+            return;
+        }
+
+        event.target.value = state ?? "";
+    };
+
+    props.onKeydown ??= event => {
+        if (!(event.key === "Enter" && event.ctrlKey)) {
+            return;
+        }
+
+        event.target.dispatchEvent(new Event("blur"));
+    }
+
+    if (is(state)) {
+        props.value = state;
+    }
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    const area = jsml.textarea(props, state);
+    const labelElement = LabelFactory(label, area);
+
+    if (placeholder) {
+        area.setAttribute("placeholder", placeholder);
+    }
+
+    container.append(
+        labelElement,
+        area
+    );
+
+    return container;
+}
+
+/**
+ * @param {string | undefined} state
+ * @param {Setter<string>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function TextFieldInspector(state, setter, label = undefined, placeholder = undefined, props = {}) {
+    const container = div("i-text-field");
+
+    props.onBlur ??= async event => {
+        if (state === event.target.value) {
+            return;
+        }
+
+        if (await setter(event.target.value, container)) {
+            state = event.target.value;
+            return;
+        }
+
+        event.target.value = state ?? "";
+    };
+
+    props.onKeydown ??= event => {
+        if (event.key !== "Enter") return;
+        event.target.dispatchEvent(new Event("blur"));
+    };
+
+    if (is(state)) {
+        props.value = state;
+    }
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    props.type = "text";
+    const textField = jsml.input(props);
+    const labelElement = LabelFactory(label, textField);
+
+    container.append(
+        labelElement,
+        textField
+    );
+
+    return container;
+}
+
+/**
+ * @param {number | undefined} state
+ * @param {Setter<string | number>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Content} measurement
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function NumberInspector(state, setter, label = undefined, placeholder = undefined, measurement = undefined, props = {}) {
+    const id = std_idHtml(8);
+    props.id = id;
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    if (is(placeholder)) {
+        props.placeholder = placeholder;
+    }
+
+    if (is(state)) {
+        props.value = state;
+    }
+
+    props.type = "number";
+
+    return (
+        div("i-number", [
+            Optional(is(label), jsml.label({ for: id }, label)),
+            jsml.input(props),
+            typeof measurement === "string"
+                ? span(_, measurement)
+                : measurement
+        ])
+    );
+}
+
+//TODO: create custom date picker
+/**
+ * @param {Date | undefined} state
+ * @param {Setter<Date>} setter
+ * @param {string} label
+ * @param {boolean} isDateTime
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function DateInspector(state, setter, label = undefined, isDateTime = false, props = {}) {
+    const input = jsml.input({
+        type: isDateTime ? "datetime-local" : "date"
+    });
+    input.addEventListener("change", async () => {
+        const date = new Date(input.value);
+        if (state === date) {
+            return;
+        }
+
+        if (await setter(date, input.parentElement)) {
+            state = date;
+            return;
+        }
+
+        input.value = state?.toISOString().slice(0, 16);
+    });
+
+    if (is(state)) {
+        const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+        const localDateTime = new Date(state.getTime() - timezoneOffset);
+        input.value = localDateTime.toISOString().slice(0, 16);
+    }
+
+    return (
+        LabelAndComponentInspector("i-date", label, input)
+    );
+}
+
+/**
+ * @param {Setter<string>} setter
+ * @param {KeyValuePair[]} options
+ * @param {string} label
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
+function SelectInspector(setter, options, label = undefined, className = undefined) {
+    const id = std_idHtml(8);
+    let lastValue = options
+        .reduce(
+            (last, current) => current.selected ? current.value : last,
+            undefined
+        );
+
+    const container = div("i-select dont-force" + (className !== undefined ? (" " + className) : ""));
+    const select = (
+        jsml.select(
+            {
+                onChange: async event => {
+                    lastValue = await choiceChangeListener(event, setter, lastValue, container, select.children);
+                }
+            },
+            options.map(option =>
+                new Option(option.text, option.value, __, option?.selected)
+            ),
+        )
+    );
+
+    jsml_addContent(container, [
+        Optional(is(label), jsml.label({ for: id }, label)),
+        div("select-container", select)
+    ]);
+
+    return container;
+}
+
+/**
+ * @param {string | undefined} state
+ * @param {Setter<string>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {Props} props
+ * @returns {HTMLElement}
+ */
+function ColorPickerInspector(state, setter, label = undefined, placeholder = undefined, props = {}) {
+    if (is(state)) {
+        props.value = state;
+    }
+
+    props.type = "color";
+    const input = jsml.input(props);
+    const container = LabelAndComponentInspector("i-date", label, input, placeholder);
+
+    input.addEventListener("change", async event => {
+        if (state === event.target.value) {
+            return;
+        }
+
+        await setter(event.target.value, container);
+    });
+
+    return container;
+}
+
+/**
+ * @param {string} title
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
+function TitleInspector(title, className = undefined) {
+    return (
+        h3("i-title" + (className !== undefined ? " " + className : ""), title)
+    );
+}
+
+function HRInspector(className = undefined) {
+    return (
+        div("i-hr" + (className !== undefined ? " " + className : ""), "​") //todo does not display without zero-width-character (?)
+    );
 }
 
 /**
@@ -154,7 +408,7 @@ function selectOption(options, value, defaultValue = undefined) {
  * @returns {HTMLElement}
  */
 function LabelAndComponentInspector(className, label, component, placeholder = undefined) {
-    const id = std_id(8);
+    const id = std_idHtml(8);
 
     component.id = id;
     if (placeholder) {
@@ -180,235 +434,10 @@ function LabelFactory(label, elementFor) {
         return;
     }
 
-    const id = std_id(8);
+    const id = std_idHtml(8);
 
     elementFor.id = id;
     return jsml.label({ for: id }, label);
-}
-
-/**
- * @param {Binding<string>} binding
- * @param {string} label
- * @param {string} placeholder
- * @param {Props} props
- * @returns {HTMLElement}
- */
-function TextAreaInspector(binding, label = undefined, placeholder = undefined, props = {}) {
-    const container = div("i-text-area");
-
-    props.onBlur ??= async event => {
-        if (binding.get() === event.target.value) {
-            return;
-        }
-
-        await binding.set(event.target.value, container);
-    };
-
-    props.onKeydown ??= event => {
-        if (!(event.key === "Enter" && event.ctrlKey)) {
-            return;
-        }
-
-        event.target.dispatchEvent(new Event("blur"));
-    };
-
-    const state = binding.get();
-    if (is(state)) {
-        props.value = state;
-    }
-
-    if (is(placeholder)) {
-        props.placeholder = placeholder;
-    }
-
-    const area = jsml.textarea(props, state);
-    const labelElement = LabelFactory(label, area);
-
-    container.append(
-        labelElement,
-        area
-    );
-
-    return container;
-}
-
-/**
- * @param {Binding<string>} binding
- * @param {string} label
- * @param {string} placeholder
- * @param {Props} props
- * @returns {HTMLElement}
- */
-function TextFieldInspector(binding, label = undefined, placeholder = undefined, props = {}) {
-    const container = div("i-text-field");
-
-    props.onBlur ??= async event => {
-        if (binding.get() === event.target.value) {
-            return;
-        }
-
-        await binding.set(event.target.value, container);
-    };
-
-    props.onKeydown ??= event => {
-        if (event.key !== "Enter") return;
-        event.target.dispatchEvent(new Event("blur"));
-    }
-
-    const state = binding.get();
-    if (is(state)) {
-        props.value = state;
-    }
-
-    if (is(placeholder)) {
-        props.placeholder = placeholder;
-    }
-
-    props.type = "text";
-    const textField = jsml.input(props);
-    const labelElement = LabelFactory(label, textField);
-
-    container.append(
-        labelElement,
-        textField
-    );
-
-    return container;
-}
-
-/**
- * @param {Binding<string | number>} binding
- * @param {string} label
- * @param {string} placeholder
- * @param {Content} measurement
- * @param {Props} props
- * @returns {HTMLElement}
- */
-function NumberInspector(binding, label = undefined, placeholder = undefined, measurement = undefined, props = {}) {
-    const id = std_id(8);
-    props.id = id;
-
-    if (is(placeholder)) {
-        props.placeholder = placeholder;
-    }
-
-    const state = binding.get();
-    if (is(state)) {
-        props.value = state;
-    }
-
-    props.type = "number";
-
-    return (
-        div("i-number", [
-            Optional(is(label), jsml.label({ for: id }, label)),
-            jsml.input(props),
-            typeof measurement === "string"
-                ? span(_, measurement)
-                : measurement
-        ])
-    );
-}
-
-//TODO: create custom date picker
-/**
- * @param {Binding<Date>} binding
- * @param {string} label
- * @param {boolean} isDateTime
- * @param {Props} props
- * @returns {HTMLElement}
- */
-function DateInspector(binding, label = undefined, isDateTime = false, props = {}) {
-    const input = jsml.input({
-        type: isDateTime ? "datetime-local" : "date"
-    });
-    input.addEventListener("change", async () => {
-        const date = new Date(input.value);
-
-        if (binding.get() === date) {
-            return;
-        }
-
-        await binding.set(date, input.parentElement);
-    });
-
-    const state = binding.get();
-    if (is(state)) {
-        const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
-        const localDateTime = new Date(state.getTime() - timezoneOffset);
-        input.value = localDateTime.toISOString().slice(0, 16);
-    }
-
-    return (
-        LabelAndComponentInspector("i-date", label, input)
-    );
-}
-
-/**
- * @param {Binding<string>} binding
- * @param {KeyValuePair[]} options
- * @param {string} label
- * @param {string} className
- * @returns {HTMLElement}
- */
-function SelectInspector(binding, options, label = undefined, className = undefined) {
-    const id = std_id(8);
-    let lastValue = options
-        .reduce(
-            (last, current) =>
-                current.selected ? current.value : last,
-            undefined
-        );
-
-    const container = div("i-select dont-force" + (className !== undefined ? (" " + className) : ""));
-
-    const select = (
-        jsml.select(
-            {
-                onChange: async event => {
-                    lastValue = await choiceChangeListener(event, binding, container, select.children);
-                }
-            },
-            options.map(option =>
-                new Option(option.text, option.value, __, option?.selected)
-            ),
-        )
-    );
-
-    jsml_addContent(container, [
-        Optional(is(label), jsml.label({ for: id }, label)),
-        div("select-container", select)
-    ]);
-
-    return container;
-}
-
-/**
- * @param {Binding<string>} binding
- * @param {string} label
- * @param {string} placeholder
- * @param {Props} props
- * @returns {HTMLElement}
- */
-function ColorPickerInspector(binding, label = undefined, placeholder = undefined, props = {}) {
-    const state = binding.get();
-    if (is(state)) {
-        props.value = state;
-    }
-
-    props.type = "color";
-    const input = jsml.input(props);
-    const container = LabelAndComponentInspector("i-date", label, input, placeholder);
-
-    input.addEventListener("change", async event => {
-        if (binding.get() === event.target.value) {
-            return;
-        }
-
-        await binding.set(event.target.value, container);
-    });
-
-    return container;
 }
 
 function NotInspectorAble() {
@@ -447,8 +476,8 @@ class ColorPicker {
         this.#alpha.addEventListener("input", this.onRgbChange("alpha"));
 
         this.#display = this.#rootElement.querySelector(".format");
-        this.#display.addEventListener("input", evt => {
-            const color = this.parseColor(evt.target.value);
+        this.#display.addEventListener("input", event => {
+            const color = this.parseColor(event.target.value);
             if (color === null) {
                 this.#display.classList.add("invalid");
                 return;
@@ -466,7 +495,7 @@ class ColorPicker {
     }
 
     static createColorPicker(inline = false) {
-        const guids = Array(5).fill(null).map(() => guid(true));
+        const guids = Array(5).fill(null).map(() => std_idHtml(8));
 
         return (
             div("color-picker", [
@@ -481,47 +510,52 @@ class ColorPicker {
                     div("row", [
                         jsml.label({ for: guids[0] }, "R:"),
                         jsml.input({
+                            class: "color-picker-r",
                             type: "range",
                             min: "0",
                             max: "255",
                             value: "0",
                             id: guids[0]
-                        }, "color-picker-r")
+                        })
                     ]),
                     div("row", [
                         jsml.label({ for: guids[1] }, "G:"),
                         jsml.input({
+                            class: "color-picker-g",
+                            type: "range",
                             min: "0",
                             max: "255",
                             value: "0",
                             id: guids[1]
-                        }, "color-picker-g")
+                        })
                     ]),
                     div("row", [
                         jsml.label({ for: guids[2] }, "B:"),
                         jsml.input({
+                            class: "color-picker-b",
                             type: "range",
                             min: "0",
                             max: "255",
                             value: "0",
                             id: guids[2]
-                        }, "color-picker-b")
+                        })
                     ]),
                     div("row", [
                         jsml.label({ for: guids[3] }, "A:"),
                         jsml.input({
+                            class: "color-picker-a",
                             type: "range",
                             min: "0",
                             max: "1",
                             step: "0.01",
                             value: "0",
                             id: guids[3]
-                        }, "color-picker-a")
+                        })
                     ])
                 ]),
                 div("row", [
                     jsml.label({ class: "format-label", for: guids[4] }),
-                    jsml.input({ type: "text", id: guids[4] }, "format")
+                    jsml.input({ class: "format", type: "text", id: guids[4] })
                 ]),
                 Optional(inline === false,
                     div("controls", [
@@ -552,8 +586,8 @@ class ColorPicker {
     }
 
     onRgbChange(channel) {
-        return evt => {
-            this.setChannel(channel, evt.target.value);
+        return event => {
+            this.setChannel(channel, event.target.value);
             this.displayCurrentColor();
             this.#rootElement.dispatchEvent(new CustomEvent("pick", { detail: this.getCurrentColor() }));
         };

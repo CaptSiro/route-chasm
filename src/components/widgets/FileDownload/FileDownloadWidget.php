@@ -12,6 +12,10 @@ class FileDownloadWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WFileDownload";
+    }
+
     public function isVisible(): bool {
         return true;
     }

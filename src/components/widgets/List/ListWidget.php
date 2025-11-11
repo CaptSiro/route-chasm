@@ -12,6 +12,10 @@ class ListWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WListWidget";
+    }
+
     public function isVisible(): bool {
         return true;
     }

@@ -34,4 +34,12 @@ class Css implements Importer, View {
     public function fileHead(string $file): string {
         return PHP_EOL."/* FILE ". basename($file) ." */".PHP_EOL;
     }
+
+    public function begin(): ?string {
+        return null;
+    }
+
+    public function end(): ?string {
+        return null;
+    }
 }

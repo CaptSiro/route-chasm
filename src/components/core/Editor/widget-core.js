@@ -775,43 +775,43 @@ class WidgetRegistry {
      * @param {...string} classNames
      * @return {Promise<Awaited<void>[]>}
      */
-    request(...classNames) {
-        let requestClassNames = "";
-        const widgetPromises = [];
-
-        for (const className of classNames) {
-            if (this.exists(className)) continue;
-
-            requestClassNames += className + ",";
-            widgetPromises.push(
-                new Promise(resolve => this.on(className, resolve))
-            );
-        }
-
-        if (requestClassNames === "") {
-            return Promise.resolve([]);
-        }
-
-        const subtrahend = Object.keys(this.#map);
-        const query = "?widgets=" + requestClassNames.substring(0, requestClassNames.length - 1) + (subtrahend.length !== 0
-            ? `&subtrahend=${subtrahend.join(",")}`
-            : "");
-
-        AJAX.get("/bundler/css/" + query, TextHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
-            .then(text => {
-                document.head.appendChild(
-                    Component("style", __, HTML(text))
-                );
-            });
-        AJAX.get("/bundler/js/" + query, TextHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
-            .then(text => {
-                document.head.appendChild(
-                    Component("script", __, HTML(text))
-                );
-            });
-
-        return Promise.all(widgetPromises);
-    }
+    // request(...classNames) {
+    //     let requestClassNames = "";
+    //     const widgetPromises = [];
+    //
+    //     for (const className of classNames) {
+    //         if (this.exists(className)) continue;
+    //
+    //         requestClassNames += className + ",";
+    //         widgetPromises.push(
+    //             new Promise(resolve => this.on(className, resolve))
+    //         );
+    //     }
+    //
+    //     if (requestClassNames === "") {
+    //         return Promise.resolve([]);
+    //     }
+    //
+    //     const subtrahend = Object.keys(this.#map);
+    //     const query = "?widgets=" + requestClassNames.substring(0, requestClassNames.length - 1) + (subtrahend.length !== 0
+    //         ? `&subtrahend=${subtrahend.join(",")}`
+    //         : "");
+    //
+    //     AJAX.get("/bundler/css/" + query, TextHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+    //         .then(text => {
+    //             document.head.appendChild(
+    //                 Component("style", __, HTML(text))
+    //             );
+    //         });
+    //     AJAX.get("/bundler/js/" + query, TextHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+    //         .then(text => {
+    //             document.head.appendChild(
+    //                 Component("script", __, HTML(text))
+    //             );
+    //         });
+    //
+    //     return Promise.all(widgetPromises);
+    // }
 
 
 

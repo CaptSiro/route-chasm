@@ -70,7 +70,6 @@ class SideLoader implements View {
 
     protected Setting $hashLength;
     protected Setting $maxRetries;
-    protected Setting $addFileNames;
     protected bool $initialized;
 
 
@@ -103,13 +102,6 @@ class SideLoader implements View {
         }
 
         $this->maxRetries = $retries;
-
-        $this->addFileNames = Setting::fromName(
-            self::SETTING_ADD_FILE_NAMES,
-            true,
-            true,
-            ['editable' => true]
-        );
     }
 
 
@@ -199,7 +191,9 @@ class SideLoader implements View {
                     HttpHeader::CONTENT_TYPE => $importer->getFileMimeType()
                 ]);
 
+                $response->send($importer->begin(), false);
                 $files = $request->getUrl()->getQuery()->getStrict('files');
+
                 if (!str_contains($files, self::FILE_SEPARATOR)) {
                     $entry = SideLoaderRecord::fromHash($files);
                     if (is_null($entry)) {
@@ -223,6 +217,7 @@ class SideLoader implements View {
                     $response->readFile($entry->path, doFlush: false);
                 }
 
+                $response->send($importer->end(), false);
                 $response->flush();
             })
                 ->query('type', Ident::getInstance())

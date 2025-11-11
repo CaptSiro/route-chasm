@@ -9,5 +9,9 @@ interface Importer {
 
     public function getFileMimeType(): string;
 
-    public function fileHead(string $file): string;
+    public function fileHead(string $file): ?string;
+
+    public function begin(): ?string;
+
+    public function end(): ?string;
 }

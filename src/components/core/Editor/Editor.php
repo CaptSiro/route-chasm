@@ -155,14 +155,14 @@ class Editor extends ContainerContent {
      * @return array<string, Widget>
      */
     public function explodeWidgets(): array {
-        $widgets = [];
+        $ret = [];
 
         foreach ($this->widgets as $widget) {
-            $widgets[$widget->getName()] = $widget;
-            $this->explodeWidget($widget, $widgets);
+            $ret[$widget->getName()] = $widget;
+            $this->explodeWidget($widget, $ret);
         }
 
-        return $widgets;
+        return $ret;
     }
 
     /**
@@ -172,7 +172,7 @@ class Editor extends ContainerContent {
      */
     protected function explodeWidget(Widget $widget, array &$accumulator): void {
         foreach ($widget->getDependencies() as $dependency) {
-            $accumulator[$widget->getName()] = $dependency;
+            $accumulator[$dependency->getName()] = $dependency;
             $this->explodeWidget($dependency, $accumulator);
         }
     }

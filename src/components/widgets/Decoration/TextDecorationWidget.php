@@ -12,6 +12,10 @@ class TextDecorationWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WTextDecoration";
+    }
+
     public function isVisible(): bool {
         return false;
     }

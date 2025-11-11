@@ -13,6 +13,10 @@ class HeaderWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WHeader";
+    }
+
     public function isVisible(): bool {
         return false;
     }

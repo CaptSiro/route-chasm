@@ -185,6 +185,7 @@ function std_randomItem(array) {
 
 const STD_ID_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 const STD_ID_CHARSET_SAFE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const STD_HTML_ID_CHARSET_FIRST = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const STD_ID_POOL = new Set();
 
 /**
@@ -192,17 +193,18 @@ const STD_ID_POOL = new Set();
  * The generated ID is guaranteed to be unique until released.
  *
  * @param {number} length - Desired length of the identifier (recommended >= 6).
+ * @param {string} charsetFirst
  * @param {string} charset
  * @param {Set<string>} pool
  * @returns {string} A unique Base64-safe identifier.
  */
-function std_id(length, charset = STD_ID_CHARSET, pool = STD_ID_POOL) {
+function std_id(length, charsetFirst = STD_ID_CHARSET, charset = STD_ID_CHARSET, pool = STD_ID_POOL) {
     let id;
 
     do {
-        id = '';
+        id = std_randomItem(charsetFirst);
 
-        for (let i = 0; i < length; i++) {
+        for (let i = 1; i < length; i++) {
             id += std_randomItem(charset);
         }
 
@@ -210,6 +212,10 @@ function std_id(length, charset = STD_ID_CHARSET, pool = STD_ID_POOL) {
 
     pool.add(id);
     return id;
+}
+
+function std_idHtml(length, pool = STD_ID_POOL) {
+    return std_id(length, STD_HTML_ID_CHARSET_FIRST, STD_ID_CHARSET, pool);
 }
 
 /**
@@ -408,6 +414,14 @@ function std_dom_onMount(selector) {
 }
 
 
+
+/**
+ * @param {() => void} listener
+ * @param {boolean} once
+ */
+function std_onLoad(listener, once = true) {
+    window.addEventListener("scriptLoad", listener, { once });
+}
 
 /**
  * @param {Record<string, any>} styles

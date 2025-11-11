@@ -14,6 +14,10 @@ class TextEditorWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WTextEditor";
+    }
+
     public function isVisible(): bool {
         return false;
     }

@@ -12,6 +12,10 @@ class DividerWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WDivider";
+    }
+
     public function isVisible(): bool {
         return true;
     }

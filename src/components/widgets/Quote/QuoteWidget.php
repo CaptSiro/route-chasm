@@ -13,6 +13,10 @@ class QuoteWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WQuote";
+    }
+
     public function isVisible(): bool {
         return true;
     }

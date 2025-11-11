@@ -13,6 +13,10 @@ class ListItemWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WListItem";
+    }
+
     public function isVisible(): bool {
         return false;
     }

@@ -3,6 +3,8 @@
 namespace components\widgets;
 
 interface Widget {
+    public function exportClass(): string;
+
     public function isVisible(): bool;
 
     public function getIcon(): string;

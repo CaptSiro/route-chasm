@@ -137,18 +137,18 @@ function editor_viewport_setMode(arg) {
 
 
 //? widget menu
-const widgetSelect = $("#widget-select-mount");
+const editor_widgetSelect = $("#widget-select-mount");
 /** @type {HTMLElement} */
-let selectedWidget = undefined;
-let isInSearchMode = false;
-let currentCmd;
+let editor_selectedWidget = undefined;
+let editor_isInSearchMode = false;
+let editor_currentCmd;
 
 /**
  * @param {boolean} isInSearch
  */
 function editor_setSearchMode(isInSearch) {
-    isInSearchMode = isInSearch;
-    widgetSelect.classList.toggle("search-mode", isInSearch);
+    editor_isInSearchMode = isInSearch;
+    editor_widgetSelect.classList.toggle("search-mode", isInSearch);
 
     if (isInSearch === false) {
         $$(".not-search-satisfactory, .search-satisfactory").forEach(e => {
@@ -162,25 +162,25 @@ function editor_setSearchMode(isInSearch) {
  * @param {boolean} direction true => Up; false => Down
  */
 function editor_moveSelection(direction) {
-    if (selectedWidget === undefined) {
-        const widgetPool = isInSearchMode
-            ? widgetSelect.querySelectorAll(".widget-option.search-satisfactory")
-            : widgetSelect.querySelectorAll(".widget-option");
+    if (editor_selectedWidget === undefined) {
+        const widgetPool = editor_isInSearchMode
+            ? editor_widgetSelect.querySelectorAll(".widget-option.search-satisfactory")
+            : editor_widgetSelect.querySelectorAll(".widget-option");
 
-        selectedWidget = widgetPool[!direction ? 0 : (widgetPool.length - 1)];
-        selectedWidget.classList.add("selected");
+        editor_selectedWidget = widgetPool[!direction ? 0 : (widgetPool.length - 1)];
+        editor_selectedWidget.classList.add("selected");
         return;
     }
 
-    selectedWidget.classList.remove("selected");
+    editor_selectedWidget.classList.remove("selected");
 
     /** @type {HTMLElement[]} */
-    let selectionPool = Array.from(widgetSelect.querySelectorAll(".widget-option"));
+    let selectionPool = Array.from(editor_widgetSelect.querySelectorAll(".widget-option"));
     if (direction) {
         selectionPool = selectionPool.reverse();
     }
 
-    let pointer = selectionPool.indexOf(selectedWidget);
+    let pointer = selectionPool.indexOf(editor_selectedWidget);
 
     do {
         pointer++;
@@ -188,15 +188,15 @@ function editor_moveSelection(direction) {
             pointer = 0;
         }
 
-        if (isInSearchMode === false || selectionPool[pointer].classList.contains("search-satisfactory")) {
-            selectedWidget = selectionPool[pointer];
+        if (editor_isInSearchMode === false || selectionPool[pointer].classList.contains("search-satisfactory")) {
+            editor_selectedWidget = selectionPool[pointer];
             break;
         }
-    } while (selectionPool[pointer] !== selectedWidget);
+    } while (selectionPool[pointer] !== editor_selectedWidget);
 
-    selectedWidget.classList.add("selected");
+    editor_selectedWidget.classList.add("selected");
 
-    std_dom_scrollIntoView(selectedWidget, widgetSelect);
+    std_dom_scrollIntoView(editor_selectedWidget, editor_widgetSelect);
 }
 
 
@@ -260,16 +260,97 @@ const defs = $("#icon-definitions");
 //         );
 //     }
 // }));
-window.addEventListener("load", async () => {
-    const dataElement = $("#page-data");
-    todo('Implement editor-data loading')
-    const root = await WRoot.build(JSON.parse(dataElement.textContent), null, true);
+
+
+
+async function editor_loadContent() {
+    const dataElement = $("#editor-data");
+    let data = dataElement.textContent.trim();
+    const root = await WRoot.buildAsync(data, null, true);
 
     dataElement.remove();
+
     window.rootWidget = root;
     document.widgetElement = root;
-    document.querySelector("#viewport").appendChild(root.rootElement);
+
+    const vp = document.querySelector("#viewport");
+    vp.appendChild(root.rootElement);
+
     root.rootElement.click();
+}
+
+/*
+<div class="widget-description" data-is-visible="true" data-name="Code" data-category="Text">
+    <div class="widget-icon">
+        <i class="nf nf-fa-code"></i>    </div>
+</div>
+ */
+async function editor_loadWidgets() {
+    const widgets = $("#widgets");
+    const categories = Array.from(widgets.children)
+        .filter(x => is(x.dataset.isVisible) && x.dataset.isVisible === "true")
+        .reduce((map, x) => {
+            const description = {
+                isVisible: x.dataset.isVisible === "true",
+                name: x.dataset.name,
+                category: x.dataset.category,
+                icon: $(".widget-icon", x),
+            };
+
+            description.searchIndex = description.category + '_' + description.name;
+
+            if (map.has(description.category)) {
+                map.get(description.category).push(description);
+            } else {
+                map.set(description.category, [description]);
+            }
+
+            return map;
+        }, new Map());
+
+    editor_widgetSelect.textContent = "";
+    for (const category of Array.from(categories.keys()).sort()) {
+        editor_widgetSelect.appendChild(
+            jsml.div("widget-category", [
+                jsml.div("label",
+                    jsml.h3(_, category)
+                ),
+                jsml.div("content",
+                    categories.get(category).map(x =>
+                        jsml.div(
+                            {
+                                class: "widget-option",
+                                "data-search": x.searchIndex,
+                                "data-class": x.class,
+                                onClick: function () {
+                                    if (editor_currentCmd === undefined) return;
+                                    editor_currentCmd.replaceSelf(widgets.get(x.class).default(editor_currentCmd.parentWidget, true));
+                                    editor_widgetSelect.style.visibility = "hidden";
+                                },
+                                onMouseover: function () {
+                                    editor_widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
+                                    editor_selectedWidget = this;
+                                    this.classList.add("selected");
+                                }
+                            },
+                            [
+                                x.icon,
+                                jsml.span(_, x.name)
+                            ]
+                        ))
+                )
+            ])
+        );
+    }
+}
+
+std_onLoad(() => {
+    window.addEventListener("load", async () => {
+        await Promise.all([
+            editor_loadContent(),
+            editor_loadWidgets()
+        ])
+    }, { once: true });
 });
 
 
@@ -288,8 +369,8 @@ editor_viewport_onResize(() => {
 
     setTimeout(() => {
         const rect = widgetSelectAnchor.getBoundingClientRect();
-        widgetSelect.style.left = (rect.x - widgetSelectAnchor.parentElement.getBoundingClientRect().x) + "px";
-        widgetSelect.style.top = (widgetSelectAnchor.offsetTop + rect.height) + "px";
+        editor_widgetSelect.style.left = (rect.x - widgetSelectAnchor.parentElement.getBoundingClientRect().x) + "px";
+        editor_widgetSelect.style.top = (widgetSelectAnchor.offsetTop + rect.height) + "px";
     }, 0);
 });
 
@@ -298,15 +379,15 @@ editor_viewport_onResize(() => {
  */
 function editor_moveWidgetSelect(to) {
     if ("widget" in to) {
-        currentCmd = to.widget;
+        editor_currentCmd = to.widget;
     }
 
     to.scrollIntoView();
     widgetSelectAnchor = to;
 
     const toBoundingBox = to.getBoundingClientRect();
-    widgetSelect.style.left = (toBoundingBox.x - to.parentElement.getBoundingClientRect().x) + "px";
-    widgetSelect.style.top = (to.offsetTop + toBoundingBox.height) + "px";
+    editor_widgetSelect.style.left = (toBoundingBox.x - to.parentElement.getBoundingClientRect().x) + "px";
+    editor_widgetSelect.style.top = (to.offsetTop + toBoundingBox.height) + "px";
     // const mountBoundingBox = viewportMount.getBoundingClientRect();
     // const selectBoundingBox = widgetSelect.getBoundingClientRect();
     //
@@ -326,7 +407,7 @@ function editor_moveWidgetSelect(to) {
     // widgetSelect.style.left = left + "%";
     // widgetSelect.style.top = top + "%";
 
-    widgetSelect.style.visibility = "visible";
+    editor_widgetSelect.style.visibility = "visible";
 }
 
 

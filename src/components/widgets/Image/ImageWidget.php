@@ -12,6 +12,10 @@ class ImageWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WImage";
+    }
+
     public function isVisible(): bool {
         return true;
     }

@@ -12,6 +12,10 @@ class LinkWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WLink";
+    }
+
     public function isVisible(): bool {
         return true;
     }

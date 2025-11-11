@@ -2,6 +2,17 @@
  * @template T
  */
 class Binding {
+    /**
+     * @template V
+     * @param {V[]} values
+     * @returns {BindingValidator<?>}
+     */
+    static setValidator(values) {
+        return value => values.includes(value) ? null : `Value '${value}' is not recognised`;
+    }
+
+
+
     /** @type {T|null} */
     #value;
     /** @type {BindingValidator<T>} */
@@ -24,6 +35,7 @@ class Binding {
      */
     onChange(listener) {
         this.#listeners.push(listener);
+        return this;
     }
 
     /**

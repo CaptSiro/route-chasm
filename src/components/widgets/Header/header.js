@@ -22,40 +22,43 @@ class WHeader extends Widget {
         this.childSupport = this.childSupport;
 
         const heading = jsml.h1(
-            { class: "page-title", title: editable ? "Edit->Website Properties->Title" : webpage.title },
-            webpage.title
+            { class: "page-title", title: editable ? "Edit->Properties->Title" : "" /* webpage.title */ },
+            "Title",
+            // webpage.title
         );
 
         const headingContainer = (
-            jsml.div("heading-container", [
-                heading,
-                jsml.span(__, new Date(webpage.timeCreated).toLocaleDateString("en-GB", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit"
-                }))
-            ], {
-                attributes: {
-                    style: `text-align: ${json.titleAlign ?? "center"};color: ${json.titleColor ?? "var(--text-color-0)"}`
-                }
-            })
+            jsml.div(
+                {
+                    style: `text-align: ${json.titleAlign ?? "center"};color: ${json.titleColor ?? "var(--text-color-0)"}`,
+                    class: "heading-container"
+                },
+                [
+                    heading,
+                    // jsml.span(_, new Date(webpage.timeCreated).toLocaleDateString("en-GB", {
+                    //     year: "numeric",
+                    //     month: "2-digit",
+                    //     day: "2-digit"
+                    // }))
+                ]
+            )
         );
 
         const root = this.getRoot();
-        if (root.json?.isHeaderIncluded !== true) {
+        if (root.json?.isHeaderIncluded === false) {
             this.rootElement.classList.add("display-none");
         }
 
-        if (root.json?.webpage?.thumbnail !== undefined) {
-            this.rootElement.style.backgroundImage = `url(${AJAX.SERVER_HOME}/file/${webpage.src}/${root.json.webpage.thumbnail})`;
-        }
+        // if (root.json?.webpage?.thumbnail !== undefined) {
+        //     this.rootElement.style.backgroundImage = `url(${AJAX.SERVER_HOME}/file/${webpage.src}/${root.json.webpage.thumbnail})`;
+        // }
 
         root.addJSONListener?.call(root, json => {
-            heading.textContent = json.webpage.title;
+            // heading.textContent = json.webpage.title;
             this.rootElement.classList.toggle("display-none", !json.isHeaderIncluded);
-            this.rootElement.style.backgroundImage = json.webpage.thumbnail !== undefined
-                ? `url(${AJAX.SERVER_HOME}/file/${webpage.src}/${json.webpage.thumbnail})`
-                : "";
+            // this.rootElement.style.backgroundImage = json.webpage.thumbnail !== undefined
+            //     ? `url(${AJAX.SERVER_HOME}/file/${webpage.src}/${json.webpage.thumbnail})`
+            //     : "";
             headingContainer.style.textAlign = json.headerTitleAlign ?? "center";
             headingContainer.style.color = json.headerTitleColor ?? "var(--text-color-0)";
         });
@@ -73,14 +76,14 @@ class WHeader extends Widget {
                 });
             };
 
-            onViewportResize(resizeListener);
+            editor_viewport_onResize(resizeListener);
 
-            if (viewportDimensions !== undefined) {
-                resizeListener(viewportDimensions);
+            if (editor_viewport_dimension !== undefined) {
+                resizeListener(editor_viewport_dimension);
                 return;
             }
 
-            viewportResize();
+            editor_viewport_resize();
         }
     }
 

@@ -109,9 +109,12 @@ class Response {
      *
      * Sends string data to user.
      */
-    public function send(string $text, bool $doFlushResponse = true): void {
+    public function send(?string $text, bool $doFlushResponse = true): void {
         $this->generateHeaders();
-        echo $text;
+
+        if (!is_null($text)) {
+            echo $text;
+        }
 
         if (!$doFlushResponse) {
             return;

@@ -3,16 +3,18 @@
 namespace components\widgets\Command;
 
 use components\core\Icon;
-use components\widgets\RegisterWidget;
 use components\widgets\Widget;
 use core\ResourceLoader;
 use core\Singleton;
 
-#[RegisterWidget]
 class CommandWidget implements Widget {
     use Singleton, ResourceLoader;
 
 
+
+    public function exportClass(): string {
+        return "WCommand";
+    }
 
     public function isVisible(): bool {
         return false;

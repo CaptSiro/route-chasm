@@ -19,10 +19,11 @@ class WPage extends ContainerWidget {
     constructor(json, parent, editable = false) {
         //! NOTE: page widget does not import any children widget. That is root's job
         super(
-            Div("w-page" + (json.forceFullscreen ? " fullscreen" : "")),
+            jsml.div("w-page" + (json.forceFullscreen ? " fullscreen" : "")),
             parent,
             editable
         );
+
         this.removeMargin();
         this.createConfinedContainer();
         this.childSupport = this.childSupport;
@@ -82,8 +83,8 @@ class WPage extends ContainerWidget {
     }
 
     /** @override */
-    remove() {
-        console.error("WRoot cannot be removed.");
+    remove(doRemoveFromRootElement, doAnimate) {
+        console.error("WPage cannot be removed.");
     }
 }
 

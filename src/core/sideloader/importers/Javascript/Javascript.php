@@ -31,7 +31,15 @@ class Javascript implements Importer, View {
         return self::FILE_MIME_TYPE;
     }
 
-    public function fileHead(string $file): string {
+    public function fileHead(string $file): ?string {
         return PHP_EOL."// FILE ". basename($file) .PHP_EOL;
+    }
+
+    public function begin(): ?string {
+        return null;
+    }
+
+    public function end(): ?string {
+        return "window.dispatchEvent(new CustomEvent('scriptLoad'));";
     }
 }

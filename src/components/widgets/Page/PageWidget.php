@@ -12,6 +12,10 @@ class PageWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WPage";
+    }
+
     public function isVisible(): bool {
         return true;
     }

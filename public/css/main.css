@@ -121,6 +121,20 @@ button:disabled:hover {
     color: var(--text-0);
 }
 
+.dragging {
+    caret-color: transparent !important;
+}
+
+.display-none {
+    display: none !important;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .column {
     display: flex;
     flex-direction: column;

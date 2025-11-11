@@ -13,6 +13,10 @@ class TextWidget implements Widget {
 
 
 
+    public function exportClass(): string {
+        return "WText";
+    }
+
     public function isVisible(): bool {
         return true;
     }
