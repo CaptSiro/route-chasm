@@ -17,7 +17,7 @@ class WListItem extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        super(Component("li", "w-list-item"), parent, editable);
+        super(jsml.li("w-list-item"), parent, editable);
         this.childSupport = 1;
         this.removeMargin();
 
@@ -30,7 +30,7 @@ class WListItem extends Widget {
         this.#textEditor.addListener("remove", () => this.remove());
         this.#textEditor.addListener("next-default", () => this.parentWidget?.nextDefault.call(this.parentWidget, this));
 
-        this.appendWidget(this.#textEditor);
+        const result = this.appendWidget(this.#textEditor);
 
         if (editable) {
             this.appendEditGui();
@@ -62,7 +62,7 @@ class WListItem extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

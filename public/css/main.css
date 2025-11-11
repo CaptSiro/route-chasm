@@ -14,6 +14,9 @@
     --accent-2: #c75c38;
     --accent-3: #d17147;
 
+    --success: #0aa25e;
+    --error: #b21351;
+
     --border-radius: 8px;
     --border-radius-smaller: 4px;
     --gap: 16px;
@@ -121,6 +124,18 @@ button:disabled:hover {
     color: var(--text-0);
 }
 
+.transition-background {
+    transition: background-color 500ms linear;
+}
+
+.validated {
+    background-color: var(--success) !important;
+}
+
+.rejected {
+    background-color: var(--error) !important;
+}
+
 .dragging {
     caret-color: transparent !important;
 }
@@ -152,20 +167,21 @@ button:disabled:hover {
 }
 
 
-
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-track {
     background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
     background: var(--accent-0);
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-2);
 }
-
 
 
 .hide {
@@ -175,7 +191,6 @@ button:disabled:hover {
 .opacity-0 {
     opacity: 0 !important;
 }
-
 
 
 .terminal {
@@ -188,7 +203,6 @@ button:disabled:hover {
     color: #aae568;
     overflow: auto;
 }
-
 
 
 .dropdown.animate {

@@ -37,17 +37,18 @@ class WImage extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        const image = Img(
-            json.src !== undefined
+        const image = jsml.img({
+            class: "w-image",
+            src: json.src !== undefined
                 ? WImage.createSourceURL(json.src)
-                : AJAX.SERVER_HOME + "/public/images/backgrounds-mono/0.png",
-            json.alt ?? "Unnamed image",
-            "w-image",
-            { attributes: { draggable: "false" } }
-        );
-        const imageContainer = Div("w-image-container", image);
+                : "",
+            alt: json.alt ?? "Unnamed image",
+            draggable: "false"
+        });
+
+        const imageContainer = jsml.div("w-image-container", image);
         super(
-            Div("w-image-mount", imageContainer),
+            jsml.div("w-image-mount", imageContainer),
             parent,
             editable
         );
@@ -59,7 +60,7 @@ class WImage extends Widget {
 
         json.position = (json.position ?? [50, 50])
             .filter(any => typeof any === "number")
-            .map(number => clamp(0, 100, number));
+            .map(number => std_clamp(0, 100, number));
 
         this.#position = json.position ?? [50, 50];
         this.#imageElement.style.objectPosition = this.#position[0] + "% " + this.#position[1] + "%";
@@ -75,8 +76,8 @@ class WImage extends Widget {
             this.#resizeable.on("resize", (width, height) => {
                 const oldDimensions = this.#dimensions.value;
                 this.#dimensions.value = [
-                    clamp(0.05, 1, width / this.rootElement.getBoundingClientRect().width),
-                    clamp(16, 4096, height),
+                    std_clamp(0.05, 1, width / this.rootElement.getBoundingClientRect().width),
+                    std_clamp(16, 4096, height),
                     oldDimensions[2]
                 ];
             });
@@ -95,10 +96,10 @@ class WImage extends Widget {
 
                 if (aspectRatio > naturalAspectRatio) {
                     // recalculate only y object position
-                    this.#position[1] = clamp(0, 100, this.#position[1] - (evt.movementY / (aspectRatio * naturalAspectRatio / 2.5)));
+                    this.#position[1] = std_clamp(0, 100, this.#position[1] - (evt.movementY / (aspectRatio * naturalAspectRatio / 2.5)));
                 } else {
                     // recalculate only x object position
-                    this.#position[0] = clamp(0, 100, this.#position[0] - (evt.movementX * (aspectRatio / naturalAspectRatio / 2.5)));
+                    this.#position[0] = std_clamp(0, 100, this.#position[0] - (evt.movementX * (aspectRatio / naturalAspectRatio / 2.5)));
                 }
 
                 this.#imageElement.style.objectPosition = this.#position[0] + "% " + this.#position[1] + "%";
@@ -130,25 +131,30 @@ class WImage extends Widget {
         });
 
         new Promise(resolve => {
-            const id = guid(true);
+            const id = std_id_html(8);
             this.rootElement.id = id;
-            untilElement("#" + id)
+            std_dom_onMount("#" + id)
                 .then(() => {
                     this.rootElement.id = undefined;
-                    freeID(id);
+                    std_id_free(id);
                     resolve();
                 });
-        }).then(() => this.#dimensions.value = [clamp(0.05, 1, json.width) ?? 0.70, clamp(16, 4096, json.height) ?? 400, clamp(0, 50, json.borderRadius) ?? 0, json.aspectRatio]);
+        }).then(() => this.#dimensions.value = [
+            std_clamp(0.05, 1, json.width) ?? 0.70,
+            std_clamp(16, 4096, json.height) ?? 400,
+            std_clamp(0, 50, json.borderRadius) ?? 0,
+            json.aspectRatio
+        ]);
 
 
         /**
-         * @param {ViewportDimensions} dimensions
+         * @param {EditorViewportDimension} dimensions
          */
         const resizeListener = async dimensions => {
             if (this.#dimensions.value[3] === undefined || typeof this.#dimensions.value[3] !== "number") return;
 
             if (editable) {
-                await sleep((dimensions.duration ?? 250) + 10);
+                await std_wait((dimensions.duration ?? 250) + 10);
             }
 
             const oldDimensions = this.#dimensions.value;
@@ -159,14 +165,14 @@ class WImage extends Widget {
             this.setImageDimensions(oldDimensions[0], oldDimensions[1], oldDimensions[2]);
         };
 
-        onViewportResize(resizeListener);
+        editor_viewport_onResize(resizeListener);
 
-        if (viewportDimensions !== undefined) {
-            resizeListener(viewportDimensions);
+        if (editor_viewport_dimension !== undefined) {
+            resizeListener(editor_viewport_dimension).then();
             return;
         }
 
-        viewportResize();
+        editor_viewport_resize();
     }
 
     setImageDimensions(widthPercentage, height, borderRadius) {
@@ -194,7 +200,8 @@ class WImage extends Widget {
      * @return {string}
      */
     static createSourceURL(src) {
-        return `${AJAX.SERVER_HOME}/file/${webpage.src}/${src}`;
+        // return `${AJAX.SERVER_HOME}/file/${webpage.src}/${src}`;
+        return "";
     }
 
     /**
@@ -224,7 +231,7 @@ class WImage extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return [
@@ -236,22 +243,25 @@ class WImage extends Widget {
 
             TextFieldInspector(this.#json.value.alt, (value, parentElement) => {
                 this.#json.setProperty("alt", value);
-                validated(parentElement);
+                std_dom_validated(parentElement);
                 return true;
-            }, "Text description:"),
+            }, "Text description"),
 
-            Div("i-row", [
-                Span(__, "Image:"),
-                Button("button-like-main", "Select", evt => {
-                    const win = showWindow("file-select");
-                    win.dataset.multiple = "false";
-                    win.dataset.fileType = "image";
-                    win.dispatchEvent(new Event("fetch"));
-                    win.onsubmit = submitEvent => {
-                        this.#json.setProperty("src", submitEvent.detail[0].serverName);
-                        validated(evt.target.parentElement);
-                    };
-                })
+            jsml.div("i-row", [
+                jsml.span(_, "Image:"),
+                jsml.button({
+                    class: "button-like-main",
+                    onClick: event => {
+                        // const win = showWindow("file-select");
+                        // win.dataset.multiple = "false";
+                        // win.dataset.fileType = "image";
+                        // win.dispatchEvent(new Event("fetch"));
+                        // win.onsubmit = submitEvent => {
+                        //     this.#json.setProperty("src", submitEvent.detail[0].serverName);
+                        //     std_dom_validated(evt.target.parentElement);
+                        // };
+                    }
+                }, "Select")
             ])
         ];
     }
@@ -274,7 +284,7 @@ class WImage extends Widget {
     }
 
     focus() {
-        inspect(this.inspectorHTML, this);
+        editor_inspect(this.inspectorHTML, this);
     }
 }
 

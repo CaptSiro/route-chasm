@@ -17,7 +17,7 @@ class PageWidget implements Widget {
     }
 
     public function isVisible(): bool {
-        return true;
+        return false;
     }
 
     public function getIcon(): string {

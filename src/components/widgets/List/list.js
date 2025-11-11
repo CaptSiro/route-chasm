@@ -21,7 +21,7 @@ class WList extends ContainerWidget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        super(Component("ul", "w-list"), parent, editable, WListItem, false);
+        super(jsml.ul("w-list"), parent, editable, WListItem, false);
         this.childSupport = this.childSupport;
         this.createConfinedContainer();
 
@@ -36,7 +36,7 @@ class WList extends ContainerWidget {
             return;
         }
 
-        this.#addItems(json.items);
+        this.#addItems(json.items).then();
 
         if (json.type) {
             this.rootElement.style.setProperty("--type", json.listStyleType);
@@ -78,7 +78,7 @@ class WList extends ContainerWidget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return [
@@ -142,7 +142,7 @@ class WList extends ContainerWidget {
     }
 
     focus() {
-        inspect(this.inspectorHTML, this);
+        editor_inspect(this.inspectorHTML, this);
         this.children[this.children.length - 1].focus();
     }
 
@@ -153,7 +153,9 @@ class WList extends ContainerWidget {
     }
 
     placeCommandBlock(after) {
-        if (document?.widgetElement.editable !== true) return;
+        if (document?.widgetElement.editable !== true) {
+            return;
+        }
 
         const indexOfAfter = this.children.indexOf(after);
 

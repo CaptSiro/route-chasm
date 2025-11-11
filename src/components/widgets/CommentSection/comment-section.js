@@ -145,7 +145,7 @@ class WCommentSection extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

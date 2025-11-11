@@ -12,7 +12,7 @@ body {
 }
 
 .gui > button,
-.gui > .button-like-main {
+.gui > .button {
     font-size: 20px !important;
     padding: 0 !important;
     border-radius: 0 !important;
@@ -37,7 +37,7 @@ body {
 }
 
 .edit-controls .drag-handle * {
-    color: var(--text-color-opposite-0) !important;
+    color: var(--text-0) !important; /* TODO text color opposite */
 }
 
 .edit-controls .drag-handle.ff-fix::after {
@@ -65,7 +65,7 @@ body {
 .drag-hint {
     width: 85%;
     height: 0;
-    background-color: var(--container-opposite-3);
+    background-color: var(--accent-3);
     margin: 2px auto;
 
     transition: height 100ms ease-in-out, width 100ms ease-in-out;
@@ -90,7 +90,7 @@ body {
 .widget.selected-widget-for-operation,
 .widget.edit.hover,
 .widget.edit:focus {
-    outline-color: var(--container-opposite-2);
+    outline-color: var(--accent-2);
     z-index: 3;
 
     transition: outline-color 0ms linear;
@@ -105,23 +105,26 @@ body {
     transition: opacity 175ms linear;
 }
 
+.gui .button,
 .gui button {
     user-select: none;
     padding: 4px;
-    color: var(--text-color-opposite-0);
-    background-color: var(--container-opposite-2);
-    border: 2px solid var(--container-opposite-3);
+    border-radius: 0;
+    color: var(--text-0); /* TODO tco */
+    background-color: var(--accent-2);
+    border: 2px solid var(--accent-3);
 
     transition: background-color 250ms linear;
 }
 
 .gui button:hover {
     cursor: pointer;
-    background-color: var(--container-opposite-1);
+    background-color: var(--accent-1);
 
     transition: background-color 0ms linear;
 }
 
+.gui .button > *,
 .gui button > * {
     color: inherit;
 }
@@ -130,8 +133,7 @@ body {
     width: 100%;
     min-height: 100%;
     overflow: hidden;
-    /*padding: 0 16px;*/
 
     background-color: var(--container-0);
-    color: var(--text-color-0);
+    color: var(--text-0);
 }

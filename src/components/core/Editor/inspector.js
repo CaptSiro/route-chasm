@@ -78,7 +78,7 @@ function CheckboxInspector(state, setter, label = "") {
  * @returns {HTMLElement}
  */
 function RadioGroupInspector(setter, radios, label = undefined) {
-    const name = std_idHtml(8);
+    const name = std_id_html(8);
     let lastValue = radios
         .reduce(
             (last, current) =>
@@ -229,7 +229,7 @@ function TextFieldInspector(state, setter, label = undefined, placeholder = unde
  * @returns {HTMLElement}
  */
 function NumberInspector(state, setter, label = undefined, placeholder = undefined, measurement = undefined, props = {}) {
-    const id = std_idHtml(8);
+    const id = std_id_html(8);
     props.id = id;
 
     if (is(placeholder)) {
@@ -303,7 +303,7 @@ function DateInspector(state, setter, label = undefined, isDateTime = false, pro
  * @returns {HTMLElement}
  */
 function SelectInspector(setter, options, label = undefined, className = undefined) {
-    const id = std_idHtml(8);
+    const id = std_id_html(8);
     let lastValue = options
         .reduce(
             (last, current) => current.selected ? current.value : last,
@@ -319,7 +319,7 @@ function SelectInspector(setter, options, label = undefined, className = undefin
                 }
             },
             options.map(option =>
-                new Option(option.text, option.value, __, option?.selected)
+                new Option(option.text, option.value, _, option?.selected)
             ),
         )
     );
@@ -408,7 +408,7 @@ function selectOption(options, value, defaultValue = undefined) {
  * @returns {HTMLElement}
  */
 function LabelAndComponentInspector(className, label, component, placeholder = undefined) {
-    const id = std_idHtml(8);
+    const id = std_id_html(8);
 
     component.id = id;
     if (placeholder) {
@@ -434,7 +434,7 @@ function LabelFactory(label, elementFor) {
         return;
     }
 
-    const id = std_idHtml(8);
+    const id = std_id_html(8);
 
     elementFor.id = id;
     return jsml.label({ for: id }, label);
@@ -495,7 +495,7 @@ class ColorPicker {
     }
 
     static createColorPicker(inline = false) {
-        const guids = Array(5).fill(null).map(() => std_idHtml(8));
+        const guids = Array(5).fill(null).map(() => std_id_html(8));
 
         return (
             div("color-picker", [

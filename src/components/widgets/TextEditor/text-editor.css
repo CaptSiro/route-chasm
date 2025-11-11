@@ -31,7 +31,7 @@
     content: attr(hint);
     position: absolute;
     line-height: 1.1em;
-    color: var(--text-color-2);
+    color: var(--text-2);
     pointer-events: none;
 }
 
@@ -60,7 +60,7 @@
 
 .w-text-editor .fancy-controls * {
     font-family: serif;
-    color: var(--text-color-opposite-0);
+    color: var(--text-0); /* TODO tco */
 }
 
 .w-text-editor .fancy-controls code {

@@ -17,10 +17,7 @@ class WHeading extends Widget { // var is used because it creates reference on g
      */
     constructor(json, parent, editable = false) {
         super(
-            Heading(
-                Number(json.level ?? 3),
-                "w-heading"
-            ),
+            jsml['h' + std_clamp(1, 6, json.level ?? 3)]("w-heading"),
             parent,
             editable
         );
@@ -62,7 +59,7 @@ class WHeading extends Widget { // var is used because it creates reference on g
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

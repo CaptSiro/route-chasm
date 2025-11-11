@@ -98,22 +98,22 @@ class WCommand extends Widget { // var is used because it creates reference on g
             }
         });
 
-        this.rootElement.addEventListener("keydown", evt => {
-            if (evt.key === "ArrowUp") {
+        this.rootElement.addEventListener("keydown", async event => {
+            if (event.key === "ArrowUp") {
                 editor_moveSelection(true);
-                evt.preventDefault();
+                event.preventDefault();
                 return;
             }
 
-            if (evt.key === "ArrowDown") {
+            if (event.key === "ArrowDown") {
                 editor_moveSelection(false);
-                evt.preventDefault();
+                event.preventDefault();
                 return;
             }
 
-            if (evt.key === "Enter") {
+            if (event.key === "Enter") {
                 if (this.rootElement.textContent[0] === "/") {
-                    evt.preventDefault();
+                    event.preventDefault();
 
                     if (editor_selectedWidget === undefined) {
                         return;
@@ -124,7 +124,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
                     }
 
                     const defaultWidget = widgets.get(editor_selectedWidget.dataset.class).default(this.parentWidget, true);
-                    this.parentWidget.insertBeforeWidget(defaultWidget, this);
+                    await this.parentWidget.insertBeforeWidget(defaultWidget, this);
                     editor_unfollowWidgetSelect();
                     this.remove();
 
@@ -136,7 +136,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
                     return;
                 }
 
-                evt.preventDefault();
+                event.preventDefault();
 
                 const lines = [this.rootElement.textContent];
                 if (this.rootElement.textContent !== "") {
@@ -151,7 +151,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
                     }
                 }, this.parentWidget, true);
 
-                this.parentWidget.insertBeforeWidget(textWidget, this);
+                await this.parentWidget.insertBeforeWidget(textWidget, this);
                 editor_unfollowWidgetSelect();
                 this.remove();
 
@@ -160,10 +160,6 @@ class WCommand extends Widget { // var is used because it creates reference on g
             }
         });
     }
-
-    //TODO: lorem ipsum generator
-    static #words = ["a", "aaenean", "ac", "accumsan", "accumsanmaecenas", "acduis", "acin", "ad", "adipiscing", "aenean", "aliquam", "aliquammauris", "aliquet", "amet", "ante", "antein", "aptent", "arcu", "at", "atsuspendisse", "auctor", "augue", "aut", "bibendum", "blandit", "blanditaliquam", "blanditin", "blanditsuspendisse", "class", "commodo", "commodonulla", "condimentum", "congue", "consectetur", "consequat", "consequataliquam", "conubia", "convallis", "convallisaliquam", "cras", "cubilia", "curabitur", "curae;", "curae;aliquam", "cursus", "cursussed", "dapibus", "diam", "diammaecenas", "dictum", "dictumst", "dictumstpraesent", "dignissim", "dignissimnunc", "dis", "dolor", "donec", "dui", "duiinteger", "duiquisque", "duis", "duised", "duiut", "efficitur", "efficiturnam", "egestas", "eget", "eleifend", "eleifendvivamus", "elementum", "elementumaenean", "elementumpraesent", "elementumsuspendisse", "elit", "elitdonec", "elitpellentesque", "elitphasellus", "elitquisque", "elitut", "enim", "erat", "eros", "erosdonec", "est", "estcras", "estetiam", "estnam", "estnunc", "et", "etetiam", "etiam", "etsed", "eu", "euaenean", "euismod", "euismodaliquam", "eunam", "euut", "ex", "expellentesque", "facilisi", "facilisialiquam", "facilisis", "facilisisnunc", "fames", "faucibus", "faucibuscurabitur", "faucibuspellentesque", "felis", "felisetiam", "fermentum", "fermentumphasellus", "feugiat", "finibus", "finibusquisque", "fringilla", "fringilladonec", "fringillainteger", "fusce", "gravida", "habitant", "habitasse", "hac", "hendrerit", "hendreritphasellus", "himenaeos", "iaculis", "id", "idsed", "imperdiet", "in", "inceptos", "integer", "interdum", "interdumetiam", "interdumvestibulum", "invivamus", "ipsum", "ipsumdonec", "ipsumquisque", "justo", "justopraesent", "lacinia", "lacus", "laoreet", "laoreetmauris", "lectus", "lectusmaecenas", "lectussuspendisse", "leo", "leofusce", "leout", "libero", "ligula", "ligulanunc", "litora", "lobortis", "lobortissed", "lorem", "lorempellentesque", "loremsed", "loremsuspendisse", "luctus", "maecenas", "magna", "magnaaliquam", "magnapellentesque", "magnis", "malesuada", "massa", "massacurabitur", "massalorem", "mattis", "mauris", "maximus", "metus", "metusdonec", "metusetiam", "metusin", "metusquisque", "mi", "minulla", "molestie", "molestieaenean", "molestiecurabitur", "molestienullam", "mollis", "montes", "morbi", "mus", "musaliquam", "musdonec", "nam", "nascetur", "natoque", "nec", "necduis", "neque", "netus", "nibh", "nibhduis", "nibhin", "nisi", "nisicras", "nisl", "non", "nostra", "nulla", "nullam", "nunc", "nuncetiam", "odio", "odioetiam", "odiosed", "orci", "orcised", "ornare", "parturient", "pellentesque", "pellentesquecras", "penatibus", "per", "pharetra", "pharetraduis", "phasellus", "placerat", "placerataliquam", "platea", "porta", "portacurabitur", "porttitor", "porttitorsed", "posuere", "potenti", "praesent", "pretium", "primis", "proin", "pulvinar", "pulvinarsed", "purus", "purusnunc", "purussuspendisse", "quam", "quamcurabitur", "quis", "quisque", "rhoncus", "ridiculus", "risus", "risusnunc", "rutrum", "rutrumduis", "sagittis", "sagittissed", "sapien", "sapienvivamus", "scelerisque", "scelerisqueaenean", "scelerisquesuspendisse", "sed", "sedquisque", "sedut", "sem", "semper", "semperinterdum", "senectus", "sit", "sociosqu", "sodales", "sollicitudin", "suscipit", "suspendisse", "taciti", "tellus", "tellusduis", "tempor", "tempordonec", "tempornullam", "tempus", "tempusdonec", "tincidunt", "tinciduntcurabitur", "tinciduntinteger", "tinciduntnunc", "tinciduntpraesent", "torquent", "tortor", "tortorsed", "tristique", "tristiqueaenean", "tristiquesed", "turpis", "turpisdonec", "turpissed", "turpisvestibulum", "ullamcorper", "ullamcorperquisque", "ultrices", "ultricespellentesque", "ultricies", "ultriciescurabitur", "ultriciesetiam", "ultriciespraesent", "urna", "urnapraesent", "ut", "utinterdum", "varius", "variusvestibulum", "vehicula", "vehiculaetiam", "vel", "velit", "velitaliquam", "velitnullam", "venenatis", "venenatisaliquam", "venenatisphasellus", "vestibulum", "vitae", "vivamus", "viverra", "viverramauris", "viverramorbi", "viverranunc", "volutpat", "volutpatcras", "vulputate", "vulputatemauris", "vulputatenulla"];
-
 
     /**
      * @param {string} command
@@ -370,7 +366,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

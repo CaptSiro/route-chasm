@@ -17,7 +17,7 @@ class WText extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        super(Paragraph("w-text"), parent, editable);
+        super(jsml.p("w-text"), parent, editable);
         this.removeInspectHandler();
         this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
         this.#textEditor.setMode("fancy");
@@ -60,7 +60,7 @@ class WText extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

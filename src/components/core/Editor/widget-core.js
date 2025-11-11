@@ -115,7 +115,7 @@ class Widget {
         this.editable = editable;
         this.rootElement.classList.add("widget", "margin");
 
-        if (window.inspect !== undefined) {
+        if (window.editor_inspect !== undefined) {
             this.rootElement.addEventListener("click", this.inspectHandler.bind(this));
         }
 
@@ -156,7 +156,7 @@ class Widget {
             return;
         }
 
-        inspect(inspectorHTML, this);
+        editor_inspect(inspectorHTML, this);
         evt.stopInspector = true;
         // evt.stopPropagation();
     }
@@ -185,7 +185,7 @@ class Widget {
     }
 
     /**
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return NotInspectorAble();
@@ -240,7 +240,7 @@ class Widget {
     }
 
     removeInspectHandler() {
-        if (window.inspect === undefined) return;
+        if (window.editor_inspect === undefined) return;
         this.rootElement.removeEventListener("click", this.inspectHandler);
     }
 
@@ -392,7 +392,7 @@ class Widget {
                 }, jsml.span(_, "+")),
                 jsml.div(
                     {
-                        class: "button-like-main drag-handle" + (std_browser() === "firefox" ? " ff-fix" : ""),
+                        class: "button drag-handle" + (std_browser() === "firefox" ? " ff-fix" : ""),
                         draggable: "true",
                         onDragStart: evt => {
                             this.select();
@@ -644,7 +644,7 @@ class ContainerWidget extends Widget {
 
         if (this.allowsDragAndDrop()) {
             widget.rootElement.ondragover = (evt) => {
-                if (getClosestByClass(widget.rootElement, "confined-container", false)?.constructor.name !== getClosestByClass(beingDragged, "confined-container", false)?.constructor.name) return;
+                if (editor_getClosestByClass(widget.rootElement, "confined-container", false)?.constructor.name !== editor_getClosestByClass(beingDragged, "confined-container", false)?.constructor.name) return;
                 this.updateDragHint(widget.rootElement, evt);
             };
             widget.rootElement.ondragleave = (evt) => this.removeDragHint(widget.rootElement, evt);

@@ -13,7 +13,7 @@ class ListWidget implements Widget {
 
 
     public function exportClass(): string {
-        return "WListWidget";
+        return "WList";
     }
 
     public function isVisible(): bool {

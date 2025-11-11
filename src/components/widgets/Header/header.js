@@ -110,7 +110,7 @@ class WHeader extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

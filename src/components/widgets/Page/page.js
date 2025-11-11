@@ -1,4 +1,3 @@
-//TODO: margin auto ->|  content  |<- margin auto
 class WPage extends ContainerWidget {
 
     // use json.child for single child widget like Center
@@ -64,7 +63,7 @@ class WPage extends ContainerWidget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

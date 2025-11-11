@@ -57,7 +57,7 @@ class WDivider extends Widget {
 
             this.#resizeable = new Resizeable(this.rootElement, { axes: "vertical" });
             this.#resizeable.on("resize", (width, height) => {
-                this.#json.setProperty("dividerAmount", clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, height));
+                this.#json.setProperty("dividerAmount", std_clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, height));
             });
 
             this.#resizeable.content.classList.add("w-divider-container");
@@ -69,7 +69,7 @@ class WDivider extends Widget {
     }
 
     focus() {
-        inspect(this.inspectorHTML, this);
+        editor_inspect(this.inspectorHTML, this);
     }
 
     /**
@@ -100,7 +100,7 @@ class WDivider extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         if (this.#dividerHeightField === undefined || this.#fillPositionRadioGroup === undefined) {
@@ -119,18 +119,18 @@ class WDivider extends Widget {
                     return false;
                 }
 
-                this.#json.setProperty("dividerAmount", clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, number));
+                this.#json.setProperty("dividerAmount", std_clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, number));
 
-                validated(parentElement);
+                std_dom_validated(parentElement);
                 return true;
             },
-            "Height:",
+            "Height",
             "32"
         );
 
         this.#fillPositionRadioGroup ||= RadioGroupInspector((value, parentElement) => {
             this.#json.setProperty("fillPosition", value);
-            validated(parentElement);
+            std_dom_validated(parentElement);
             return true;
         }, selectOption([
             { text: "Top", value: "start" },

@@ -19,8 +19,8 @@ class WQuote extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        super(Div("w-quote", [
-            Span("decorative", ",,")
+        super(jsml.div("w-quote", [
+            jsml.span("decorative", ",,")
         ]), parent, editable);
         this.childSupport = this.childSupport;
 
@@ -39,11 +39,11 @@ class WQuote extends Widget {
         }, this, editable);
 
         this.rootElement.append(
-            Div("text", [
+            jsml.div("text", [
                 this.#textEditor.rootElement
             ]),
-            Div("author", [
-                Span("decorative", "-"),
+            jsml.div("author", [
+                jsml.span("decorative", "-"),
                 this.#authorEditor.rootElement
             ])
         );
@@ -76,7 +76,7 @@ class WQuote extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

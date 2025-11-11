@@ -25,7 +25,12 @@ function $$(selector, element = document) {
     return element.querySelectorAll(selector);
 }
 
-class Todo extends Error {}
+
+
+class Todo extends Error {
+}
+
+
 
 function todo() {
     console.log(...arguments);
@@ -95,18 +100,18 @@ function std_clamp(min, max, x) {
  * @returns {number} The evaluated numeric result of the expression.
  */
 function std_evaluate(expression) {
-    if (typeof expression !== 'string') {
-        throw new TypeError('Expression must be a string');
+    if (typeof expression !== "string") {
+        throw new TypeError("Expression must be a string");
     }
 
     if (!/^[\d+\-*/().\s%eE]+$/.test(expression)) {
-        throw new Error('Invalid characters in expression');
+        throw new Error("Invalid characters in expression");
     }
 
     const fn = Function(`"use strict"; return (${expression});`);
     const number = fn();
     if (typeof number !== "number") {
-        throw new Error('Invalid numeric expression');
+        throw new Error("Invalid numeric expression");
     }
 
     return number;
@@ -183,9 +188,9 @@ function std_randomItem(array) {
 
 
 
-const STD_ID_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-const STD_ID_CHARSET_SAFE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-const STD_HTML_ID_CHARSET_FIRST = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const STD_ID_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+const STD_ID_CHARSET_SAFE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+const STD_HTML_ID_CHARSET_FIRST = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const STD_ID_POOL = new Set();
 
 /**
@@ -214,7 +219,7 @@ function std_id(length, charsetFirst = STD_ID_CHARSET, charset = STD_ID_CHARSET,
     return id;
 }
 
-function std_idHtml(length, pool = STD_ID_POOL) {
+function std_id_html(length, pool = STD_ID_POOL) {
     return std_id(length, STD_HTML_ID_CHARSET_FIRST, STD_ID_CHARSET, pool);
 }
 
@@ -234,32 +239,32 @@ function std_id_free(id, pool = STD_ID_POOL) {
 
 
 
-const std_relativeTimeFormat = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+const std_relativeTimeFormat = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
 /**
  * @type {RelativeTimestamp[]}
  */
 const STD_RELATIVE_TIMESTAMPS = [{
     amount: 60,
-    name: 'seconds'
+    name: "seconds"
 }, {
     amount: 60,
-    name: 'minutes'
+    name: "minutes"
 }, {
     amount: 24,
-    name: 'hours'
+    name: "hours"
 }, {
     amount: 7,
-    name: 'days'
+    name: "days"
 }, {
     amount: 4.34524,
-    name: 'weeks'
+    name: "weeks"
 }, {
     amount: 12,
-    name: 'months'
+    name: "months"
 }, {
     amount: Number.POSITIVE_INFINITY,
-    name: 'years'
+    name: "years"
 }];
 
 /**
@@ -278,7 +283,7 @@ function std_dateRelative(date) {
         duration /= relativeTimestamp.amount;
     }
 
-    return 'Long time ago';
+    return "Long time ago";
 }
 
 
@@ -413,6 +418,36 @@ function std_dom_onMount(selector) {
     });
 }
 
+/**
+ * @param {HTMLElement} element
+ * @param {string[]} classes
+ * @returns {number} timeoutID
+ */
+function std_dom_pulseBackground(element, classes) {
+    element.classList.add("transition-background", ...classes);
+
+    return setTimeout(() => {
+        element.classList.remove(...classes);
+
+        setTimeout(() => {
+            element.classList.remove("transition-background");
+        }, 500);
+    }, 1000);
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {boolean} dark
+ * @returns {number} timeoutID
+ */
+function std_dom_validated(element, dark = false) {
+    return std_dom_pulseBackground(element, ["validated", ...(dark ? ["darken"] : [])]);
+}
+
+function std_dom_rejected(element, dark = false) {
+    return std_dom_pulseBackground(element, ["rejected", ...(dark ? ["darken"] : [])]);
+}
+
 
 
 /**
@@ -476,7 +511,7 @@ function std_getFunction(fn) {
     /** @type {any} */
     let context = window;
 
-    for (const part of fn.split('.')) {
+    for (const part of fn.split(".")) {
         context = context[part.trim()];
 
         if (context === undefined) {
@@ -496,7 +531,7 @@ function std_getFunction(fn) {
  * @param {string} functionLiteral
  */
 function std_call(element, functionLiteral) {
-    for (const literal of functionLiteral.split(',')) {
+    for (const literal of functionLiteral.split(",")) {
         const fn = std_getFunction(literal.trim());
         if (!is(fn)) {
             continue;
@@ -542,11 +577,11 @@ function std_browser() {
                 : "edge";
         }
 
-        if (typeof InstallTrigger !== 'undefined') {
+        if (typeof InstallTrigger !== "undefined") {
             return "firefox";
         }
 
-        if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+        if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(" OPR/") >= 0) {
             return "opera";
         }
 
@@ -557,11 +592,12 @@ function std_browser() {
         if (/constructor/i.test(window.HTMLElement)
             || (function (param) {
                 return param.toString() === "[object SafariRemoteNotification]";
-            })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification))) {
+            })(!window["safari"] || (typeof safari !== "undefined" && window["safari"].pushNotification))) {
 
             return "safari";
         }
-    } catch (ignored) {}
+    } catch (ignored) {
+    }
 
     return "chrome";
 }

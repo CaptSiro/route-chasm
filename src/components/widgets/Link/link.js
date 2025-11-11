@@ -7,7 +7,7 @@ class WLink extends Widget {
      * @property {string} url
      * @property {string=} text
      * @property {string=} title
-     * @property {boolean=} useOppositeColors
+     * @property {boolean=} useAccentColors
      *
      * @typedef {LinkJSONType & WidgetJSON} LinkJSON
      */
@@ -30,21 +30,21 @@ class WLink extends Widget {
      */
     constructor(json, parent, editable = false) {
         super(
-            Link(json.url, "w-link", String(json.text ?? json.title ?? json.url), {
-                attributes: {
-                    target: "_blank",
-                    title: json.title ?? "",
-                    contenteditable: "false"
-                }
+            Link(json.url, String(json.text ?? json.title ?? json.url), {
+                class: "w-link",
+                target: "_blank",
+                title: json.title ?? "",
+                contenteditable: "false"
             }),
             parent,
             editable
         );
+
         this.removeMargin();
         this.childSupport = "none";
 
         this.#json = json;
-        this.useOppositeColors(json.useOppositeColors ?? false);
+        this.useAccentColors(json.useAccentColors ?? false);
 
         if (!editable) {
             this.rootElement.classList.add("not-edit");
@@ -59,8 +59,8 @@ class WLink extends Widget {
         });
     }
 
-    useOppositeColors(bool) {
-        this.rootElement.classList.toggle("opposite", bool);
+    useAccentColors(bool) {
+        this.rootElement.classList.toggle("accent", bool);
     }
 
     /**
@@ -95,7 +95,7 @@ class WLink extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return [
@@ -106,26 +106,26 @@ class WLink extends Widget {
             TextFieldInspector(this.#json.text, (value, parentElement) => {
                 this.#json.text = value.replace("\n", "");
                 this.rootElement.textContent = this.#json.text;
-                validated(parentElement);
+                std_dom_validated(parentElement);
                 return true;
-            }, "Label:"),
+            }, "Label"),
             TextFieldInspector(this.#json.url, (value, parentElement) => {
                 if (!WLink.isValidLink(value)) {
-                    rejected(parentElement);
+                    std_dom_rejected(parentElement);
                     return false;
                 }
 
                 this.#json.url = value;
                 this.rootElement.setAttribute("href", value);
-                validated(parentElement);
+                std_dom_validated(parentElement);
                 return true;
-            }, "URL:"),
+            }, "URL"),
             TextFieldInspector(this.#json.title, (value, parentElement) => {
                 this.#json.title = value.replace("\n", "");
                 this.rootElement.setAttribute("title", this.#json.title);
-                validated(parentElement);
+                std_dom_validated(parentElement);
                 return true;
-            }, "Tooltip:")
+            }, "Tooltip")
         ];
     }
 
@@ -143,7 +143,7 @@ class WLink extends Widget {
     }
 
     focus() {
-        inspect(this.inspectorHTML, this);
+        editor_inspect(this.inspectorHTML, this);
     }
 
     isSelectAble() {

@@ -2,13 +2,16 @@
 
 use components\core\Editor\Editor;
 use components\core\Html\Html;
+use core\forms\Form;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
 Css::import($this->getResource('editor.css'));
+Css::import(Form::getStaticResource('form.css'));
 Javascript::import($this->getResource('editor.js'));
 Javascript::import($this->getResource('inspector.js'));
 Javascript::import($this->getResource('widget-core.js'));
+Javascript::import(Form::getStaticResource('form.js'));
 
 ?><section>
     <div id="editor-data" style="display: none">

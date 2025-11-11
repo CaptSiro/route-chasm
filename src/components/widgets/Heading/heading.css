@@ -1,10 +1,10 @@
 .w-heading {
     padding: 32px 16px;
-    color: var(--text-color-opposite-0);
-    background-color: var(--container-opposite-3);
+    color: var(--text-0); /* TODO color accent */
+    background-color: var(--accent-3);
 }
 
 .w-heading *::selection {
-    color: var(--container-opposite-3);
-    background-color: var(--text-color-opposite-0);
+    color: var(--accent-3);
+    background-color: var(--text-0); /* TODO color accent */
 }

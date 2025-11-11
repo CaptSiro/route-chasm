@@ -183,7 +183,7 @@ class WRoot extends ContainerWidget {
      */
     get inspectorHTML() {
         const headerTitleColorPicker = new ColorPicker(true);
-        const pickerID = std_idHtml(8);
+        const pickerID = std_id_html(8);
         headerTitleColorPicker.rootElement.id = pickerID;
         std_dom_onMount("#" + pickerID)
             .then(() => {
@@ -214,7 +214,7 @@ class WRoot extends ContainerWidget {
             TitleInspector("Header", this.#json.isHeaderIncluded ? "" : "display-none"),
             jsml.div("i-header-settings inner-padding" + (this.#json.isHeaderIncluded ? "" : " display-none"), [
                 // jsml.div("i-row", [
-                //     jsml.span(_, "Image:"),
+                //     jsml.span(_, "Image"),
                 //     jsml.div("i-row", [
                 //         Button("button-like-main", "Remove", async (evt) => {
                 //             if (this.#json.webpage.thumbnail === undefined) return;
@@ -316,7 +316,7 @@ class WRoot extends ContainerWidget {
         //         validated(parentElement);
         //         return true;
         //     },
-        //     "Release date:",
+        //     "Release date",
         //     true
         // );
 
@@ -526,7 +526,7 @@ class WRoot extends ContainerWidget {
             //     this.dispatchJSONEvent();
             //
             //     return true;
-            // }, "Title:"),
+            // }, "Title"),
             // CheckboxInspector(this.#json.webpage.isHomePage, async (value, parentElement) => {
             //     const setHomePageResponse = await AJAX.patch(`/page/home-page/${webpage.ID}/${Number(value)}`, JSONHandler());
             //     if (setHomePageResponse.error !== undefined) {

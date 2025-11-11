@@ -36,26 +36,12 @@ class WFileDownload extends Widget {
     constructor(json, parent, editable = false) {
         const buttonLike = (
             jsml.div("container", [
-                Async(async () => {
-                    $("#icon-definitions").appendChild(
-                        stringToSVGDef(
-                            await AJAX.get(
-                                "/public/images/download-icon.svg",
-                                TextHandler(),
-                                { headers: { "Access-Control-Allow-Origin": "*" } },
-                                AJAX.SERVER_HOME
-                            ),
-                            WFileDownload.DOWNLOAD_ICON
-                        )
-                    );
-
-                    return SVG(WFileDownload.DOWNLOAD_ICON);
-                }, jsml.span(_, "Icon...")),
+                Icon("nf-oct-download"),
                 jsml.span(_, "Download")
             ])
         );
 
-        super(Div("w-file-download center", buttonLike), parent, editable);
+        super(jsml.div("w-file-download center", buttonLike), parent, editable);
         this.childSupport = this.childSupport;
 
         this.#name = json.name;
@@ -66,14 +52,14 @@ class WFileDownload extends Widget {
                 .map(file => file.src)
                 .join(",");
 
-            this.#downloadSize.value = Number(
-                await AJAX.get(
-                    `/file/size/?files=${fileSources}&website=${webpage.website}`,
-                    TextHandler(),
-                    { headers: { "Access-Control-Allow-Origin": "*" } },
-                    AJAX.SERVER_HOME
-                )
-            );
+            // this.#downloadSize.value = Number(
+            //     await AJAX.get(
+            //         `/file/size/?files=${fileSources}&website=${webpage.website}`,
+            //         TextHandler(),
+            //         { headers: { "Access-Control-Allow-Origin": "*" } },
+            //         AJAX.SERVER_HOME
+            //     )
+            // );
         });
 
         if (json.files !== undefined) {
@@ -101,14 +87,14 @@ class WFileDownload extends Widget {
                 );
 
                 if (isConfirmed) {
-                    const url = new URL(`${AJAX.SERVER_HOME}/file/download`);
-                    url.searchParams.set("website", webpage.website);
-                    url.searchParams.set("files", this.#files.value
-                        .map(file => file.src)
-                        .join(","));
-                    url.searchParams.set("name", this.#name ?? "");
-
-                    window.location.replace(url);
+                    // const url = new URL(`${AJAX.SERVER_HOME}/file/download`);
+                    // url.searchParams.set("website", webpage.website);
+                    // url.searchParams.set("files", this.#files.value
+                    //     .map(file => file.src)
+                    //     .join(","));
+                    // url.searchParams.set("name", this.#name ?? "");
+                    //
+                    // window.location.replace(url);
                 }
             }
         });
@@ -159,11 +145,11 @@ class WFileDownload extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         if (this.#fileView === undefined) {
-            this.#fileView = Div("files-inspector");
+            this.#fileView = jsml.ul("files-inspector");
 
             const appendFiles = files => {
                 this.#fileView.textContent = undefined;
@@ -171,7 +157,8 @@ class WFileDownload extends Widget {
 
                 for (const file of files) {
                     this.#fileView.appendChild(
-                        new TextSlider(Div("i-row", file.name), { gap: 50, speed: 75 }).element
+                        //     new TextSlider(jsml.div("i-row", file.name), { gap: 50, speed: 75 }).element
+                        jsml.li("i-row", file.name)
                     );
                 }
             };
@@ -189,19 +176,22 @@ class WFileDownload extends Widget {
             TextFieldInspector(this.#name, value => {
                 this.#name = value;
                 return true;
-            }, "Download as:", "best-wallpaper"),
-            Div("i-row", [
-                Span(__, "Files:"),
-                Button("button-like-main", "Select", evt => {
-                    const win = showWindow("file-select");
-                    win.dataset.multiple = "true";
-                    win.dataset.fileType = "";
-                    win.dispatchEvent(new Event("fetch"));
-                    win.onsubmit = submitEvent => {
-                        this.#files.value = submitEvent.detail.map(file => ({ name: file.name, src: file.src }));
-                        validated(evt.target.parentElement);
-                    };
-                })
+            }, "Download as", "best-wallpaper"),
+            jsml.div("i-row", [
+                jsml.span(_, "Files"),
+                jsml.button({
+                    class: "button",
+                    onClick: evt => {
+                        // const win = showWindow("file-select");
+                        // win.dataset.multiple = "true";
+                        // win.dataset.fileType = "";
+                        // win.dispatchEvent(new Event("fetch"));
+                        // win.onsubmit = submitEvent => {
+                        //     this.#files.value = submitEvent.detail.map(file => ({ name: file.name, src: file.src }));
+                        //     std_dom_validated(evt.target.parentElement);
+                        // };
+                    }
+                }, "Select")
             ]),
             this.#fileView
         ];
@@ -220,7 +210,7 @@ class WFileDownload extends Widget {
     }
 
     focus() {
-        inspect(this.inspectorHTML, this);
+        editor_inspect(this.inspectorHTML, this);
     }
 }
 

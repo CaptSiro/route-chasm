@@ -21,7 +21,7 @@ class WCode extends Widget {
         this.childSupport = 1;
 
         this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
-        this.appendWidget(this.#textEditor).then(r => {});
+        this.appendWidget(this.#textEditor);
 
         if (editable !== true) {
             return;
@@ -59,7 +59,7 @@ class WCode extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (

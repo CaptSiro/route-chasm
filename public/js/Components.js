@@ -46,11 +46,10 @@ function Icon(nf, fallback = undefined) {
  * @return {HTMLLabelElement}
  */
 function CheckBox(checked, label, props = {}) {
-    const id = std_idHtml(8);
+    const id = std_id_html(8);
 
-    const checkbox = jsml.input({ type: "checkbox", id, checked, ...props })
     return jsml.label({ class: "checkbox-container", for: id }, [
-        checkbox,
+        jsml.input({ type: "checkbox", id, checked, ...props }),
         jsml.span(_, label)
     ]);
 }
@@ -85,7 +84,7 @@ function Optionals(predicate, content) {
  * @param {HTMLElement} placeholder
  */
 function Async(asyncFunction, placeholder = undefined) {
-    const id = std_idHtml(8);
+    const id = std_id_html(8);
 
     if (placeholder === undefined) {
         placeholder = jsml.div();
@@ -176,7 +175,7 @@ function stringToSvgDef(svgStringRepresentation, id) {
  * @param {Props} inputProps
  */
 function Radio(label, value, name, className = undefined, inputProps = {}) {
-    let id = std_idHtml(8);
+    let id = std_id_html(8);
 
     inputProps.type = "radio";
     inputProps.name = name;

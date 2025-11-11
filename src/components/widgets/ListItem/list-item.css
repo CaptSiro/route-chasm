@@ -4,8 +4,8 @@
 }
 
 .w-list-item::marker {
-    background-color: var(--container-opposite-3);
-    color: var(--text-color-2);
+    background-color: var(--accent-3);
+    color: var(--text-2);
 }
 
 .w-list-item > .gui.edit-controls {

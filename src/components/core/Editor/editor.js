@@ -279,18 +279,13 @@ async function editor_loadContent() {
     root.rootElement.click();
 }
 
-/*
-<div class="widget-description" data-is-visible="true" data-name="Code" data-category="Text">
-    <div class="widget-icon">
-        <i class="nf nf-fa-code"></i>    </div>
-</div>
- */
 async function editor_loadWidgets() {
-    const widgets = $("#widgets");
-    const categories = Array.from(widgets.children)
+    const widgetContainer = $("#widgets");
+    const categories = Array.from(widgetContainer.children)
         .filter(x => is(x.dataset.isVisible) && x.dataset.isVisible === "true")
         .reduce((map, x) => {
             const description = {
+                class: x.dataset.class,
                 isVisible: x.dataset.isVisible === "true",
                 name: x.dataset.name,
                 category: x.dataset.category,
@@ -323,7 +318,10 @@ async function editor_loadWidgets() {
                                 "data-search": x.searchIndex,
                                 "data-class": x.class,
                                 onClick: function () {
-                                    if (editor_currentCmd === undefined) return;
+                                    if (editor_currentCmd === undefined) {
+                                        return;
+                                    }
+
                                     editor_currentCmd.replaceSelf(widgets.get(x.class).default(editor_currentCmd.parentWidget, true));
                                     editor_widgetSelect.style.visibility = "hidden";
                                 },
@@ -583,13 +581,13 @@ document.body.addEventListener("drop", async evt => {
     evt.preventDefault();
     const dragHint = $(".drag-hint");
     const parentWidget = dragHint?.closest(".widget")?.widget;
-    const dropAtContainerName = getClosestByClass(dragHint, "confined-container")?.constructor.name;
+    const dropAtContainerName = editor_getClosestByClass(dragHint, "confined-container")?.constructor.name;
 
     if (dragHint !== null || !(parentWidget === null || parentWidget === undefined)) {
         const toBeMoved = $$("." + WIDGET_SELECTION_CLASS);
         for (const toBeMovedElement of toBeMoved) {
             if (!toBeMovedElement.classList.contains("widget")) continue;
-            if (dropAtContainerName !== getClosestByClass(toBeMovedElement, "confined-container", false)?.constructor.name) continue;
+            if (dropAtContainerName !== editor_getClosestByClass(toBeMovedElement, "confined-container", false)?.constructor.name) continue;
 
             toBeMovedElement.widget.remove(false, false);
             await parentWidget.insertBeforeWidget(toBeMovedElement.widget, dragHint.nextElementSibling?.widget, false);
@@ -597,13 +595,13 @@ document.body.addEventListener("drop", async evt => {
         }
     }
 
-    cleanUpAfterDrag(evt);
+    await cleanUpAfterDrag(evt);
 });
-document.body.addEventListener("dragend", evt => {
-    cleanUpAfterDrag(evt);
+document.body.addEventListener("dragend", async evt => {
+    await cleanUpAfterDrag(evt);
 });
 document.body.addEventListener("dragover", evt => {
-    if (getClosestByClass(beingDragged, "confined-container", false)?.constructor.name === getClosestByClass(evt.target, "confined-container", false)?.constructor.name) {
+    if (editor_getClosestByClass(beingDragged, "confined-container", false)?.constructor.name === editor_getClosestByClass(evt.target, "confined-container", false)?.constructor.name) {
         evt.dataTransfer.dropEffect = "move";
         return;
     }
@@ -618,13 +616,13 @@ async function cleanUpAfterDrag() {
         widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
     }
 
-    await sleep(10);
+    await std_wait(10);
     const dragHint = $(".drag-hint");
 
     if (dragHint === null) return;
 
     dragHint.classList.remove("expand");
-    await sleep(100);
+    await std_wait(100);
     dragHint.remove();
 }
 
@@ -638,7 +636,7 @@ window.addEventListener("keydown", evt => {
     }
 });
 window.addEventListener("mousemove", evt => {
-    const hoveringOver = getClosestByClass(evt.target, "edit");
+    const hoveringOver = editor_getClosestByClass(evt.target, "edit");
 
     if (hoveringOver === null) {
         beingHovered?.classList.remove("hover");
@@ -664,12 +662,16 @@ window.addEventListener("mousemove", evt => {
 let clipboardBuffer = [];
 
 function edit_selectAll() {
-    if (window.rootWidget === undefined) return;
+    if (window.rootWidget === undefined) {
+        return;
+    }
 
     edit_deselect();
 
-    for (const child of window.rootWidget.page.children) {
-        child.select();
+    if ("page" in window.rootWidget) {
+        for (const child of window.rootWidget.page.children) {
+            child.select();
+        }
     }
 }
 
@@ -685,11 +687,13 @@ function edit_delete() {
     }
 }
 
-function edit_copy(evt) {
-    if (evt.clipboardActionHandled === true) return;
+function edit_copy(event) {
+    if ("clipboardActionHandled" in event && event.clipboardActionHandled === true) {
+        return;
+    }
 
-    evt.stopPropagation();
-    evt.preventDefault();
+    event.stopPropagation();
+    event.preventDefault();
 
     clipboardBuffer = Array.from($$("." + WIDGET_SELECTION_CLASS))
         .map(element => ({
@@ -698,11 +702,13 @@ function edit_copy(evt) {
         }));
 }
 
-function edit_cut(evt) {
-    if (evt.clipboardActionHandled === true) return;
+function edit_cut(event) {
+    if ("clipboardActionHandled" in event && event.clipboardActionHandled === true) {
+        return;
+    }
 
-    evt.stopPropagation();
-    evt.preventDefault();
+    event.stopPropagation();
+    event.preventDefault();
 
     clipboardBuffer = [];
     for (const element of $$("." + WIDGET_SELECTION_CLASS)) {
@@ -716,10 +722,10 @@ function edit_cut(evt) {
     }
 }
 
-function edit_paste(evt) {
-    if (evt.clipboardActionHandled === true) return;
+function edit_paste(event) {
+    if ("clipboardActionHandled" in event && event.clipboardActionHandled === true) return;
 
-    evt.preventDefault();
+    event.preventDefault();
 
     const selectedWidgets = Array.from($$("." + WIDGET_SELECTION_CLASS));
     if (selectedWidgets.length === 0) return;
@@ -760,7 +766,7 @@ window.addEventListener("paste", edit_paste);
  * @param {string} className
  * @param {boolean} includeArgumentElement
  */
-function getClosestByClass(element, className, includeArgumentElement = true) {
+function editor_getClosestByClass(element, className, includeArgumentElement = true) {
     if (element === undefined || element === null || element.classList === undefined) {
         return null;
     }
@@ -843,7 +849,7 @@ let currentlyInspecting;
  * @param {Content} inspectorHTML
  * @param {Widget} widget
  */
-function inspect(inspectorHTML, widget) {
+function editor_inspect(inspectorHTML, widget) {
     currentlyInspecting = widget;
     editor_inspector.textContent = "";
 

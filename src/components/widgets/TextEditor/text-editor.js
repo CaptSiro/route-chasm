@@ -79,31 +79,31 @@ class WTextEditor extends Widget {
                 }
 
                 if (element instanceof Array) {
-                    line.appendChild(WTextDecoration.unpack(element).rootElement);
+                    line.appendChild(WTextDecoration.unpack(element, this).rootElement);
                     continue;
                 }
 
                 if (element.type !== undefined) {
                     if (!widgets.exists(element.type)) {
-                        const request = widgets.request(element.type);
-
-                        const replacement = Span("widget-loading", `[Loading ${element.type}...]`);
-                        line.appendChild(replacement);
-
-                        request.then(() => {
-                            line.insertBefore(widgets.get(element.type).build(element, this, editable).rootElement, replacement);
-                            replacement.remove();
-                        });
-
-                        if (element === linesContents[linesContents.length - 1]) {
-                            line.appendChild(document.createElement("br"));
-                        }
+                        // const request = widgets.request(element.type);
+                        //
+                        // const replacement = jsml.span("widget-loading", `[Loading ${element.type}...]`);
+                        // line.appendChild(replacement);
+                        //
+                        // request.then(() => {
+                        //     line.insertBefore(widgets.get(element.type).build(element, this, editable).rootElement, replacement);
+                        //     replacement.remove();
+                        // });
+                        //
+                        // if (element === linesContents[linesContents.length - 1]) {
+                        //     line.appendChild(jsml.br());
+                        // }
                         continue;
                     }
 
                     line.appendChild(widgets.get(element.type).build(element, this, editable).rootElement);
                     if (element === linesContents[linesContents.length - 1]) {
-                        line.appendChild(document.createElement("br"));
+                        line.appendChild(jsml.br());
                     }
                 }
             }
@@ -154,7 +154,7 @@ class WTextEditor extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        super(Div(WTextEditor.#class), parent, editable);
+        super(jsml.div(WTextEditor.#class), parent, editable);
 
         this.rootElement.setAttribute("hint", json.hint ?? "Lorem ipsum...");
 
@@ -167,9 +167,7 @@ class WTextEditor extends Widget {
         this.childSupport = "none";
 
         this.#article = (
-            Component("article", __,
-                this.#parseContent(json.content, json.forceSingleLine, editable)
-            )
+            jsml.article(_, this.#parseContent(json.content, json.forceSingleLine, editable))
         );
         this.rootElement.appendChild(this.#article);
 
@@ -322,12 +320,13 @@ class WTextEditor extends Widget {
     }
 
     forceSingleLineHandler() {
-        return (evt => {
-            if (evt.key !== "Enter") return;
+        return (event => {
+            if (event.key !== "Enter") {
+                return;
+            }
 
             if (this.#json.forceSingleLine) {
-                evt.preventDefault();
-                return;
+                event.preventDefault();
             }
         }).bind(this);
     }
@@ -357,7 +356,7 @@ class WTextEditor extends Widget {
 
     /**
      * @override
-     * @returns {ComponentContent}
+     * @returns {Content}
      */
     get inspectorHTML() {
         return (
@@ -407,33 +406,36 @@ class WTextEditor extends Widget {
     appendFancyGUI() {
         this.rootElement.style.position = "relative";
         this.rootElement.appendChild(
-            Div("gui fancy-controls", [
-                Button(__, [
-                    Component("strong", __, "B")
-                ], this.handleDecoration(WTextDecoration.types.BOLD)),
-                Button(__, [
-                    Component("i", __, "I")
-                ], this.handleDecoration(WTextDecoration.types.ITALIC)),
+            jsml.div("gui fancy-controls", [
+                jsml.button({ onClick: this.handleDecoration(WTextDecoration.types.BOLD) }, [
+                    jsml.strong(_, "B")
+                ]),
 
-                Button(__, [
-                    Component("u", __, "U")
-                ], this.handleDecoration(WTextDecoration.types.UNDERLINE)),
-                Button(__, "S", this.handleDecoration(WTextDecoration.types.LINE_THROUGH), {
-                    attributes: {
-                        style: "text-decoration: line-through;"
-                    }
-                }),
+                jsml.button({ onClick: this.handleDecoration(WTextDecoration.types.ITALIC) }, [
+                    jsml.i(_, "I")
+                ]),
 
-                Button(__, [
-                    Component("code", __, "<>")
-                ], this.handleDecoration(WTextDecoration.types.CODE))
+                jsml.button({ onClick: this.handleDecoration(WTextDecoration.types.UNDERLINE) }, [
+                    jsml.u(_, "U")
+                ]),
+
+                jsml.button({
+                    onClick: this.handleDecoration(WTextDecoration.types.LINE_THROUGH),
+                    style: "text-decoration: line-through;"
+                }, "S"),
+
+                jsml.button({ onClick: this.handleDecoration(WTextDecoration.types.CODE) }, [
+                    jsml.code(_, "<>")
+                ])
             ])
         );
     }
 
     removeFancyGUI() {
         const fancy = this.rootElement.querySelector(".gui.fancy-controls");
-        if (fancy === null) return;
+        if (fancy === null) {
+            return;
+        }
 
         fancy.remove();
     }
@@ -444,7 +446,7 @@ class WTextEditor extends Widget {
             return;
         }
 
-        let buffer = Div();
+        let buffer = jsml.div();
 
         for (const node of [...this.#article.childNodes]) {
             if (node.nodeName === "BR") {
@@ -459,7 +461,7 @@ class WTextEditor extends Widget {
 
             if (buffer.childNodes.length !== 0) {
                 this.#article.insertBefore(buffer, node);
-                buffer = Div();
+                buffer = jsml.div();
             }
         }
 
@@ -788,7 +790,7 @@ class WTextEditor extends Widget {
                             siblingClasses = sibling.widget.getFilteredClasses();
                         }
 
-                        if (arrayEqual(childClasses, siblingClasses)) {
+                        if (std_arrayEquals(childClasses, siblingClasses)) {
                             child.append(...sibling.childNodes);
                             sibling.remove();
                             continue;
