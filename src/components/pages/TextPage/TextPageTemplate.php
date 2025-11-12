@@ -2,15 +2,17 @@
 
 namespace components\pages\TextPage;
 
-use components\core\Editor\Editor;
 use components\core\Html\Html;
 use components\core\ToolBar\ToolBarItem;
+use components\Lumora\Display\Display;
+use components\Lumora\Editor\Editor;
 use core\actions\Action;
 use core\App;
 use core\pages\PageTemplate;
 use core\route\Route;
 use core\RouteChasmEnvironment;
 use core\view\View;
+use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
 
 class TextPageTemplate implements PageTemplate {
@@ -18,18 +20,8 @@ class TextPageTemplate implements PageTemplate {
         return "Text";
     }
 
-    public function build(Page $page): View {
-        return new Html('p', content: $page->getPathToSelf(RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT));
-    }
-
-    public function create(Page $page): ?View {
-        return null;
-    }
-
-    public function getEditor(Page $page): Action {
+    protected function createEditor(Page $page, LocalizedPage $localization): Editor {
         $editor = new Editor($page->get('content'));
-
-        $localization = $page->getLocalizationOrDefault(App::getInstance()->getRequest()->getLanguage());
         $editor->setTitle($localization->title .' - Content Editor');
 
         $open = new ToolBarItem('file_open', 'ctrl + o');
@@ -45,6 +37,26 @@ class TextPageTemplate implements PageTemplate {
             );
 
         return $editor;
+    }
+
+    public function build(Page $page): View {
+        $localization = $page->getLocalizationOrDefault(
+            App::getInstance()->getRequest()->getLanguage()
+        );
+
+        return new Display(
+            $localization->title,
+            $this->createEditor($page, $localization)
+        );
+    }
+
+    public function create(Page $page): ?View {
+        return null;
+    }
+
+    public function getEditor(Page $page): Action {
+        $localization = $page->getLocalizationOrDefault(App::getInstance()->getRequest()->getLanguage());
+        return $this->createEditor($page, $localization);
     }
 
     public function delete(Page $page): ?View {

@@ -1,0 +1,29 @@
+<?php /** @var Display $this */
+
+use components\core\Html\Html;
+use components\Lumora\Display\Display;
+use components\Lumora\Editor\Editor;
+use core\forms\Form;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Css::import(Form::getStaticResource('form.css'));
+Css::import($this->getResource('display.css'));
+Javascript::import($this->getResource('../lumora.js'));
+Javascript::import(Editor::getStaticResource('inspector.js'));
+Javascript::import(Editor::getStaticResource('widget-core.js'));
+Javascript::import($this->getResource('display.js'));
+Javascript::import(Form::getStaticResource('form.js'));
+
+foreach ($this->editor->explodeWidgets() as $widget) {
+    Css::import($widget->getStyles());
+    Javascript::import($widget->getScript());
+}
+
+?><section>
+    <div id="display-data" style="display: none">
+        <?= Html::escape($this->editor->getStorage()->read()) ?>
+    </div>
+</section>
+
+<section id="viewport"></section>
