@@ -53,10 +53,8 @@ function CheckboxInspector(state, setter, label = "") {
         CheckBox(state, label, {
             onChange: async event => {
                 if (!(await setter(event.target.checked, checkbox))) {
-                    return;
+                    event.target.checked = !event.target.checked;
                 }
-
-                event.target.checked = !event.target.checked;
             }
         })
     );
@@ -81,8 +79,7 @@ function RadioGroupInspector(setter, radios, label = undefined) {
     const name = std_id_html(8);
     let lastValue = radios
         .reduce(
-            (last, current) =>
-                current.selected ? current.value : last,
+            (last, current) => current.selected ? current.value : last,
             undefined
         );
 
@@ -90,7 +87,13 @@ function RadioGroupInspector(setter, radios, label = undefined) {
         div({
             class: "i-radio-group",
             onChange: async event => {
-                lastValue = await choiceChangeListener(event, setter, lastValue, radioGroup, radioGroup.querySelectorAll(`input[name=${name}]`));
+                lastValue = await choiceChangeListener(
+                    event,
+                    setter,
+                    lastValue,
+                    radioGroup,
+                    radioGroup.querySelectorAll(`input[name=${name}]`)
+                );
             }
         }, [
             Optional(label !== undefined,
@@ -100,11 +103,7 @@ function RadioGroupInspector(setter, radios, label = undefined) {
                 return (
                     Radio(radio.text, radio.value, name, _,
                         radio.selected !== undefined
-                            ? {
-                                attributes: {
-                                    checked: radio.selected
-                                }
-                            }
+                            ? { checked: radio.selected }
                             : undefined
                     )
                 );

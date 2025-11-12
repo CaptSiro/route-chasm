@@ -143,7 +143,7 @@ input[readonly] {
     font-style: italic;
 }
 
-input:not([type=checkbox]):focus {
+input:not([type=checkbox]):not([type=radio]):focus {
     outline: 2px solid var(--form-accent-1);
     background-color: var(--form-container-input-0);
     color: var(--form-text-0);
