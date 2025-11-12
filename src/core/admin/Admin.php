@@ -56,7 +56,7 @@ class Admin {
             )
 
             ->use(
-                Route::menu("/Web/Page")
+                Route::menu("/Web/Pages")
                     ->icon("Pages", Icon::nf('nf-md-file_document')),
                 Page::getNexus()
             )

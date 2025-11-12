@@ -118,8 +118,9 @@ function toolBar_item(element) {
             }
 
             try {
-                action(element);
+                action(element, event);
                 event.preventDefault();
+                event.stopImmediatePropagation();
             } catch (e) {
                 console.error(e);
             }

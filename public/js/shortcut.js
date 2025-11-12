@@ -6,7 +6,7 @@ class Shortcut {
      * @param {EventTarget} target
      */
     static bind(target) {
-        target.addEventListener("keyup", event => {
+        target.addEventListener("keydown", event => {
             for (const shortcut of Shortcut.#shortcuts) {
                 shortcut.perform(event);
             }
@@ -95,14 +95,22 @@ class Shortcut {
 
     /**
      * @param {KeyboardEvent|Event} event
+     * @return {boolean}
      */
-    perform(event) {
+    matches(event) {
         const keyMatches = event.key.toLowerCase() === this.#key;
         const modifiersMatches = event.shiftKey === this.#shift
             && event.ctrlKey === this.#control
             && event.altKey === this.#alt;
 
-        if (keyMatches && modifiersMatches) {
+        return keyMatches && modifiersMatches;
+    }
+
+    /**
+     * @param {KeyboardEvent|Event} event
+     */
+    perform(event) {
+        if (this.matches(event)) {
             this.#action(event);
         }
     }

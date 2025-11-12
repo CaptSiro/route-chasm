@@ -446,7 +446,7 @@ class WRoot extends ContainerWidget {
 
             HRInspector(),
 
-            TitleInspector("Visibility"),
+            // TitleInspector("Visibility"),
             // RadioGroupInspector(async (value, parentElement) => {
             //     if (value === "planned") {
             //         const releaseDateString = new Date(releaseDateInput.value === "" ? Date.now() : releaseDateInput.value).toISOString();
@@ -497,8 +497,8 @@ class WRoot extends ContainerWidget {
             //         ? "planned"
             //         : "private")),
             // releaseDate,
-
-            HRInspector(),
+            //
+            // HRInspector(),
 
             TitleInspector("Properties"),
             // TextFieldInspector(this.#json.webpage.title, async (value, parent) => {
@@ -540,11 +540,11 @@ class WRoot extends ContainerWidget {
             //
             //     return true;
             // }, "Set as home"),
-            CheckboxInspector(this.#json.areCommentsAvailable, (value) => {
-                this.#json.areCommentsAvailable = value;
-                this.dispatchJSONEvent();
-                return true;
-            }, "Enable comments"),
+            // CheckboxInspector(this.#json.areCommentsAvailable, (value) => {
+            //     this.#json.areCommentsAvailable = value;
+            //     this.dispatchJSONEvent();
+            //     return true;
+            // }, "Enable comments"),
             CheckboxInspector(this.#json.isHeaderIncluded, value => {
                 this.#json.isHeaderIncluded = value;
                 this.dispatchJSONEvent();
@@ -557,11 +557,11 @@ class WRoot extends ContainerWidget {
 
             HRInspector(),
 
-            TitleInspector("Theme"),
+            // TitleInspector("Theme"),
             // themeSelect,
             // themeRemover,
 
-            HRInspector()
+            // HRInspector()
 
             // jsml.div("i-controls-row", [
             //   Button("button-like-main", "Change"),

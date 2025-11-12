@@ -861,20 +861,17 @@ function editor_inspect(inspectorHTML, widget) {
 async function file_save() {
     const structure = window.rootWidget.save();
 
-    const response = await AJAX.post("/page/" + webpage.src, JSONHandler(), {
-        body: JSON.stringify({
-            content: JSON.stringify(structure)
-        })
-    }).catch(errorResponse => {
-        errorResponse.text().then(console.log);
+    const response = await fetch(window.location, {
+        method: "post",
+        body: JSON.stringify(structure)
     });
 
-    if (response.error) {
-        alert(response.error);
+    if (!response.ok) {
+        await window_alert("Website was not saved properly");
         return;
     }
 
-    alert(response.message);
+    await window_alert("Website was saved successfully");
 }
 
 /**

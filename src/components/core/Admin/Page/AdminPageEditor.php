@@ -100,6 +100,8 @@ class AdminPageEditor extends AdminNexusEditor {
 
         $router = $bindingPoint->getRouter();
         $router->use('template', function (Request $request, Response $response) {
+            $response->setHeader("X-Template", "created");
+
             $pageId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE);
             if (is_null($pageId)) {
                 $queryParameter = RouteChasmEnvironment::QUERY_PAGE;
@@ -114,6 +116,7 @@ class AdminPageEditor extends AdminNexusEditor {
             }
 
             $template = Pages::getTemplate($templateRecord->getId());
+            $response->setHeader("X-Template", "created|performed");
             return $template->getEditor($page);
         });
     }

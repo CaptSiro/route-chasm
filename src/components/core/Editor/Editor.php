@@ -25,7 +25,11 @@ use components\widgets\Text\TextWidget;
 use components\widgets\TextEditor\TextEditorWidget;
 use components\widgets\Widget;
 use components\widgets\WidgetImporter;
+use core\communication\Request;
+use core\communication\Response;
 use core\data\DataItem;
+use core\http\HttpCode;
+use core\http\HttpMethod;
 use core\route\Route;
 use core\utils\Arrays;
 use core\view\ContainerContent;
@@ -82,9 +86,20 @@ class Editor extends ContainerContent {
         }
 
         $this->widgets = $widgets ?? self::getDefaultWidgets();
+        $this->toolBar = $this->initToolBar(new ToolBar());
 
-        $this->toolBar = new ToolBar();
-        $this->toolBar
+        $this->addViewportMode('Mobile', 'mobile', 9/16);
+        $this->addViewportMode('Computer', 'computer', 16/9);
+    }
+
+
+
+    public function getToolBar(): ToolBar {
+        return $this->toolBar;
+    }
+
+    protected function initToolBar(ToolBar $toolBar): ToolBar {
+        return $toolBar
             ->add(
                 Route::menu('/File/Save'),
                 new ToolBarItem('file_save', 'ctrl + s')
@@ -121,15 +136,6 @@ class Editor extends ContainerContent {
                 Route::menu('/Edit/Properties'),
                 new ToolBarItem('edit_properties'),
             );
-
-        $this->addViewportMode('Mobile', 'mobile', 9/16);
-        $this->addViewportMode('Computer', 'computer', 16/9);
-    }
-
-
-
-    public function getToolBar(): ToolBar {
-        return $this->toolBar;
     }
 
     public function addViewportMode(string $label, string $name, float $aspectRatio): static {
@@ -181,5 +187,30 @@ class Editor extends ContainerContent {
         return $this->importer
             ->setWidget($widget)
             ->render();
+    }
+
+
+
+    // Action
+    public function perform(Request $request, Response $response): void {
+        switch ($request->getHttpMethod()) {
+            case HttpMethod::GET: {
+                parent::perform($request, $response);
+                return;
+            }
+
+            case HttpMethod::POST: {
+                $this->storage->write($request->getBodyRaw());
+                $response->setStatus(HttpCode::S_OK);
+                $response->flush();
+            }
+
+            default: {
+                $response->sendMessage(
+                    'Invalid HTTP method ' . $request->getHttpMethod(),
+                    HttpCode::CE_BAD_REQUEST
+                );
+            }
+        }
     }
 }
