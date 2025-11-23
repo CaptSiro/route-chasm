@@ -193,4 +193,18 @@ class Strings extends Init {
     public static function asHumanReadableBoolean(string $string): bool {
         return filter_var($string, FILTER_VALIDATE_BOOLEAN);
     }
+
+    public static function fromBuffer(callable $bufferWriter): string {
+        if (!ob_start()) {
+            return "";
+        }
+
+        $bufferWriter();
+
+        if (($content = ob_get_clean()) === false) {
+            return "";
+        }
+
+        return $content;
+    }
 }

@@ -3,6 +3,7 @@
 namespace core\admin;
 
 use components\core\Admin\Nexus\AdminNexus;
+use components\core\Admin\PhpInfo\PhpInfo;
 use components\core\Admin\SptfTests\SptfTests;
 use components\core\Icon;
 use components\core\Menu\Menu;
@@ -134,6 +135,12 @@ class Admin {
                 Route::menu('/System/Modules')
                     ->icon('Modules', Icon::nf('nf-md-package_variant')),
                 new Modules()
+            )
+
+            ->use(
+                Route::menu('/System/PHP')
+                    ->icon('PHP', Icon::nf('nf-dev-php')),
+                new PhpInfo()
             )
 
             ->use(
