@@ -19,8 +19,10 @@ class WText extends Widget {
     constructor(json, parent, editable = false) {
         super(jsml.p("w-text"), parent, editable);
         this.removeInspectHandler();
+        json.textEditor.mode = "simple";
         this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
-        this.#textEditor.setMode("fancy");
+        // this.#textEditor.setMode("fancy");
+        console.log(this.#textEditor);
         this.childSupport = 1;
         this.appendWidget(this.#textEditor);
 

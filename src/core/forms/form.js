@@ -34,6 +34,27 @@ function form_init(form) {
 }
 
 /**
+ * @param {HTMLElement} control
+ * @returns {HTMLFormElement | null}
+ */
+function form_get(control) {
+    return control.closest('form');
+}
+
+/**
+ * @param {HTMLElement | null} form
+ * @param {string} name
+ * @returns {HTMLElement | null}
+ */
+function form_getControl(form, name) {
+    if (!is(form)) {
+        return null;
+    }
+
+    return form.querySelector(`[name=${name}]`);
+}
+
+/**
  * @param {HTMLElement} form
  * @param {{ message: string, property?: string }} error
  */

@@ -9,6 +9,7 @@ use components\layout\Grid\description\GridColumn;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\Table;
@@ -19,7 +20,7 @@ use models\core\Language\Language;
 use models\core\Language\Lexicon\Grid\LexiconGridRow;
 
 /**
- * @property string $group
+ * @property int $groupId
  * @property string $default
  * @property bool $isDynamic
  */
@@ -31,7 +32,7 @@ class Phrase extends Model {
     public static function getNexus(): AdminNexus {
         return (new AdminNexus(
             ModelDescription::extract(Phrase::class),
-            new AdminPhraseEditor(new PhraseEditorBehavior()),
+            new AdminPhraseEditor(),
             LexiconGridRow::getGridDescription()
         ))->showCreateButton(false);
     }
@@ -123,6 +124,33 @@ class Phrase extends Model {
     /** @var array<Translation> */
     private array $staticTranslations;
     private LexiconGroup $group;
+
+
+
+    public function delete(): DatabaseAction {
+        $group = $this->getLexiconGroup();
+
+        $this->deleteTranslations();
+        $ret = parent::delete();
+
+        if ($group->getPhraseCount() === 0) {
+            $group->delete();
+        }
+
+        return $ret;
+    }
+
+    public function deleteTranslations(): DatabaseAction {
+        if (empty($translations = $this->getTranslations())) {
+            return DatabaseAction::NONE;
+        }
+
+        foreach ($translations as $translation) {
+            $translation->delete();
+        }
+
+        return DatabaseAction::DELETE;
+    }
 
 
 

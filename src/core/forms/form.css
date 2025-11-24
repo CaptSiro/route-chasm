@@ -64,6 +64,7 @@
 .form-row {
     display: flex;
     gap: var(--form-gap);
+    align-items: end;
 }
 
 .radio-container,
@@ -319,6 +320,10 @@ input.form-invalid {
 
 .form-select {
     width: clamp(100px, 100%, 700px);
+}
+
+.form-select label {
+    margin-bottom: 0 !important;
 }
 
 .form-select select {

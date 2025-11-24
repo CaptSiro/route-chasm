@@ -2,6 +2,7 @@
 
 namespace models\core\Language\Lexicon;
 
+use components\core\Icon;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Row\Row;
@@ -14,6 +15,7 @@ use core\database\sql\query\Query;
 use core\database\sql\SideEffect;
 use core\database\sql\Sql;
 use core\database\sql\Table;
+use core\forms\controls\Button\Button;
 use core\forms\controls\HiddenField;
 use core\forms\controls\Select\Select;
 use core\forms\controls\TextField;
@@ -38,6 +40,7 @@ class Translation extends Model {
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_TRANSLATION = 'translation';
     public const NAME_RULE_ID = 'ruleId';
+    public const CSS_CLASS_TRANSLATION_CONTROL = 'translation-control';
 
 
 
@@ -72,8 +75,13 @@ class Translation extends Model {
         ];
     }
 
-    public static function createDynamicTranslationControl(int $languageId, ?Translation $translation = null): View {
+    public static function createDynamicTranslationControl(
+        int $languageId,
+        ?Translation $translation = null,
+        ?string $deletionAccumulator = null,
+    ): View {
         $row = new Row();
+        $row->addCssClass(self::CSS_CLASS_TRANSLATION_CONTROL);
 
         $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->getId()));
         $row->add(new HiddenField(
@@ -93,6 +101,18 @@ class Translation extends Model {
             Rule::options(),
             Models::get($translation, 'ruleId')
         ));
+
+        $remove = new Button(Icon::nf('nf-fa-remove', 'X'));
+
+        $remove->addAttribute('data-control', self::CSS_CLASS_TRANSLATION_CONTROL);
+        $remove->addJavascriptInit('phraseEditor_removeTranslationButton');
+
+        if (!is_null($translation)) {
+            $remove->addAttribute('data-id', $translation->getId());
+            $remove->addAttribute('data-accumulator', $deletionAccumulator);
+        }
+
+        $row->add($remove);
 
         return $row;
     }

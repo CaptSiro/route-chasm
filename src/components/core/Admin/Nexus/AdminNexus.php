@@ -10,6 +10,7 @@ use components\layout\Grid\Grid;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\http\Http;
 use core\http\HttpCode;
@@ -124,6 +125,12 @@ class AdminNexus extends ContainerContent {
 
     public function setTitle(?string $title): void {
         $this->title = $title;
+    }
+
+    public function createModel(mixed $id): ?Model {
+        return $this->modelDescription
+            ->getFactory()
+            ->fromId($id);
     }
 
     public function onBind(RouteNode $bindingPoint): void {

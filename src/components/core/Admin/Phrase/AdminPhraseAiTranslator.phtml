@@ -1,0 +1,11 @@
+<?php /** @var AdminPhraseAiTranslator $this */
+
+use components\core\Admin\Phrase\AdminPhraseAiTranslator;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('phrase-translator.js'));
+
+?><button
+    x-init="phraseTranslator_init"
+    data-url="<?= $this->context->getAiTranslateLink() ?>"
+>Translate with AI</button>

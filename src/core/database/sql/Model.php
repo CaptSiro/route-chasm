@@ -107,6 +107,11 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
             ->all($projection, $where);
     }
 
+    public static function count(Query|string|null $where = null): int {
+        return ModelFactory::extract(static::class)
+            ->count($where);
+    }
+
 
 
     private Origin $_origin;

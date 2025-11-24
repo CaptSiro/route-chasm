@@ -30,6 +30,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
     protected AdminWebPage $page;
     protected ?Model $model = null;
     protected AdminNexus $context;
+    protected ?View $headerContent = null;
 
     public function __construct(
         protected EditorBehavior $behaviour
@@ -44,6 +45,10 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         $this->context = $context;
         Javascript::import($this->context->getResource('nexus.js'));
         return $this;
+    }
+
+    public function setHeaderContent(View $headerContent): void {
+        $this->headerContent = $headerContent;
     }
 
     public function setModel(Model $model): static {

@@ -2,6 +2,7 @@
 
 namespace components\core\Html;
 
+use core\utils\Arrays;
 use core\view\View;
 use core\view\Renderer;
 
@@ -20,12 +21,16 @@ class Html implements View {
         return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5);
     }
 
-    public static function wrap(string $tag, string $content): string {
-        return static::wrapUnsafe($tag, htmlspecialchars($content));
+    public static function wrap(string $tag, string $content, array $attributes = []): string {
+        return static::wrapUnsafe($tag, htmlspecialchars($content), $attributes);
     }
 
-    public static function wrapUnsafe(string $tag, string $content): string {
-        return "<$tag>$content</$tag>";
+    public static function wrapUnsafe(string $tag, string $content, array $attributes = []): string {
+        $attr = !empty($attributes)
+            ? Arrays::htmlEncode($attributes)
+            : '';
+
+        return "<$tag $attr>$content</$tag>";
     }
 
     public static function createLink(string $url, string $content): string {

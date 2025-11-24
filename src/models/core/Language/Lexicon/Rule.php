@@ -35,12 +35,35 @@ class Rule extends Model {
         return $instance;
     }
 
+    public static function fromLabel(string $label): ?static {
+        static::modelCache_loadAll(fn(Rule $x) => $x->rule);
+
+        foreach (self::$modelCache as $rule) {
+            if ($rule->label === $label) {
+                return $rule;
+            }
+        }
+
+        return null;
+    }
+
     public static function options(): array {
         static::modelCache_loadAll(fn(Rule $x) => $x->rule);
 
         $ret = [];
         foreach (self::$modelCache as $record) {
             $ret[$record->getId()] = $record->getLabel();
+        }
+
+        return $ret;
+    }
+
+    public static function getLabels(): array {
+        static::modelCache_loadAll(fn(Rule $x) => $x->rule);
+
+        $ret = [];
+        foreach (self::$modelCache as $record) {
+            $ret[] = $record->getLabel();
         }
 
         return $ret;

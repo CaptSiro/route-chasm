@@ -66,4 +66,10 @@ class LexiconGroup extends Model {
             where: Query::infer('id_lexicon_group = ?', $this->getId())
         );
     }
+
+    public function getPhraseCount(): int {
+        return Phrase::count(
+            where: Query::infer('id_lexicon_group = ?', $this->getId())
+        );
+    }
 }

@@ -12,6 +12,7 @@ use components\layout\Layout;
 use components\layout\Tabs\Tabs;
 use core\App;
 use core\database\sql\Model;
+use core\forms\controls\HiddenField;
 use core\forms\controls\TextField;
 use core\forms\Form;
 use core\locale\LexiconUnit;
@@ -23,7 +24,8 @@ use models\core\Language\Language;
 class PhraseEditorBehavior implements EditorBehavior {
     use LexiconUnit, SetEditor;
 
-    public const LEXICON_GROUP = 'admin.phrase.editor';
+    public const LEXICON_GROUP = AdminPhraseEditor::LEXICON_GROUP;
+    public const NAME_DELETED_TRANSLATIONS = 'deleted_translations';
 
     public function __construct() {
         $this->setLexiconGroup(self::LEXICON_GROUP);
@@ -51,7 +53,11 @@ class PhraseEditorBehavior implements EditorBehavior {
 
             $language = $languages[$translation->languageId];
             $tabs[$language->getLocale()->getName()]->add(
-                Translation::createDynamicTranslationControl($translation->languageId, $translation)
+                Translation::createDynamicTranslationControl(
+                    $translation->languageId,
+                    $translation,
+                    self::NAME_DELETED_TRANSLATIONS
+                )
             );
         }
 
@@ -90,6 +96,8 @@ class PhraseEditorBehavior implements EditorBehavior {
         if (is_null($model)) {
             return new Message($this->tr('Creating phrases is not supported'));
         }
+
+        $layout->add(new HiddenField(self::NAME_DELETED_TRANSLATIONS));
 
         /** @var Phrase $model */
         $layout->add((new TextField('_ignored_', $this->tr('Default'), $model->default))
@@ -173,18 +181,28 @@ class PhraseEditorBehavior implements EditorBehavior {
         $request = App::getInstance()->getRequest();
         $body = $request->getBody();
 
+        if (!empty($deleted = $body->get(self::NAME_DELETED_TRANSLATIONS))) {
+            foreach (explode(',', $deleted) as $id) {
+                Translation::fromId($id)?->delete();
+            }
+        }
+
         $objects = Models::transpose(
             $body->toArray(),
             Translation::getControlNames(),
             count($body->getStrict(Translation::NAME_TRANSLATION_ID))
         );
 
-        if (!$model->isDynamic) {
-            if (!is_null($error = $this->onSubmitStatic($model, $objects))) {
+        return $this->submitTranslations($model, $objects);
+    }
+
+    public function submitTranslations(Phrase $phrase, array $translationRawObjects): ?View {
+        if (!$phrase->isDynamic) {
+            if (!is_null($error = $this->onSubmitStatic($phrase, $translationRawObjects))) {
                 return $error;
             }
         } else {
-            if (!is_null($error = $this->onSubmitDynamic($model, $objects))) {
+            if (!is_null($error = $this->onSubmitDynamic($phrase, $translationRawObjects))) {
                 return $error;
             }
         }
