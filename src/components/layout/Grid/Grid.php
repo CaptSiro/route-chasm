@@ -9,7 +9,7 @@ use core\Flags;
 use core\view\Renderer;
 use core\view\View;
 
-class Grid implements View {
+class Grid implements View, GridLayout {
     use Renderer, Flags;
 
     public const FLAG_SHOW_HEADER = 1;

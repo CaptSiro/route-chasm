@@ -5,8 +5,8 @@ namespace components\core\Admin\Nexus;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Message\Message;
 use components\core\WebPage\AdminWebPage;
-use components\layout\Grid\description\GridDescription;
-use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
+use components\layout\Grid\GridLayoutFactory;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -34,13 +34,14 @@ class AdminNexus extends ContainerContent {
     protected ?BreadCrumbs $breadCrumbs = null;
     protected NexusLinkCreator $linkCreator;
     protected bool $showCreateButton = true;
+    protected ?View $headerContent;
 
 
 
     public function __construct(
         protected ModelDescription $modelDescription,
         protected Editor $editor,
-        protected GridDescription $gridDescription,
+        protected GridLayoutFactory $gridFactory,
         protected ?string $title = null,
         protected ?string $createButtonLabel = null
     ) {
@@ -60,6 +61,11 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
+    public function setHeaderContent(View $headerContent): static {
+        $this->headerContent = $headerContent;
+        return $this;
+    }
+
     public function setLinkCreator(NexusLinkCreator $creator): static {
         $this->linkCreator = $creator;
         return $this;
@@ -69,8 +75,8 @@ class AdminNexus extends ContainerContent {
         return $this->modelDescription;
     }
 
-    public function getGridDescription(): GridDescription {
-        return $this->gridDescription;
+    public function getGridFactory(): GridLayoutFactory {
+        return $this->gridFactory;
     }
 
     public function getBreadCrumbs(): ?BreadCrumbs {
@@ -91,14 +97,14 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
-    public function createGrid(): ?Grid {
-        $proxy = $this->gridDescription->getProxy() ?? new NexusProxy();
+    public function createGrid(): ?GridLayout {
+        $proxy = $this->gridFactory->getProxy() ?? new NexusProxy();
 
         if ($proxy instanceof NexusProxy) {
             $proxy->setContext($this);
         }
 
-        return $this->gridDescription->createGrid($proxy);
+        return $this->gridFactory->createGrid($proxy);
     }
 
     public function getGrid(): View {
@@ -111,7 +117,7 @@ class AdminNexus extends ContainerContent {
         return $grid
             ->addAsFirst(self::COLUMN_EDIT, $this->tr('Edit'), '64px')
             ->add(self::COLUMN_DELETE, $this->tr('Delete'), '64px')
-            ->load($this->gridDescription->getLoader()->load($grid));
+            ->load($this->gridFactory->getLoader()->load($grid));
     }
 
     public function getTitle(): string {

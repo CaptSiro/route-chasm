@@ -3,7 +3,7 @@
 namespace components\layout\Grid\Loader;
 
 use Closure;
-use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
 
 class StaticGridLoader implements GridLoader {
     /**
@@ -13,7 +13,7 @@ class StaticGridLoader implements GridLoader {
         protected Closure $loader
     ) {}
 
-    public function load(Grid $context): array {
+    public function load(GridLayout $context): array {
         return ($this->loader)();
     }
 }

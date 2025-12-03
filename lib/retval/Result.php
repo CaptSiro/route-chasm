@@ -41,7 +41,7 @@ class Result implements JsonSerializable {
 
     protected bool $isSuccess;
     protected mixed $success;
-    protected Exc $failure;
+    protected ?Exc $failure;
 
 
 

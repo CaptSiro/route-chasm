@@ -12,7 +12,8 @@ use components\core\RoutedMenu\RoutedMenu;
 use components\layout\Grid\description\GridDescription;
 use core\database\sql\ModelDescription;
 use core\forms\description\FormDescription;
-use core\navigation\Mount;
+use core\fs\FileSystem;
+use core\mounts\Mount;
 use core\route\Route;
 use core\route\Router;
 use models\core\Domain\Domain;
@@ -60,6 +61,12 @@ class Admin {
                 Route::menu("/Web/Pages")
                     ->icon("Pages", Icon::nf('nf-md-file_document')),
                 Page::getNexus()
+            )
+
+            ->use(
+                Route::menu("/Files")
+                    ->icon("Files", Icon::nf('nf-fa-folder')),
+                FileSystem::getNexus()
             )
 
             ->use(

@@ -4,7 +4,7 @@ namespace components\layout\Grid\Loader;
 
 use components\core\PaginationControl\Pagination;
 use components\core\PaginationControl\PaginationControl;
-use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
 use core\App;
 use core\database\sql\ModelFactory;
 use core\database\sql\query\SelectQuery;
@@ -42,7 +42,7 @@ class ModelGridLoader implements GridPortionLoader {
         return $factory->count();
     }
 
-    public function load(Grid $context): array {
+    public function load(GridLayout $context): array {
         $factory = ModelFactory::extract($this->modelClass);
         $query = $this->createSelectQuery($factory);
         if (!$this->paginate) {

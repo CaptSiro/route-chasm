@@ -7,6 +7,40 @@ CREATE TABLE IF NOT EXISTS core_module (
 
 
 
+DROP TABLE IF EXISTS core_fs_shortcut;
+DROP TABLE IF EXISTS core_fs_file;
+DROP TABLE IF EXISTS core_fs_directory;
+CREATE TABLE IF NOT EXISTS core_fs_directory (
+    `id_fs_directory` INT NOT NULL AUTO_INCREMENT,
+    `id_fs_parent` INT DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_fs_directory`),
+    FOREIGN KEY (`id_fs_parent`) REFERENCES core_fs_directory (`id_fs_directory`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_fs_file (
+    `id_fs_file` INT NOT NULL AUTO_INCREMENT,
+    `id_fs_parent` INT DEFAULT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `extension` VARCHAR(16) NOT NULL,
+    `hash` VARCHAR(255) NOT NULL,
+    `type` VARCHAR(128) NOT NULL,
+    `size` LONG NOT NULL,
+    PRIMARY KEY (`id_fs_file`),
+    FOREIGN KEY (`id_fs_parent`) REFERENCES core_fs_directory (`id_fs_directory`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_fs_shortcut (
+    `id_fs_shortcut` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `id_fs_file` INT NOT NULL,
+    PRIMARY KEY (`id_fs_shortcut`),
+    UNIQUE (`name`),
+    FOREIGN KEY (`id_fs_file`) REFERENCES core_fs_file (`id_fs_file`)
+) ENGINE = InnoDB;
+
+
+
 DROP TABLE IF EXISTS core_language;
 CREATE TABLE IF NOT EXISTS core_language (
     `id_language` INT NOT NULL AUTO_INCREMENT,

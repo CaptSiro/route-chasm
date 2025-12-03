@@ -40,6 +40,20 @@ function Icon(nf, fallback = undefined) {
 }
 
 /**
+ * @param {Impulse} percentage
+ */
+function Bar(percentage) {
+    const fill = jsml.div('progress-bar-fill');
+
+    const updateFill = x => fill.style.setProperty('fill', std_percentage(x))
+
+    updateFill(percentage.value());
+    percentage.listen(updateFill);
+
+    return jsml.div('progress-bar-container', fill);
+}
+
+/**
  * @param {boolean} checked
  * @param {string} label
  * @param {Props} props
@@ -196,6 +210,21 @@ function Radio(label, value, name, className = undefined, inputProps = {}) {
             jsml.span(_, label)
         ])
     );
+}
+
+/**
+ * @param {string | undefined} label
+ * @param {HTMLElement} elementFor
+ */
+function LabelFactory(label, elementFor) {
+    if (label === undefined) {
+        return;
+    }
+
+    const id = std_id_html(8);
+
+    elementFor.id = id;
+    return jsml.label({ for: id }, label);
 }
 
 /**

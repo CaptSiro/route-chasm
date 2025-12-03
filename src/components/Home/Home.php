@@ -25,7 +25,7 @@ class Home extends ContainerContent {
         $url = App::getInstance()->getRequest()->getUrl()->copy();
         $url->getQuery()->clear();
 
-        return Html::createLink(
+        return Html::createLinkUnsafe(
             $url->setQueryArgument('language', $locale->getIdentifier()),
             $locale->getName()
         );

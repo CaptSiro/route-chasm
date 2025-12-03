@@ -218,6 +218,11 @@ class Response {
         );
     }
 
+    public function sendStatus(int $httpCode): void {
+        $this->setStatus($httpCode);
+        $this->flush();
+    }
+
     /**
      * Redirects request to new URL.
      *

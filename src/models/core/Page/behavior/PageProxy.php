@@ -14,7 +14,7 @@ class PageProxy extends NexusProxy {
         if ($name === "title") {
             $url = App::getInstance()->getRequest()->getUrl()->copy();
             $url->setQueryArgument(RouteChasmEnvironment::QUERY_PAGE_PARENT, $this->item->getId());
-            return Html::createLink($url, $value);
+            return Html::createLinkUnsafe($url, $value);
         }
 
         return $value;

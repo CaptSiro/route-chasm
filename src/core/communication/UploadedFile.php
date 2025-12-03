@@ -17,6 +17,10 @@ class UploadedFile implements JsonSerializable {
 
 
 
+    public function getPath(): ?string {
+        return $this->temporaryName;
+    }
+
     public function getName(): string {
         return $this->name;
     }
@@ -40,6 +44,11 @@ class UploadedFile implements JsonSerializable {
 
         if (is_null($this->temporaryName)) {
             return Result::fail(new Exc("Uploaded file '$this->name' has not been uploaded properly. No temporary file"));
+        }
+
+        $directory = dirname($destination);
+        if (!file_exists($directory)) {
+            mkdir($directory, recursive: true);
         }
 
         move_uploaded_file($this->temporaryName, $destination);

@@ -4,6 +4,8 @@ namespace core\forms;
 
 use components\core\Html\Html;
 use components\layout\Layout;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
 use core\view\View;
 
@@ -12,6 +14,11 @@ class Form extends Component implements Layout {
 
     public static function rendering(): ?Form {
         return self::$form;
+    }
+
+    public static function importAssets(): void {
+        Css::import(Form::getStaticResource('form.css'));
+        Javascript::import(Form::getStaticResource('form.js'));
     }
 
 

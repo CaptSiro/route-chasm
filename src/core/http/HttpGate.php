@@ -90,7 +90,7 @@ class HttpGate implements Action {
     }
 
     protected function checkHttpMethod(string $httpMethod): bool {
-        return $this->httpMethod === HttpMethod::ANY || $httpMethod === $this->httpMethod;
+        return $this->httpMethod === HttpMethod::ANY || strtoupper($httpMethod) === strtoupper($this->httpMethod);
     }
 
 

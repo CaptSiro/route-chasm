@@ -3,6 +3,18 @@
 namespace core\utils;
 
 class Files {
+    protected static function periodPosition($base): int {
+        $len = strlen($base);
+
+        for ($i = $len - 1; $i >= 0; $i--) {
+            if ($base[$i] === ".") {
+                return $i;
+            }
+        }
+
+        return -1;
+    }
+
     public static function extension(string $path): ?string {
         $base = basename($path);
         $len = strlen($base);
@@ -14,6 +26,24 @@ class Files {
         }
 
         return null;
+    }
+
+    /**
+     * @param string $path
+     * @return array<string> [name, extension]
+     */
+    public static function split(string $path): array {
+        $base = basename($path);
+        $period = self::periodPosition($base);
+
+        if ($period < 0) {
+            return [$base, ''];
+        }
+
+        $name = substr($base, 0, $period);
+        $extension = substr($base, $period + 1);
+
+        return [$name, $extension];
     }
 
     public static function mimeType(string $path): string {
@@ -56,5 +86,25 @@ class Files {
         }
 
         return $files;
+    }
+
+    public static function humanSize(int $bytes): string {
+        if ($bytes < 1000) {
+            return $bytes . ' B';
+        }
+
+        $units = ['kiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+        $value = $bytes;
+        $i = 0;
+
+        while ($value >= 1024 && $i < count($units) - 1) {
+            $value /= 1024;
+            $i++;
+        }
+
+        $formatted = number_format($value, ($value < 10 ? 1 : 0), '.', '');
+        $formatted = rtrim(rtrim($formatted, '0'), '.');
+
+        return $formatted . ' ' . $units[$i - 1];
     }
 }

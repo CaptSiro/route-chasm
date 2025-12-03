@@ -1,0 +1,15 @@
+<?php /** @var AdminFileSystemCreateDirectory $this */
+
+use components\core\Admin\FileSystem\AdminFileSystemCreateDirectory;
+use core\forms\Form;
+use core\fs\FileServer;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('fs-mkdir.js'));
+
+Form::importAssets();
+
+?><button
+    x-init="fs_mkdirButton_init"
+    data-mkdir="<?= FileServer::getInstance()->createDirectoryUrl($this->directory) ?>"
+>Create directory</button>

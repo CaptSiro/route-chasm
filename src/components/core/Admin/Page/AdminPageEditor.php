@@ -26,7 +26,7 @@ class AdminPageEditor extends AdminNexusEditor {
 
     public function __construct(
         EditorBehavior $behaviour,
-        protected string $navigatorMountAlias = RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT
+        protected string $navigatorMountAlias = RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT
     ) {
         parent::__construct($behaviour);
         $this->setLexiconGroup(self::LEXICON_GROUP);
@@ -46,7 +46,7 @@ class AdminPageEditor extends AdminNexusEditor {
         }
 
         return $this->model->getUrlToModel(
-            RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT
+            RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT
         );
     }
 

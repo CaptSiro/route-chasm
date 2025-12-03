@@ -38,6 +38,13 @@ function todo() {
 }
 
 
+/**
+ * @param {number} x
+ * @return {string}
+ */
+function std_percentage(x) {
+    return (std_clamp(0, 1, x) * 100) + '%';
+}
 
 /**
  * @param {number} a1
@@ -287,6 +294,31 @@ function std_dateRelative(date) {
 }
 
 
+
+/**
+ * @param {HTMLElement} child
+ * @param {(element: HTMLElement) => boolean} validator
+ * @param {boolean} includeChild
+ * @returns {boolean}
+ */
+function std_dom_isDescendant(child, validator, includeChild = true) {
+    if (includeChild && validator(child)) {
+        return true;
+    }
+
+    let current = child.parentElement;
+    while (true) {
+        if (!is(current) || !(current instanceof HTMLElement)) {
+            return false;
+        }
+
+        if (validator(current)) {
+            return true;
+        }
+
+        current = current.parentElement;
+    }
+}
 
 /**
  * @param {HTMLElement} child
@@ -562,6 +594,22 @@ function std_arrayEquals(array1, array2, compareFunction = ((a, b) => a === b)) 
     }
 
     return true;
+}
+
+
+
+/**
+ * @param {string|URL} url
+ * @returns {URL}
+ */
+function std_jsonEndpoint(url) {
+    if (typeof url === "string") {
+        url = new URL(url);
+    }
+
+    url.searchParams.set('o', 'json');
+    url.searchParams.set('i', 'json');
+    return url;
 }
 
 

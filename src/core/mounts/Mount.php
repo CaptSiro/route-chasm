@@ -1,6 +1,6 @@
 <?php
 
-namespace core\navigation;
+namespace core\mounts;
 
 use core\route\Path;
 use core\route\Route;

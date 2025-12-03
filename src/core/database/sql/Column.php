@@ -12,6 +12,7 @@ class Column {
     public const TYPE_DATE = Parameter::TYPE_STRING;
     public const TYPE_DATETIME = Parameter::TYPE_STRING;
     public const TYPE_INTEGER = Parameter::TYPE_INTEGER;
+    public const TYPE_LONG = Parameter::TYPE_INTEGER;
     public const TYPE_DOUBLE = Parameter::TYPE_DOUBLE;
     public const TYPE_FLOAT = Parameter::TYPE_FLOAT;
     public const TYPE_BOOLEAN = Parameter::TYPE_BOOLEAN;

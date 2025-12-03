@@ -4,11 +4,13 @@ namespace components\layout\Grid\description;
 
 use components\layout\Grid\description\Grid as GridAttribute;
 use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
+use components\layout\Grid\GridLayoutFactory;
 use components\layout\Grid\Loader\GridLoader;
 use components\layout\Grid\Proxy\Proxy;
 use ReflectionClass;
 
-class GridDescription {
+class GridDescription implements GridLayoutFactory {
     /**
      * @var array<string, static>
      */
@@ -73,15 +75,30 @@ class GridDescription {
         return $this->proxy;
     }
 
+    public function setProxy(?Proxy $proxy): static {
+        $this->proxy = $proxy;
+        return $this;
+    }
+
     public function getColumns(): array {
         return $this->columns;
+    }
+
+    public function setColumns(array $columns): static {
+        $this->columns = $columns;
+        return $this;
     }
 
     public function getLoader(): ?GridLoader {
         return $this->loader;
     }
 
-    public function createGrid(Proxy $proxy): ?Grid {
+    public function setLoader(?GridLoader $loader): static {
+        $this->loader = $loader;
+        return $this;
+    }
+
+    public function createGrid(Proxy $proxy): ?GridLayout {
         if (empty($this->columns)) {
             return null;
         }

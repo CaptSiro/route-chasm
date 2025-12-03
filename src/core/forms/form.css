@@ -358,7 +358,7 @@ input.form-invalid {
 
 .form-select .dropdown {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 4px);
     left: 0;
     width: 100%;
     overflow: auto;

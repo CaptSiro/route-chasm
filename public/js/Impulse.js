@@ -20,7 +20,7 @@ class Impulse {
     /**
      * @param {ImpulseOptions<I> | undefined} options
      */
-    constructor(options) {
+    constructor(options = {}) {
         this.#options = options
         this.#listeners = [];
         this.#lastValue = options?.default;

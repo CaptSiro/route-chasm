@@ -115,7 +115,7 @@ class FormBodyParser implements RequestBodyParser {
         $files = new StrictMap();
 
         foreach ($_FILES as $name => $value) {
-            if (is_array($value)) {
+            if (is_array($value['name'])) {
                 $array = [];
 
                 $count = count($value['name']);

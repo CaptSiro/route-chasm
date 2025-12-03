@@ -2,8 +2,8 @@
 
 namespace components\layout\Grid\Loader;
 
-use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
 
 interface GridLoader {
-    public function load(Grid $context): array;
+    public function load(GridLayout $context): array;
 }

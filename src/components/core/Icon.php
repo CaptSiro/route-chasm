@@ -10,4 +10,12 @@ class Icon {
 
         return "<i class='nf $class'><span>$fallback</span></i>";
     }
+
+    public static function edit(): string {
+        return static::nf('nf-oct-pencil', 'Edit');
+    }
+
+    public static function delete(): string {
+        return static::nf('nf-oct-trash', 'Delete');
+    }
 }

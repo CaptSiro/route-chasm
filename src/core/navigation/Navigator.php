@@ -5,19 +5,21 @@ namespace core\navigation;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
+use core\mounts\MountLocation;
 use core\route\Path;
-use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
 use core\route\RouteTree;
 use core\view\View;
 use models\core\Language\Language;
-use models\core\Navigation\Slug;
 use models\core\Navigation\NavigationContext;
 use models\core\Navigation\NavigationFactoryRecord;
+use models\core\Navigation\Slug;
 use RuntimeException;
 
 class Navigator extends Router {
+    use MountLocation;
+
     /** @var $factories array<NavigationFactory> */
     private static array $factories = [];
 
@@ -32,26 +34,6 @@ class Navigator extends Router {
         }
 
         return self::$factories[$factoryId]->createDestination($data);
-    }
-
-
-
-    /**
-     * @var array<string, Mount>
-     */
-    protected static array $routes;
-
-    public static function mount(Mount $mount, Route|string $route): Route {
-        $route = Route::resolve($route);
-
-        $mount->setMountingPoint($route);
-        self::$routes[$mount->getAlias()] = $mount;
-
-        return $route;
-    }
-
-    public static function locate(string $alias): ?Mount {
-        return self::$routes[$alias];
     }
 
 

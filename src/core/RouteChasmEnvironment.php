@@ -3,10 +3,15 @@
 namespace core;
 
 class RouteChasmEnvironment {
+    public const FILE_SYSTEM_HASH_ALGORITHM = 'sha256';
+    public const FILE_SYSTEM_NAMESPACE = 'fs';
+    public const FILE_SYSTEM_DIRECTORY_HASH_OFFSET = 2;
+
     public const FILE_ENV = __DIR__ ."/../../.env";
     public const DIRECTORY_DATA = __DIR__ . '/../../data';
 
-    public const DEFAULT_CONTEXT_MOUNT = '';
+    public const MOUNT_DEFAULT_CONTEXT = '';
+    public const MOUNT_FILE_SERVER = 'fs';
 
     public const QUERY_REQUEST_FORMAT = 'i';
     public const QUERY_REQUEST_FORMAT_LONG = 'in';
@@ -24,6 +29,7 @@ class RouteChasmEnvironment {
      */
     public const QUERY_SIDELOADER_FORCE = 'f';
     public const QUERY_GRID_PORTION = 'p';
+    public const QUERY_FILE_SYSTEM_DIRECTORY = 'directory';
 
     public const PROJECT = "PROJECT";
     public const PROJECT_AUTHOR = "PROJECT_AUTHOR";
@@ -41,4 +47,6 @@ class RouteChasmEnvironment {
 
     public const GRID_DEFAULT_PORTION_SIZE = 20;
     public const ID_DIGITS = 4;
+
+    const BREAD_CRUMBS_DELIMITOR = '>';
 }

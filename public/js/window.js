@@ -309,8 +309,8 @@ function window_init(element) {
  */
 
 /**
- * @param {string} title
- * @param content
+ * @param {Content} title
+ * @param {Content} content
  * @param {WindowSettings} settings
  * @return {HTMLDivElement}
  */
@@ -379,6 +379,48 @@ function window_alert(message, settings = {}) {
 /**
  * @param {string} message
  * @param {WindowSettings} settings
+ * @return {Promise<string|undefined>}
+ */
+function window_prompt(message, settings = {}) {
+    return new Promise(resolve => {
+        const input = jsml.input({ type: 'text' });
+        let result = undefined;
+
+        const w = window_create(
+            "Prompt",
+            jsml.div("text-window", [
+                LabelFactory(message, input),
+                input,
+                jsml.div("controls",
+                    jsml.div("controls", [
+                        jsml.button({
+                            onClick: () => {
+                                result = input.value;
+                                window_close(w);
+                            }
+                        }, 'Ok'),
+
+                        jsml.button({
+                            onClick: () => {
+                                window_close(w);
+                            }
+                        }, 'Cancel'),
+                    ])
+                )
+            ]),
+            settings
+        );
+
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
+        window_open(w);
+    });
+}
+
+
+
+/**
+ * @param {string} message
+ * @param {WindowSettings} settings
  * @return {Promise<boolean>}
  */
 async function window_confirm(message, settings = {}) {
@@ -410,4 +452,21 @@ async function window_confirm(message, settings = {}) {
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
+}
+
+
+
+/**
+ * @param {Impulse<number>} fileProgress
+ * @param {WindowSettings} settings
+ */
+function window_fileUpload(fileProgress, settings = {}) {
+    return window_create(
+        'File upload',
+        jsml.div("text-window", [
+            jsml.h3(_, "Uploading files..."),
+            Bar(fileProgress)
+        ]),
+        settings
+    );
 }

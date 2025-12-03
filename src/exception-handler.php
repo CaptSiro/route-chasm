@@ -2,10 +2,12 @@
 
 function exc_dump_array(array $array): void {
     foreach ($array as $key => $value) {
+        $v = json_encode($value);
+
         echo "<code>
             <span class=\"key\">$key</span>
             <span class=\"separator\"> => </span>
-            <span class=\"value\">$value</span>
+            <span class=\"value\">$v</span>
         </code>";
     }
 }

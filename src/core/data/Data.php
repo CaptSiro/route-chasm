@@ -6,6 +6,10 @@ use core\route\Path;
 use core\RouteChasmEnvironment;
 
 class Data {
+    public static function namespace(string $ns): string {
+        return Path::join(RouteChasmEnvironment::DIRECTORY_DATA, $ns);
+    }
+
     public static function file(string $namespace, string $file): string {
         $path = Path::join(RouteChasmEnvironment::DIRECTORY_DATA, $namespace, $file);
         $directory = dirname($path);

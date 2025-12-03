@@ -424,21 +424,6 @@ function LabelAndComponentInspector(className, label, component, placeholder = u
     );
 }
 
-/**
- * @param {string | undefined} label
- * @param {HTMLElement} elementFor
- */
-function LabelFactory(label, elementFor) {
-    if (label === undefined) {
-        return;
-    }
-
-    const id = std_id_html(8);
-
-    elementFor.id = id;
-    return jsml.label({ for: id }, label);
-}
-
 function NotInspectorAble() {
     return undefined;
 }

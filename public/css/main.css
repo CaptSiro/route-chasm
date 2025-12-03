@@ -208,3 +208,17 @@ button:disabled:hover {
 .dropdown.animate {
     transition: max-height ease-in-out var(--animation-duration);
 }
+
+.progress-bar-container {
+    height: 1rem;
+    width: 100%;
+    background-color: var(--container-1);
+    border-radius: var(--border-radius-smaller);
+}
+
+.progress-bar-container .progress-bar-fill {
+    --fill: 0%;
+    width: var(--fill);
+    height: 100%;
+    background-color: var(--accent-3);
+}

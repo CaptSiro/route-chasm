@@ -3,7 +3,7 @@
 namespace components\layout\Grid\Loader;
 
 use components\core\PaginationControl\PaginationUrlCreator;
-use components\layout\Grid\Grid;
+use components\layout\Grid\GridLayout;
 use core\communication\Request;
 use core\RouteChasmEnvironment;
 use core\url\Url;
@@ -18,7 +18,7 @@ class GridLoaderUrlCreator implements PaginationUrlCreator {
 
     public function __construct(
         protected Url $base,
-        protected Grid $context
+        protected GridLayout $context
     ) {}
 
     public function createUrl(int $position, int $current, int $max): Url {

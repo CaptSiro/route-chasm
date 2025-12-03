@@ -2,7 +2,6 @@
 
 namespace core\mounts;
 
-use core\navigation\Mount;
 use core\route\Path;
 use core\route\Route;
 

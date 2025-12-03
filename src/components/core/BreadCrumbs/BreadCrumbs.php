@@ -2,6 +2,7 @@
 
 namespace components\core\BreadCrumbs;
 
+use core\RouteChasmEnvironment;
 use core\view\Renderer;
 use core\view\View;
 
@@ -13,7 +14,7 @@ class BreadCrumbs implements View {
      * @param string $delimitor
      * @return static
      */
-    public static function from(array $breadcrumbs, string $delimitor = '>'): static {
+    public static function from(array $breadcrumbs, string $delimitor = RouteChasmEnvironment::BREAD_CRUMBS_DELIMITOR): static {
         $items = [];
 
         foreach ($breadcrumbs as $url => $label) {

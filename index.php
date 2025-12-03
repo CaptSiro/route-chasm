@@ -27,6 +27,7 @@ use core\forms\controls\TextArea\TextArea;
 use core\forms\controls\TextField;
 use core\forms\Form;
 use core\forms\FormAction;
+use core\fs\FileServer;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
@@ -54,6 +55,7 @@ $router = $app->getMainRouter();
 
 
 
+$router->bind('/fs', FileServer::getInstance());
 $router->bind('/import', SideLoader::getInstance()->initRouter($app));
 $router->bind(
     Admin::mount(new StaticMount('admin'), '/admin'),
@@ -186,7 +188,7 @@ $router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
 Navigator::register(\core\pages\PageFactory::getInstance());
 
 $router->bind(
-    Navigator::mount(new StaticMount(RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT), '/'),
+    Navigator::mount(new StaticMount(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT), '/'),
     new Navigator()
 );
 

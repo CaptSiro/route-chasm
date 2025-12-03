@@ -27,7 +27,7 @@ class TextPageTemplate implements PageTemplate {
         $open = new ToolBarItem('file_open', 'ctrl + o');
         $open->addAttribute(
             'data-url',
-            $page->getUrlToModel(RouteChasmEnvironment::DEFAULT_CONTEXT_MOUNT)
+            $page->getUrlToModel(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT)
         );
 
         $editor->getToolBar()
