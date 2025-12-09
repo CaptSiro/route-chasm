@@ -34,7 +34,7 @@ class AdminNexus extends ContainerContent {
     protected ?BreadCrumbs $breadCrumbs = null;
     protected NexusLinkCreator $linkCreator;
     protected bool $showCreateButton = true;
-    protected ?View $headerContent;
+    protected ?View $headerContent = null;
 
 
 

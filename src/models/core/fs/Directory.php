@@ -2,6 +2,8 @@
 
 namespace models\core\fs;
 
+use components\core\Html\Html;
+use components\core\Icon;
 use core\App;
 use core\communication\Request;
 use core\database\sql\Column;
@@ -15,7 +17,6 @@ use core\fs\FileSystem;
 use core\fs\FileSystemEntry;
 use core\RouteChasmEnvironment;
 use core\url\Url;
-use http\Exception\RuntimeException;
 
 /**
  * @property int $parentId
@@ -219,5 +220,9 @@ class Directory extends Model implements FileSystemEntry {
 
     public function getEntryName(): string {
         return $this->name;
+    }
+
+    public function getEntryIcon(): string {
+        return Html::wrapUnsafe('span', Icon::nf('nf-fa-folder'), ['class' => 'folder-color']);
     }
 }

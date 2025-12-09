@@ -8,6 +8,7 @@ use components\core\Icon;
 use core\App;
 use core\ResourceLoader;
 use core\RouteChasmEnvironment;
+use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use models\core\fs\Directory;
 use models\core\fs\File;
@@ -22,6 +23,7 @@ class FileSystemEntryProxy extends NexusProxy {
         }
 
         Javascript::import(static::getStaticResource('fs.js'));
+        Css::import(static::getStaticResource('fs.css'));
         self::$imported = true;
     }
 
@@ -41,11 +43,10 @@ class FileSystemEntryProxy extends NexusProxy {
                 $url = App::getInstance()->getRequest()->getUrl()->copy();
                 $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $this->item->getId());
                 $link = Html::createLinkUnsafe($url, Html::escape($this->item->getEntryName()));
-                $icon = Icon::nf('nf-fa-folder');
 
                 return Html::wrapUnsafe(
                     'div',
-                    $icon . $link,
+                    $this->item->getEntryIcon() . $link,
                     ['class' => 'row']
                 );
             }
@@ -56,7 +57,7 @@ class FileSystemEntryProxy extends NexusProxy {
 
                 return Html::wrapUnsafe(
                     'div',
-                    $icon . $span,
+                    $this->item->getEntryIcon() . $span,
                     ['class' => 'row']
                 );
             }

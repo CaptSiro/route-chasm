@@ -2,6 +2,7 @@
 
 namespace models\core\fs;
 
+use components\core\Icon;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
@@ -176,6 +177,26 @@ class File extends Model implements FileSystemEntry, Destination {
 
     public function getEntryName(): string {
         return $this->name .'.'. $this->extension;
+    }
+
+    public function getEntryIcon(): string {
+        if (str_starts_with($this->type, 'text')) {
+            return Icon::nf('nf-fa-file_text');
+        }
+
+        if (str_starts_with($this->type, 'image')) {
+            return Icon::nf('nf-fa-file_image');
+        }
+
+        if (str_starts_with($this->type, 'audio')) {
+            return Icon::nf('nf-fa-file_audio');
+        }
+
+        return match ($this->type) {
+            'application/zip' => Icon::nf('nf-fa-file_zip_o'),
+            'application/xml' => Icon::nf('nf-fa-file_code'),
+            default => Icon::nf('nf-fa-file'),
+        };
     }
 
 

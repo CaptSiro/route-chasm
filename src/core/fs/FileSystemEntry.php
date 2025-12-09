@@ -8,6 +8,8 @@ use models\core\fs\Directory;
 interface FileSystemEntry {
     public function getEntryName(): string;
 
+    public function getEntryIcon(): string;
+
     public function renameEntry(string $name): static;
 
     public function createRenameEntryUrl(): Url;

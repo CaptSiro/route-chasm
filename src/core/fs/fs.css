@@ -1,0 +1,7 @@
+:root {
+    --fs-folder: #fdcf09;
+}
+
+.folder-color {
+    color: var(--fs-folder);
+}
