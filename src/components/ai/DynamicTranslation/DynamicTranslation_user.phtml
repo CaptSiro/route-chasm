@@ -1,0 +1,24 @@
+<?php /** @var \components\ai\DynamicTranslation\DynamicTranslation $this */
+
+use components\ai\DynamicTranslation\DynamicTranslation;
+
+?>
+
+phrase: <?= $this->phrase->default ?>;
+group: <?= $this->phrase->getLexiconGroup()->name ?>;
+languages: <?= $this->getLanguages() ?>;
+rules: <?= $this->getRules() ?>;
+
+Requirements:
+- Translate the phrase into each target language.
+- The phrase will contain "{}" which is a placeholder for a dynamic value.
+- NEVER remove or replace "{}".
+- "{}" must appear in every translation exactly once.
+- Each language uses **ONLY THE RULES THAT APPLY TO IT**. Do NOT force all rules. If a language needs fewer rules, output fewer. If a language requires more, output more.
+- Output a JSON object:
+{
+language: {
+rule: "translated string with {}"
+}
+}
+- No comments, no explanations, no prose.

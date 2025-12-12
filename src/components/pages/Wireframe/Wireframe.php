@@ -49,7 +49,7 @@ class Wireframe extends Component implements Container {
             ?? $page->getLocalization(App::getDefaultLanguage());
 
         if (is_null($localization)) {
-            throw new RuntimeException("Page is no localization found for page. Cannot display.");
+            throw new RuntimeException("No localization found for page. Cannot display.");
         }
 
         $this->localization = $localization;

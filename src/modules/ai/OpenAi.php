@@ -3,6 +3,7 @@
 namespace modules\ai;
 
 use core\App;
+use core\view\View;
 
 class OpenAi {
     public const API_KEY = 'OPENAI_KEY';
@@ -23,7 +24,7 @@ class OpenAi {
 
 
 
-    public function chat(array $body): bool|string {
+    public function chat(View $body): bool|string {
         $curl = curl_init("https://api.openai.com/v1/responses");
 
         curl_setopt_array($curl, [
@@ -33,7 +34,7 @@ class OpenAi {
                 'Content-Type: application/json',
                 "Authorization: Bearer ". $this->apiKey,
             ],
-            CURLOPT_POSTFIELDS => json_encode($body)
+            CURLOPT_POSTFIELDS => $body->render()
         ]);
 
         $response = curl_exec($curl);

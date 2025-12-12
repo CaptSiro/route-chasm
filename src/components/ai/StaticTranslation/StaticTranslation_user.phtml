@@ -1,0 +1,9 @@
+<?php /** @var StaticTranslation $this */
+
+use components\ai\StaticTranslation\StaticTranslation;
+
+?>
+
+phrase: <?= $this->phrase->default ?>;
+group: <?= $this->phrase->getLexiconGroup()->name ?>;
+languages: <?= $this->getLanguages() ?>;

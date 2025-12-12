@@ -13,8 +13,20 @@ trait TemplateRenderer {
 
 
 
+    public function getTemplate(): string {
+        return $this->getResource($this->getClass() .".phtml");
+    }
+
+    public function getTemplateVariant(?string $variant): string {
+        if (is_null($variant)) {
+            return $this->getTemplate();
+        }
+
+        return $this->getResource($this->getClass() ."_$variant.phtml");
+    }
+
     public function renderTemplated(?string $template = null): string {
-        $file = $this->template ?? $template ?? $this->getResource($this->getClass() .".phtml");
+        $file = $this->template ?? $template ?? $this->getTemplate();
 
         if (Files::extension($file) === null) {
             $file .= ".phtml";

@@ -20,6 +20,14 @@ class DataItem {
 
 
 
+    public function getFilePath(): string {
+        return Data::file($this->namespace, $this->file);
+    }
+
+    public function exists(): bool {
+        return file_exists($this->getFilePath());
+    }
+
     public function read(): mixed {
         if (!isset($this->content)) {
             $this->content = Data::retrieve($this->namespace, $this->file);

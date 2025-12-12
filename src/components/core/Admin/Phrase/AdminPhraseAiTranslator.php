@@ -2,6 +2,10 @@
 
 namespace components\core\Admin\Phrase;
 
+use components\ai\AiRequest;
+use components\ai\DynamicTranslation\DynamicTranslation;
+use components\ai\InputMessage;
+use components\ai\StaticTranslation\StaticTranslation;
 use core\App;
 use core\ResourceLoader;
 use core\utils\Strings;
@@ -15,79 +19,36 @@ use models\core\Language\Lexicon\Translation;
 class AdminPhraseAiTranslator implements View {
     use Renderer, ResourceLoader;
 
-    public static function createRequest(Phrase $phrase): array {
+    public const AI_MODEL = 'gpt-4o-mini';
+
+
+
+    public static function createRequest(Phrase $phrase): View {
         return $phrase->isDynamic
             ? self::createDynamicRequest($phrase)
             : self::createStaticRequest($phrase);
     }
 
-    public static function createStaticRequest(Phrase $phrase): array {
-        $languages = json_encode(Language::getCodes(), JSON_UNESCAPED_UNICODE);
+    public static function createStaticRequest(Phrase $phrase): View {
+        $request = new AiRequest(self::AI_MODEL);
 
-        $userContent = <<<TXT
-phrase: {$phrase->default}
-group: {$phrase->getLexiconGroup()->name}
-languages: {$languages}
-TXT;
+        $request->set('text', ["format" => ["type" => "json_object"]]);
 
-        return [
-            "model" => "gpt-4o-mini",
-            "text" => ["format" => ["type" => "json_object"]],
-            "input" => [
-                [
-                    "role" => "system",
-                    "content" => "Translate the given phrase into all target languages. Do not add explanations, notes, or context. Just return a JSON object mapping language_code -> translated_string."
-                ],
-                [
-                    "role" => "user",
-                    "content" => $userContent
-                ]
-            ]
-        ];
+        $request->add(new StaticTranslation(InputMessage::ROLE_SYSTEM, $phrase));
+        $request->add(new StaticTranslation(InputMessage::ROLE_USER, $phrase));
+
+        return $request;
     }
 
-    public static function createDynamicRequest(Phrase $phrase): array {
-        $languages = json_encode(Language::getCodes(), JSON_UNESCAPED_UNICODE);
-        $rules = json_encode(Rule::getLabels(), JSON_UNESCAPED_UNICODE);
+    public static function createDynamicRequest(Phrase $phrase): View {
+        $request = new AiRequest(self::AI_MODEL);
 
-        $userContent = <<<TXT
-phrase: {$phrase->default}
-group: {$phrase->getLexiconGroup()->name}
-languages: {$languages}
-rules: {$rules}
+        $request->set('text', ["format" => ["type" => "json_object"]]);
 
-Requirements:
-- Translate the phrase into each target language.
-- The phrase will contain "{}" which is a placeholder for a dynamic value.
-- NEVER remove or replace "{}".
-- "{}" must appear in every translation exactly once.
-- Each language uses **ONLY THE RULES THAT APPLY TO IT**. Do NOT force all rules. If a language needs fewer rules, output fewer. If a language requires more, output more.
-- Output a JSON object:
-  {
-    language: {
-      rule: "translated string with {}"
-    }
-  }
-- No comments, no explanations, no prose.
-TXT;
+        $request->add(new DynamicTranslation(InputMessage::ROLE_SYSTEM, $phrase));
+        $request->add(new DynamicTranslation(InputMessage::ROLE_USER, $phrase));
 
-        return [
-            "model" => "gpt-4o-mini",
-            "text" => ["format" => ["type" => "json_object"]],
-            "input" => [
-                [
-                    "role" => "system",
-                    "content" =>
-                        "You are a translation engine with pluralization support. " .
-                        "Your only job is to produce valid JSON according to the user's instructions. " .
-                        "Do not add explanations. Do not change the '{}' placeholder."
-                ],
-                [
-                    "role" => "user",
-                    "content" => $userContent
-                ]
-            ]
-        ];
+        return $request;
     }
 
     public static function parseTranslations(Phrase $phrase, bool|string $result): array {

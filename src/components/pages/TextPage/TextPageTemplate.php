@@ -16,12 +16,16 @@ use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
 
 class TextPageTemplate implements PageTemplate {
+    public const DATA_ITEM_CONTENT = 'content';
+
+
+
     public function getName(): string {
         return "Text";
     }
 
     protected function createEditor(Page $page, LocalizedPage $localization): Editor {
-        $editor = new Editor($page->get('content'));
+        $editor = new Editor($page->get(self::DATA_ITEM_CONTENT));
         $editor->setTitle($localization->title .' - Content Editor');
 
         $open = new ToolBarItem('file_open', 'ctrl + o');
@@ -60,6 +64,10 @@ class TextPageTemplate implements PageTemplate {
     }
 
     public function delete(Page $page): ?View {
+        $page
+            ->get(self::DATA_ITEM_CONTENT)
+            ->delete();
+
         return null;
     }
 }
