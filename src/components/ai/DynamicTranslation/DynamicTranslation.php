@@ -9,7 +9,7 @@ use models\core\Language\Lexicon\Rule;
 
 class DynamicTranslation extends InputMessage {
     public function __construct(
-        protected string $role,
+        string $role,
         protected Phrase $phrase
     ) {
         parent::__construct($role);

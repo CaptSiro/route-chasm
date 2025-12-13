@@ -8,13 +8,13 @@ use core\sideloader\importers\Javascript\Javascript;
 <?php Javascript::import($this->getResource("form.js")); ?>
 <?php Css::import($this->getResource("form.css")); ?>
 <form
-    class="form"
+    class="form <?= $this->getCssClass() ?>"
     data-method="<?= $this->method ?>"
     data-transformer="<?= $this->bodyTransformer ?>"
     <?php if (!is_null($this->action)): ?>
         action="<?= $this->action ?>"
     <?php endif; ?>
-    x-init="form_init"
+    <?= $this->stringifyAttributes() ?>
 >
     <div class="form-barrier">
         <?php foreach ($this->elements as $control): ?>

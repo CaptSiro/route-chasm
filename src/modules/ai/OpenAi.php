@@ -42,4 +42,17 @@ class OpenAi {
 
         return $response;
     }
+
+    public function parseResponse(bool|string $result): ?array {
+        if ($result === false) {
+            return [];
+        }
+
+        $json = json_decode($result, associative: true);
+        if (!isset($json['output'][0]['content'][0]['text'])) {
+            return [];
+        }
+
+        return json_decode($json['output'][0]['content'][0]['text'], associative: true);
+    }
 }

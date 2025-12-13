@@ -8,10 +8,10 @@ use models\core\Language\Lexicon\Phrase;
 
 class StaticTranslation extends InputMessage {
     public function __construct(
-        protected string $role,
+        string $role,
         protected Phrase $phrase
     ) {
-        parent::__construct();
+        parent::__construct($role);
         $this->setTemplate($this->getTemplateVariant(strtolower($role)));
     }
 

@@ -4,12 +4,18 @@ namespace core\forms;
 
 use components\core\Html\Html;
 use components\layout\Layout;
+use core\html\Attribute;
+use core\html\HtmlAttribute;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
 use core\view\View;
 
-class Form extends Component implements Layout {
+class Form extends Component implements Layout, Attribute {
+    use HtmlAttribute;
+
+
+
     private static ?Form $form = null;
 
     public static function rendering(): ?Form {
@@ -73,9 +79,20 @@ class Form extends Component implements Layout {
         parent::__construct();
         $this->elements = [];
         $this->bodyTransformer = FormTransformer::TRANSFORMER_FORM_DATA;
+        $this->addJavascriptInit('form_init');
     }
 
 
+
+    public function setOnSubmitSuccess(string $javascriptFunction): static {
+        $this->addAttribute('data-on-submit-success', $javascriptFunction);
+        return $this;
+    }
+
+    public function setOnSubmitFailure(string $javascriptFunction): static {
+        $this->addAttribute('data-on-submit-failure', $javascriptFunction);
+        return $this;
+    }
 
     public function setBodyTransformer(string $javascriptFunction): static {
         $this->bodyTransformer = $javascriptFunction;

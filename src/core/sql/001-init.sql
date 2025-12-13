@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS core_navigation (
 
 
 
+DROP TABLE IF EXISTS core_ai_page;
 DROP TABLE IF EXISTS ext_page_meta;
 DROP TABLE IF EXISTS core_page_localization;
 DROP TABLE IF EXISTS core_page;
@@ -202,6 +203,14 @@ CREATE TABLE IF NOT EXISTS ext_page_meta (
     `og_description` TEXT NOT NULL,
     PRIMARY KEY (`id_page_meta`),
     FOREIGN KEY (`id_localized_page`) REFERENCES `core_page_localization` (`id_localized_page`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS core_ai_page (
+    `id_ai_page` INT NOT NULL AUTO_INCREMENT,
+    `id_page` INT NOT NULL,
+    `description` TEXT NOT NULL,
+    PRIMARY KEY (`id_ai_page`),
+    FOREIGN KEY (`id_page`) REFERENCES `core_page` (`id_page`)
 ) ENGINE = InnoDB;
 
 

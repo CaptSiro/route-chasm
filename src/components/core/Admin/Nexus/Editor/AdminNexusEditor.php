@@ -9,6 +9,7 @@ use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\Model;
+use core\Flags;
 use core\forms\controls\CsrfField;
 use core\forms\controls\HiddenField;
 use core\forms\controls\MultiSubmit\MultiSubmit;
@@ -22,6 +23,10 @@ use core\view\ContainerContent;
 use core\view\View;
 
 class AdminNexusEditor extends ContainerContent implements Editor {
+    use Flags;
+
+    public const FLAG_REMOVE_CANCEL_BUTTON = 1;
+
     public const STATE_CREATOR = 0;
     public const STATE_UPDATER = 1;
 
@@ -90,13 +95,16 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             ? 'Create'
             : 'Update';
 
-        $form->add(new MultiSubmit([
-            (new FormAction(FormAction::TYPE_BUTTON, 'Cancel'))
+        $actions = [];
+        if (!$this->hasFlag(self::FLAG_REMOVE_CANCEL_BUTTON)) {
+            $actions[] = (new FormAction(FormAction::TYPE_BUTTON, 'Cancel'))
                 ->addJavascriptInit('nexus_cancelButton')
-                ->addAttribute('data-url', $this->context->getLink()),
-            new FormAction(FormAction::TYPE_SUBMIT, $submitLabel)
-        ]));
+                ->addAttribute('data-url', $this->context->getLink());
+        }
 
+        $actions[] = new FormAction(FormAction::TYPE_SUBMIT, $submitLabel);
+
+        $form->add(new MultiSubmit($actions));
         return $form;
     }
 
@@ -163,7 +171,10 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                 }
 
                 $response->setStatus(HttpCode::S_OK);
-                $response->setHeader(HttpHeader::X_NEXT, $this->context->getLink());
+                if (!is_null($next = $this->context->getLink())) {
+                    $response->setHeader(HttpHeader::X_NEXT, $next);
+                }
+
                 $response->flush();
             }
 

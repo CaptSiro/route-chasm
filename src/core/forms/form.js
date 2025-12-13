@@ -127,8 +127,7 @@ async function form_submit(form, event) {
     }
 
     if (response.headers.has('X-Next')) {
-        const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onRedirect;
-        await fn(form, response, response.headers.get('X-Next'));
+        await form_onRedirect(form, response, response.headers.get('X-Next'));
         return;
     }
 

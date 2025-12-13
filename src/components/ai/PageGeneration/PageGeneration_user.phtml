@@ -1,0 +1,15 @@
+<?php /** @var PageGeneration $this */
+
+use components\ai\PageGeneration\PageGeneration;
+
+?>
+
+Generate a static website based on the following description:
+<?= $this->description ?>
+
+Rules:
+- The "html" field must contain ONLY body content (no HTML, HEAD, BODY tags).
+- The "css" field must contain ONLY CSS.
+- The "js" field must contain ONLY JavaScript.
+- Do not inline CSS or JavaScript into HTML.
+- Do not include any explanations or formatting outside the JSON output.

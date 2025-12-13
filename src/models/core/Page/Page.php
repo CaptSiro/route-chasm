@@ -26,6 +26,7 @@ use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\utils\Arrays;
 use core\utils\Strings;
+use core\view\View;
 use http\Exception\RuntimeException;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
@@ -110,6 +111,17 @@ class Page extends Model implements Destination {
     protected array $children;
 
 
+
+    public function save(): DatabaseAction|View {
+        $result = parent::save();
+        if ($result === DatabaseAction::INSERT) {
+            if (!is_null($error = $this->getTemplate()?->create($this))) {
+                return $error;
+            }
+        }
+
+        return $result;
+    }
 
     public function delete(): DatabaseAction {
         $template = $this->getTemplate();
