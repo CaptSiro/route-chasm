@@ -93,6 +93,11 @@ class Router {
         $parameters = $request->getParam();
         $traces = $this->find($path);
 
+        $method = $request
+            ->getUrl()
+            ->getQuery()
+            ->get('x');
+
         foreach ($traces as $trace) {
             $index = -1;
             $pathIndex = $path->getOffset();
@@ -111,9 +116,16 @@ class Router {
                 }
 
                 foreach ($vertex->get()->getActions() as $action) {
-                    if ($action->isMiddleware() || $last === $key) {
-                        $action->perform($request, $response);
+                    if (!$action->isMiddleware() && $last !== $key) {
+                        continue;
                     }
+
+                    if (!is_null($method) && $method !== '' && method_exists($action, $method)) {
+                        call_user_func_array([$action, $method], [$request, $response]);
+                        continue;
+                    }
+
+                    $action->perform($request, $response);
                 }
 
                 $pathIndex++;
