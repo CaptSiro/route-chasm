@@ -9,6 +9,7 @@ use core\collections\dictionary\StrictStack;
 use core\collections\graph\TreeVertex;
 use core\communication\Request;
 use core\communication\Response;
+use core\RouteChasmEnvironment;
 
 class Router {
     protected RouteTree $structure;
@@ -96,7 +97,7 @@ class Router {
         $method = $request
             ->getUrl()
             ->getQuery()
-            ->get('x');
+            ->get(RouteChasmEnvironment::QUERY_EXECUTE);
 
         foreach ($traces as $trace) {
             $index = -1;

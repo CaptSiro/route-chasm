@@ -1,0 +1,7 @@
+.w-ai {
+    display: block;
+    position: relative;
+    border: unset;
+    height: fit-content;
+    min-height: 32px;
+}

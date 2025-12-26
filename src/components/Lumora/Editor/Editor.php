@@ -2,10 +2,17 @@
 
 namespace components\Lumora\Editor;
 
+use components\ai\AiRequest;
+use components\ai\InputMessage;
+use components\ai\PageGeneration\PageGeneration;
+use components\ai\Schema\ObjectSchema;
+use components\ai\Schema\Schema;
+use components\ai\Schema\StringSchema;
 use components\core\Html\Html;
 use components\core\ToolBar\ToolBar;
 use components\core\ToolBar\ToolBarItem;
 use components\core\WebPage\WebPage;
+use components\Lumora\widgets\Ai\AiWidget;
 use components\Lumora\widgets\Code\CodeWidget;
 use components\Lumora\widgets\Command\CommandWidget;
 use components\Lumora\widgets\CommentSection\CommentSectionWidget;
@@ -25,6 +32,7 @@ use components\Lumora\widgets\Text\TextWidget;
 use components\Lumora\widgets\TextEditor\TextEditorWidget;
 use components\Lumora\widgets\Widget;
 use components\Lumora\widgets\WidgetImporter;
+use components\pages\AiGeneratedPage\AiPageTemplate;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
@@ -33,6 +41,7 @@ use core\http\HttpMethod;
 use core\route\Route;
 use core\utils\Arrays;
 use core\view\ContainerContent;
+use modules\ai\OpenAi;
 
 class Editor extends ContainerContent {
     public static function getDefaultWidgets(): array {
@@ -54,6 +63,7 @@ class Editor extends ContainerContent {
             RootWidget::getInstance(),
             TextWidget::getInstance(),
             TextEditorWidget::getInstance(),
+            AiWidget::getInstance()
         ];
     }
 
@@ -198,6 +208,42 @@ class Editor extends ContainerContent {
     // Action
     public function perform(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
+            case "GENERATE": {
+                $client = OpenAi::fromEnv();
+                $aiRequest = new AiRequest('gpt-4o-mini');
+
+                $schema = new Schema(
+                    'webpage_component_generation',
+                    (new ObjectSchema())
+                        ->add('html', new StringSchema())
+                        ->add('css', new StringSchema())
+                        ->add('js', new StringSchema())
+                        ->setRequired(['html', 'css', 'js'])
+                );
+
+                $prompt = $request->getBody()->get("prompt");
+
+                $aiRequest
+                    ->setSchema($schema)
+                    ->add(new PageGeneration(InputMessage::ROLE_SYSTEM, $prompt))
+                    ->add(new PageGeneration(InputMessage::ROLE_USER, $prompt));
+
+                if (is_null($aiResponse = $client->parseResponse($client->chat($aiRequest)))) {
+                    $response->sendMessage(
+                        $this->tr("Unable to generate widget based on the prompt."),
+                        HttpCode::CE_BAD_REQUEST
+                    );
+
+                    return;
+                }
+
+                $response->json([
+                    'html' => $aiResponse['html'],
+                    'css' => $aiResponse['css'],
+                    'js' => $aiResponse['js'],
+                ]);
+            }
+
             case HttpMethod::GET: {
                 parent::perform($request, $response);
                 return;

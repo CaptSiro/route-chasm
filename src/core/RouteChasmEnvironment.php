@@ -13,6 +13,7 @@ class RouteChasmEnvironment {
     public const MOUNT_DEFAULT_CONTEXT = '';
     public const MOUNT_FILE_SERVER = 'fs';
 
+    public const QUERY_EXECUTE = 'x';
     public const QUERY_REQUEST_FORMAT = 'i';
     public const QUERY_REQUEST_FORMAT_LONG = 'in';
     public const QUERY_RESPONSE_FORMAT = 'o';
