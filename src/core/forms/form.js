@@ -94,6 +94,18 @@ async function form_submit(form, event) {
     event.preventDefault();
     event.stopImmediatePropagation();
 
+    const w = window_create(
+        "",
+        jsml.div("text-window", [
+            jsml.h3(_, "Submitting form..."),
+        ]),
+        {
+            isDialog: true
+        }
+    );
+
+    window_open(w);
+
     /** @type {(HTMLElement) => Payload} */
     const transformer = std_getFunction(form.dataset.transformer ?? '');
     if (!is(transformer)) {
@@ -119,6 +131,8 @@ async function form_submit(form, event) {
         headers,
         body: payload.body
     });
+
+    window_close(w);
 
     if (response.status >= 400) {
         const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onSubmitFailure;

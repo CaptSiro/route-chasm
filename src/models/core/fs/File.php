@@ -81,6 +81,10 @@ class File extends Model implements FileSystemEntry, Destination {
 
 
 
+    public function getFileName(): string {
+        return $this->name .'.'. $this->extension;
+    }
+
     public function getRealPath(): string {
         return FileSystem::getRealPath($this);
     }

@@ -3,10 +3,12 @@
 <html lang="<?= $this->language ?>">
     <?= $this->head ?>
     <body>
-        <main>
-            <?php foreach ($this->children as $child): ?>
-                <?= $child->render() ?>
-            <?php endforeach; ?>
-        </main>
+        <div class="root">
+            <main>
+                <?php foreach ($this->children as $child): ?>
+                    <?= $child->render() ?>
+                <?php endforeach; ?>
+            </main>
+        </div>
     </body>
 </html>

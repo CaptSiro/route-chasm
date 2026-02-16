@@ -1,6 +1,14 @@
 <?php /** @var WebPage $this */
 
-use components\core\Admin\Login\AdminLogin;use components\core\Admin\Project\AdminProject;use components\core\Icon;use components\core\Terminal\Terminal;use components\core\WebPage\WebPage;use components\windows\LanguageSelect\LanguageSelect;use core\admin\AdminRouter;use core\App;use core\sideloader\importers\Css\Css;
+use components\core\Admin\Login\AdminLogin;
+use components\core\Admin\Project\AdminProject;
+use components\core\Icon;
+use components\core\Terminal\Terminal;
+use components\core\WebPage\WebPage;
+use components\windows\LanguageSelect\LanguageSelect;
+use core\admin\AdminRouter;
+use core\App;
+use core\sideloader\importers\Css\Css;
 
 Css::import($this->getResource('admin-page.css'));
 $request = App::getInstance()->getRequest();
@@ -19,57 +27,59 @@ $request = App::getInstance()->getRequest();
         });
     }
 </script>
-<body class="admin-page">
-    <nav>
-        <div class="start">
-            <?= new AdminProject() ?>
-            <?= AdminRouter::getInstance()->getMenu() ?>
-        </div>
+<body>
+    <div class="root admin-page">
+        <nav>
+            <div class="start">
+                <?= new AdminProject() ?>
+                <?= AdminRouter::getInstance()->getMenu() ?>
+            </div>
 
-        <div class="end">
-            <div class="nav-item" x-init="adminPage_navItem">
+            <div class="end">
+                <div class="nav-item" x-init="adminPage_navItem">
                 <span class="icon">
                     <?= Icon::nf('nf-fa-language', '<') ?>
                 </span>
 
-                <?= $languageWindow = LanguageSelect::window(openButton: false) ?>
-                <div class="target" onclick="window_open($('#<?= $languageWindow->getId() ?>'))">
-                    <?= $this->trg(AdminRouter::LEXICON_GROUP, "Languages") ?>
+                    <?= $languageWindow = LanguageSelect::window(openButton: false) ?>
+                    <div class="target" onclick="window_open($('#<?= $languageWindow->getId() ?>'))">
+                        <?= $this->trg(AdminRouter::LEXICON_GROUP, "Languages") ?>
+                    </div>
                 </div>
-            </div>
 
-            <div class="nav-item" x-init="adminPage_navItem">
+                <div class="nav-item" x-init="adminPage_navItem">
                 <span class="icon">
                     <?= Icon::nf('nf-fa-power_off', '<') ?>
                 </span>
 
-                <a href="<?= AdminLogin::createLogoutUrl($request->getUrl()) ?>">
-                    <?= $this->trg(AdminRouter::LEXICON_GROUP, 'Logout') ?>
-                </a>
+                    <a href="<?= AdminLogin::createLogoutUrl($request->getUrl()) ?>">
+                        <?= $this->trg(AdminRouter::LEXICON_GROUP, 'Logout') ?>
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <div
-            class="resize-handle"
-            data-target="<parent>"
-            data-direction="horizontal"
-        ></div>
-    </nav>
+            <div
+                class="resize-handle"
+                data-target="<parent>"
+                data-direction="horizontal"
+            ></div>
+        </nav>
 
-    <main>
-<!--    todo    -->
-<!--        --><?php //$crumbs = AdminHome::changeHomeLabel(AdminMenu::getInstance()->getBreadCrumbs()) ?>
-<!--        --><?php //if (count($crumbs->getItems()) > 1): ?>
-<!--            <section>-->
-<!--                --><?php //= $crumbs->render() ?>
-<!--            </section>-->
-<!--        --><?php //endif; ?>
+        <main>
+            <!--    todo    -->
+            <!--        --><?php //$crumbs = AdminHome::changeHomeLabel(AdminMenu::getInstance()->getBreadCrumbs()) ?>
+            <!--        --><?php //if (count($crumbs->getItems()) > 1): ?>
+            <!--            <section>-->
+            <!--                --><?php //= $crumbs->render() ?>
+            <!--            </section>-->
+            <!--        --><?php //endif; ?>
 
-        <?php foreach ($this->children as $child): ?>
-            <?= $child->render() ?>
-        <?php endforeach; ?>
-    </main>
+            <?php foreach ($this->children as $child): ?>
+                <?= $child->render() ?>
+            <?php endforeach; ?>
+        </main>
 
-    <?= Terminal::getInstance() ?>
+        <?= Terminal::getInstance() ?>
+    </div>
 </body>
 </html>

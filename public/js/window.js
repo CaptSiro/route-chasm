@@ -42,6 +42,11 @@ function window_open(element) {
         return;
     }
 
+    if (element.dataset.dialog === "true") {
+        $(".root", document.body)?.toggleAttribute("inert", true);
+        windowOverlayActive.classList.add("inert");
+    }
+
     window_maximize(element);
     element.style.left = "50%";
     element.style.top = "50%";
@@ -160,6 +165,11 @@ function window_close(element) {
             arg: element
         });
         return;
+    }
+
+    if (element.dataset.dialog === "true") {
+        $(".root", document.body)?.toggleAttribute("inert", false);
+        windowOverlayActive.classList.remove("inert");
     }
 
     element.classList.add('hide');
@@ -300,6 +310,7 @@ function window_init(element) {
 
 /**
  * @typedef {{
+     isDialog?: boolean,
      isDraggable?: boolean,
      isMinimizable?: boolean,
      isResizable?: boolean,
@@ -341,6 +352,10 @@ function window_create(title, content, settings = {}) {
 
     if (settings.isDraggable === true) {
         w.dataset.windowDraggable = "true";
+    }
+
+    if (settings.isDialog === true) {
+        w.dataset.dialog = "true";
     }
 
     window_init(w);

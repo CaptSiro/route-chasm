@@ -7,7 +7,6 @@ body {
     visibility: hidden;
     position: absolute;
     display: flex;
-    z-index: 2;
     user-select: none;
 }
 
@@ -91,13 +90,8 @@ body {
 .widget.edit.hover,
 .widget.edit:focus {
     outline-color: var(--accent-2);
-    z-index: 3;
 
     transition: outline-color 0ms linear;
-}
-
-.widget.edit.hover {
-    z-index: 5;
 }
 
 .widget.remove {

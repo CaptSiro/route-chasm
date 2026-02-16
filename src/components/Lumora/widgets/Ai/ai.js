@@ -105,6 +105,9 @@ class WAi extends Widget {
             "Prompt",
             "Create table..."
         );
+
+        $("textarea", this.#promptArea)
+            ?.setAttribute("rows", "5");
         
         return [
             TitleInspector("Ai component"),
@@ -114,6 +117,17 @@ class WAi extends Widget {
             this.#promptArea,
             jsml.div(_, jsml.button({
                 onClick: async () => {
+                    const w = window_create(
+                        "",
+                        jsml.div("text-window", [
+                            jsml.h3(_, "Generating widget..."),
+                        ]),
+                        {
+                            isDialog: true
+                        }
+                    );
+
+                    window_open(w);
                     const response = await fetch(window.location, {
                         method: "GENERATE",
                         body: JSON.stringify({
@@ -122,6 +136,7 @@ class WAi extends Widget {
                     });
 
                     const json = await response.json();
+                    window_close(w);
 
                     if (!response.ok) {
                         await window_alert(json.message);

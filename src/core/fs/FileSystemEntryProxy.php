@@ -52,12 +52,16 @@ class FileSystemEntryProxy extends NexusProxy {
             }
 
             if ($this->item instanceof File) {
-                $span = Html::wrap('span', $this->item->getEntryName());
                 $icon = Icon::nf('nf-fa-file');
+                $link = Html::createLinkUnsafe(
+                    $this->item->getUrlToModel(),
+                    Html::escape($this->item->getEntryName()),
+                    '_blank'
+                );
 
                 return Html::wrapUnsafe(
                     'div',
-                    $this->item->getEntryIcon() . $span,
+                    $this->item->getEntryIcon() . $link,
                     ['class' => 'row']
                 );
             }

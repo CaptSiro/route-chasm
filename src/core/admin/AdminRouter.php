@@ -52,7 +52,9 @@ class AdminRouter extends Router {
             Procedure::middleware(function (Request $request) {
                 $request->set(self::KEY_IS_ADMIN, true);
             }),
+            // middleware
             new AdminLogin(),
+            // if it is just / render message 'Admin Home'
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
                 $this->home ?? new Procedure(fn() => new Message('Admin Home'))

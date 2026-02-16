@@ -33,8 +33,8 @@ class Html implements View {
         return "<$tag $attr>$content</$tag>";
     }
 
-    public static function createLinkUnsafe(string $url, string $content): string {
-        return "<a href='$url'>$content</a>";
+    public static function createLinkUnsafe(string $url, string $content, string $target = '_self'): string {
+        return "<a href='$url' target='$target'>$content</a>";
     }
 
     public function __construct(

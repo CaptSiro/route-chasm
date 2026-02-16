@@ -16,7 +16,12 @@ use modules\locales\EnglishUS;
     </div>
 <?php endforeach; ?>
 
-<div><?= $this->trtg('home', '{} flowers', 0, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
+<div>
+
+    <?= $this->trtg('home', '{} flowers', 0,
+        templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?>
+
+</div>
 <div><?= $this->trtg('home', '{} flowers', 1, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
 <div><?= $this->trtg('home', '{} flowers', 2, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>
 <div><?= $this->trtg('home', '{} flowers', 3, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?></div>

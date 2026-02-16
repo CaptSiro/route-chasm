@@ -7,6 +7,7 @@ use core\communication\Request;
 use core\communication\Response;
 use core\http\Http;
 use core\http\HttpCode;
+use core\http\HttpHeader;
 use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\RouteNode;
@@ -110,6 +111,36 @@ class FileServer extends Router {
         );
 
         $router->use(
+            '/file/[hash]',
+            Http::get(function (Request $request, Response $response) {
+                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
+
+                $name = $file->getFileName();
+                $response->setHeader(HttpHeader::CONTENT_DISPOSITION, "inline; filename=\"$name\"");
+                $response->setHeader(HttpHeader::CONTENT_TYPE, $file->type);
+                $response->readFile($file->getRealPath());
+            }),
+
+            Http::patch(function (Request $request, Response $response) {
+                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
+
+                $file->renameEntry($request->getBody()->getStrict('name'));
+            }),
+
+            Http::delete(function (Request $request, Response $response) {
+                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
+
+                $file->delete();
+            })
+        );
+
+        $router->use(
             '/directory/',
             Http::post(function (Request $request, Response $response) {
                 $parent = Directory::fromRequest($request);
@@ -150,33 +181,6 @@ class FileServer extends Router {
 
                 $directory->deleteEntry();
                 $response->sendStatus(HttpCode::S_OK);
-            })
-        );
-
-        $router->use(
-            '/file/[hash]',
-            Http::get(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
-                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
-                }
-
-                $response->readFile($file->getRealPath());
-            }),
-
-            Http::patch(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
-                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
-                }
-
-                $file->renameEntry($request->getBody()->getStrict('name'));
-            }),
-
-            Http::delete(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
-                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
-                }
-
-                $file->delete();
             })
         );
     }

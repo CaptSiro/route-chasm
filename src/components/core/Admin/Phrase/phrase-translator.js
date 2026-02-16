@@ -9,7 +9,20 @@ function phraseTranslator_init(element) {
     }
 
     element.addEventListener("click", async () => {
+        const w = window_create(
+            "",
+            jsml.div("text-window", [
+                jsml.h3(_, "Translating..."),
+            ]),
+            {
+                isDialog: true
+            }
+        );
+
+        window_open(w);
         const response = await fetch(translateUrl);
+        window_close(w);
+
         if (response.status >= 300) {
             await window_alert(await response.text());
         }

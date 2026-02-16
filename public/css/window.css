@@ -15,6 +15,11 @@
     pointer-events: none;
 }
 
+.window-overlay.inert,
+.window-overlay-active.inert {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
 .window {
     pointer-events: all;
     position: absolute;
