@@ -2,6 +2,7 @@
 
 namespace models\core\fs;
 
+use components\core\Terminal\Terminal;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
@@ -17,7 +18,9 @@ use core\database\sql\Table;
 use core\forms\description\NumberField;
 use core\forms\description\select\Select;
 use core\forms\description\TextField;
+use core\fs\variants\FileVariant;
 use core\fs\variants\FileVariantTransformer;
+use core\fs\variants\ImageVariant;
 use core\guards\Guard;
 use core\guards\NumberGuard;
 use core\guards\StringGuard;
@@ -121,12 +124,21 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
         }
 
         $this->version ??= 1;
-        $this->set(['version', $this->version + 1]);
+        $this->set(['version' => $this->version + 1]);
 
         return parent::save();
     }
 
 
+
+    // FileVariantTransformer
+    public function getFileVariant(): FileVariant {
+        return ImageVariant::getInstance();
+    }
+
+    public function getTransformer(): string {
+        return $this->transformer;
+    }
 
     public function getQuality(): float {
         return max(0.0, min($this->quality, 1.0));
@@ -159,8 +171,6 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
         };
     }
 
-
-
     protected function positiveDimensions(): bool {
         return $this->width >= 0 && $this->height >= 0;
     }
@@ -188,29 +198,29 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
 
             case File::TYPE_IMAGE_JPEG: {
                 $quality = $this->getQuality() * 100;
-                imagejpeg($image, $file, $quality);
+                imagejpeg($image, $variant, $quality);
                 break;
             }
 
             case File::TYPE_IMAGE_GIF: {
-                imagegif($image, $file);
+                imagegif($image, $variant);
                 break;
             }
 
             case File::TYPE_IMAGE_AVIF: {
                 $quality = $this->getQuality() * 100;
-                imageavif($image, $file, $quality);
+                imageavif($image, $variant, $quality);
                 break;
             }
 
             case File::TYPE_IMAGE_BMP: {
-                imagebmp($image, $file, false);
+                imagebmp($image, $variant, false);
                 break;
             }
 
             case File::TYPE_IMAGE_WEBP: {
                 $quality = $this->getQuality() * 100;
-                imagewebp($image, $file, $quality);
+                imagewebp($image, $variant, $quality);
                 break;
             }
         }
@@ -243,24 +253,24 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
         }
 
         $image = $this->createImageHandle($file);
-        [$imageWidth, $imageHeight] = getimagesize($image);
+        [$imageWidth, $imageHeight] = getimagesize($file->getRealPath());
 
-        $width = $this->width < 0
+        $width = (int) round($this->width < 0
             ? $imageWidth
-            : min($imageWidth, $this->width);
+            : min($imageWidth, $this->width));
 
-        $height = $this->height < 0
+        $height = (int) round($this->height < 0
             ? $imageHeight
-            : min($imageHeight, $this->height);
+            : min($imageHeight, $this->height));
 
-        if ($width === $this->width && $height === $this->height) {
+        if ($width === $imageWidth && $height === $imageHeight) {
             $this->writeImage($image, $file, $variant);
             imagedestroy($image);
             return $variant;
         }
 
-        $x = ($imageWidth - $width) / 2;
-        $y = ($imageHeight - $height) / 2;
+        $x = (int) round(($imageWidth - $width) / 2);
+        $y = (int) round(($imageHeight - $height) / 2);
 
         $transformed = imagecrop($image, [
             "x" => $x,
@@ -283,18 +293,18 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
         }
 
         $image = $this->createImageHandle($file);
-        [$imageWidth, $imageHeight] = getimagesize($image);
+        [$imageWidth, $imageHeight] = getimagesize($file->getRealPath());
 
         $factor = max(((float) $this->width) / $imageWidth, ((float) $this->height) / $imageHeight);
-        $scaledWidth = $imageWidth * $factor;
-        $scaledHeight = $imageHeight * $factor;
+        $scaledWidth = (int) round($imageWidth * $factor);
+        $scaledHeight = (int) round($imageHeight * $factor);
 
         $scaled = imagescale($image, $scaledWidth, $scaledHeight);
 
-        $x = ($scaledWidth - $this->width) / 2;
-        $y = ($scaledHeight - $this->height) / 2;
+        $x = (int) round(($scaledWidth - $this->width) / 2);
+        $y = (int) round(($scaledHeight - $this->height) / 2);
 
-        $transformed = imagecrop($image, [
+        $transformed = imagecrop($scaled, [
             "x" => $x,
             "y" => $y,
             "width" => $this->width,

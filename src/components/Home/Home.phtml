@@ -1,5 +1,7 @@
-<?php /** @var \components\Home\Home $this */
+<?php /** @var Home $this */
 
+use components\Home\Home;
+use core\fs\variants\ImageVariant;
 use modules\locales\EnglishUS;
 
 ?><h1>Route Chasm</h1>
@@ -31,3 +33,8 @@ use modules\locales\EnglishUS;
 
 
 <div><?= \core\url\Url::from('/my-page') ?></div>
+
+<?php $file = \models\core\fs\File::fromId(5) ?>
+<img src="<?= $file->getUrl(ImageVariant::get(ImageVariant::TRANSFORMER_ARTICLE_THUMBNAIL)) ?>"
+     alt="hom" width="400" height="300">
+<img src="<?= $file->getUrlToModel() ?>" alt="hom" width="384" height="216">

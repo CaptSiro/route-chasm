@@ -13,6 +13,7 @@ use core\database\sql\Table;
 use core\fs\FileServer;
 use core\fs\FileSystem;
 use core\fs\FileSystemEntry;
+use core\fs\variants\FileVariantTransformer;
 use core\navigation\Destination;
 use core\route\Path;
 use core\RouteChasmEnvironment;
@@ -234,5 +235,21 @@ class File extends Model implements FileSystemEntry, Destination {
 
         $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
         return $ret;
+    }
+
+    public function getUrl(
+        ?FileVariantTransformer $transformer = null,
+        string $fileServerMountAlias = RouteChasmEnvironment::MOUNT_FILE_SERVER
+    ): Url {
+        $url = $this->getUrlToModel($fileServerMountAlias);
+        
+        if (is_null($transformer)) {
+            return $url;
+        }
+
+        $variant = $transformer->getFileVariant()->getName() .':'. $transformer->getTransformer();
+        $url->setQueryArgument(RouteChasmEnvironment::QUERY_FS_VARIANT, $variant);
+
+        return $url;
     }
 }

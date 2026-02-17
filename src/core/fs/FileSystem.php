@@ -16,18 +16,35 @@ use core\App;
 use core\communication\UploadedFile;
 use core\data\Data;
 use core\database\sql\ModelDescription;
+use core\fs\variants\FileVariant;
 use core\locale\Lexicon;
+use core\ResourceLoader;
 use core\route\Path;
 use core\RouteChasmEnvironment;
 use core\utils\Files;
+use core\utils\Php;
 use models\core\fs\Directory;
 use models\core\fs\File;
 use models\core\fs\Shortcut;
 
 class FileSystem {
+    use ResourceLoader;
+
     public const LEXICON_GROUP = 'file-system';
 
 
+
+    /** @var $factories array<FileVariant> */
+    private static array $variants = [];
+
+    public static function registerVariant(FileVariant $variant): void {
+        self::$variants[$variant->getName()] = $variant;
+    }
+
+    public static function getVariant(string $name): ?FileVariant {
+        Php::run(self::getSelfResource("variants.php"));
+        return self::$variants[$name] ?? null;
+    }
 
     public static function getLocation(): string {
         return Data::namespace(RouteChasmEnvironment::FILE_SYSTEM_NAMESPACE);

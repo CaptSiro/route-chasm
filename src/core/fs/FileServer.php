@@ -120,7 +120,27 @@ class FileServer extends Router {
                 $name = $file->getFileName();
                 $response->setHeader(HttpHeader::CONTENT_DISPOSITION, "inline; filename=\"$name\"");
                 $response->setHeader(HttpHeader::CONTENT_TYPE, $file->type);
-                $response->readFile($file->getRealPath());
+
+                $variant = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_FS_VARIANT);
+                if (is_null($variant)) {
+                    $response->readFile($file->getRealPath());
+                    return;
+                }
+
+                [$v, $t] = explode(':', $variant);
+                if (is_null($fileVariant = FileSystem::getVariant($v))) {
+                    $response->readFile($file->getRealPath());
+                    return;
+                }
+
+                if (is_null($transformer = $fileVariant->getTransformer($t))
+                    || !$transformer->supports($file))
+                {
+                    $response->readFile($file->getRealPath());
+                    return;
+                }
+
+                $response->readFile($transformer->transform($file));
             }),
 
             Http::patch(function (Request $request, Response $response) {

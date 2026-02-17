@@ -2,10 +2,16 @@
 
 namespace core\pages;
 
+use core\ResourceLoader;
+use core\utils\Php;
 use models\core\Page\PageTemplateRecord;
 use RuntimeException;
 
 class Pages {
+    use ResourceLoader;
+
+
+
     /** @var $templates array<PageTemplate> */
     private static array $templates = [];
 
@@ -23,6 +29,6 @@ class Pages {
     }
 
     public static function load(): void {
-        require_once __DIR__. '/../../components/pages/page-templates.php';
+        Php::run(self::getSelfResource("../../components/pages/page-templates.php"));
     }
 }
