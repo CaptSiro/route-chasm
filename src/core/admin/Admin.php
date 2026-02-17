@@ -17,6 +17,8 @@ use core\mounts\Mount;
 use core\route\Route;
 use core\route\Router;
 use models\core\Domain\Domain;
+use models\core\fs\ImageVariantTransformer;
+use models\core\fs\ImageVariantBehavior;
 use models\core\Group\Group;
 use models\core\Language\Language;
 use models\core\Language\LanguageEditorBehavior;
@@ -64,9 +66,20 @@ class Admin {
             )
 
             ->use(
-                Route::menu("/Files")
-                    ->icon("Files", Icon::nf('nf-fa-folder')),
+                Route::menu("/File System/Files")
+                    ->icon("File System", Icon::nf('nf-fa-folder'))
+                    ->icon("Files", Icon::nf('nf-fa-file')),
                 FileSystem::getNexus()
+            )
+
+            ->use(
+                Route::menu("/File System/Image Variants")
+                    ->icon("Image Variants", Icon::nf('nf-md-file_image_plus')),
+                new AdminNexus(
+                    ModelDescription::extract(ImageVariantTransformer::class),
+                    ImageVariantBehavior::createEditor(),
+                    ImageVariantTransformer::getGridLayoutFactory()
+                )
             )
 
             ->use(

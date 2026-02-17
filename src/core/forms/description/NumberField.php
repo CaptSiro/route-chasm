@@ -12,7 +12,8 @@ class NumberField implements ControlAttribute {
     public function __construct(
         protected ?string $label = null,
         protected bool $readonly = false,
-        protected bool $isFirst = false
+        protected bool $isFirst = false,
+        protected float $step = 1,
     ) {}
 
 
@@ -23,6 +24,7 @@ class NumberField implements ControlAttribute {
 
     public function getControl(): Control {
         $control = new \core\forms\controls\NumberField($this->name, $this->label);
+        $control->addAttribute('step', $this->step);
 
         if ($this->readonly) {
             $control->readonly();

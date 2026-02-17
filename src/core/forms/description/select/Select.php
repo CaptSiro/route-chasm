@@ -13,7 +13,7 @@ class Select implements ControlAttribute {
     use BindProperty, IsFirst;
 
     public function __construct(
-        protected SelectValues $values,
+        protected SelectValues|array $values,
         protected ?string $label = null,
         protected ?string $selected = null,
         protected bool $isFirst = false
@@ -25,11 +25,19 @@ class Select implements ControlAttribute {
         return $this->label;
     }
 
+    public function getValues(): array {
+        if (!is_array($this->values)) {
+            return $this->values->getValues();
+        }
+
+        return $this->values;
+    }
+
     public function getControl(): Control {
         return new \core\forms\controls\Select\Select(
             $this->name,
             $this->label,
-            $this->values->getValues(),
+            $this->getValues(),
             $this->selected
         );
     }

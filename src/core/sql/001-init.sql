@@ -41,6 +41,22 @@ CREATE TABLE IF NOT EXISTS core_fs_shortcut (
 
 
 
+DROP TABLE IF EXISTS core_fs_image_variant;
+
+CREATE TABLE IF NOT EXISTS core_fs_image_variant (
+    `id_fs_image_variant` INT NOT NULL AUTO_INCREMENT,
+    `transformer` VARCHAR(255) NOT NULL,
+    `version` INT DEFAULT 1,
+    `quality` FLOAT DEFAULT 1,
+    `function` VARCHAR(255) NOT NULL,
+    `width` INT DEFAULT -1,
+    `height` INT DEFAULT -1,
+    PRIMARY KEY (`id_fs_image_variant`),
+    UNIQUE (`transformer`)
+) ENGINE = InnoDB;
+
+
+
 DROP TABLE IF EXISTS core_language;
 CREATE TABLE IF NOT EXISTS core_language (
     `id_language` INT NOT NULL AUTO_INCREMENT,

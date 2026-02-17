@@ -84,6 +84,11 @@ class GridDescription implements GridLayoutFactory {
         return $this->columns;
     }
 
+    public function addColumn(string $property, GridColumn $column): static {
+        $this->columns[$property] = $column;
+        return $this;
+    }
+
     public function setColumns(array $columns): static {
         $this->columns = $columns;
         return $this;

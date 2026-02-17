@@ -569,7 +569,7 @@ function std_call(element, functionLiteral) {
             continue;
         }
 
-        fn(element);
+        fn(element, element.dataset);
     }
 }
 

@@ -8,7 +8,9 @@ use core\database\sql\Origin;
 use core\database\sql\query\Query;
 use core\database\sql\Record;
 use core\database\sql\SideEffect;
+use Exception;
 use PDO;
+use PDOException;
 use PDOStatement;
 
 class PdoConnection implements Connection {
@@ -36,7 +38,12 @@ class PdoConnection implements Connection {
 
     protected function createStatement(Query $query): PDOStatement {
         if (empty($query->getParameters())) {
-            return $this->connection->query($query->getSql());
+            try {
+                return $this->connection->query($query->getSql());
+            } catch (PDOException $exception) {
+                $sql = $query->getSql();
+                throw new PDOException($exception->getMessage() ." SQL: '$sql'");
+            }
         }
 
         $statement = $this->connection->prepare($query->getSql());

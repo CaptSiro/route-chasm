@@ -31,6 +31,16 @@ use core\utils\Files;
 #[Database(App::DATABASE)]
 #[Table('core_fs_file')]
 class File extends Model implements FileSystemEntry, Destination {
+    public const TYPE_IMAGE = 'image';
+    public const TYPE_IMAGE_GIF = 'image/gif';
+    public const TYPE_IMAGE_JPEG = 'image/jpeg';
+    public const TYPE_IMAGE_PNG = 'image/png';
+    public const TYPE_IMAGE_AVIF = 'image/avif';
+    public const TYPE_IMAGE_BMP = 'image/bmp';
+    public const TYPE_IMAGE_WEBP = 'image/webp';
+
+
+
     public static function fromHash(string $hash): ?File {
         return static::first(
             where: Query::infer('hash = ?', $hash)
@@ -83,6 +93,10 @@ class File extends Model implements FileSystemEntry, Destination {
 
     public function getFileName(): string {
         return $this->name .'.'. $this->extension;
+    }
+
+    public function isTypeOf(string $prefix): bool {
+        return str_starts_with($this->type, $prefix .'/');
     }
 
     public function getRealPath(): string {

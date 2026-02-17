@@ -1,0 +1,19 @@
+<?php /** @var ImageVariantPreview $this */
+
+use components\core\fs\ImageVariantPreview;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource("image-variant-preview.js"));
+Css::import($this->getResource("image-variant-preview.css"));
+
+?><div class="image-variant-preview">
+    <div
+        class="preview"
+        x-init="imageVariantPreview_preview"
+        data-width-selector="<?= $this->widthSelector ?>"
+        data-height-selector="<?= $this->heightSelector ?>"
+    >
+        <span class="size"></span>
+    </div>
+</div>
