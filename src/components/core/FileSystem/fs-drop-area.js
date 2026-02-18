@@ -1,3 +1,11 @@
+const FS_RELOAD_CURRENT_DIRECTORY = 'fsReloadCurrentDirectory';
+
+window.addEventListener(FS_RELOAD_CURRENT_DIRECTORY, () => {
+    location.reload();
+});
+
+
+
 /**
  * @param {DataTransfer} dataTransfer
  * @return {boolean}
@@ -39,7 +47,7 @@ function fs_dropArea_init(element) {
 
     const isDropArea = x => x.classList.contains("fs-drop-area");
 
-    const drop = event => {
+    const drop = async event => {
         if (!fs_hasFiles(event.dataTransfer)) {
             return;
         }
@@ -58,16 +66,21 @@ function fs_dropArea_init(element) {
         const w = window_fileUpload(progress);
         window_open(w);
 
-        const request = new XMLHttpRequest();
-        request.upload.addEventListener('progress', event => {
-            progress.pulse(event.loaded / event.total);
+        const response = await fetch(upload, {
+            method: "post",
+            body: formData
         });
 
-        // request.upload.addEventListener('load', () => location.reload());
+        if (!response.ok) {
+            hide();
+            window_close(w);
+            await window_alert("File upload failed");
+            return;
+        }
 
-        request.open('post', upload);
-        request.timeout = 45000;
-        request.send(formData);
+        hide();
+        window_close(w);
+        element.dispatchEvent(new CustomEvent(FS_RELOAD_CURRENT_DIRECTORY, { bubbles: true }));
     };
 
     let timeout = null;

@@ -100,8 +100,20 @@ class File extends Model implements FileSystemEntry, Destination {
         return str_starts_with($this->type, $prefix .'/');
     }
 
+    public function isImage(): bool {
+        return $this->isTypeOf(self::TYPE_IMAGE);
+    }
+
     public function getRealPath(): string {
         return FileSystem::getRealPath($this);
+    }
+
+    public function isChildOf(Directory $directory): bool {
+        return $this->isChildOfRaw($directory->getId());
+    }
+
+    public function isChildOfRaw(int $directoryId): bool {
+        return $this->parentId === $directoryId;
     }
 
     public function getParent(): ?Directory {
@@ -199,22 +211,22 @@ class File extends Model implements FileSystemEntry, Destination {
     }
 
     public function getEntryIcon(): string {
-        if (str_starts_with($this->type, 'text')) {
-            return Icon::nf('nf-fa-file_text');
+        if ($this->isTypeOf('text')) {
+            return Icon::nf('nf-fa-file_text', 'Text');
         }
 
-        if (str_starts_with($this->type, 'image')) {
-            return Icon::nf('nf-fa-file_image');
+        if ($this->isTypeOf('image')) {
+            return Icon::nf('nf-fa-file_image', 'Image');
         }
 
-        if (str_starts_with($this->type, 'audio')) {
-            return Icon::nf('nf-fa-file_audio');
+        if ($this->isTypeOf('audio')) {
+            return Icon::nf('nf-fa-file_audio', 'Audio');
         }
 
         return match ($this->type) {
-            'application/zip' => Icon::nf('nf-fa-file_zip_o'),
-            'application/xml' => Icon::nf('nf-fa-file_code'),
-            default => Icon::nf('nf-fa-file'),
+            'application/zip' => Icon::nf('nf-fa-file_zip_o', 'Zip'),
+            'application/xml' => Icon::nf('nf-fa-file_code', '</>'),
+            default => Icon::nf('nf-fa-file', 'File'),
         };
     }
 

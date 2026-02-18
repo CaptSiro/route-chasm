@@ -34,6 +34,8 @@ class AdminNexus extends ContainerContent {
     protected ?BreadCrumbs $breadCrumbs = null;
     protected NexusLinkCreator $linkCreator;
     protected bool $showCreateButton = true;
+    protected bool $showHeader = true;
+    protected bool $doAddGridControls = true;
     protected ?View $headerContent = null;
 
 
@@ -61,6 +63,16 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
+    public function showHeader(bool $show): static {
+        $this->showHeader = $show;
+        return $this;
+    }
+
+    public function doAddGridControls(bool $do): static {
+        $this->doAddGridControls = $do;
+        return $this;
+    }
+
     public function setHeaderContent(View $headerContent): static {
         $this->headerContent = $headerContent;
         return $this;
@@ -83,8 +95,9 @@ class AdminNexus extends ContainerContent {
         return $this->breadCrumbs;
     }
 
-    public function setBreadCrumbs(?BreadCrumbs $breadCrumbs): void {
+    public function setBreadCrumbs(?BreadCrumbs $breadCrumbs): static {
         $this->breadCrumbs = $breadCrumbs;
+        return $this;
     }
 
     public function getEditor(): Editor {
@@ -114,9 +127,13 @@ class AdminNexus extends ContainerContent {
             return new Message($this->tr("Could not create table, because the description is empty"));
         }
 
+        if ($this->doAddGridControls) {
+            $grid
+                ->addAsFirst(self::COLUMN_EDIT, $this->tr('Edit'), '64px')
+                ->add(self::COLUMN_DELETE, $this->tr('Delete'), '64px');
+        }
+
         return $grid
-            ->addAsFirst(self::COLUMN_EDIT, $this->tr('Edit'), '64px')
-            ->add(self::COLUMN_DELETE, $this->tr('Delete'), '64px')
             ->load($this->gridFactory->getLoader()->load($grid));
     }
 
@@ -129,8 +146,9 @@ class AdminNexus extends ContainerContent {
         return $this->title;
     }
 
-    public function setTitle(?string $title): void {
+    public function setTitle(?string $title): static {
         $this->title = $title;
+        return $this;
     }
 
     public function createModel(mixed $id): ?Model {

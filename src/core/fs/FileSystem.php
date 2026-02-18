@@ -2,12 +2,14 @@
 
 namespace core\fs;
 
+use Closure;
 use components\core\Admin\FileSystem\AdminFileSystemCreateDirectory;
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\FileSystem\FileSystemDropArea;
 use components\core\FileSystem\FileSystemGridFactory;
+use components\core\Html\Html;
 use components\core\Message\Message;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\GridLayoutFactory;
@@ -21,8 +23,10 @@ use core\locale\Lexicon;
 use core\ResourceLoader;
 use core\route\Path;
 use core\RouteChasmEnvironment;
+use core\utils\Arrays;
 use core\utils\Files;
 use core\utils\Php;
+use core\view\View;
 use models\core\fs\Directory;
 use models\core\fs\File;
 use models\core\fs\Shortcut;
@@ -64,6 +68,15 @@ class FileSystem {
         return Path::join(self::getLocation(), $dir, $f);
     }
 
+    public static function createDirectoryLinkAttributes(string $url): array {
+        return [
+            "x-get" => $url,
+            "x-target" => ".file-select-window .nexus",
+            "x-swap" => "outer",
+            "class" => "link no-style",
+        ];
+    }
+
 
 
     public static function resolve(string $shortcut): ?File {
@@ -79,6 +92,11 @@ class FileSystem {
 
         $hash = hash_file(RouteChasmEnvironment::FILE_SYSTEM_HASH_ALGORITHM, $path);
         if (!is_null($found = File::fromHash($hash))) {
+            if (!$found->isChildOf($directory)) {
+                $found->setParent($directory);
+                $found->save();
+            }
+
             return $found;
         }
 
@@ -133,40 +151,97 @@ class FileSystem {
             );
         }
 
+        $directoryLinkProvider = function (Directory $directory) {
+            $url = App::getInstance()->getRequest()->getUrl()->copy();
+            $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->getId());
+
+            return Html::createLinkUnsafe(
+                $url,
+                Html::escape($directory->getEntryName())
+            );
+        };
+
         $nexus = new AdminNexus(
             ModelDescription::extract(File::class),
             new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
-            new FileSystemGridFactory(
-                new FileSystemDropArea($directory, readonly: false),
-                [
-                    'name' => new GridColumn('Name'),
-                    'size' => new GridColumn('Size', '96px')
-                ],
-                new FileSystemEntryProxy(),
-                new FileSystemGridLoader($directory)
-            )
+            self::listDirectory($directory, $directoryLinkProvider)
         );
 
         $nexus->showCreateButton(false)
             ->setHeaderContent(new AdminFileSystemCreateDirectory($directory))
-            ->setBreadCrumbs($bc = static::generateBreadCrumbs(
+            ->setBreadCrumbs(static::generateBreadCrumbs(
                 $directory,
-                function (Directory $x) {
-                    $url = App::getInstance()->getRequest()->getUrl()->copy();
-                    $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $x->getId());
-                    return $url->toString();
-                }
+                fn(Directory $x) => self::getBreadCrumbUrl($x)
             ));
-
 
         return $nexus;
     }
 
-    public static function listDirectory(Directory $directory, bool $readonly = false): GridLayoutFactory {
+    public static function listDirectoryModal(?Directory $directory = null, bool $readonly = false): View {
+        if (is_null($directory)) {
+            $directoryId = App::getInstance()
+                ->getRequest()
+                ->getUrl()
+                ->getQuery()
+                ->get(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY);
+
+            $directory = empty($directoryId) || $directoryId == 0
+                ? static::getRoot()
+                : Directory::fromId($directoryId);
+        }
+
+        if (is_null($directory)) {
+            return new Message(
+                Lexicon::translate(self::LEXICON_GROUP, 'Could not find directory')
+            );
+        }
+
+        $directoryLinkProvider = fn(Directory $directory) => Html::wrapUnsafe(
+            "button",
+            Html::escape($directory->getEntryName()),
+            self::createDirectoryLinkAttributes(
+                FileServer::getInstance()->createDirectoryUrl($directory)
+            )
+        );
+
+        $nexus = new AdminNexus(
+            ModelDescription::extract(File::class),
+            new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
+            self::listDirectory($directory, $directoryLinkProvider, $readonly)
+        );
+
+        $breadCrumbs = $bc = static::generateBreadCrumbs(
+            $directory,
+            fn(Directory $x) => self::getBreadCrumbUrl($x)
+        );
+
+        $breadCrumbs->setItemTemplate($breadCrumbs->getResource("BreadCrumb_fs.phtml"));
+        $nexus
+            ->showHeader(false)
+            ->showCreateButton(false)
+            ->doAddGridControls(false)
+            ->setTitle($directory->name)
+            ->setBreadCrumbs($breadCrumbs);
+
+        if (!$readonly) {
+            $nexus->setHeaderContent(new AdminFileSystemCreateDirectory($directory));
+        }
+
+        return $nexus;
+    }
+
+    public static function listDirectory(
+        Directory $directory,
+        Closure $directoryLinkProvider,
+        bool $readonly = false
+    ): GridLayoutFactory {
         return new FileSystemGridFactory(
             new FileSystemDropArea($directory, readonly: $readonly),
-            ['name' => new GridColumn('Name')],
-            new FileSystemEntryProxy(),
+            [
+                'name' => new GridColumn('Name'),
+                'size' => new GridColumn('Size', '96px')
+            ],
+            new FileSystemEntryProxy($directoryLinkProvider),
             new FileSystemGridLoader($directory)
         );
     }
@@ -182,5 +257,11 @@ class FileSystem {
         }
 
         return BreadCrumbs::from($crumbs);
+    }
+
+    public static function getBreadCrumbUrl(Directory $directory): string {
+        $url = App::getInstance()->getRequest()->getUrl()->copy();
+        $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->getId());
+        return $url->toString();
     }
 }

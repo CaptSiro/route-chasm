@@ -11,6 +11,8 @@ class ImageVariant implements FileVariant {
 
 
     public const TRANSFORMER_ARTICLE_THUMBNAIL = 'article-thumbnail';
+    public const TRANSFORMER_FULL_HD = 'full-hd';
+    public const TRANSFORMER_HD = 'hd';
 
     public static function get(string $transformer): ?FileVariantTransformer {
         return static::getInstance()

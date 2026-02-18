@@ -485,3 +485,88 @@ function window_fileUpload(fileProgress, settings = {}) {
         settings
     );
 }
+
+
+
+async function window_fileSelect(fileIds, url) {
+    return new Promise(resolve => {
+        let result = fileIds;
+        const w = window_create(
+            "File Select",
+            jsml.div("content-window file-select-window", [
+                    jsml.div({
+                    class: "file-select-window",
+                    "x-get": url,
+                    "x-event": "jsmlLoad"
+                }),
+                jsml.div("controls", [
+                    jsml.button({
+                        onClick: () => {
+                            window_close(w);
+                        }
+                    }, 'Ok'),
+
+                    jsml.button({
+                        onClick: () => {
+                            result = fileIds;
+                            window_close(w);
+                        }
+                    }, 'Cancel'),
+                ])
+            ]),
+            {
+                isDialog: true,
+                isResizable: true,
+                isDraggable: true,
+                isMinimizable: true,
+                width: "500px",
+            }
+        );
+
+        w.addEventListener("click", event => {
+            const gridRow = event.target.closest(".grid-row");
+            if (!is(gridRow)) {
+                return;
+            }
+
+            const dataElement = $('.row', gridRow);
+            if (!is(dataElement.dataset.fileId)) {
+                return;
+            }
+
+            if (gridRow.classList.contains("selected")) {
+                result = "";
+                gridRow.classList.remove("selected");
+                return;
+            }
+
+            for (const row of $$('.grid-row', gridRow.parentElement)) {
+                row.classList.remove("selected");
+            }
+
+            result = dataElement.dataset.fileId;
+            gridRow.classList.add("selected");
+        });
+
+        w.addEventListener('fsReloadCurrentDirectory', event => {
+            const breadCrumbs = Array.from($$('.nexus .bread-crumb', w));
+            if (breadCrumbs.length <= 0) {
+                return;
+            }
+
+            const last = breadCrumbs.at(-1);
+            const link = $('[x-get]', last);
+            if (!is(link)) {
+                return;
+            }
+
+            event.stopImmediatePropagation();
+            event.preventDefault();
+
+            link.click();
+        });
+
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
+        window_open(w);
+    });
+}

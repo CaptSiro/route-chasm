@@ -161,12 +161,15 @@ function jsml_init() {
 
 const jsml = jsml_init();
 const _ = undefined;
+const JSML_EVENT_LOAD = 'jsmlLoad';
 
 
 
 window.addEventListener('load', () => {
     /** @type {Map<string, Set<string>>} */
     const imported = new Map();
+    /** @type {Map<string, Set<HTMLElement>>} */
+    const deferred = new Map();
 
     SideLoader.addImporter('js', (files, type) => {
         const script = jsml.script();
@@ -236,7 +239,7 @@ window.addEventListener('load', () => {
         return undefined;
     }
 
-    const REQUIRE_HEADER_PARSE_REGEX = /(\w+)\(([0-9a-f,]+)\)/g;
+    const REQUIRE_HEADER_PARSE_REGEX = /([0-9A-Za-z_\-,]+)/g;
 
     /**
      * @param {string} content
@@ -245,12 +248,13 @@ window.addEventListener('load', () => {
     function parseRequireHeader(content) {
         const groups = new Map();
 
-        for (const group of content.matchAll(REQUIRE_HEADER_PARSE_REGEX)) {
-            if (typeof group[2] !== "string") {
+        for (const type of content.split(';')) {
+            const group = type.trim().match(REQUIRE_HEADER_PARSE_REGEX);
+            if (!is(group) || typeof group[1] !== "string") {
                 continue;
             }
 
-            groups.set(group[1], group[2].split(','));
+            groups.set(group[0], group[1].split(','));
         }
 
         return groups;
@@ -290,6 +294,56 @@ window.addEventListener('load', () => {
 
             importer(unseen, type);
         });
+
+        setTimeout(async () => {
+            for (const delay of [200, 500, 1000, 2000, 4000]) {
+                if (resolveDeferred()) {
+                    return;
+                }
+
+                await std_wait(delay);
+            }
+
+            console.warn("Not resolved", Array.from(deferred.keys()));
+        }, 50);
+    }
+
+    function defer(element, functions) {
+        for (const fn of functions) {
+            const set = deferred.get(fn);
+            if (is(set)) {
+                set.add(element);
+                continue;
+            }
+
+            const s = new Set();
+            s.add(element);
+            deferred.set(fn, s);
+        }
+    }
+
+    function resolveDeferred() {
+        if (deferred.size === 0) {
+            return true;
+        }
+
+        const resolved = [];
+        deferred.forEach((elements, fn) => {
+            if (!is(std_getFunction(fn))) {
+                return;
+            }
+
+            resolved.push(fn);
+            for (const element of elements) {
+                std_call(element, fn);
+            }
+        });
+
+        for (const fn of resolved) {
+            deferred.delete(fn);
+        }
+
+        return deferred.size === 0;
     }
 
     /**
@@ -304,7 +358,7 @@ window.addEventListener('load', () => {
 
         const functionName = element.getAttribute(X_INIT);
         if (functionName !== null) {
-            std_call(element, functionName);
+            defer(element, std_call(element, functionName));
         }
 
         const ajaxInfo = getAjaxInfo(element);
@@ -320,7 +374,7 @@ window.addEventListener('load', () => {
             ? element.getAttribute(X_EVENT)
             : 'click';
 
-        const body = element.hasAttribute(X_TARGET)
+        const body = element.hasAttribute(X_DATA)
             ? element.getAttribute(X_DATA)
             : undefined;
         
@@ -331,12 +385,13 @@ window.addEventListener('load', () => {
         element.addEventListener(event, async () => {
             const url = new URL(ajaxInfo.url, document.baseURI);
             url.searchParams.set('s', '');
+            url.searchParams.set('f', '');
 
             const response = await fetch(url, {
                 method: ajaxInfo.httpMethod,
                 body
             });
-            
+
             if (!response.ok) {
                 return;
             }
@@ -358,6 +413,8 @@ window.addEventListener('load', () => {
 
             target.outerHTML = text;
         });
+
+        element.dispatchEvent(new CustomEvent(JSML_EVENT_LOAD, { bubbles: false }));
     }
 
     const selector = needProcessing

@@ -223,6 +223,10 @@ class Directory extends Model implements FileSystemEntry {
     }
 
     public function getEntryIcon(): string {
-        return Html::wrapUnsafe('span', Icon::nf('nf-fa-folder'), ['class' => 'folder-color']);
+        return Html::wrapUnsafe(
+            'span',
+            Icon::nf('nf-fa-folder', 'Folder'),
+            ['class' => 'folder-color']
+        );
     }
 }

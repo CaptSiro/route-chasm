@@ -2,10 +2,13 @@
 
 namespace core\fs;
 
+use Closure;
 use components\core\Admin\Nexus\NexusProxy;
 use components\core\Html\Html;
 use components\core\Icon;
 use core\App;
+use core\fs\variants\FileVariantTransformer;
+use core\fs\variants\ImageVariant;
 use core\ResourceLoader;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Css\Css;
@@ -29,6 +32,17 @@ class FileSystemEntryProxy extends NexusProxy {
 
 
 
+    protected FileVariantTransformer $imageTransformer;
+
+    public function __construct(
+        protected Closure $directoryLinkProvider
+    ) {
+        self::import();
+        $this->imageTransformer = ImageVariant::get(ImageVariant::TRANSFORMER_FULL_HD);
+    }
+
+
+
     public function getValue(string $name): string {
         if ($name === 'size') {
             if ($this->item instanceof File) {
@@ -40,9 +54,7 @@ class FileSystemEntryProxy extends NexusProxy {
 
         if ($name === "name") {
             if ($this->item instanceof Directory) {
-                $url = App::getInstance()->getRequest()->getUrl()->copy();
-                $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $this->item->getId());
-                $link = Html::createLinkUnsafe($url, Html::escape($this->item->getEntryName()));
+                $link = ($this->directoryLinkProvider)($this->item);
 
                 return Html::wrapUnsafe(
                     'div',
@@ -52,9 +64,10 @@ class FileSystemEntryProxy extends NexusProxy {
             }
 
             if ($this->item instanceof File) {
-                $icon = Icon::nf('nf-fa-file');
                 $link = Html::createLinkUnsafe(
-                    $this->item->getUrlToModel(),
+                    $this->item->isImage()
+                        ? $this->item->getUrl($this->imageTransformer)
+                        : $this->item->getUrlToModel(),
                     Html::escape($this->item->getEntryName()),
                     '_blank'
                 );
@@ -62,7 +75,10 @@ class FileSystemEntryProxy extends NexusProxy {
                 return Html::wrapUnsafe(
                     'div',
                     $this->item->getEntryIcon() . $link,
-                    ['class' => 'row']
+                    [
+                        'class' => 'row',
+                        'data-file-id' => $this->item->getId()
+                    ]
                 );
             }
 
@@ -72,12 +88,10 @@ class FileSystemEntryProxy extends NexusProxy {
         return parent::getValue($name);
     }
 
-    protected function createEditValue(string $url): string {
+    protected function createEditValue(?string $url): string {
         if (!($this->item instanceof FileSystemEntry)) {
             return '';
         }
-
-        self::import();
 
         $rename = $this->item->createRenameEntryUrl();
         $id = $this->item->getId();
@@ -87,12 +101,10 @@ class FileSystemEntryProxy extends NexusProxy {
         return "<button class='link no-style' x-init='fs_renameButton_init' data-url='$rename' data-id='$id'>$content</button>";
     }
 
-    protected function createDeleteValue(string $url): string {
+    protected function createDeleteValue(?string $url): string {
         if (!($this->item instanceof FileSystemEntry)) {
             return '';
         }
-
-        self::import();
 
         $delete = $this->item->createDeleteEntryUrl();
         $id = $this->item->getId();

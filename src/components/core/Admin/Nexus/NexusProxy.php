@@ -51,7 +51,7 @@ class NexusProxy extends TypeProxy {
         );
     }
 
-    protected function createEditValue(string $url): string {
+    protected function createEditValue(?string $url): string {
         $content = Icon::edit();
         return "<a href='$url' class='link no-style'>$content</a>";
     }
@@ -66,7 +66,7 @@ class NexusProxy extends TypeProxy {
         );
     }
 
-    protected function createDeleteValue(string $url): string {
+    protected function createDeleteValue(?string $url): string {
         $content = Icon::delete();
         return "<button class='link no-style' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
     }

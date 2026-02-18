@@ -561,16 +561,22 @@ function std_getFunction(fn) {
  *
  * @param {HTMLElement} element
  * @param {string} functionLiteral
+ * @returns {string[]} Functions that could not be found
  */
 function std_call(element, functionLiteral) {
+    const notFound = [];
+
     for (const literal of functionLiteral.split(",")) {
         const fn = std_getFunction(literal.trim());
         if (!is(fn)) {
+            notFound.push(literal.trim());
             continue;
         }
 
         fn(element, element.dataset);
     }
+
+    return notFound;
 }
 
 

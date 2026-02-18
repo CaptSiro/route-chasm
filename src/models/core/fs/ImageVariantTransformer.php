@@ -2,7 +2,6 @@
 
 namespace models\core\fs;
 
-use components\core\Terminal\Terminal;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
@@ -75,7 +74,7 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
     protected string $transformer;
 
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $version = 1;
+    protected int $version = 0;
 
     #[NumberField("Quality (0 worst, 1 best)", step: 0.01)]
     #[Column(type: Column::TYPE_FLOAT)]

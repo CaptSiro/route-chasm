@@ -17,6 +17,7 @@ use core\Singleton;
 use core\url\Url;
 use models\core\fs\Directory;
 use models\core\fs\File;
+use models\core\User\User;
 
 class FileServer extends Router {
     use Singleton, LexiconUnit;
@@ -162,6 +163,14 @@ class FileServer extends Router {
 
         $router->use(
             '/directory/',
+            Http::get(function (Request $request, Response $response) {
+                $user = User::fromSession($request->getSession());
+                $isAdmin = is_null($user) || $user->isAdmin();
+                $response->render(
+                    FileSystem::listDirectoryModal(readonly: !$isAdmin)
+                );
+            }),
+
             Http::post(function (Request $request, Response $response) {
                 $parent = Directory::fromRequest($request);
                 $name = $request->getBody()->getStrict('name');

@@ -1,0 +1,11 @@
+<?php /** @var BreadCrumb $this */
+
+use components\core\BreadCrumbs\BreadCrumb;
+
+?><li class="bread-crumb">
+    <?php if (is_null($this->getUrl())): ?>
+        <span><?= $this->getLabel() ?></span>
+    <?php else: ?>
+        <a href="<?= $this->getUrl() ?>"><?= $this->getLabel() ?></a>
+    <?php endif; ?>
+</li>

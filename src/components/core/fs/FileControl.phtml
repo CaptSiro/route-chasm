@@ -1,0 +1,33 @@
+<?php /** @var FileControl $this */
+
+use components\core\fs\FileControl;
+use core\fs\FileServer;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('file-control.js'));
+Css::import($this->getResource('file-control.css'));
+
+$id = $this->getId();
+
+?><div class="form-control <?= $this->cssClass ?>">
+    <?php if (!is_null($this->label)): ?>
+        <label for="<?= $id ?>"><?= $this->label ?></label>
+    <?php endif; ?>
+
+    <input
+        type="hidden"
+        value="<?= $this->stringifyFiles() ?>"
+        name="<?= $this->name ?>"
+        id="<?= $id ?>"
+        <?= $this->stringifyAttributes() ?>
+    >
+
+    <button
+        x-init="form_fs_fileControl"
+        data-control-id="<?= $id ?>"
+        data-url="<?= FileServer::getInstance()->createDirectoryUrl() ?>"
+    >
+        <?= $this->tr('Select') ?>
+    </button>
+</div>

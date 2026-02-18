@@ -163,7 +163,7 @@ class SideLoader implements View {
                     continue;
                 }
 
-                $require .= "$type($hashed)";
+                $require .= "$type($hashed);";
             }
 
             if ($require === '') {
@@ -233,7 +233,7 @@ class SideLoader implements View {
         $first = true;
         $length = $this->hashLength->toInt();
 
-        foreach ($files as $file) {
+        foreach (array_unique($files) as $file) {
             $real = realpath($file);
 
             if (!file_exists($real)) {

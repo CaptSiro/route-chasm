@@ -103,7 +103,9 @@ class Files {
         }
 
         $formatted = number_format($value, ($value < 10 ? 1 : 0), '.', '');
-        $formatted = rtrim(rtrim($formatted, '0'), '.');
+        if (str_contains($formatted, '.')) {
+            $formatted = rtrim(rtrim($formatted, '0'), '.');
+        }
 
         return $formatted . ' ' . $units[$i - 1];
     }

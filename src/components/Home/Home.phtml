@@ -1,5 +1,6 @@
 <?php /** @var Home $this */
 
+use components\core\fs\FileControl;
 use components\Home\Home;
 use core\fs\variants\ImageVariant;
 use modules\locales\EnglishUS;
@@ -32,9 +33,12 @@ use modules\locales\EnglishUS;
 
 
 
-<div><?= \core\url\Url::from('/my-page') ?></div>
-
 <?php $file = \models\core\fs\File::fromId(5) ?>
 <img src="<?= $file->getUrl(ImageVariant::get(ImageVariant::TRANSFORMER_ARTICLE_THUMBNAIL)) ?>"
      alt="hom" width="400" height="300">
+<img src="<?= $file->getUrl(ImageVariant::get('article-icon')) ?>"
+     alt="hom" width="100" height="100">
 <img src="<?= $file->getUrlToModel() ?>" alt="hom" width="384" height="216">
+
+
+<?= new FileControl('image', 'Homepage Image') ?>

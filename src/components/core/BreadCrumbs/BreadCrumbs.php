@@ -45,4 +45,12 @@ class BreadCrumbs implements View {
         $this->items[] = $breadcrumb;
         return $this;
     }
+
+    public function setItemTemplate(string $template): static {
+        foreach ($this->items as $item) {
+            $item->setTemplate($template);
+        }
+
+        return $this;
+    }
 }

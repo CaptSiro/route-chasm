@@ -9,17 +9,19 @@ Css::import($this->getResource('nexus.css'));
 
 ?>
 <section class="nexus">
-    <div class="head">
-        <h1><?= $this->getTitle() ?></h1>
+    <?php if ($this->showHeader): ?>
+        <div class="head">
+            <h1><?= $this->getTitle() ?></h1>
 
-        <?php if ($this->showCreateButton): ?>
-            <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
-        <?php endif; ?>
+            <?php if ($this->showCreateButton): ?>
+                <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
+            <?php endif; ?>
 
-        <?php if (!is_null($this->headerContent)): ?>
-            <?= $this->headerContent ?>
-        <?php endif; ?>
-    </div>
+            <?php if (!is_null($this->headerContent)): ?>
+                <?= $this->headerContent ?>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 
     <?php if (!is_null($this->breadCrumbs)): ?>
         <?= $this->breadCrumbs ?>

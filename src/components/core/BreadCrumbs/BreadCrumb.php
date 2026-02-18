@@ -2,7 +2,14 @@
 
 namespace components\core\BreadCrumbs;
 
-class BreadCrumb {
+use core\view\Renderer;
+use core\view\View;
+
+class BreadCrumb implements View {
+    use Renderer;
+
+
+
     public function __construct(
         protected string $label,
         protected ?string $url = null

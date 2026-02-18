@@ -1,0 +1,3 @@
+.file-select-window .grid-row.selected {
+    background-color: var(--accent-1);
+}

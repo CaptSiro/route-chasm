@@ -55,6 +55,10 @@ CREATE TABLE IF NOT EXISTS core_fs_image_variant (
     UNIQUE (`transformer`)
 ) ENGINE = InnoDB;
 
+INSERT INTO `core_fs_image_variant` (`transformer`, `version`, `quality`, `function`, `width`, `height`)
+VALUES ('full-hd', 1, 1, 'fit', 1920, 1080),
+       ('hd', 1, 1, 'fit', 1280, 720);
+
 
 
 DROP TABLE IF EXISTS core_language;

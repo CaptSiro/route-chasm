@@ -1,0 +1,15 @@
+<?php /** @var BreadCrumb $this */
+
+use components\core\BreadCrumbs\BreadCrumb;
+use core\fs\FileSystem;
+use core\utils\Arrays;
+
+?><li class="bread-crumb">
+    <?php if (is_null($this->getUrl())): ?>
+        <span><?= $this->getLabel() ?></span>
+    <?php else: ?>
+        <button <?= Arrays::htmlEncode(FileSystem::createDirectoryLinkAttributes($this->getUrl())) ?>>
+            <?= $this->getLabel() ?>
+        </button>
+    <?php endif; ?>
+</li>

@@ -17,13 +17,7 @@ if ($count > 0) {
                 <li class="delimitor"><?= $this->delimitor ?></li>
             <?php endif; ?>
 
-            <li class="bread-crumb">
-                <?php if (is_null($item->getUrl())): ?>
-                    <span><?= $item->getLabel() ?></span>
-                <?php else: ?>
-                    <a href="<?= $item->getUrl() ?>"><?= $item->getLabel() ?></a>
-                <?php endif; ?>
-            </li>
+            <?= $item ?>
         <?php $first = false; endforeach; ?>
     </ul>
 <?php endif; ?>
