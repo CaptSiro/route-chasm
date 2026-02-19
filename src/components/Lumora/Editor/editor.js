@@ -223,6 +223,13 @@ async function editor_loadContent() {
     root.rootElement.click();
 }
 
+/**
+ * @return {LumoraEditorFileSystemApi|null|any}
+ */
+function editor_loadFileSystemApi() {
+    return $("#fs-data")?.dataset ?? null;
+}
+
 async function editor_loadWidgets() {
     const widgetContainer = $("#widgets");
     const categories = Array.from(widgetContainer.children)

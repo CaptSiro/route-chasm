@@ -488,9 +488,9 @@ function window_fileUpload(fileProgress, settings = {}) {
 
 
 
-async function window_fileSelect(fileIds, url) {
+async function window_fileSelect(fileHashes, url) {
     return new Promise(resolve => {
-        let result = fileIds;
+        let result = fileHashes;
         const w = window_create(
             "File Select",
             jsml.div("content-window file-select-window", [
@@ -508,7 +508,7 @@ async function window_fileSelect(fileIds, url) {
 
                     jsml.button({
                         onClick: () => {
-                            result = fileIds;
+                            result = fileHashes;
                             window_close(w);
                         }
                     }, 'Cancel'),
@@ -530,7 +530,7 @@ async function window_fileSelect(fileIds, url) {
             }
 
             const dataElement = $('.row', gridRow);
-            if (!is(dataElement.dataset.fileId)) {
+            if (!is(dataElement.dataset.fileHash)) {
                 return;
             }
 
@@ -544,7 +544,7 @@ async function window_fileSelect(fileIds, url) {
                 row.classList.remove("selected");
             }
 
-            result = dataElement.dataset.fileId;
+            result = dataElement.dataset.fileHash;
             gridRow.classList.add("selected");
         });
 

@@ -77,7 +77,7 @@ class FileSystemEntryProxy extends NexusProxy {
                     $this->item->getEntryIcon() . $link,
                     [
                         'class' => 'row',
-                        'data-file-id' => $this->item->getId()
+                        'data-file-hash' => $this->item->hash
                     ]
                 );
             }

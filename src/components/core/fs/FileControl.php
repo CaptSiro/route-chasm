@@ -25,12 +25,12 @@ class FileControl implements Control, Attribute {
     /**
      * @param string $name
      * @param string $label
-     * @param array<int> $fileIds
+     * @param array<int> $fileHashes
      */
     public function __construct(
         protected string $name = self::class,
         protected string $label = self::class,
-        protected array $fileIds = []
+        protected array $fileHashes = []
     ) {
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }
@@ -48,10 +48,10 @@ class FileControl implements Control, Attribute {
     }
 
     public function setValue(mixed $value): void {
-        $this->fileIds = $value;
+        $this->fileHashes = $value;
     }
 
     public function stringifyFiles(): string {
-        return implode(',', $this->fileIds);
+        return implode(',', $this->fileHashes);
     }
 }

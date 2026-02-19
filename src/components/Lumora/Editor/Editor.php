@@ -32,10 +32,10 @@ use components\Lumora\widgets\Text\TextWidget;
 use components\Lumora\widgets\TextEditor\TextEditorWidget;
 use components\Lumora\widgets\Widget;
 use components\Lumora\widgets\WidgetImporter;
-use components\pages\AiGeneratedPage\AiPageTemplate;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
+use core\fs\FileServer;
 use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\route\Route;
@@ -201,6 +201,18 @@ class Editor extends ContainerContent {
         return $this->importer
             ->setWidget($widget)
             ->render();
+    }
+
+    public function getFileSystemApi(): string {
+        $fs = FileServer::getInstance();
+        return Html::wrap(
+            'div',
+            '',
+            [
+                'id' => 'fs-data',
+                'directoryUrl' => $fs->createDirectoryUrl(),
+            ]
+        );
     }
 
 

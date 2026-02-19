@@ -8,6 +8,7 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
+use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\fs\FileServer;
@@ -43,9 +44,7 @@ class File extends Model implements FileSystemEntry, Destination {
 
 
     public static function fromHash(string $hash): ?File {
-        return static::first(
-            where: Query::infer('hash = ?', $hash)
-        );
+        return static::first(where: Query::infer('hash = ?', $hash));
     }
 
     public static function fromName(?Directory $parent, string $name): static {

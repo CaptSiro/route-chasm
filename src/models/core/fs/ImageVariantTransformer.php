@@ -98,6 +98,7 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
     // Model
     public function save(): DatabaseAction|View {
         $guards = [
+            StringGuard::nonEmpty($this->transformer, 'transformer', 'Name must not be empty'),
             StringGuard::satisfiesRegex(
                 $this->transformer,
                 "/[a-zA-Z0-9\-_]*/",
