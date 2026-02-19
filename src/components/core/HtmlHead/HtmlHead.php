@@ -6,9 +6,11 @@ use components\core\WebPage\Head;
 use core\App;
 use core\RouteChasmEnvironment;
 use core\view\Component;
+use core\view\View;
 
 class HtmlHead extends Component implements Head {
     protected array $meta;
+    protected array $elements;
 
 
 
@@ -18,6 +20,7 @@ class HtmlHead extends Component implements Head {
         parent::__construct();
 
         $this->meta = [];
+        $this->elements = [];
 
         $env = App::getInstance()->getEnv();
         if (!is_null($env)) {
@@ -53,5 +56,10 @@ class HtmlHead extends Component implements Head {
      */
     public function getTitle(): string {
         return $this->title;
+    }
+
+    public function addElement(View $view): static {
+        $this->elements[] = $view;
+        return $this;
     }
 }

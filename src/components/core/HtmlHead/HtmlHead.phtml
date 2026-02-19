@@ -25,4 +25,8 @@ use core\sideloader\SideLoader;
     <?= Jsml::getInstance() ?>
     <?= SideLoader::getApi() ?>
     <?= SideLoader::getInstance() ?>
+
+    <?php foreach ($this->elements as $element): ?>
+        <?= $element ?>
+    <?php endforeach; ?>
 </head>

@@ -394,6 +394,23 @@ function window_alert(message, settings = {}) {
 /**
  * @param {string} message
  * @param {WindowSettings} settings
+ * @return {HTMLDivElement}
+ */
+function window_createNotice(message, settings = {}) {
+    return window_create(
+        "",
+        jsml.div("text-window", [
+            jsml.h3(_, message),
+        ]),
+        settings
+    );
+}
+
+
+
+/**
+ * @param {string} message
+ * @param {WindowSettings} settings
  * @return {Promise<string|undefined>}
  */
 function window_prompt(message, settings = {}) {

@@ -1,0 +1,35 @@
+<?php /** @var AiGeneratedPage $this */
+
+use components\core\fs\FileContent\FileContentEditor;
+use components\core\Icon;
+use components\pages\AiGeneratedPage\AiGeneratedPage;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('ai-generated-page.js'));
+Css::import($this->getResource('ai-generated-page.css'));
+
+?><div class="ai-generated-page">
+    <div id="<?= AiGeneratedPage::TARGET_HTML ?>">
+        <?= $this->html->read() ?>
+    </div>
+
+    <div class="source-editor">
+        <?= new FileContentEditor($this->createSources()) ?>
+    </div>
+
+    <div class="row edit-controls">
+        <button onclick="aiPage_toggleEditMode()">
+            <?= Icon::nf('nf-fa-edit', $this->tr('Edit')) ?>
+        </button>
+
+        <button
+            x-init="aiPage_save"
+            data-file-content-html=".file-content[data-target='#<?= AiGeneratedPage::TARGET_HTML ?>'] pre"
+            data-file-content-css=".file-content[data-target='#<?= AiGeneratedPage::TARGET_CSS ?>'] pre"
+            data-file-content-js=".file-content[data-target='#<?= AiGeneratedPage::TARGET_JS ?>'] pre"
+        >
+            <?= Icon::nf('nf-fa-save', $this->tr('Save')) ?>
+        </button>
+    </div>
+</div>

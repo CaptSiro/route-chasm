@@ -12,6 +12,7 @@ use core\database\sql\Table;
 use core\navigation\NavigationFactory;
 use core\navigation\Navigator;
 use core\route\Route;
+use core\view\Component;
 use core\view\View;
 use models\core\Language\Language;
 
@@ -102,7 +103,7 @@ class Slug extends Model {
         ]);
     }
 
-    public function build(): View {
+    public function build(): Component {
         return Navigator::build($this->factoryId, $this->data);
     }
 

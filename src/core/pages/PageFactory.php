@@ -7,7 +7,7 @@ use core\App;
 use core\http\HttpCode;
 use core\navigation\NavigationFactory;
 use core\Singleton;
-use core\view\View;
+use core\view\Component;
 use models\core\Navigation\NavigationFactoryRecord;
 use models\core\Navigation\Slug;
 use models\core\Page\Page;
@@ -21,7 +21,7 @@ class PageFactory implements NavigationFactory {
         return 'page';
     }
 
-    public function createDestination(string $data): View {
+    public function createDestination(string $data): Component {
         $response = App::getInstance()->getResponse();
 
         if (is_null($page = Page::fromId(intval($data)))) {
@@ -40,7 +40,7 @@ class PageFactory implements NavigationFactory {
 
         $wireframe = new Wireframe($page);
         $wireframe->addContent(
-            $template->build($page)
+            $template->build($wireframe, $page)
         );
 
         return $wireframe;

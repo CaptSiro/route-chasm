@@ -6,6 +6,7 @@ use Closure;
 use core\communication\Request;
 use core\communication\Response;
 use core\route\RouteNode;
+use core\view\View;
 
 class Procedure implements Action {
     use ActionBindRouteNode, ActorClassName;
@@ -65,6 +66,10 @@ class Procedure implements Action {
 
         if ($ret instanceof Action) {
             $ret->perform($request, $response);
+        }
+
+        if ($ret instanceof View) {
+            $response->renderRoot($ret);
         }
     }
 }

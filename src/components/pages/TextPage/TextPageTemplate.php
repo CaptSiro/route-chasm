@@ -6,11 +6,13 @@ use components\core\Html\Html;
 use components\core\ToolBar\ToolBarItem;
 use components\Lumora\Display\Display;
 use components\Lumora\Editor\Editor;
+use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\App;
 use core\pages\PageTemplate;
 use core\route\Route;
 use core\RouteChasmEnvironment;
+use core\view\Component;
 use core\view\View;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
@@ -43,7 +45,7 @@ class TextPageTemplate implements PageTemplate {
         return $editor;
     }
 
-    public function build(Page $page): View {
+    public function build(Wireframe $wireframe, Page $page): Component {
         $localization = $page->getLocalizationOrDefault(
             App::getInstance()->getRequest()->getLanguage()
         );

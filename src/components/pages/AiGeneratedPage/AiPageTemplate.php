@@ -4,12 +4,15 @@ namespace components\pages\AiGeneratedPage;
 
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
+use components\core\Html\Html;
 use components\layout\Grid\description\GridDescription;
+use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\forms\description\FormDescription;
 use core\pages\PageTemplate;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Component;
 use core\view\StringRenderer;
 use core\view\View;
 use models\core\Page\AiPage;
@@ -54,24 +57,8 @@ class AiPageTemplate implements PageTemplate {
         return null;
     }
 
-    public function build(Page $page): View {
-        $html = $page->get(self::DATA_ITEM_HTML);
-        $js = $page->get(self::DATA_ITEM_JS);
-        $css = $page->get(self::DATA_ITEM_CSS);
-
-        if (!$html->exists()) {
-            return new StringRenderer("");
-        }
-
-        if ($js->exists()) {
-            Javascript::import($js->getFilePath());
-        }
-
-        if ($css->exists()) {
-            Css::import($css->getFilePath());
-        }
-
-        return new StringRenderer($html->read());
+    public function build(Wireframe $wireframe, Page $page): Component {
+        return AiGeneratedPage::build($wireframe, $page);
     }
 
     public function getEditor(Page $page): Action {

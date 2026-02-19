@@ -15,6 +15,10 @@ trait HtmlAttribute {
         return $this;
     }
 
+    public function addDataAttribute(string $name, mixed $value = null): static {
+        return $this->addAttribute('data-'. $name, $value);
+    }
+
     public function getAttributes(): array {
         return $this->attributes;
     }

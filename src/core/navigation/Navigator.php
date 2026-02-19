@@ -10,7 +10,7 @@ use core\route\Path;
 use core\route\RouteNode;
 use core\route\Router;
 use core\route\RouteTree;
-use core\view\View;
+use core\view\Component;
 use models\core\Language\Language;
 use models\core\Navigation\NavigationContext;
 use models\core\Navigation\NavigationFactoryRecord;
@@ -28,7 +28,7 @@ class Navigator extends Router {
         self::$factories[$factoryRecord->getId()] = $factory;
     }
 
-    public static function build(int $factoryId, string $data): View {
+    public static function build(int $factoryId, string $data): Component {
         if (!isset(self::$factories[$factoryId])) {
             throw new RuntimeException("Factory ($factoryId) is not loaded");
         }
@@ -65,7 +65,7 @@ class Navigator extends Router {
         }
     }
 
-    public static function getDestination(Language $language, Path $path, ?string $context = null): ?View {
+    public static function getDestination(Language $language, Path $path, ?string $context = null): ?Component {
         /** @var Slug|null $slug */
         $slug = null;
         $contextId = NavigationContext::getContextId($context);
@@ -108,7 +108,7 @@ class Navigator extends Router {
         $this->context = $context;
     }
 
-    public function resolve(Request $request, Response $response): void {
+    public function resolve(Request $request, Response $response): Component {
         $path = $request->getRemainingPath();
         $language = $request->getLanguage();
 
@@ -118,6 +118,6 @@ class Navigator extends Router {
             $response->send('Resource not found');
         }
 
-        $response->renderRoot($destination);
+        return $destination;
     }
 }

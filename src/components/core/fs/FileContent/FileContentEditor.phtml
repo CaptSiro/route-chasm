@@ -1,0 +1,8 @@
+<?php /** @var FileContentEditor $this */
+
+use components\core\fs\FileContent\FileContentEditor;
+use components\layout\Tabs\Tabs;
+
+?><div class="file-content-editor">
+    <?= new Tabs($this->files) ?>
+</div>

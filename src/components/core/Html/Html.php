@@ -7,6 +7,8 @@ use core\view\View;
 use core\view\Renderer;
 
 class Html implements View {
+    // todo
+    //  remove Renderer dependency
     use Renderer;
 
     public static function escape(?string $content): string {
@@ -36,6 +38,8 @@ class Html implements View {
     public static function createLinkUnsafe(string $url, string $content, string $target = '_self'): string {
         return "<a href='$url' target='$target'>$content</a>";
     }
+
+
 
     public function __construct(
         protected readonly string $tag,

@@ -94,16 +94,7 @@ async function form_submit(form, event) {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    const w = window_create(
-        "",
-        jsml.div("text-window", [
-            jsml.h3(_, "Submitting form..."),
-        ]),
-        {
-            isDialog: true
-        }
-    );
-
+    const w = window_createNotice("Submitting form...", { isDialog: true });
     window_open(w);
 
     /** @type {(HTMLElement) => Payload} */

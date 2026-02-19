@@ -1,0 +1,40 @@
+.ai-generated-page {
+    display: grid;
+    grid-template-columns: 1fr 0;
+    grid-auto-rows: 1fr;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.ai-generated-page.edit {
+    grid-template-columns: 1fr 1fr;
+}
+
+.ai-generated-page > div:not(.edit-controls) {
+    overflow: auto;
+    height: 100%;
+}
+
+.ai-generated-page .source-editor .tabs {
+    overflow: auto;
+    height: 100vh;
+}
+
+.ai-generated-page:not(.edit) .source-editor {
+    display: none;
+}
+
+.ai-generated-page .edit-controls {
+    position: fixed;
+    bottom: var(--gap);
+    left: var(--gap);
+}
+
+.ai-generated-page .tabs__wrapper {
+    overflow: auto;
+}
+
+.ai-generated-page .file-content {
+    padding-bottom: 20vh;
+}

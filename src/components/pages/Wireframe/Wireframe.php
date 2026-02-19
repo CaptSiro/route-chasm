@@ -4,18 +4,20 @@ namespace components\pages\Wireframe;
 
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\Head;
+use core\actions\Action;
 use core\App;
+use core\communication\Request;
+use core\communication\Response;
 use core\view\ArrayContainer;
 use core\view\Component;
 use core\view\Container;
+use core\view\View;
 use models\core\Language\Language;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
 use RuntimeException;
 
 class Wireframe extends Component implements Container {
-    use ArrayContainer;
-
     public static function createHtmlHead(LocalizedPage $localization): HtmlHead {
         $head = new HtmlHead($localization->title);
 
@@ -32,8 +34,10 @@ class Wireframe extends Component implements Container {
 
 
     protected Language $language;
-    protected Head $head;
+    protected HtmlHead $head;
     protected LocalizedPage $localization;
+    protected View $content;
+    protected ?Action $action;
 
     public function __construct(
         protected Page $page,
@@ -54,5 +58,30 @@ class Wireframe extends Component implements Container {
 
         $this->localization = $localization;
         $this->head = self::createHtmlHead($localization);
+    }
+
+
+
+    public function getHead(): HtmlHead {
+        return $this->head;
+    }
+
+    public function addContent(View $view): static {
+        $this->content = $view;
+
+        if ($view instanceof Action) {
+            $this->action = $view;
+        }
+
+        return $this;
+    }
+
+    public function perform(Request $request, Response $response): void {
+        if (!is_null($this->action)) {
+            $this->action->perform($request, $response);
+            return;
+        }
+
+        parent::perform($request, $response);
     }
 }

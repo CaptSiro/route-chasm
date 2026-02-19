@@ -2,10 +2,13 @@
 
 namespace core\view;
 
-class StringRenderer implements View {
+class StringRenderer extends Component {
     public function __construct(
-        protected string $string
-    ) {}
+        protected string $string,
+        bool $isMiddleware = false
+    ) {
+        parent::__construct($isMiddleware);
+    }
 
     public function __toString(): string {
         return $this->string;
@@ -19,5 +22,9 @@ class StringRenderer implements View {
 
     public function getRoot(): View {
         return $this;
+    }
+
+    public function isMiddleware(): bool {
+        return false;
     }
 }
