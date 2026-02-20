@@ -135,6 +135,10 @@ class Directory extends Model implements FileSystemEntry {
         return $this->files;
     }
 
+    public function filterFiles(string $type): array {
+        return array_filter($this->getFiles(), fn(File $x) => $x->isTypeOf($type));
+    }
+
     public function getParent(): ?Directory {
         if (!isset($this->parent)) {
             $this->parent = Directory::fromId($this->parentId) ?? FileSystem::getRoot();

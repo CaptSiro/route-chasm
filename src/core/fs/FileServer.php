@@ -187,8 +187,14 @@ class FileServer extends Router {
             Http::get(function (Request $request, Response $response) {
                 $user = User::fromSession($request->getSession());
                 $isAdmin = is_null($user) || $user->isAdmin();
+
                 $response->render(
-                    FileSystem::listDirectoryModal(readonly: !$isAdmin)
+                    FileSystem::listDirectoryModal(
+                        fileType: $request->getUrl()
+                            ->getQuery()
+                            ->get(RouteChasmEnvironment::QUERY_FS_FILE_TYPE),
+                        readonly: !$isAdmin,
+                    )
                 );
             }),
 

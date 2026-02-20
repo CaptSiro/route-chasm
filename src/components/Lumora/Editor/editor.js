@@ -252,7 +252,14 @@ function editor_loadFileSystemApi() {
         },
 
         createDirectoryUrl(type) {
-            return this.directoryUrl;
+            if (!is(type)) {
+                return dataset.directoryUrl;
+            }
+
+            const url = new URL(dataset.directoryUrl);
+            url.searchParams.set(dataset['fileTypeQuery'], type);
+
+            return url.href;
         }
     };
 }

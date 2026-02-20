@@ -33,6 +33,7 @@ class RouteChasmEnvironment {
     public const QUERY_SIDELOADER_FORCE = 'f';
     public const QUERY_GRID_PORTION = 'p';
     public const QUERY_FS_VARIANT = 'v';
+    public const QUERY_FS_FILE_TYPE = 'file-type';
     public const QUERY_FILE_SYSTEM_DIRECTORY = 'directory';
 
     public const PROJECT = "PROJECT";

@@ -186,7 +186,11 @@ class FileSystem {
         return $nexus;
     }
 
-    public static function listDirectoryModal(?Directory $directory = null, bool $readonly = false): View {
+    public static function listDirectoryModal(
+        ?Directory $directory = null,
+        ?string $fileType = null,
+        bool $readonly = false
+    ): View {
         if (is_null($directory)) {
             $directoryId = App::getInstance()
                 ->getRequest()
@@ -216,7 +220,12 @@ class FileSystem {
         $nexus = new AdminNexus(
             ModelDescription::extract(File::class),
             new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
-            self::listDirectory($directory, $directoryLinkProvider, $readonly)
+            self::listDirectory(
+                $directory,
+                $directoryLinkProvider,
+                $fileType,
+                $readonly,
+            )
         );
 
         $breadCrumbs = $bc = static::generateBreadCrumbs(
@@ -242,6 +251,7 @@ class FileSystem {
     public static function listDirectory(
         Directory $directory,
         Closure $directoryLinkProvider,
+        ?string $fileType = null,
         bool $readonly = false
     ): GridLayoutFactory {
         return new FileSystemGridFactory(
@@ -251,7 +261,7 @@ class FileSystem {
                 'size' => new GridColumn('Size', '96px')
             ],
             new FileSystemEntryProxy($directoryLinkProvider),
-            new FileSystemGridLoader($directory)
+            new FileSystemGridLoader($directory, $fileType)
         );
     }
 

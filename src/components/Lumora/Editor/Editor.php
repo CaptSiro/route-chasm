@@ -214,6 +214,7 @@ class Editor extends ContainerContent {
                 'id' => 'fs-data',
                 'data-file-url' => $fs->createFileUrl(),
                 'data-variant-query' => RouteChasmEnvironment::QUERY_FS_VARIANT,
+                'data-file-type-query' => RouteChasmEnvironment::QUERY_FS_FILE_TYPE,
                 'data-directory-url' => $fs->createDirectoryUrl(),
                 'data-image-variant-url' => $fs->createVariantUrl(ImageVariant::getInstance()),
             ]
