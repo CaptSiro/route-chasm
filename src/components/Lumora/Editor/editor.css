@@ -13,9 +13,8 @@
     overflow: hidden;
 }
 
-.table * {
+.table {
     color: var(--text-0);
-    transition: background-color 250ms, color 250ms, border-color 250ms;
 }
 
 
@@ -28,7 +27,7 @@ nav {
     gap: 0.5em;
     align-items: center;
     font-size: smaller;
-    z-index: 100;
+    z-index: 2;
 }
 
 

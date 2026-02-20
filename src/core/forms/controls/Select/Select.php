@@ -4,6 +4,7 @@ namespace core\forms\controls\Select;
 
 use core\forms\controls\Control;
 use core\forms\controls\FormControl;
+use core\forms\Form;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
 use core\view\Renderer;
@@ -13,7 +14,12 @@ class Select implements Control, Attribute {
 
 
 
-
+    /**
+     * @param string $name
+     * @param string $label
+     * @param array<string, string> $values value => label
+     * @param string|null $selected
+     */
     public function __construct(
         protected string $name = self::class,
         protected string $label = self::class,

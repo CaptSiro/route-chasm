@@ -10,7 +10,11 @@ function form_fs_fileControl(element, { url, controlId }) {
     }
 
     element.addEventListener("click", async () => {
-        control.value = await window_fileSelect(control.value, url);
-        console.log(control.value);
+        const file = await window_fileSelect(url);
+        if (!is(file)) {
+            return;
+        }
+
+        control.value = file;
     });
 }

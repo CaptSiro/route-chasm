@@ -67,7 +67,7 @@ class Resizeable {
     } = {}) {
         this.#e = element;
 
-        this.content = jsml.div("content", this.#e.children);
+        this.content = jsml.div("content", Array.from(this.#e.children));
         this.#e.appendChild(this.content);
 
         this.#e.classList.add("resizeable", "boundaries");
@@ -215,8 +215,6 @@ class Resizeable {
             styles.paddingY = (+pTop[1]) + (+pBottom[1]);
         }
 
-
-
         const min = this.#e.getAttribute("min-size");
         const minSize = min != null
             ? /(.+) (.+)/.exec(min)
@@ -250,8 +248,6 @@ class Resizeable {
 
         styles.contentX = cWidth;
         styles.contentY = cHeight;
-
-
 
         const max = this.#e.getAttribute("max-size");
         const maxSize = max != null

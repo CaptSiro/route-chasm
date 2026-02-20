@@ -36,9 +36,11 @@ use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
 use core\fs\FileServer;
+use core\fs\variants\ImageVariant;
 use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\route\Route;
+use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use modules\ai\OpenAi;
@@ -210,7 +212,10 @@ class Editor extends ContainerContent {
             '',
             [
                 'id' => 'fs-data',
-                'directoryUrl' => $fs->createDirectoryUrl(),
+                'data-file-url' => $fs->createFileUrl(),
+                'data-variant-query' => RouteChasmEnvironment::QUERY_FS_VARIANT,
+                'data-directory-url' => $fs->createDirectoryUrl(),
+                'data-image-variant-url' => $fs->createVariantUrl(ImageVariant::getInstance()),
             ]
         );
     }

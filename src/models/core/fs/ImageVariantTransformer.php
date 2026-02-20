@@ -23,6 +23,7 @@ use core\fs\variants\ImageVariant;
 use core\guards\Guard;
 use core\guards\NumberGuard;
 use core\guards\StringGuard;
+use core\RouteChasmEnvironment;
 use core\view\View;
 use GdImage;
 
@@ -131,6 +132,26 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
 
 
 
+    public function getSize(): string {
+        $size = $this->width > 0
+            ? $this->width
+            : RouteChasmEnvironment::CHAR_INFINITY;
+
+        $size .= 'x';
+
+        $size .= $this->height > 0
+            ? $this->height
+            : RouteChasmEnvironment::CHAR_INFINITY;
+
+        return $size;
+    }
+
+    public function getQuality(): float {
+        return max(0.0, min($this->quality, 1.0));
+    }
+
+
+
     // FileVariantTransformer
     public function getFileVariant(): FileVariant {
         return ImageVariant::getInstance();
@@ -140,8 +161,10 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
         return $this->transformer;
     }
 
-    public function getQuality(): float {
-        return max(0.0, min($this->quality, 1.0));
+    public function getTransformerLabel(): string {
+        return $this->transformer .' ('
+            . $this->getSize() .', '
+            . ucfirst($this->function) .')';
     }
 
     public function createVariantFileName(string $filePath, ?string $transformer = null, mixed $version = null): string {

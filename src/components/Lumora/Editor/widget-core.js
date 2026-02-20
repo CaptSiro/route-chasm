@@ -32,8 +32,18 @@ class Observable {
      * @param {string | number} key Ability to address indexes in array with number as a key
      * @param {any} value
      */
-    setProperty(key, value) {
+    setPropertySafe(key, value) {
         this.#value[key] = value;
+    }
+
+    /**
+     * Setting property like so will not trigger on change event
+     *
+     * @param {string | number} key Ability to address indexes in array with number as a key
+     * @param {any} value
+     */
+    setProperty(key, value) {
+        this.setPropertySafe(key, value);
         this.dispatch();
     }
 

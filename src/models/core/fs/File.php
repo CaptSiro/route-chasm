@@ -258,8 +258,10 @@ class File extends Model implements FileSystemEntry, Destination {
             return $url;
         }
 
-        $variant = $transformer->getFileVariant()->getName() .':'. $transformer->getTransformer();
-        $url->setQueryArgument(RouteChasmEnvironment::QUERY_FS_VARIANT, $variant);
+        $url->setQueryArgument(
+            RouteChasmEnvironment::QUERY_FS_VARIANT,
+            FileSystem::createVariantIdentifier($transformer)
+        );
 
         return $url;
     }

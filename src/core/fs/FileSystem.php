@@ -19,6 +19,7 @@ use core\communication\UploadedFile;
 use core\data\Data;
 use core\database\sql\ModelDescription;
 use core\fs\variants\FileVariant;
+use core\fs\variants\FileVariantTransformer;
 use core\locale\Lexicon;
 use core\ResourceLoader;
 use core\route\Path;
@@ -48,6 +49,14 @@ class FileSystem {
     public static function getVariant(string $name): ?FileVariant {
         Php::run(self::getSelfResource("variants.php"));
         return self::$variants[$name] ?? null;
+    }
+
+    public static function getVariants(): array {
+        return self::$variants;
+    }
+
+    public static function createVariantIdentifier(FileVariantTransformer $transformer): string {
+        return $transformer->getFileVariant()->getName() .':'. $transformer->getTransformer();
     }
 
     public static function getLocation(): string {

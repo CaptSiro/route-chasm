@@ -162,15 +162,16 @@ function jsml_init() {
 const jsml = jsml_init();
 const _ = undefined;
 const JSML_EVENT_LOAD = 'jsmlLoad';
+const JSML_EVENT_FETCHED = 'jsmlAdded';
+
+/** @type {Map<string, Set<string>>} */
+const sideloader_imported = new Map();
+/** @type {Map<string, Set<HTMLElement>>} */
+const sideloader_deferred = new Map();
 
 
 
 window.addEventListener('load', () => {
-    /** @type {Map<string, Set<string>>} */
-    const imported = new Map();
-    /** @type {Map<string, Set<HTMLElement>>} */
-    const deferred = new Map();
-
     SideLoader.addImporter('js', (files, type) => {
         const script = jsml.script();
         script.src = SideLoader.createImportUrl(type, files);
@@ -186,11 +187,11 @@ window.addEventListener('load', () => {
 
     for (const importer of document.querySelectorAll("." + SideLoader.getImporterClass())) {
         const type = importer.dataset.type;
-        if (!imported.has(type)) {
-            imported.set(type, new Set());
+        if (!sideloader_imported.has(type)) {
+            sideloader_imported.set(type, new Set());
         }
 
-        const set = imported.get(type);
+        const set = sideloader_imported.get(type);
         for (const file of String(importer.dataset.files).split(',')) {
             set.add(file);
         }
@@ -272,11 +273,11 @@ window.addEventListener('load', () => {
                 return;
             }
 
-            if (!imported.has(type)) {
-                imported.set(type, new Set());
+            if (!sideloader_imported.has(type)) {
+                sideloader_imported.set(type, new Set());
             }
 
-            const set = imported.get(type);
+            const set = sideloader_imported.get(type);
             const unseen = [];
 
             for (const file of files) {
@@ -304,13 +305,13 @@ window.addEventListener('load', () => {
                 await std_wait(delay);
             }
 
-            console.warn("Not resolved", Array.from(deferred.keys()));
+            console.warn("Not resolved", Array.from(sideloader_deferred.keys()));
         }, 50);
     }
 
     function defer(element, functions) {
         for (const fn of functions) {
-            const set = deferred.get(fn);
+            const set = sideloader_deferred.get(fn);
             if (is(set)) {
                 set.add(element);
                 continue;
@@ -318,17 +319,17 @@ window.addEventListener('load', () => {
 
             const s = new Set();
             s.add(element);
-            deferred.set(fn, s);
+            sideloader_deferred.set(fn, s);
         }
     }
 
     function resolveDeferred() {
-        if (deferred.size === 0) {
+        if (sideloader_deferred.size === 0) {
             return true;
         }
 
         const resolved = [];
-        deferred.forEach((elements, fn) => {
+        sideloader_deferred.forEach((elements, fn) => {
             if (!is(std_getFunction(fn))) {
                 return;
             }
@@ -340,10 +341,10 @@ window.addEventListener('load', () => {
         });
 
         for (const fn of resolved) {
-            deferred.delete(fn);
+            sideloader_deferred.delete(fn);
         }
 
-        return deferred.size === 0;
+        return sideloader_deferred.size === 0;
     }
 
     /**
@@ -408,6 +409,12 @@ window.addEventListener('load', () => {
             
             if (swap === "inner") {
                 target.innerHTML = text;
+                target.dispatchEvent(new CustomEvent(JSML_EVENT_FETCHED, {
+                    bubbles: true,
+                    detail: {
+                        element: target.children[0]
+                    }
+                }));
                 return;
             }
 

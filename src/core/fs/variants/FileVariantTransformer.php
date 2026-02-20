@@ -9,6 +9,8 @@ interface FileVariantTransformer {
 
     public function getTransformer(): string;
 
+    public function getTransformerLabel(): string;
+
     public function supports(File $file): bool;
 
     public function transform(File $file): string;

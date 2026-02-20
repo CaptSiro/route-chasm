@@ -2,11 +2,9 @@
 
 use components\core\fs\FileControl;
 use core\fs\FileServer;
-use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
 Javascript::import($this->getResource('file-control.js'));
-Css::import($this->getResource('file-control.css'));
 
 $id = $this->getId();
 

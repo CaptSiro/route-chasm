@@ -1,4 +1,6 @@
 .idea
-.env
-todo
 data/*
+
+.env
+assignment.pdf
+todo

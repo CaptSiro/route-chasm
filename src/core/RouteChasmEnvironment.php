@@ -3,6 +3,8 @@
 namespace core;
 
 class RouteChasmEnvironment {
+    public const CHAR_INFINITY = '∞';
+
     public const FILE_SYSTEM_HASH_ALGORITHM = 'sha256';
     public const FILE_SYSTEM_NAMESPACE = 'fs';
     public const FILE_SYSTEM_DIRECTORY_HASH_OFFSET = 2;

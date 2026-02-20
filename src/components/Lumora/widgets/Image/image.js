@@ -5,6 +5,8 @@ class WImage extends Widget {
     /**
      * @typedef ImageJSONType
      * @property {string=} src
+     * @property {string=} hash
+     * @property {string=} variant
      * @property {string=} alt
      * @property {number=} width
      * @property {number=} height
@@ -39,9 +41,7 @@ class WImage extends Widget {
     constructor(json, parent, editable = false) {
         const image = jsml.img({
             class: "w-image",
-            src: json.src !== undefined
-                ? WImage.createSourceURL(json.src)
-                : "",
+            src: json.src ?? '',
             alt: json.alt ?? "Unnamed image",
             draggable: "false"
         });
@@ -65,11 +65,12 @@ class WImage extends Widget {
         this.#position = json.position ?? [50, 50];
         this.#imageElement.style.objectPosition = this.#position[0] + "% " + this.#position[1] + "%";
 
-
         if (editable) {
             this.#json = new Observable(json);
             this.#json.onChange(descriptor => {
-                this.#imageElement.src = WImage.createSourceURL(descriptor.src);
+                const src = WImage.createSource(descriptor.hash, descriptor.variant);
+                this.#imageElement.src = src;
+                this.#json.setPropertySafe('src', src);
             });
 
             this.#resizeable = new Resizeable(imageContainer, { axes: "diagonal", borderRadius: "enabled" });
@@ -196,12 +197,13 @@ class WImage extends Widget {
     }
 
     /**
-     * @param {string} src
+     * @param {string} hash
+     * @param {string} variant
      * @return {string}
      */
-    static createSourceURL(src) {
-        // return `${AJAX.SERVER_HOME}/file/${webpage.src}/${src}`;
-        return "";
+    static createSource(hash, variant) {
+        const api = editor_loadFileSystemApi();
+        return api.createFileUrl(hash, variant);
     }
 
     /**
@@ -229,11 +231,39 @@ class WImage extends Widget {
         return new WImage(json, parent, editable);
     }
 
+    /** @type {HTMLElement | undefined} */
+    #imageVariantSelect;
+    createImageVariantSelect() {
+        if (is(this.#imageVariantSelect)) {
+            return this.#imageVariantSelect;
+        }
+
+        const api = editor_loadFileSystemApi();
+        this.#imageVariantSelect = Remote('div', api.imageVariantUrl, 'Loading image variants...');
+        this.#imageVariantSelect.addEventListener('change', event => {
+            this.#json.setProperty('variant', event.target.value);
+        });
+
+        if (is(this.#json.value.variant)) {
+            this.#imageVariantSelect.addEventListener(JSML_EVENT_FETCHED, event => {
+                const select = event.detail?.element;
+                if (!is(select)) {
+                    return;
+                }
+
+                form_select_selectOption(select, this.#json.value.variant);
+            }, { once: true });
+        }
+
+        return this.#imageVariantSelect;
+    }
+
     /**
      * @override
      * @returns {Content}
      */
     get inspectorHTML() {
+
         return [
             TitleInspector("Image"),
 
@@ -251,30 +281,36 @@ class WImage extends Widget {
                 jsml.span(_, "Image:"),
                 jsml.button({
                     class: "button-like-main",
-                    onClick: event => {
-                        // const win = showWindow("file-select");
-                        // win.dataset.multiple = "false";
-                        // win.dataset.fileType = "image";
-                        // win.dispatchEvent(new Event("fetch"));
-                        // win.onsubmit = submitEvent => {
-                        //     this.#json.setProperty("src", submitEvent.detail[0].serverName);
-                        //     std_dom_validated(evt.target.parentElement);
-                        // };
+                    onClick: async event => {
+                        const api = editor_loadFileSystemApi();
+                        if (!is(api)) {
+                            return;
+                        }
+
+                        const hash = await window_fileSelect(api.createDirectoryUrl('image'));
+                        if (!is(hash)) {
+                            return;
+                        }
+
+                        this.#json.setProperty('hash', hash);
                     }
                 }, "Select")
-            ])
+            ]),
+
+            this.createImageVariantSelect()
         ];
     }
 
     /**
      * @override
-     * @returns {WidgetJSON}
+     * @returns {ImageJSON}
      */
     save() {
+        const { src, hash, variant } = this.#json.value;
+
         return {
             type: "WImage",
-            src: this.#json.value.src,
-            alt: this.#json.value.alt,
+            src, hash, variant,
             width: this.#dimensions.value[0],
             height: this.#dimensions.value[1],
             borderRadius: this.#dimensions.value[2],

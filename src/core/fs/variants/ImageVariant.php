@@ -28,4 +28,8 @@ class ImageVariant implements FileVariant {
     public function getTransformer(string $transformer): ?FileVariantTransformer {
         return ImageVariantTransformer::fromTransformer($transformer);
     }
+
+    public function getTransformers(): array {
+        return ImageVariantTransformer::all();
+    }
 }

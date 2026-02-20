@@ -111,12 +111,16 @@ class SideLoader implements View {
     }
 
     public function doSendRequireHeader(Request $request): bool {
-        $format = App::getInstance()
-            ->getResponse()
-            ->getFormat($request);
+        // todo
+        //  investigate
+//        $format = App::getInstance()
+//            ->getResponse()
+//            ->getFormat($request);
+//
+//        return $format !== Format::IDENT_HTML
+//            || $request->getUrl()->getQuery()->exists(RouteChasmEnvironment::QUERY_SIDELOADER_FORCE);
 
-        return $format !== Format::IDENT_HTML
-            || $request->getUrl()->getQuery()->exists(RouteChasmEnvironment::QUERY_SIDELOADER_FORCE);
+        return true;
     }
 
     public function isInitialized(): bool {
@@ -156,6 +160,7 @@ class SideLoader implements View {
             }
 
             $require = '';
+            $test = [];
 
             foreach ($this->files as $type => $files) {
                 $hashed = $this->joinHashed($files);
@@ -163,6 +168,7 @@ class SideLoader implements View {
                     continue;
                 }
 
+                $test[] = array_unique(array_map(fn($x) => basename($x), $files));
                 $require .= "$type($hashed);";
             }
 
@@ -171,6 +177,7 @@ class SideLoader implements View {
             }
 
             $response->setHeader(self::HEADER_X_REQUIRE, $require);
+            $response->setHeader('X-Test', json_encode($test));
         });
 
         $this->router->use(

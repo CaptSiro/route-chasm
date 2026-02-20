@@ -422,6 +422,8 @@ function form_select_selectOption(container, value) {
     }
 
     option.parentElement.value = option.value;
+    option.parentElement.dispatchEvent(new Event('change', { bubbles: true }));
+
     const label = $('.option', container);
     if (is(label)) {
         label.textContent = option.textContent;
@@ -601,7 +603,7 @@ function form_select_init(container) {
             return;
         }
 
-        form_select_selectOption(container, item.dataset.value)
+        form_select_selectOption(container, item.dataset.value);
     });
 
     dropdown_shrink(container, dropdown);

@@ -40,6 +40,19 @@ function Icon(nf, fallback = undefined) {
 }
 
 /**
+ * @param {keyof HTMLElementTagNameMap} container
+ * @param {string} url
+ * @param {string} placeholder
+ * @returns {HTMLElement}
+ */
+function Remote(container, url, placeholder) {
+    return jsml[container]({
+        'x-get': url,
+        'x-event': JSML_EVENT_LOAD,
+    }, placeholder);
+}
+
+/**
  * @param {Impulse} percentage
  */
 function Bar(percentage) {

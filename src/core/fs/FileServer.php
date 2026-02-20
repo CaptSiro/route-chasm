@@ -2,9 +2,11 @@
 
 namespace core\fs;
 
+use components\core\fs\FileVariantTransformers;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\fs\variants\FileVariant;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
@@ -58,11 +60,14 @@ class FileServer extends Router {
         return $ret;
     }
 
-    public function createFileUrl(File $file): Url {
+    public function createFileUrl(?File $file = null): Url {
         $request = App::getInstance()->getRequest();
         $path = $this->getRoute()->toStaticPath()
-            ->append('file')
-            ->append($file->hash);
+            ->append('file');
+
+        if (!is_null($file)) {
+            $path->append($file->hash);
+        }
 
         $ret = $request
             ->getDomain()
@@ -87,6 +92,22 @@ class FileServer extends Router {
                 $directory->getId()
             );
         }
+
+        return $ret;
+    }
+
+    public function createVariantUrl(FileVariant $variant): Url {
+        $request = App::getInstance()->getRequest();
+        $path = $this->getRoute()->toStaticPath()
+            ->append('variant')
+            ->append($variant->getName());
+
+        $ret = $request
+            ->getDomain()
+            ->createUrl($path);
+
+        $ret->getQuery()
+            ->load($request->getUrl()->getQuery()->toArray());
 
         return $ret;
     }
@@ -210,6 +231,30 @@ class FileServer extends Router {
 
                 $directory->deleteEntry();
                 $response->sendStatus(HttpCode::S_OK);
+            })
+        );
+
+        $router->use(
+            '/variant/[variant]',
+            Http::get(function (Request $request, Response $response) {
+                $variant = FileSystem::getVariant(
+                    $request->getParam()->getStrict('variant')
+                );
+
+                $query = $request
+                    ->getUrl()
+                    ->getQuery();
+
+                $name = $query->get('name', 'file-variant-transformers');
+                $label = $query->get('label', 'Transformers');
+
+                $response->renderRoot(
+                    new FileVariantTransformers(
+                        $variant->getTransformers(),
+                        $name,
+                        $label
+                    )
+                );
             })
         );
     }

@@ -227,7 +227,34 @@ async function editor_loadContent() {
  * @return {LumoraEditorFileSystemApi|null|any}
  */
 function editor_loadFileSystemApi() {
-    return $("#fs-data")?.dataset ?? null;
+    const dataset = $("#fs-data")?.dataset;
+    if (!is(dataset)) {
+        return null;
+    }
+
+    return {
+        directoryUrl: dataset.directoryUrl,
+        imageVariantUrl: dataset.imageVariantUrl,
+
+        createFileUrl(hash, variant) {
+            const fileUrl = dataset['fileUrl'];
+            if (!is(fileUrl)) {
+                return null;
+            }
+
+            const url = new URL(fileUrl);
+            url.pathname += '/' + hash;
+            if (is(variant)) {
+                url.searchParams.set(dataset['variantQuery'], variant);
+            }
+
+            return url.href;
+        },
+
+        createDirectoryUrl(type) {
+            return this.directoryUrl;
+        }
+    };
 }
 
 async function editor_loadWidgets() {
