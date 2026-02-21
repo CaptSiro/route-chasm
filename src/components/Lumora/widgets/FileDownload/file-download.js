@@ -3,29 +3,27 @@ class WFileDownload extends Widget {
     // use json.child for single child widget like Center
     // or json.children for array of widgets
     /**
-     * @typedef DownloadFile
-     * @property {string} name
-     * @property {string} src
-     */
-    /**
      * @typedef FileDownloadJSONType
-     * @property {DownloadFile[]=} files
-     * @property {string=} name
+     * @property {string=} hash
+     * @property {string=} url
+     * @property {string=} fileName
+     * @property {string=} downloadName
+     * @property {string=} size
      *
      * @typedef {FileDownloadJSONType & WidgetJSON} FileDownloadJSON
      */
 
     static DOWNLOAD_ICON = "w-file-download-icon";
-    /**
-     * @type {Observable<DownloadFile[]>}
-     */
-    #files;
-    /**
-     * @type {Observable<number>}
-     */
-    #downloadSize;
+    /** @type {Observable<string>} */
+    #hash;
+    /** @type {Observable<string>} */
+    #size;
     #fileView;
-    #name;
+    /** @type {Observable<string>} */
+    #fileName;
+    /** @type {Observable<string>} */
+    #downloadName;
+    #url;
 
 
     /**
@@ -34,69 +32,89 @@ class WFileDownload extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
-        const buttonLike = (
-            jsml.div("container", [
+        const button = (
+            jsml.button({
+                class: "container",
+                disabled: !is(json.url)
+            }, [
                 Icon("nf-oct-download"),
                 jsml.span(_, "Download")
             ])
         );
 
-        super(jsml.div("w-file-download center", buttonLike), parent, editable);
+        super(jsml.div("w-file-download center", button), parent, editable);
         this.childSupport = this.childSupport;
 
-        this.#name = json.name;
-        this.#files = new Observable([]);
-        this.#downloadSize = new Observable(0);
-        this.#files.onChange(async files => {
-            const fileSources = files
-                .map(file => file.src)
-                .join(",");
+        const updateUrl = () => {
+            const api = editor_loadFileSystemApi();
+            const url = api.createDownloadUrl(this.#hash.value, this.#downloadName.value);
+            button.disabled = !is(this.#url);
+            if (!is(url)) {
+                return;
+            }
 
-            // this.#downloadSize.value = Number(
-            //     await AJAX.get(
-            //         `/file/size/?files=${fileSources}&website=${webpage.website}`,
-            //         TextHandler(),
-            //         { headers: { "Access-Control-Allow-Origin": "*" } },
-            //         AJAX.SERVER_HOME
-            //     )
-            // );
-        });
-
-        if (json.files !== undefined) {
-            this.#files.value = json.files;
+            this.#url = url;
         }
+
+        this.#downloadName = new Observable(json.downloadName ?? 'file');
+        this.#downloadName.onChange(updateUrl);
+        this.#url = json.url;
+
+        this.#fileName = new Observable(json.fileName ?? '');
+        this.#size = new Observable(json.size ?? '0 B');
+
+        this.#hash = new Observable(json.hash ?? '');
+        this.#hash.onChange(async hash => {
+            updateUrl();
+
+            const api = editor_loadFileSystemApi();
+            const url = api.createInfoUrl(hash);
+            if (!is(url)) {
+                return;
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Could not fetch file size');
+            }
+
+            const json = await response.json();
+            if (!is(json['sizeHumanReadable'])) {
+                return;
+            }
+
+            this.#size.value = json['sizeHumanReadable'];
+            this.#fileName.value = json['fileName'];
+        });
 
         if (editable) {
             this.appendEditGui();
         }
 
-        buttonLike.addEventListener("click", evt => {
+        button.addEventListener("click", async evt => {
             document.body?.classList.remove("cursor-pointer");
             const canBeTriggered = evt.ctrlKey || editable === false;
 
-            if (canBeTriggered) {
-                evt.preventDefault();
-                evt.stopImmediatePropagation();
-
-                const isConfirmed = confirm(
-                    `Do you want to download ${
-                        this.#files.value.length > 1
-                            ? "these files? They"
-                            : "this file? It"
-                    } may be a virus hazard.\nSize: ${WFileDownload.sizeFormatter(this.#downloadSize.value)}`
-                );
-
-                if (isConfirmed) {
-                    // const url = new URL(`${AJAX.SERVER_HOME}/file/download`);
-                    // url.searchParams.set("website", webpage.website);
-                    // url.searchParams.set("files", this.#files.value
-                    //     .map(file => file.src)
-                    //     .join(","));
-                    // url.searchParams.set("name", this.#name ?? "");
-                    //
-                    // window.location.replace(url);
-                }
+            if (!is(this.#url)) {
+                await window_alert('No file has been assigned');
+                return;
             }
+
+            if (!canBeTriggered) {
+                return;
+            }
+
+            evt.preventDefault();
+            evt.stopImmediatePropagation();
+            const isConfirmed = await window_confirm(
+                `Do you want to download ${this.#downloadName.value}? It may be a virus hazard.\nSize: ${this.#size.value}`
+            );
+
+            if (!isConfirmed) {
+                return;
+            }
+
+            window.location.replace(this.#url);
         });
     }
 
@@ -149,22 +167,21 @@ class WFileDownload extends Widget {
      */
     get inspectorHTML() {
         if (this.#fileView === undefined) {
-            this.#fileView = jsml.ul("files-inspector");
+            const fileName = jsml.span(_, this.#fileName.value);
+            const size = jsml.span(_, this.#size.value);
 
-            const appendFiles = files => {
-                this.#fileView.textContent = undefined;
+            this.#fileView = jsml.div("files-inspector", [
+                jsml.div('i-row', ['Selected: ', fileName]),
+                jsml.div('i-row', ['Size: ', size]),
+            ]);
 
+            this.#fileName.onChange(n => {
+                fileName.textContent = n;
+            });
 
-                for (const file of files) {
-                    this.#fileView.appendChild(
-                        //     new TextSlider(jsml.div("i-row", file.name), { gap: 50, speed: 75 }).element
-                        jsml.li("i-row", file.name)
-                    );
-                }
-            };
-
-            this.#files.onChange(appendFiles);
-            appendFiles(this.#files.value);
+            this.#size.onChange(s => {
+                size.textContent = s;
+            });
         }
 
         return [
@@ -173,23 +190,25 @@ class WFileDownload extends Widget {
             HRInspector(),
 
             TitleInspector("Properties"),
-            TextFieldInspector(this.#name, value => {
-                this.#name = value;
+            TextFieldInspector(this.#downloadName.value, (value, parentElement) => {
+                this.#downloadName.value = value;
+                std_dom_validated(parentElement);
+                console.log(this.#downloadName);
                 return true;
             }, "Download as", "best-wallpaper"),
+
             jsml.div("i-row", [
-                jsml.span(_, "Files"),
+                jsml.span(_, "File"),
                 jsml.button({
                     class: "button",
-                    onClick: evt => {
-                        // const win = showWindow("file-select");
-                        // win.dataset.multiple = "true";
-                        // win.dataset.fileType = "";
-                        // win.dispatchEvent(new Event("fetch"));
-                        // win.onsubmit = submitEvent => {
-                        //     this.#files.value = submitEvent.detail.map(file => ({ name: file.name, src: file.src }));
-                        //     std_dom_validated(evt.target.parentElement);
-                        // };
+                    onClick: async evt => {
+                        const api = editor_loadFileSystemApi();
+                        const hash = await window_fileSelect(api.createDirectoryUrl());
+                        if (!is(hash)) {
+                            return;
+                        }
+
+                        this.#hash.value = hash;
                     }
                 }, "Select")
             ]),
@@ -199,13 +218,16 @@ class WFileDownload extends Widget {
 
     /**
      * @override
-     * @returns {WidgetJSON}
+     * @returns {FileDownloadJSON}
      */
     save() {
         return {
             type: "WFileDownload",
-            files: this.#files.value,
-            name: this.#name
+            fileName: this.#fileName.value,
+            downloadName: this.#downloadName,
+            url: this.#url,
+            size: this.#size.value,
+            hash: this.#hash.value,
         };
     }
 

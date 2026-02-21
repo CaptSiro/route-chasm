@@ -14,4 +14,8 @@ trait ActionBindRouteNode {
     protected function bindRouteNode(RouteNode $node): void {
         $this->routeNode = $node;
     }
+
+    public function onBind(RouteNode $bindingPoint): void {
+        $this->bindRouteNode($bindingPoint);
+    }
 }

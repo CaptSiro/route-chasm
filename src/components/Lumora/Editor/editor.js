@@ -232,23 +232,47 @@ function editor_loadFileSystemApi() {
         return null;
     }
 
+    const variantQuery = dataset['variantQuery'];
+    const nameQuery = dataset['nameQuery'] ?? 'name';
+
+    const createHashedUrl = (url, hash, query = {}) => {
+        if (!is(url)) {
+            return null;
+        }
+
+        const u = new URL(url);
+        u.pathname += '/' + hash;
+
+        for (const key in query) {
+            if (!is(query[key])) {
+                continue;
+            }
+
+            u.searchParams.set(key, query[key]);
+        }
+
+        return u.href;
+    };
+
     return {
         directoryUrl: dataset.directoryUrl,
         imageVariantUrl: dataset.imageVariantUrl,
 
-        createFileUrl(hash, variant) {
-            const fileUrl = dataset['fileUrl'];
-            if (!is(fileUrl)) {
-                return null;
-            }
+        createFileUrl(hash, variant = null) {
+            return createHashedUrl(dataset['fileUrl'], hash, {
+                [variantQuery]: variant
+            });
+        },
 
-            const url = new URL(fileUrl);
-            url.pathname += '/' + hash;
-            if (is(variant)) {
-                url.searchParams.set(dataset['variantQuery'], variant);
-            }
+        createDownloadUrl(hash, name, variant = null) {
+            return createHashedUrl(dataset['downloadUrl'], hash, {
+                [variantQuery]: variant,
+                [nameQuery]: name
+            });
+        },
 
-            return url.href;
+        createInfoUrl(hash) {
+            return createHashedUrl(dataset['infoUrl'], hash);
         },
 
         createDirectoryUrl(type) {

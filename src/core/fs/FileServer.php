@@ -60,10 +60,10 @@ class FileServer extends Router {
         return $ret;
     }
 
-    public function createFileUrl(?File $file = null): Url {
+    protected function createHashedUrl(string $function, ?File $file = null): Url {
         $request = App::getInstance()->getRequest();
         $path = $this->getRoute()->toStaticPath()
-            ->append('file');
+            ->append($function);
 
         if (!is_null($file)) {
             $path->append($file->hash);
@@ -75,6 +75,18 @@ class FileServer extends Router {
 
         $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
         return $ret;
+    }
+
+    public function createFileUrl(?File $file = null): Url {
+        return $this->createHashedUrl('file', $file);
+    }
+
+    public function createDownloadUrl(?File $file = null): Url {
+        return $this->createHashedUrl('download', $file);
+    }
+
+    public function createInfoUrl(?File $file = null): Url {
+        return $this->createHashedUrl('info', $file);
     }
 
     public function createDirectoryUrl(?Directory $directory = null): Url {
@@ -114,6 +126,29 @@ class FileServer extends Router {
 
 
 
+    protected function getTransformedFile(Request $request, File $file): string {
+        $variant = $request->getUrl()
+            ->getQuery()
+            ->get(RouteChasmEnvironment::QUERY_FS_VARIANT);
+
+        if (is_null($variant)) {
+            return $file->getRealPath();
+        }
+
+        [$v, $t] = explode(':', $variant);
+        if (is_null($fileVariant = FileSystem::getVariant($v))) {
+            return $file->getRealPath();
+        }
+
+        if (is_null($transformer = $fileVariant->getTransformer($t))
+            || !$transformer->supports($file))
+        {
+            return $file->getRealPath();
+        }
+
+        return $transformer->transform($file);
+    }
+
     protected function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
 
@@ -140,29 +175,12 @@ class FileServer extends Router {
                 }
 
                 $name = $file->getFileName();
-                $response->setHeader(HttpHeader::CONTENT_DISPOSITION, "inline; filename=\"$name\"");
-                $response->setHeader(HttpHeader::CONTENT_TYPE, $file->type);
+                $response->setHeaders([
+                    HttpHeader::CONTENT_DISPOSITION => "inline; filename=\"$name\"",
+                    HttpHeader::CONTENT_TYPE => $file->type
+                ]);
 
-                $variant = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_FS_VARIANT);
-                if (is_null($variant)) {
-                    $response->readFile($file->getRealPath());
-                    return;
-                }
-
-                [$v, $t] = explode(':', $variant);
-                if (is_null($fileVariant = FileSystem::getVariant($v))) {
-                    $response->readFile($file->getRealPath());
-                    return;
-                }
-
-                if (is_null($transformer = $fileVariant->getTransformer($t))
-                    || !$transformer->supports($file))
-                {
-                    $response->readFile($file->getRealPath());
-                    return;
-                }
-
-                $response->readFile($transformer->transform($file));
+                $response->readFile($this->getTransformedFile($request, $file));
             }),
 
             Http::patch(function (Request $request, Response $response) {
@@ -180,6 +198,45 @@ class FileServer extends Router {
 
                 $file->delete();
             })
+        );
+
+        $router->use(
+            '/download/[hash]',
+            Http::get(function (Request $request, Response $response) {
+                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
+
+                $name = $request->getUrl()
+                    ->getQuery()
+                    ->get('name', $file->getFileName());
+
+                $response->setHeaders([
+                    HttpHeader::CONTENT_DISPOSITION => "inline; filename=\"$name\"",
+                    HttpHeader::CONTENT_TYPE => $file->type
+                ]);
+
+                $response->download($this->getTransformedFile($request, $file), $name);
+            }),
+        );
+
+        $router->use(
+            '/info/[hash]',
+            Http::get(function (Request $request, Response $response) {
+                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
+
+                $response->json([
+                    'name' => $file->name,
+                    'extension' => $file->extension,
+                    'fileName' => $file->getFileName(),
+                    'type' => $file->type,
+                    'size' => $file->size,
+                    'sizeHumanReadable' => $file->getHumanReadableSize(),
+                    'parent' => $file->getParent()?->getEntryName()
+                ]);
+            }),
         );
 
         $router->use(

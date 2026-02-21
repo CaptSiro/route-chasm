@@ -116,7 +116,7 @@ class File extends Model implements FileSystemEntry, Destination {
     }
 
     public function getParent(): ?Directory {
-        if ($this->parent == 0) {
+        if ($this->parentId == 0) {
             return FileSystem::getRoot();
         }
 

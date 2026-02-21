@@ -148,8 +148,7 @@ class AiGeneratedPage extends Component {
             case HttpMethod::PUT: {
                 $user = User::fromSession($request->getSession());
                 if (is_null($user) || !$user->isAdmin()) {
-                    $response->setStatus(HttpCode::CE_FORBIDDEN);
-                    $response->flush();
+                    $response->sendStatus(HttpCode::CE_FORBIDDEN);
                 }
 
                 $body = $request->getBody();
@@ -166,13 +165,11 @@ class AiGeneratedPage extends Component {
                     $this->js->write($js);
                 }
 
-                $response->setStatus(HttpCode::S_OK);
-                $response->flush();
+                $response->sendStatus(HttpCode::S_OK);
             }
 
             default: {
-                $response->setStatus(HttpCode::CE_METHOD_NOT_ALLOWED);
-                $response->flush();
+                $response->sendStatus(HttpCode::CE_METHOD_NOT_ALLOWED);
             }
         }
     }

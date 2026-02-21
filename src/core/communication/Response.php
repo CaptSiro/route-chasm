@@ -164,11 +164,11 @@ class Response {
      *
      * Checks for valid file path and sets headers to download it.
      */
-    public function download(string $file): void {
+    public function download(string $file, ?string $name = null): void {
         $this->setHeaders([
             HttpHeader::CONTENT_DESCRIPTION => "RequestFile Transfer",
             HttpHeader::CONTENT_TYPE => 'application/octet-stream',
-            HttpHeader::CONTENT_DISPOSITION => "attachment; filename=" . basename($file),
+            HttpHeader::CONTENT_DISPOSITION => "attachment; filename=" . ($name ?? basename($file)),
             HttpHeader::PREGMA => "public",
             HttpHeader::CONTENT_LENGTH => filesize($file)
         ]);
