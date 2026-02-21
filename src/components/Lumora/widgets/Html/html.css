@@ -1,0 +1,21 @@
+.w-html {
+    position: relative;
+}
+
+.w-html .w-html-preview {
+    padding: var(--gap);
+}
+
+.w-html .w-html-editor {
+    overflow: auto;
+    padding: var(--gap);
+    background-color: var(--container-2);
+}
+
+.w-html .w-html-editor pre {
+    max-height: 50vh;
+}
+
+.w-html .w-html-editor pre:focus {
+    outline: unset;
+}

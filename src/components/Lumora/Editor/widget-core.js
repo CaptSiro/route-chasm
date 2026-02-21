@@ -120,9 +120,18 @@ class Widget {
      * @param {boolean} editable
      */
     constructor(root, parent, editable = false) {
-        this.rootElement = root;
-        this.rootElement.widget = this;
+        this.setRootElement(root);
         this.editable = editable;
+
+        this.parentWidget = parent;
+
+        /** @type {Widget[]} */
+        this.children = [];
+    }
+
+    setRootElement(element) {
+        this.rootElement = element;
+        this.rootElement.widget = this;
         this.rootElement.classList.add("widget", "margin");
 
         if (window.editor_inspect !== undefined) {
@@ -130,11 +139,6 @@ class Widget {
         }
 
         this.rootElement.addEventListener("click", this.selectHandler.bind(this));
-
-        this.parentWidget = parent;
-
-        /** @type {Widget[]} */
-        this.children = [];
     }
 
     selectHandler(evt) {

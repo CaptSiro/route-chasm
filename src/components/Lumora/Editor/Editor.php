@@ -21,6 +21,7 @@ use components\Lumora\widgets\Divider\DividerWidget;
 use components\Lumora\widgets\FileDownload\FileDownloadWidget;
 use components\Lumora\widgets\Header\HeaderWidget;
 use components\Lumora\widgets\Heading\HeadingWidget;
+use components\Lumora\widgets\Html\HtmlWidget;
 use components\Lumora\widgets\Image\ImageWidget;
 use components\Lumora\widgets\Link\LinkWidget;
 use components\Lumora\widgets\List\ListWidget;
@@ -65,7 +66,8 @@ class Editor extends ContainerContent {
             RootWidget::getInstance(),
             TextWidget::getInstance(),
             TextEditorWidget::getInstance(),
-            AiWidget::getInstance()
+            AiWidget::getInstance(),
+            HtmlWidget::getInstance(),
         ];
     }
 

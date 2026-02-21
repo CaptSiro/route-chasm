@@ -6,7 +6,7 @@ class WCode extends Widget {
      * @typedef CodeJSONType
      * @property {TextEditorJSON} textEditor
      *
-     * @typedef {CodeJSONType & WidgetJSON} CodeJSON
+     * @typedef {HtmlJSONType & WidgetJSON} CodeJSON
      */
 
     #textEditor;
