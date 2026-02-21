@@ -21,7 +21,7 @@ class WFileDownload extends Widget {
     #fileView;
     /** @type {Observable<string>} */
     #fileName;
-    /** @type {Observable<string>} */
+    /** @type {Observable<string | null>} */
     #downloadName;
     #url;
 
@@ -47,7 +47,7 @@ class WFileDownload extends Widget {
 
         const updateUrl = () => {
             const api = editor_loadFileSystemApi();
-            const url = api.createDownloadUrl(this.#hash.value, this.#downloadName.value);
+            const url = api.createDownloadUrl(this.#hash.value, this.getFileName());
             button.disabled = !is(this.#url);
             if (!is(url)) {
                 return;
@@ -56,7 +56,7 @@ class WFileDownload extends Widget {
             this.#url = url;
         }
 
-        this.#downloadName = new Observable(json.downloadName ?? 'file');
+        this.#downloadName = new Observable(json.downloadName ?? null);
         this.#downloadName.onChange(updateUrl);
         this.#url = json.url;
 
@@ -106,8 +106,9 @@ class WFileDownload extends Widget {
 
             evt.preventDefault();
             evt.stopImmediatePropagation();
+
             const isConfirmed = await window_confirm(
-                `Do you want to download ${this.#downloadName.value}? It may be a virus hazard.\nSize: ${this.#size.value}`
+                `Do you want to download ${this.getFileName()}? It may be a virus hazard.\nSize: ${this.#size.value}`
             );
 
             if (!isConfirmed) {
@@ -116,6 +117,15 @@ class WFileDownload extends Widget {
 
             window.location.replace(this.#url);
         });
+    }
+
+    getFileName() {
+        const download = this.#downloadName.value;
+        if (!is(download) || download.length === 0) {
+            return this.#fileName.value;
+        }
+
+        return download;
     }
 
     static sizeFormatter(size, inPowerOfTwo = false, decimal = 1) {
@@ -193,7 +203,6 @@ class WFileDownload extends Widget {
             TextFieldInspector(this.#downloadName.value, (value, parentElement) => {
                 this.#downloadName.value = value;
                 std_dom_validated(parentElement);
-                console.log(this.#downloadName);
                 return true;
             }, "Download as", "best-wallpaper"),
 
@@ -224,7 +233,7 @@ class WFileDownload extends Widget {
         return {
             type: "WFileDownload",
             fileName: this.#fileName.value,
-            downloadName: this.#downloadName,
+            downloadName: this.#downloadName.value,
             url: this.#url,
             size: this.#size.value,
             hash: this.#hash.value,
