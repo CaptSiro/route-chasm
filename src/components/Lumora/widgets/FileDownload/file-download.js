@@ -32,13 +32,14 @@ class WFileDownload extends Widget {
      * @param {boolean} editable
      */
     constructor(json, parent, editable = false) {
+        const buttonLabel = jsml.span(_, "Download");
         const button = (
             jsml.button({
                 class: "container",
                 disabled: !is(json.url)
             }, [
                 Icon("nf-oct-download"),
-                jsml.span(_, "Download")
+                buttonLabel
             ])
         );
 
@@ -57,7 +58,11 @@ class WFileDownload extends Widget {
         }
 
         this.#downloadName = new Observable(json.downloadName ?? null);
-        this.#downloadName.onChange(updateUrl);
+        this.#downloadName.onChange(() => {
+            updateUrl();
+            buttonLabel.textContent = this.getFileName();
+        });
+
         this.#url = json.url;
 
         this.#fileName = new Observable(json.fileName ?? '');
@@ -86,6 +91,8 @@ class WFileDownload extends Widget {
             this.#size.value = json['sizeHumanReadable'];
             this.#fileName.value = json['fileName'];
         });
+
+        buttonLabel.textContent = this.getFileName();
 
         if (editable) {
             this.appendEditGui();
