@@ -5,6 +5,7 @@ namespace core\admin;
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\PhpInfo\PhpInfo;
 use components\core\Admin\SptfTests\SptfTests;
+use components\core\Admin\User\AdminUserEditor;
 use components\core\Icon;
 use components\core\Menu\Menu;
 use components\core\Modules\Modules;
@@ -16,19 +17,21 @@ use core\fs\FileSystem;
 use core\mounts\Mount;
 use core\route\Route;
 use core\route\Router;
+use core\RouteChasmEnvironment;
 use models\core\Domain\Domain;
-use models\core\fs\ImageVariantTransformer;
 use models\core\fs\ImageVariantBehavior;
+use models\core\fs\ImageVariantTransformer;
 use models\core\Group\Group;
+use models\core\Group\GroupBehavior;
 use models\core\Language\Language;
 use models\core\Language\LanguageEditorBehavior;
 use models\core\Language\Lexicon\Phrase;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
-use models\core\Resource;
 use models\core\Setting\Setting;
 use models\core\User\User;
 use models\core\User\UserEditorBehavior;
+use models\core\UserResource;
 
 class Admin {
     private static Mount $mount;
@@ -46,41 +49,48 @@ class Admin {
 
 
     public static function createMenu(Router $router): Menu {
-        $router
+        $webStatus = new AdminNexus(
+            ModelDescription::extract(PageStatus::class),
+            FormDescription::getEditor(PageStatus::class),
+            GridDescription::extract(PageStatus::class),
+            userResource: PageStatus::getUserResource(),
+        );
+        $webStatus->setRouter(
+            Route::menu("Web/Status")
+                ->icon("Web", Icon::nf('nf-md-web'))
+                ->icon("Status", Icon::nf('nf-md-checkbox_multiple_marked_circle')),
+            $router
+        );
 
-            ->use(
-                Route::menu("Web/Status")
-                    ->icon("Web", Icon::nf('nf-md-web'))
-                    ->icon("Status", Icon::nf('nf-md-checkbox_multiple_marked_circle')),
-                new AdminNexus(
-                    ModelDescription::extract(PageStatus::class),
-                    FormDescription::getEditor(PageStatus::class),
-                    GridDescription::extract(PageStatus::class)
-                )
-            )
-
-            ->use(
+        Page::getNexus()
+            ->setRouter(
                 Route::menu("/Web/Pages")
                     ->icon("Pages", Icon::nf('nf-md-file_document')),
-                Page::getNexus()
-            )
+                $router
+            );
 
-            ->use(
-                Route::menu("/File System/Files")
-                    ->icon("File System", Icon::nf('nf-fa-folder'))
-                    ->icon("Files", Icon::nf('nf-fa-file')),
-                FileSystem::getNexus()
-            )
+        FileSystem::setRouter(
+            Route::menu("/File System/Files")
+                ->icon("File System", Icon::nf('nf-fa-folder'))
+                ->icon("Files", Icon::nf('nf-fa-file')),
+            $router
+        );
 
-            ->use(
-                Route::menu("/File System/Image Variants")
-                    ->icon("Image Variants", Icon::nf('nf-md-file_image_plus')),
-                new AdminNexus(
-                    ModelDescription::extract(ImageVariantTransformer::class),
-                    ImageVariantBehavior::createEditor(),
-                    ImageVariantTransformer::getGridLayoutFactory()
-                )
-            )
+        $fsImageVariants = new AdminNexus(
+            ModelDescription::extract(ImageVariantTransformer::class),
+            ImageVariantBehavior::createEditor(),
+            ImageVariantTransformer::getGridLayoutFactory(),
+            userResource: UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM)
+        );
+        $fsImageVariants->setRouter(
+            Route::menu("/File System/Image Variants")
+                ->icon("Image Variants", Icon::nf('nf-md-file_image_plus')),
+            $router
+        );
+
+
+
+        $router
 
             ->use(
                 Route::menu("/Domains")
@@ -116,7 +126,7 @@ class Admin {
                     ->icon('Users', Icon::nf('nf-fa-user')),
                 new AdminNexus(
                     ModelDescription::extract(User::class),
-                    UserEditorBehavior::getEditor(),
+                    new AdminUserEditor(new UserEditorBehavior()),
                     GridDescription::extract(User::class),
                 )
             )
@@ -126,7 +136,7 @@ class Admin {
                     ->icon('Groups', Icon::nf('nf-fa-group')),
                 new AdminNexus(
                     ModelDescription::extract(Group::class),
-                    FormDescription::getEditor(Group::class),
+                    GroupBehavior::getEditor(),
                     GridDescription::extract(Group::class),
                 )
             )
@@ -135,9 +145,9 @@ class Admin {
                 Route::menu('/System/User resources')
                     ->icon('User resources', Icon::nf('nf-md-laptop_account')),
                 new AdminNexus(
-                    ModelDescription::extract(Resource::class),
-                    FormDescription::getEditor(Resource::class),
-                    GridDescription::extract(Resource::class),
+                    ModelDescription::extract(UserResource::class),
+                    FormDescription::getEditor(UserResource::class),
+                    GridDescription::extract(UserResource::class),
                 )
             )
 

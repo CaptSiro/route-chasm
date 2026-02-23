@@ -37,7 +37,7 @@ class InsertQuery implements SqlQuery {
         return $this;
     }
 
-    public function generateColumnList(Driver $driver): string {
+    protected function generateColumnList(Driver $driver): string {
         $list = '';
         $first = true;
 

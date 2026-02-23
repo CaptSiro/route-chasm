@@ -26,6 +26,8 @@ class SelectQuery implements Portion, SqlQuery {
 
 
     /**
+     * Adds column to projection
+     *
      * @param string $column Escaping the column is responsibility of the caller
      * @return $this
      */

@@ -17,10 +17,10 @@ class GroupProxy extends NexusProxy {
     }
 
     protected function getEditValue(): string {
-        if (!$this->isItemEditable()) {
-            return '';
-        }
+        $id = (string) $this->item->getId();
 
-        return parent::getEditValue();
+        return $this->createEditValue(
+            $this->context->getUpdateLink((string) $this->item->getId())
+        );
     }
 }

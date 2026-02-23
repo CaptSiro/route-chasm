@@ -11,7 +11,10 @@ class Checkbox extends Input {
         bool $checked = false
     ) {
         parent::__construct("checkbox", $name, $label, $checked);
-        $this->addAttribute("checked", $checked);
+        if ($checked) {
+            $this->addAttribute("checked", $checked);
+        }
+
         $this->setTemplate($this->getResource("Checkbox"));
     }
 }

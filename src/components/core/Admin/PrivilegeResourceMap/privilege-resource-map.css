@@ -1,0 +1,33 @@
+:root {
+    --prm-container-0: var(--container-0);
+    --prm-container-1: var(--container-1);
+    --prm-accent-0: var(--accent-0)
+}
+
+.privilege-resource-map {
+    background-color: var(--prm-container-0);
+    border: 2px solid var(--prm-container-1);
+}
+
+.privilege-resource-map .map-header,
+.privilege-resource-map .map-row {
+    display: grid;
+    align-content: center;
+    grid-template-columns: inherit;
+    grid-template-rows: 1fr;
+    padding: 8px;
+    text-overflow: ellipsis;
+}
+
+.privilege-resource-map .map-row:nth-child(odd) {
+    background-color: var(--prm-container-1);
+}
+
+.privilege-resource-map .map-row.selected {
+    background-color: var(--accent-1);
+}
+
+.privilege-resource-map .map-header {
+    padding: 16px 8px;
+    background-color: var(--prm-accent-0);
+}

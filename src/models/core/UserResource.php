@@ -12,21 +12,51 @@ use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
+use core\forms\description\select\Select;
 use core\forms\description\TextField;
 use core\view\View;
 
 /**
- * @property int $id
+ * @property string $name
+ * @property int $type
  */
 
 #[Grid]
 #[Table('core_resource')]
 #[Database(App::DATABASE)]
-class Resource extends Model {
+class UserResource extends Model {
+    public const TYPE_SYSTEM = 1;
+    public const TYPE_USER = 2;
+    public const TYPES = [
+        self::TYPE_SYSTEM => 'System',
+        self::TYPE_USER => 'User'
+    ];
+
+
+
+    public static function allOfType(int $type): array {
+        return self::all(where: Query::infer('type = ?', $type));
+    }
+
     public static function fromName(string $name): ?static {
         return static::first(
             where: Query::infer('name = ?', $name)
         );
+    }
+
+    public static function getSystemResource(string $name): ?static {
+        $resource = static::first(
+            where: Query::infer('name = ? AND type = ?', $name, self::TYPE_SYSTEM)
+        );
+
+        if (is_null($resource)) {
+            $resource = static::create([
+                'name' => $name,
+                'type' => self::TYPE_SYSTEM
+            ]);
+        }
+
+        return $resource;
     }
 
 
@@ -38,6 +68,10 @@ class Resource extends Model {
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
     protected string $name;
+
+    #[Select(UserResource::TYPES, label: 'Types')]
+    #[Column(type: Column::TYPE_INTEGER)]
+    protected int $type;
 
 
 

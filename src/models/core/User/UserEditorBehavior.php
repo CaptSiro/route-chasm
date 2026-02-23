@@ -5,13 +5,17 @@ namespace models\core\User;
 use components\core\Admin\Nexus\Editor;
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
+use components\core\Admin\User\AdminUserEditor;
 use components\core\Message\Message;
 use components\core\SaveError\SaveError;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\layout\Layout;
+use components\layout\Row\Row;
 use core\App;
 use core\database\sql\Model;
+use core\forms\controls\Button\Button;
+use core\forms\controls\Link\Link;
 use core\forms\controls\MultiSelect\MultiSelect;
 use core\forms\controls\PasswordField\PasswordField;
 use core\forms\controls\TextField;
@@ -38,6 +42,18 @@ class UserEditorBehavior implements EditorBehavior {
     public function addControls(Layout $layout, ?Model $model): ?View {
         if (!is_null($model) && !($model instanceof User)) {
             return new Message("Provided resource is not User");
+        }
+
+        if ($this->editor instanceof AdminUserEditor) {
+            $row = new Row();
+
+            $loginAsUser = new Button('Login as user');
+            $loginAsUser->addDataAttribute('url', $this->editor->createLoginAsUserUrl($model));
+            $loginAsUser->addJavascriptInit('admin_user_loginAsUser');
+
+            $layout->add(
+                $row->add($loginAsUser)
+            );
         }
 
         /** @var User|null $model */
@@ -98,22 +114,16 @@ class UserEditorBehavior implements EditorBehavior {
             $model->tag = $body->getStrict(self::NAME_TAG);
         }
 
-        $password = $body->getStrict(self::NAME_PASSWORD);
+        $password = $body->get(self::NAME_PASSWORD, '');
         $len = strlen($password);
-        if ($action === EditorBehaviorAction::CREATE) {
+        if ($len !== 0) {
             if ($len < 8) {
                 return new SaveError(self::NAME_PASSWORD, 'Password must be at least 8 characters long');
             }
 
             $model->password = password_hash($password, PASSWORD_DEFAULT);
-        }
-
-        if ($action === EditorBehaviorAction::UPDATE && $len !== 0) {
-            if ($len < 8) {
-                return new SaveError(self::NAME_PASSWORD, 'Password must be at least 8 characters long');
-            }
-
-            $model->password = password_hash($password, PASSWORD_DEFAULT);
+        } else {
+            $model->password = '';
         }
 
         $model->username = $body->getStrict(self::NAME_USERNAME);

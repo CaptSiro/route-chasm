@@ -36,10 +36,9 @@ class AiGeneratedPage extends Component {
         $css = $page->get(AiPageTemplate::DATA_ITEM_CSS);
         $js = $page->get(AiPageTemplate::DATA_ITEM_JS);
 
-        $session = App::getInstance()
-            ->getRequest()
-            ->getSession();
-        if (is_null($user = User::fromSession($session)) || !$user->isAdmin()) {
+        $request = App::getInstance()
+            ->getRequest();
+        if (is_null($user = User::fromRequest($request)) || !$user->isAdmin()) {
             return static::renderHtml($html, $css, $js);
         }
 
@@ -146,7 +145,7 @@ class AiGeneratedPage extends Component {
             }
 
             case HttpMethod::PUT: {
-                $user = User::fromSession($request->getSession());
+                $user = User::fromRequest($request);
                 if (is_null($user) || !$user->isAdmin()) {
                     $response->sendStatus(HttpCode::CE_FORBIDDEN);
                 }

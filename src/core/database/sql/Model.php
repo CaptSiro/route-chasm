@@ -3,12 +3,14 @@
 namespace core\database\sql;
 
 use components\core\Admin\Nexus\NexusProxyItem;
+use components\core\SaveError\SaveError;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;
 use core\Identifier;
 use core\view\View;
 use JsonSerializable;
+use RuntimeException;
 
 class Model implements JsonSerializable, Identifier, NexusProxyItem {
     public static function getDescription(): ModelDescription {
@@ -31,7 +33,10 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $instance->set($properties);
 
         if ($save) {
-            $instance->save();
+            $error = $instance->save();
+            if ($error instanceof SaveError) { // todo make SaveError interface View + toThrowable()
+                throw new RuntimeException($error->getMessage());
+            }
         }
 
         return $instance;
@@ -164,6 +169,10 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $this->$alias = $value;
     }
 
+    /**
+     * @param array $data `[$phpPropertyName => $value]` Do not use column name as a key
+     * @return $this
+     */
     public function set(array $data): static {
         $description = ModelDescription::extract(static::class);
 

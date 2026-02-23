@@ -52,51 +52,6 @@ class WHtml extends Widget {
         ));
     }
 
-    extractPreContent(pre) {
-        const extractNode = node => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                return node.nodeValue;
-            }
-
-            if (node.nodeType !== Node.ELEMENT_NODE) {
-                return '';
-            }
-
-            const tag = node.tagName;
-            if (tag === 'BR') {
-                return '\n';
-            }
-
-            const isBlock =
-                tag === 'DIV' ||
-                tag === 'P' ||
-                tag === 'LI';
-
-            let ret = '';
-            if (isBlock && result.length > 0 && !result.endsWith('\n')) {
-                ret += '\n';
-            }
-
-            for (let child of node.childNodes) {
-                ret += extractNode(child);
-            }
-
-            if (isBlock && !result.endsWith('\n')) {
-                ret += '\n';
-            }
-
-            return ret;
-        }
-
-        let result = '';
-
-        for (let child of pre.childNodes) {
-            result += extractNode(child);
-        }
-
-        return result;
-    }
-
     /**
      * @override
      * @param {Widget} parent
@@ -139,11 +94,9 @@ class WHtml extends Widget {
      * @returns {WidgetJSON}
      */
     save() {
-        const html = this.extractPreContent(this.#htmlEditor);
-
         return {
             type: "WHtml",
-            html
+            html: std_dom_contentEditableText(this.#htmlEditor)
         };
     }
 }

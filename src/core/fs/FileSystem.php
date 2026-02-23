@@ -23,14 +23,16 @@ use core\fs\variants\FileVariantTransformer;
 use core\locale\Lexicon;
 use core\ResourceLoader;
 use core\route\Path;
+use core\route\Route;
+use core\route\Router;
 use core\RouteChasmEnvironment;
-use core\utils\Arrays;
 use core\utils\Files;
 use core\utils\Php;
 use core\view\View;
 use models\core\fs\Directory;
 use models\core\fs\File;
 use models\core\fs\Shortcut;
+use models\core\UserResource;
 
 class FileSystem {
     use ResourceLoader;
@@ -173,7 +175,8 @@ class FileSystem {
         $nexus = new AdminNexus(
             ModelDescription::extract(File::class),
             new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
-            self::listDirectory($directory, $directoryLinkProvider)
+            self::listDirectory($directory, $directoryLinkProvider),
+            userResource: UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM)
         );
 
         $nexus->showCreateButton(false)
@@ -184,6 +187,17 @@ class FileSystem {
             ));
 
         return $nexus;
+    }
+
+    public static function setRouter(Route $route, Router $router): void {
+        $action = FileSystem::getNexus();
+
+        if ($action instanceof AdminNexus) {
+            $action->setRouter($route, $router);
+            return;
+        }
+
+        $router->use($route, $action);
     }
 
     public static function listDirectoryModal(

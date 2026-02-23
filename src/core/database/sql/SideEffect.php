@@ -3,6 +3,12 @@
 namespace core\database\sql;
 
 class SideEffect {
+    public static function none(): SideEffect {
+        return new self(0, 0);
+    }
+
+
+
     public function __construct(
         protected mixed $lastInsertedId,
         protected int $rowsAffected,

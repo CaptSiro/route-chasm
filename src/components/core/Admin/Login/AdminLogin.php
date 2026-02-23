@@ -117,7 +117,7 @@ class AdminLogin extends ContainerContent {
     }
 
     public function perform(Request $request, Response $response): void {
-        $loggedIn = User::fromSession($request->getSession());
+        $loggedIn = User::fromRequest($request);
         if (!is_null($loggedIn)) {
             $url = $request->getUrl();
             $logout = $url->getQuery()->exists(RouteChasmEnvironment::QUERY_LOGOUT);

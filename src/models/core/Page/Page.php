@@ -31,6 +31,9 @@ use http\Exception\RuntimeException;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
+use models\core\Privilege\Privilege;
+use models\core\UserResource;
+use models\core\User\User;
 use models\extensions\Name\NameValues;
 
 /**
@@ -54,6 +57,7 @@ class Page extends Model implements Destination {
             ModelDescription::extract(static::class),
             new AdminPageEditor(new PageEditorBehavior()),
             PageGridRow::getGridDescription(),
+            userResource: static::getUserResource(),
             title: '&nbsp;'
         ))->setLinkCreator(new PageLinkCreator());
     }
@@ -69,6 +73,16 @@ class Page extends Model implements Destination {
         return self::all(where: is_null($parentId)
             ? Query::static('id_page_parent IS NULL')
             : Query::infer('id_page_parent = ?', $parentId));
+    }
+
+    private static UserResource $userResource;
+
+    public static function getUserResource(): UserResource {
+        if (!isset(self::$userResource)) {
+            self::$userResource = UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE);
+        }
+
+        return self::$userResource;
     }
 
 
@@ -202,6 +216,14 @@ class Page extends Model implements Destination {
         }
 
         return $this->status;
+    }
+
+    public function getReleaseDate(): string {
+        return $this->publish ?? $this->updated;
+    }
+
+    public function accessible(User $user, Privilege $privilege): bool {
+        return $user->hasAccess(static::getUserResource(), $privilege);
     }
 
     public function getTemplateRecord(): ?PageTemplateRecord {

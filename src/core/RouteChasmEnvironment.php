@@ -50,6 +50,9 @@ class RouteChasmEnvironment {
     public const ENV_DATABASE_CHARSET = "DATABASE_CHARSET";
     public const ENV_ADMIN_LOGIN_PASSWORD = "ADMIN_LOGIN_PASSWORD";
 
+    public const USER_RESOURCE_PAGE = 'Pages';
+    public const USER_RESOURCE_FILE_SYSTEM = 'File System';
+
     public const GRID_DEFAULT_PORTION_SIZE = 20;
     public const ID_DIGITS = 4;
 

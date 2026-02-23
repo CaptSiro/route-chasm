@@ -242,7 +242,7 @@ class FileServer extends Router {
         $router->use(
             '/directory/',
             Http::get(function (Request $request, Response $response) {
-                $user = User::fromSession($request->getSession());
+                $user = User::fromRequest($request);
                 $isAdmin = is_null($user) || $user->isAdmin();
 
                 $response->render(

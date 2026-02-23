@@ -1,0 +1,33 @@
+<?php /** @var PrivilegeResourceMap $this */
+
+use components\core\Admin\PrivilegeResourceMap\PrivilegeResourceMap;
+use core\forms\controls\Checkbox\Checkbox;
+use core\sideloader\importers\Css\Css;
+
+Css::import($this->getResource('privilege-resource-map.css'));
+
+?><div class="privilege-resource-map" style="grid-template-columns: <?= $this->createColumnTemplate() ?>">
+    <div class="map-header">
+        <span></span>
+
+        <?php foreach ($this->privileges as $privilege): ?>
+            <span><?= $privilege->name ?></span>
+        <?php endforeach; ?>
+    </div>
+
+    <?php foreach ($this->resources as $resource): ?>
+        <div class="map-row">
+            <span><?= $resource->name ?></span>
+
+            <?php foreach ($this->privileges as $privilege): ?>
+                <?php $position = PrivilegeResourceMap::createPosition($privilege, $resource) ?>
+                <?php $name = $this->mappingName .'_'. $position ?>
+
+                <span aria-checked="<?= json_encode($this->isset($privilege, $resource)) ?>">
+                    <?= new Checkbox($name, '', $this->isset($privilege, $resource)) ?>
+                </span>
+            <?php endforeach; ?>
+        </div>
+    <?php endforeach; ?>
+    <div></div>
+</div>

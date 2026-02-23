@@ -110,7 +110,12 @@ class PdoConnection implements Connection {
     public function run(Query $query): SideEffect {
         $statement = $this->createStatement($query);
 
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (PDOException $exception) {
+            $sql = $query->getSql();
+            throw new PDOException($exception->getMessage() ." SQL: '$sql'");
+        }
 
         return new SideEffect(
             $this->connection->lastInsertId(),

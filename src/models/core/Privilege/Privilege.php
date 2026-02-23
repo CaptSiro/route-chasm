@@ -36,6 +36,8 @@ class Privilege extends Model implements Editable {
     public const UPDATE = 'Update';
 
     public static function fromName(string $name): ?static {
+        static::modelCache_loadAll(fn(Privilege $x) => $x->name);
+
         if (!is_null($hit = static::modelCache_get($name))) {
             return $hit;
         }

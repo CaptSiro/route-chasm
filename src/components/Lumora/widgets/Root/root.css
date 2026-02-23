@@ -8,6 +8,7 @@ body {
     position: absolute;
     display: flex;
     user-select: none;
+    z-index: 1;
 }
 
 .gui > button,

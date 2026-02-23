@@ -8,6 +8,8 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\Table;
+use core\RouteChasmEnvironment;
+use models\core\UserResource;
 use models\extensions\Editable\EditableExtension;
 use models\extensions\Name\CachedNameExtension;
 use models\extensions\Name\Name;
@@ -19,6 +21,18 @@ class PageStatus extends Model implements Name {
     public const ID_DRAFT = 1;
     public const ID_PUBLIC = 2;
     public const ID_ARCHIVED = 3;
+
+
+
+    private static UserResource $userResource;
+
+    public static function getUserResource(): UserResource {
+        if (!isset(static::$userResource)) {
+            static::$userResource = UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE);
+        }
+
+        return static::$userResource;
+    }
 
 
 

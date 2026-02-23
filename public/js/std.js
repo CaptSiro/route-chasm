@@ -296,6 +296,55 @@ function std_dateRelative(date) {
 
 
 /**
+ * @param {HTMLElement} element
+ * @return {string}
+ */
+function std_dom_contentEditableText(element) {
+    const extractNode = node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return node.nodeValue;
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) {
+            return '';
+        }
+
+        const tag = node.tagName;
+        if (tag === 'BR') {
+            return '\n';
+        }
+
+        const isBlock =
+            tag === 'DIV' ||
+            tag === 'P' ||
+            tag === 'LI';
+
+        let ret = '';
+        if (isBlock && result.length > 0 && !result.endsWith('\n')) {
+            ret += '\n';
+        }
+
+        for (let child of node.childNodes) {
+            ret += extractNode(child);
+        }
+
+        if (isBlock && !result.endsWith('\n')) {
+            ret += '\n';
+        }
+
+        return ret;
+    }
+
+    let result = '';
+
+    for (let child of element.childNodes) {
+        result += extractNode(child);
+    }
+
+    return result;
+}
+
+/**
  * @param {HTMLElement} child
  * @param {(element: HTMLElement) => boolean} validator
  * @param {boolean} includeChild

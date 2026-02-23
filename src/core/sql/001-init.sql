@@ -285,7 +285,8 @@ CREATE TABLE IF NOT EXISTS `core_user` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `core_user` (id_user, username, password, tag)
-VALUES (1, 'root', '', 'root');
+VALUES (1, 'Root', '', 'root'),
+       (2, 'Anonymous', '', 'anonymous');
 
 
 
@@ -314,7 +315,10 @@ CREATE TABLE IF NOT EXISTS `core_users_x_groups` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `core_users_x_groups` (id_user, id_group)
-VALUES (1, 2);
+VALUES (1, 2), # @root -> Root
+       (1, 3), # @root -> Admin
+       (2, 1), # @anonymous -> Default
+       (2, 2); # @anonymous -> Root
 
 
 
@@ -338,6 +342,7 @@ DROP TABLE IF EXISTS `core_resource`;
 CREATE TABLE IF NOT EXISTS `core_resource` (
     `id_resource` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
+    `type` INT NOT NULL,
     PRIMARY KEY (`id_resource`),
     UNIQUE (`name`)
 ) ENGINE = InnoDB;

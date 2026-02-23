@@ -18,9 +18,13 @@ use core\http\HttpMethod;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
+use core\route\Router;
 use core\url\Url;
 use core\view\ContainerContent;
 use core\view\View;
+use models\core\Privilege\Privilege;
+use models\core\UserResource;
+use models\core\User\User;
 
 class AdminNexus extends ContainerContent {
     public const LEXICON_GROUP = 'admin.nexus';
@@ -44,6 +48,7 @@ class AdminNexus extends ContainerContent {
         protected ModelDescription $modelDescription,
         protected Editor $editor,
         protected GridLayoutFactory $gridFactory,
+        protected ?UserResource $userResource = null,
         protected ?string $title = null,
         protected ?string $createButtonLabel = null
     ) {
@@ -57,6 +62,30 @@ class AdminNexus extends ContainerContent {
     }
 
 
+
+    public function hasAccess(string $privilegeName): bool {
+        if (is_null($this->userResource)) {
+            return true;
+        }
+
+        $request = App::getInstance()
+            ->getRequest();
+        $user = User::fromRequest($request);
+        if (is_null($user)) {
+            return false;
+        }
+
+        return $user->hasAccess($this->userResource, Privilege::fromName($privilegeName));
+    }
+
+    public function setRouter(Route $route, Router $router): bool {
+        if (!$this->hasAccess(Privilege::READ)) {
+            return false;
+        }
+
+        $router->use($route, $this);
+        return true;
+    }
 
     public function showCreateButton(bool $show): static {
         $this->showCreateButton = $show;
@@ -245,6 +274,10 @@ class AdminNexus extends ContainerContent {
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
+                if (!$this->hasAccess(Privilege::READ)) {
+                    $response->sendStatus(HttpCode::CE_FORBIDDEN);
+                }
+
                 parent::perform($request, $response);
             }
 

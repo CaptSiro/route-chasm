@@ -2,13 +2,13 @@
 
 use components\core\Admin\Login\AdminLogin;
 use components\core\Admin\Project\AdminProject;
-use components\core\Icon;
+use components\core\Html\Html;use components\core\Icon;
 use components\core\Terminal\Terminal;
 use components\core\WebPage\WebPage;
 use components\windows\LanguageSelect\LanguageSelect;
 use core\admin\AdminRouter;
 use core\App;
-use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Css\Css;use models\core\User\User;
 
 Css::import($this->getResource('admin-page.css'));
 $request = App::getInstance()->getRequest();
@@ -53,7 +53,8 @@ $request = App::getInstance()->getRequest();
                 </span>
 
                     <a href="<?= AdminLogin::createLogoutUrl($request->getUrl()) ?>">
-                        <?= $this->trg(AdminRouter::LEXICON_GROUP, 'Logout') ?>
+                        <span><?= $this->trg(AdminRouter::LEXICON_GROUP, 'Logout') ?></span>
+                        <span>(<?= Html::escape(User::fromRequest($request)->username) ?>)</span>
                     </a>
                 </div>
             </div>
