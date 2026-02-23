@@ -13,4 +13,9 @@ declare type LumoraViewportDimension = {
     height: number;
 }
 
+declare type LumoraLocalizationApi = {
+    title: string,
+    releaseDate: string,
+}
+
 declare type LumoraViewportResizeListener = (dimension: LumoraViewportDimension) => void;

@@ -69,6 +69,10 @@ abstract class Locale {
         return date('Y-m-d', $timestamp);
     }
 
+    public function formatDateTime(int $timestamp): string {
+        return date('Y-m-d H:i:s', $timestamp);
+    }
+
     public function formatDateRelative(int $timestamp): string {
         return date('Y-m-d H:i:s', $timestamp);
     }

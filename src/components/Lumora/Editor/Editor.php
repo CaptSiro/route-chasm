@@ -44,6 +44,8 @@ use core\route\Route;
 use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\view\ContainerContent;
+use DateTime;
+use models\core\Page\LocalizedPage;
 use modules\ai\OpenAi;
 
 class Editor extends ContainerContent {
@@ -82,11 +84,13 @@ class Editor extends ContainerContent {
 
     /**
      * @param DataItem $storage
+     * @param LocalizedPage $localization
      * @param string $title
      * @param array<Widget>|null $widgets
      */
     public function __construct(
         protected DataItem $storage,
+        protected LocalizedPage $localization,
         string $title = "Editor",
         ?array $widgets = null
     ) {
@@ -207,7 +211,7 @@ class Editor extends ContainerContent {
             ->render();
     }
 
-    public function getFileSystemApi(): string {
+    public function createFileSystemApi(): string {
         $fs = FileServer::getInstance();
         return Html::wrap(
             'div',
@@ -221,6 +225,23 @@ class Editor extends ContainerContent {
                 'data-file-type-query' => RouteChasmEnvironment::QUERY_FS_FILE_TYPE,
                 'data-directory-url' => $fs->createDirectoryUrl(),
                 'data-image-variant-url' => $fs->createVariantUrl(ImageVariant::getInstance()),
+            ]
+        );
+    }
+
+    public function createLocalizationApi(): string {
+        $releaseDate = new DateTime($this->localization->getPage()->getReleaseDate());
+
+        return Html::wrap(
+            'div',
+            '',
+            [
+                'id' => 'localization-data',
+                'data-title' => $this->localization->title,
+                'data-release-date' => $this->localization
+                    ->getLanguage()
+                    ->getLocale()
+                    ->formatDateTime($releaseDate->getTimestamp())
             ]
         );
     }

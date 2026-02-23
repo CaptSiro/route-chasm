@@ -198,7 +198,7 @@ class WImage extends Widget {
 
     /**
      * @param {string} hash
-     * @param {string} variant
+     * @param {string | null} variant
      * @return {string}
      */
     static createSource(hash, variant) {
@@ -239,7 +239,10 @@ class WImage extends Widget {
         }
 
         const api = editor_loadFileSystemApi();
-        this.#imageVariantSelect = Remote('div', api.imageVariantUrl, 'Loading image variants...');
+        const url = new URL(api.imageVariantUrl);
+        url.searchParams.set('name', 'Image variants');
+
+        this.#imageVariantSelect = Remote('div', url.href, 'Loading image variants...');
         this.#imageVariantSelect.addEventListener('change', event => {
             this.#json.setProperty('variant', event.target.value);
         });

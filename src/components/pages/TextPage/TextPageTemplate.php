@@ -2,7 +2,6 @@
 
 namespace components\pages\TextPage;
 
-use components\core\Html\Html;
 use components\core\ToolBar\ToolBarItem;
 use components\Lumora\Display\Display;
 use components\Lumora\Editor\Editor;
@@ -27,7 +26,7 @@ class TextPageTemplate implements PageTemplate {
     }
 
     protected function createEditor(Page $page, LocalizedPage $localization): Editor {
-        $editor = new Editor($page->get(self::DATA_ITEM_CONTENT));
+        $editor = new Editor($page->get(self::DATA_ITEM_CONTENT), $localization);
         $editor->setTitle($localization->title .' - Content Editor');
 
         $open = new ToolBarItem('file_open', 'ctrl + o');
@@ -46,9 +45,7 @@ class TextPageTemplate implements PageTemplate {
     }
 
     public function build(Wireframe $wireframe, Page $page): Component {
-        $localization = $page->getLocalizationOrDefault(
-            App::getInstance()->getRequest()->getLanguage()
-        );
+        $localization = $page->getLocalizationOrDefault();
 
         return new Display(
             $localization->title,
@@ -61,7 +58,7 @@ class TextPageTemplate implements PageTemplate {
     }
 
     public function getEditor(Page $page): Action {
-        $localization = $page->getLocalizationOrDefault(App::getInstance()->getRequest()->getLanguage());
+        $localization = $page->getLocalizationOrDefault();
         return $this->createEditor($page, $localization);
     }
 

@@ -81,6 +81,11 @@ class Czech extends Locale {
         return date('j. n. Y', $timestamp);
     }
 
+    public function formatDateTime(int $timestamp): string {
+        // Czech format: 1. 9. 2025 14:05
+        return date('j. n. Y H:i', $timestamp);
+    }
+
     public function formatDateRelative(int $timestamp): string {
         $diff = time() - $timestamp;
 

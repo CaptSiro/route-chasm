@@ -79,6 +79,11 @@ class EnglishUS extends Locale {
         return date('m/d/Y', $timestamp);
     }
 
+    public function formatDateTime(int $timestamp): string {
+        // US format: 09/01/2025 02:05 PM
+        return date('m/d/Y h:i A', $timestamp);
+    }
+
     public function formatDateRelative(int $timestamp): string {
         $diff = time() - $timestamp;
         if ($diff < 60) {

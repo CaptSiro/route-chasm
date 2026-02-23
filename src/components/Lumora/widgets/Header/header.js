@@ -4,7 +4,6 @@ class WHeader extends Widget {
     // or json.children for array of widgets
     /**
      * @typedef HeaderJSONType
-     * @property {string=} imageURL
      * @property {"start" | "center" | "end"=} titleAlign
      * @property {string=} titleColor
      *
@@ -21,11 +20,8 @@ class WHeader extends Widget {
         this.removeMargin();
         this.childSupport = this.childSupport;
 
-        const heading = jsml.h1(
-            { class: "page-title", title: editable ? "Edit->Properties->Title" : "" /* webpage.title */ },
-            "Title",
-            // webpage.title
-        );
+        const localization = lumora_loadLocalizationApi();
+        const title = localization?.title ?? "Title";
 
         const headingContainer = (
             jsml.div(
@@ -37,12 +33,13 @@ class WHeader extends Widget {
                     class: "heading-container"
                 },
                 [
-                    heading,
-                    // jsml.span(_, new Date(webpage.timeCreated).toLocaleDateString("en-GB", {
-                    //     year: "numeric",
-                    //     month: "2-digit",
-                    //     day: "2-digit"
-                    // }))
+                    jsml.h1({
+                        class: "page-title",
+                        title: editable
+                            ? "Edit->Properties->Title"
+                            : title
+                    }, title),
+                    Optional(is(localization?.releaseDate), jsml.span(_, localization?.releaseDate))
                 ]
             )
         );
@@ -52,16 +49,20 @@ class WHeader extends Widget {
             this.rootElement.classList.add("display-none");
         }
 
-        // if (root.json?.webpage?.thumbnail !== undefined) {
-        //     this.rootElement.style.backgroundImage = `url(${AJAX.SERVER_HOME}/file/${webpage.src}/${root.json.webpage.thumbnail})`;
-        // }
+        console.log(root.json.headerImageSrc);
+        if (is(root.json.headerImageSrc)) {
+            this.rootElement.style.backgroundImage = `url(${root.json.headerImageSrc})`;
+        }
 
         root.addJSONListener?.call(root, json => {
-            // heading.textContent = json.webpage.title;
             this.rootElement.classList.toggle("display-none", !json.isHeaderIncluded);
-            // this.rootElement.style.backgroundImage = json.webpage.thumbnail !== undefined
-            //     ? `url(${AJAX.SERVER_HOME}/file/${webpage.src}/${json.webpage.thumbnail})`
-            //     : "";
+
+            if (is(json.headerImageHash)) {
+                const src = WImage.createSource(json.headerImageHash, json.headerImageVariant);
+                json.headerImageSrc = src;
+                this.rootElement.style.backgroundImage = `url(${src})`;
+            }
+
             headingContainer.style.textAlign = json.headerTitleAlign ?? "center";
             headingContainer.style.color = json.headerTitleColor ?? "var(--text-color-0)";
         });

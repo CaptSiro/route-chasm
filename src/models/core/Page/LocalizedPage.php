@@ -60,6 +60,7 @@ class LocalizedPage extends Model {
     protected Page $page;
     protected PageMeta $meta;
     protected Slug $slug;
+    protected Language $language;
 
 
 
@@ -77,6 +78,14 @@ class LocalizedPage extends Model {
             $language ?? Language::fromId($this->languageId),
             $this->title
         );
+    }
+
+    public function getLanguage(): Language {
+        if (!isset($this->language)) {
+            $this->language = Language::fromId($this->languageId);
+        }
+
+        return $this->language;
     }
 
     public function getPage(): Page {

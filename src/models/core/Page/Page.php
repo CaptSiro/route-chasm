@@ -178,7 +178,11 @@ class Page extends Model implements Destination {
         return $this->getLocalizations()[$language->getId()] ?? null;
     }
 
-    public function getLocalizationOrDefault(Language $language): ?LocalizedPage {
+    public function getLocalizationOrDefault(?Language $language = null): ?LocalizedPage {
+        $language ??= App::getInstance()
+            ->getRequest()
+            ->getLanguage();
+
         return $this->getLocalization($language)
             ?? $this->getLocalization(Language::getDefault());
     }

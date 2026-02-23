@@ -7,7 +7,9 @@ class WRoot extends ContainerWidget {
      * @property {boolean=} isHeaderIncluded
      * @property {"center" | "start" | "end" | string | null} headerTitleAlign
      * @property {string=} headerTitleColor
-     * @property {string=} headerImageURL
+     * @property {string=} headerImageSrc
+     * @property {string=} headerImageHash
+     * @property {string=} headerImageVariant
      * @property {Webpage=} webpage
      * @property {boolean=} areCommentsAvailable
      *
@@ -28,7 +30,13 @@ class WRoot extends ContainerWidget {
      * @property {string} title
      * @property {number} usersID
      */
+    
+    /** @type {RootJSON} */
     #json;
+
+    /**
+     * @return {RootJSON}
+     */
     get json() {
         return this.#json;
     }
@@ -177,6 +185,37 @@ class WRoot extends ContainerWidget {
         };
     }
 
+    /** @type {HTMLElement | undefined} */
+    #imageVariantSelect;
+    createImageVariantSelect() {
+        if (is(this.#imageVariantSelect)) {
+            return this.#imageVariantSelect;
+        }
+
+        const api = editor_loadFileSystemApi();
+        const url = new URL(api.imageVariantUrl);
+        url.searchParams.set('name', 'Header image variants');
+
+        this.#imageVariantSelect = Remote('div', url.href, 'Loading image variants...');
+        this.#imageVariantSelect.addEventListener('change', event => {
+            this.#json.headerImageVariant = event.target.value;
+            this.dispatchJSONEvent();
+        });
+
+        if (is(this.#json.headerImageVariant)) {
+            this.#imageVariantSelect.addEventListener(JSML_EVENT_FETCHED, event => {
+                const select = event.detail?.element;
+                if (!is(select)) {
+                    return;
+                }
+
+                form_select_selectOption(select, this.#json.headerImageVariant);
+            }, { once: true });
+        }
+
+        return this.#imageVariantSelect;
+    }
+
     /**
      * @override
      * @returns {Content}
@@ -213,57 +252,38 @@ class WRoot extends ContainerWidget {
             HRInspector(this.#json.isHeaderIncluded ? "" : "display-none"),
             TitleInspector("Header", this.#json.isHeaderIncluded ? "" : "display-none"),
             jsml.div("i-header-settings inner-padding" + (this.#json.isHeaderIncluded ? "" : " display-none"), [
-                // jsml.div("i-row", [
-                //     jsml.span(_, "Image"),
-                //     jsml.div("i-row", [
-                //         Button("button-like-main", "Remove", async (evt) => {
-                //             if (this.#json.webpage.thumbnail === undefined) return;
-                //
-                //             const response = await AJAX.patch("/page/", JSONHandler(), {
-                //                 body: JSON.stringify({
-                //                     id: webpage.ID,
-                //                     property: "thumbnailSRC",
-                //                     value: null
-                //                 })
-                //             });
-                //
-                //             if (response.error !== undefined) {
-                //                 rejected(evt.target.parentElement.parentElement);
-                //                 alert(response.error);
-                //                 return;
-                //             }
-                //
-                //             validated(evt.target.parentElement.parentElement);
-                //             this.#json.webpage.thumbnail = undefined;
-                //             this.dispatchJSONEvent();
-                //         }),
-                //         Button("button-like-main", "Select", (evt) => {
-                //             const win = showWindow("file-select");
-                //             win.dataset.multiple = "false";
-                //             win.dataset.fileType = "image";
-                //             win.dispatchEvent(new Event("fetch"));
-                //             win.onsubmit = async submitEvent => {
-                //                 const response = await AJAX.patch("/page/", JSONHandler(), {
-                //                     body: JSON.stringify({
-                //                         id: webpage.ID,
-                //                         property: "thumbnailSRC",
-                //                         value: submitEvent.detail[0].src
-                //                     })
-                //                 });
-                //
-                //                 if (response.error !== undefined) {
-                //                     alert(response.error);
-                //                     rejected(evt.target.parentElement.parentElement);
-                //                     return;
-                //                 }
-                //
-                //                 validated(evt.target.parentElement.parentElement);
-                //                 this.#json.webpage.thumbnail = submitEvent.detail[0].serverName;
-                //                 this.dispatchJSONEvent();
-                //             };
-                //         })
-                //     ])
-                // ]),
+                jsml.div("i-row", [
+                    jsml.span(_, "Image"),
+                    jsml.div("i-row", [
+                        jsml.button({
+                            class: "button-like-main",
+                            onClick: async () => {
+                                this.#json.headerImageSrc = undefined;
+                                this.#json.headerImageHash = undefined;
+                                this.#json.headerImageVariant = undefined;
+                                this.dispatchJSONEvent();
+                            }
+                        }, "Remove"),
+                        jsml.button({
+                            class: "button-like-main",
+                            onClick: async event => {
+                                const api = editor_loadFileSystemApi();
+                                if (!is(api)) {
+                                    return;
+                                }
+
+                                const hash = await window_fileSelect(api.createDirectoryUrl('image'));
+                                if (!is(hash)) {
+                                    return;
+                                }
+
+                                this.#json.headerImageHash = hash;
+                                this.dispatchJSONEvent();
+                            }
+                        }, "Select")
+                    ])
+                ]),
+                this.createImageVariantSelect(),
                 // jsml.div("i-row", [
                 //     jsml.span(),
                 //     Button("button-like-main", "Generate theme", async evt => {
@@ -577,12 +597,25 @@ class WRoot extends ContainerWidget {
      * @returns {RootJSON}
      */
     save() {
+        const {
+            isHeaderIncluded,
+            areCommentsAvailable,
+            headerTitleAlign,
+            headerTitleColor,
+            headerImageSrc,
+            headerImageHash,
+            headerImageVariant
+        } = this.#json;
+
         return {
             type: "WRoot",
-            isHeaderIncluded: this.#json.isHeaderIncluded,
-            areCommentsAvailable: this.#json.areCommentsAvailable,
-            headerTitleAlign: this.#json.headerTitleAlign,
-            headerTitleColor: this.#json.headerTitleColor,
+            isHeaderIncluded,
+            areCommentsAvailable,
+            headerTitleAlign,
+            headerTitleColor,
+            headerImageSrc,
+            headerImageHash,
+            headerImageVariant,
             children: this.page.saveChildren()
         };
     }

@@ -6,7 +6,7 @@ use components\pages\Wireframe\Wireframe;
 <html lang="<?= $this->language ?>">
 <?= $this->head ?>
 <body>
-    <main>
+    <main class="wireframe" style="height: 100%; overflow: auto">
         <?php if ($this->hasContentAccess()): ?>
             <?= $this->content ?>
         <?php else: ?>

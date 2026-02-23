@@ -19,7 +19,8 @@ Form::importAssets();
         <?= Html::escape($this->storage->read()) ?>
     </div>
 
-    <?= $this->getFileSystemApi() ?>
+    <?= $this->createFileSystemApi() ?>
+    <?= $this->createLocalizationApi() ?>
 
     <div id="widgets" style="display: none">
         <?php foreach ($this->explodeWidgets() as $widget): ?>
