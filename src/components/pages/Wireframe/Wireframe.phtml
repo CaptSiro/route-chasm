@@ -1,10 +1,19 @@
-<?php /** @var \components\pages\Wireframe\Wireframe $this */ ?>
-<!DOCTYPE html>
+<?php /** @var Wireframe $this */
+
+use components\pages\Wireframe\Wireframe;
+
+?><!DOCTYPE html>
 <html lang="<?= $this->language ?>">
 <?= $this->head ?>
 <body>
     <main>
-        <?= $this->content ?>
+        <?php if ($this->hasContentAccess()): ?>
+            <?= $this->content ?>
+        <?php else: ?>
+            <div class="center">
+                <h1>Page is not accessible</h1>
+            </div>
+        <?php endif; ?>
     </main>
 </body>
 </html>

@@ -28,4 +28,10 @@ class PageStatus extends Model implements Name {
 
     #[Column('id_page_status', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
+
+
+
+    public function is(int $id): bool {
+        return $this->id === $id;
+    }
 }

@@ -15,6 +15,8 @@ use core\view\View;
 use models\core\Language\Language;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
+use models\core\Privilege\Privilege;
+use models\core\User\User;
 use RuntimeException;
 
 class Wireframe extends Component implements Container {
@@ -74,6 +76,13 @@ class Wireframe extends Component implements Container {
         }
 
         return $this;
+    }
+
+    public function hasContentAccess(): bool {
+        return $this->page->hasAccess(
+            User::fromRequest(App::getInstance()->getRequest()),
+            Privilege::fromName(Privilege::READ)
+        );
     }
 
     public function perform(Request $request, Response $response): void {

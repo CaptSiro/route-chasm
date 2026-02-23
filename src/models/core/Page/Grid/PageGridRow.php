@@ -19,6 +19,7 @@ use models\core\Language\Language;
 use models\core\Page\behavior\PageProxy;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
+use models\core\Page\PageStatus;
 use models\core\Page\PageTemplateRecord;
 
 /**
@@ -47,15 +48,20 @@ class PageGridRow extends Model {
     public static function childrenBaseQuery(int $languageId, ?int $parentId = null): SelectQuery {
         $page = Page::getDescription();
         $id_parent = $page->getEscapedColumn('id_page_parent');
+        $page_id_page_status = $page->getEscapedColumn('id_page_status');
 
         $localizedPage = LocalizedPage::getDescription();
         $id_language = $localizedPage->getEscapedColumn('id_language');
 
         $pageTemplate = PageTemplateRecord::getDescription();
+        $pageStatus = PageStatus::getDescription();
+        $status = $pageStatus->getEscapedTable();
+        $status_id_page_status = $pageStatus->getEscapedColumn('id_page_status');
 
         return Sql::select($localizedPage->getEscapedTable())
             ->naturalJoin($page->getEscapedTable())
             ->naturalJoin($pageTemplate->getEscapedTable())
+            ->join($status, Query::static("$page_id_page_status = $status_id_page_status"))
             ->where(is_null($parentId)
                 ? Query::infer("$id_parent IS NULL AND $id_language = ?", $languageId)
                 : Query::infer("$id_parent = ? AND $id_language = ?", $parentId, $languageId)
@@ -65,11 +71,13 @@ class PageGridRow extends Model {
     public static function childrenQuery(int $languageId, ?int $parentId = null): SelectQuery {
         $localizedPage = LocalizedPage::getDescription();
         $pageTemplate = PageTemplateRecord::getDescription();
+        $pageStatus = PageStatus::getDescription();
 
         return self::childrenBaseQuery($languageId, $parentId)
             ->projection($localizedPage->getEscapedColumn('id_page'))
             ->projection($localizedPage->getEscapedColumn('title'))
-            ->projection($pageTemplate->getEscapedColumn('name'));
+            ->projection($pageTemplate->getEscapedColumn('name') .' AS template')
+            ->projection($pageStatus->getEscapedColumn('name') .' AS status');
     }
 
     public static function childrenCountQuery(int $languageId, ?int $parentId = null): SelectQuery {
@@ -97,11 +105,15 @@ class PageGridRow extends Model {
     #[Column('id_page', type: Column::TYPE_INTEGER, primaryKey: true)]
     protected int $id;
 
+    #[GridColumn(template: '128px')]
+    #[Column(type: Column::TYPE_STRING)]
+    protected string $status;
+
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     protected string $title;
 
     #[GridColumn]
-    #[Column('name', type: Column::TYPE_STRING)]
+    #[Column(type: Column::TYPE_STRING)]
     protected string $template;
 }

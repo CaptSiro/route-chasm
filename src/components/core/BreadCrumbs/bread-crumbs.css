@@ -1,8 +1,15 @@
 .bread-crumbs {
     display: flex;
-    gap: var(--gap);
+    align-items: center;
+    gap: calc(var(--gap) / 2);
+    margin: calc(var(--gap) / 2);
 }
 
 .bread-crumbs li {
     list-style-type: none;
+}
+
+.bread-crumbs .bread-crumb {
+    padding: calc(var(--gap) / 4);
+    background-color: var(--container-1);
 }

@@ -78,7 +78,13 @@ class PdoConnection implements Connection {
         $statement = $this->createStatement($query);
         $this->setFetchMode($statement, $class);
 
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (PDOException $exception) {
+            $sql = $query->getSql();
+            throw new PDOException($exception->getMessage() ." SQL: '$sql'");
+        }
+
         $record = $statement->fetch();
 
         if ($record === false) {

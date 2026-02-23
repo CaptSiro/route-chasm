@@ -27,6 +27,7 @@ use core\url\Url;
 use core\utils\Arrays;
 use core\utils\Strings;
 use core\view\View;
+use DateTime as DateTimeObject;
 use http\Exception\RuntimeException;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
@@ -212,8 +213,29 @@ class Page extends Model implements Destination {
         return $this->publish ?? $this->updated;
     }
 
-    public function accessible(User $user, Privilege $privilege): bool {
-        return $user->hasAccess(static::getUserResource(), $privilege);
+    public function hasAccess(User $user, Privilege $privilege): bool {
+        if ($user->isRoot()) {
+            return true;
+        }
+
+        $status = $this->getStatus();
+        if ($status->is(PageStatus::ID_DRAFT)) {
+            return $user->hasAccess(
+                UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE),
+                $privilege
+            );
+        }
+
+        $releaseDate = new DateTimeObject();
+
+        $releaseDate = new DateTimeObject($this->getReleaseDate());
+        $endDate = !is_null($this->remove)
+            ? new DateTimeObject($this->remove)
+            : null;
+
+        $now = new DateTimeObject();
+
+        return $now >= $releaseDate && (is_null($endDate) || $now <= $endDate);
     }
 
     public function getTemplateRecord(): ?PageTemplateRecord {

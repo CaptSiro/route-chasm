@@ -10,6 +10,7 @@ use core\communication\Request;
 use core\database\sql\ModelFactory;
 use core\database\sql\query\SelectQuery;
 use core\RouteChasmEnvironment;
+use models\core\Page\Page;
 
 class PageGridLoader extends ModelGridLoader {
     public static function getParentId(Request $request): ?int {
