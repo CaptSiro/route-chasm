@@ -13,7 +13,7 @@ Css::import($this->getResource('nexus.css'));
         <div class="head">
             <h1><?= $this->getTitle() ?></h1>
 
-            <?php if ($this->showCreateButton): ?>
+            <?php if ($this->canShowCreateButton()): ?>
                 <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
             <?php endif; ?>
 

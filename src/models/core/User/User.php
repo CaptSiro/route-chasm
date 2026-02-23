@@ -46,10 +46,10 @@ class User extends Model {
     public static function fromSession(Session $session): ?static {
         $id = $session->get(App::KEY_LOGGED_IN_USER);
         if (is_null($id)) {
-            return null;
+            return User::fromTag(User::TAG_ANONYMOUS);
         }
 
-        return static::fromId($id);
+        return static::fromId($id) ?? User::fromTag(User::TAG_ANONYMOUS);
     }
 
     public static function fromRequest(Request $request): ?static {
@@ -248,7 +248,11 @@ class User extends Model {
     }
 
     public function isAdmin(): bool {
-        return $this->is(Group::NAME_ADMIN);
+        return $this->is(Group::NAME_ADMIN) || $this->isRoot();
+    }
+
+    public function isRoot(): bool {
+        return $this->is(Group::NAME_ROOT);
     }
 
     public function isAnonymous(): bool {
@@ -259,9 +263,17 @@ class User extends Model {
         return $this->hasAccessRaw($resource->getId(), $privilege->getId());
     }
 
+    private array $accessCache = [];
+
     public function hasAccessRaw(int $resourceId, int $privilegeId): bool {
-        if ($this->isAdmin()) {
+        if ($this->isRoot()) {
             return true;
+        }
+
+        $key = $resourceId .'-'. $privilegeId;
+        $hit = $this->accessCache[$key] ?? null;
+        if (!is_null($hit)) {
+            return $hit;
         }
 
         $connection = static::getDescription()->getConnection();
@@ -282,6 +294,6 @@ class User extends Model {
                 )
             );
 
-        return !is_null($sql->fetch($connection));
+        return $this->accessCache[$key] = !is_null($sql->fetch($connection));
     }
 }

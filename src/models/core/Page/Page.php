@@ -57,9 +57,9 @@ class Page extends Model implements Destination {
             ModelDescription::extract(static::class),
             new AdminPageEditor(new PageEditorBehavior()),
             PageGridRow::getGridDescription(),
-            userResource: static::getUserResource(),
             title: '&nbsp;'
-        ))->setLinkCreator(new PageLinkCreator());
+        ))
+            ->setLinkCreator(new PageLinkCreator());
     }
 
     /**
@@ -73,16 +73,6 @@ class Page extends Model implements Destination {
         return self::all(where: is_null($parentId)
             ? Query::static('id_page_parent IS NULL')
             : Query::infer('id_page_parent = ?', $parentId));
-    }
-
-    private static UserResource $userResource;
-
-    public static function getUserResource(): UserResource {
-        if (!isset(self::$userResource)) {
-            self::$userResource = UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE);
-        }
-
-        return self::$userResource;
     }
 
 

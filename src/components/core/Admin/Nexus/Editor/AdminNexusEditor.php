@@ -21,6 +21,7 @@ use core\http\HttpMethod;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\ContainerContent;
 use core\view\View;
+use models\core\Privilege\Privilege;
 
 class AdminNexusEditor extends ContainerContent implements Editor {
     use Flags;
@@ -124,10 +125,15 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
+                $this->setUserResource($this->context->getUserResource());
                 parent::perform($request, $response);
             }
 
             case HttpMethod::POST: {
+                if (!$this->hasRequestAccess(Privilege::fromName(Privilege::CREATE))) {
+                    $response->sendStatus(HttpCode::CE_FORBIDDEN);
+                }
+
                 if (!CsrfField::check($request)) {
                     $response->sendMessage(
                         'Cross-Site request forgery detected',
@@ -152,6 +158,10 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             }
 
             case HttpMethod::PUT: {
+                if (!$this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE))) {
+                    $response->sendStatus(HttpCode::CE_FORBIDDEN);
+                }
+
                 if (!CsrfField::check($request)) {
                     $response->sendMessage(
                         'Cross-Site request forgery detected',

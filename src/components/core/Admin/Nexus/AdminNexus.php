@@ -23,8 +23,6 @@ use core\url\Url;
 use core\view\ContainerContent;
 use core\view\View;
 use models\core\Privilege\Privilege;
-use models\core\UserResource;
-use models\core\User\User;
 
 class AdminNexus extends ContainerContent {
     public const LEXICON_GROUP = 'admin.nexus';
@@ -48,7 +46,6 @@ class AdminNexus extends ContainerContent {
         protected ModelDescription $modelDescription,
         protected Editor $editor,
         protected GridLayoutFactory $gridFactory,
-        protected ?UserResource $userResource = null,
         protected ?string $title = null,
         protected ?string $createButtonLabel = null
     ) {
@@ -63,23 +60,8 @@ class AdminNexus extends ContainerContent {
 
 
 
-    public function hasAccess(string $privilegeName): bool {
-        if (is_null($this->userResource)) {
-            return true;
-        }
-
-        $request = App::getInstance()
-            ->getRequest();
-        $user = User::fromRequest($request);
-        if (is_null($user)) {
-            return false;
-        }
-
-        return $user->hasAccess($this->userResource, Privilege::fromName($privilegeName));
-    }
-
     public function setRouter(Route $route, Router $router): bool {
-        if (!$this->hasAccess(Privilege::READ)) {
+        if (!$this->hasRequestAccess(Privilege::fromName(Privilege::READ))) {
             return false;
         }
 
@@ -92,6 +74,14 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
+    protected function canShowCreateButton(): bool {
+        if (!$this->showCreateButton) {
+            return false;
+        }
+
+        return $this->hasRequestAccess(Privilege::fromName(Privilege::CREATE));
+    }
+
     public function showHeader(bool $show): static {
         $this->showHeader = $show;
         return $this;
@@ -100,6 +90,14 @@ class AdminNexus extends ContainerContent {
     public function doAddGridControls(bool $do): static {
         $this->doAddGridControls = $do;
         return $this;
+    }
+
+    protected function canAddGridControls(): bool {
+        if (!$this->doAddGridControls) {
+            return false;
+        }
+
+        return $this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE));
     }
 
     public function setHeaderContent(View $headerContent): static {
@@ -156,7 +154,7 @@ class AdminNexus extends ContainerContent {
             return new Message($this->tr("Could not create table, because the description is empty"));
         }
 
-        if ($this->doAddGridControls) {
+        if ($this->canAddGridControls()) {
             $grid
                 ->addAsFirst(self::COLUMN_EDIT, $this->tr('Edit'), '64px')
                 ->add(self::COLUMN_DELETE, $this->tr('Delete'), '64px');
@@ -198,7 +196,11 @@ class AdminNexus extends ContainerContent {
 
         $router->use(
             Route::from('/update/[id]'),
-            function (Request $request) use ($factory) {
+            function (Request $request, Response $response) use ($factory) {
+                if (!$this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE), $request)) {
+                    $response->sendStatus(HttpCode::CE_FORBIDDEN);
+                }
+
                 $id = $request->getParam()->get('id');
 
                 return $this->editor
@@ -209,14 +211,17 @@ class AdminNexus extends ContainerContent {
         $router->use(
             Route::from('/[id]'),
             Http::delete(function (Request $request, Response $response) use ($factory) {
+                if (!$this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE), $request)) {
+                    $response->sendStatus(HttpCode::CE_FORBIDDEN);
+                }
+
                 $model = $factory->fromId(
                     $request->getParam()->get('id')
                 );
 
                 $model->delete();
 
-                $response->setStatus(HttpCode::S_OK);
-                $response->flush();
+                $response->sendStatus(HttpCode::S_OK);
             })
         );
     }
@@ -274,7 +279,7 @@ class AdminNexus extends ContainerContent {
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                if (!$this->hasAccess(Privilege::READ)) {
+                if (!$this->hasRequestAccess(Privilege::fromName(Privilege::READ), $request)) {
                     $response->sendStatus(HttpCode::CE_FORBIDDEN);
                 }
 

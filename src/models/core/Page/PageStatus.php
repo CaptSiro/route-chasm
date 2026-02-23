@@ -24,18 +24,6 @@ class PageStatus extends Model implements Name {
 
 
 
-    private static UserResource $userResource;
-
-    public static function getUserResource(): UserResource {
-        if (!isset(static::$userResource)) {
-            static::$userResource = UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE);
-        }
-
-        return static::$userResource;
-    }
-
-
-
     use EditableExtension, CachedNameExtension;
 
     #[Column('id_page_status', type: Column::TYPE_INTEGER, primaryKey: true)]

@@ -15,9 +15,11 @@ use core\database\sql\ModelDescription;
 use core\database\sql\Table;
 use core\forms\description\TextField;
 use core\locale\Lexicon;
+use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use models\core\Language\Language;
 use models\core\Language\Lexicon\Grid\LexiconGridRow;
+use models\core\UserResource;
 
 /**
  * @property int $groupId
@@ -34,7 +36,8 @@ class Phrase extends Model {
             ModelDescription::extract(Phrase::class),
             new AdminPhraseEditor(),
             LexiconGridRow::getGridDescription()
-        ))->showCreateButton(false);
+        ))
+            ->showCreateButton(false);
     }
 
     /** @var array<string, array<string, static>> */

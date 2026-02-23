@@ -176,10 +176,11 @@ class FileSystem {
             ModelDescription::extract(File::class),
             new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
             self::listDirectory($directory, $directoryLinkProvider),
-            userResource: UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM)
         );
 
-        $nexus->showCreateButton(false)
+        $nexus
+            ->setUserResource(UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM))
+            ->showCreateButton(false)
             ->setHeaderContent(new AdminFileSystemCreateDirectory($directory))
             ->setBreadCrumbs(static::generateBreadCrumbs(
                 $directory,

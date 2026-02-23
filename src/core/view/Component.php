@@ -5,14 +5,17 @@ namespace core\view;
 use core\actions\Action;
 use core\actions\ActionBindRouteNode;
 use core\actions\ActorClassName;
+use core\actions\Barrier;
 use core\actions\IsLastAction;
 use core\communication\Request;
 use core\communication\Response;
+use core\http\HttpCode;
 use core\locale\LexiconUnit;
 use core\route\RouteNode;
+use models\core\Privilege\Privilege;
 
 class Component implements View, Action {
-    use Renderer, ActionBindRouteNode, ActorClassName, IsLastAction, LexiconUnit;
+    use Renderer, ActionBindRouteNode, ActorClassName, IsLastAction, LexiconUnit, Barrier;
 
 
 
@@ -38,6 +41,10 @@ class Component implements View, Action {
     public function perform(Request $request, Response $response): void {
         if (!$this->isLastAction($request)) {
             return;
+        }
+
+        if (!$this->hasRequestAccess(Privilege::fromName(Privilege::READ), $request)) {
+            $response->sendStatus(HttpCode::CE_FORBIDDEN);
         }
 
         $response->renderRoot($this);

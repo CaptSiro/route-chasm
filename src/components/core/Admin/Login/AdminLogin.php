@@ -117,24 +117,15 @@ class AdminLogin extends ContainerContent {
     }
 
     public function perform(Request $request, Response $response): void {
-        $loggedIn = User::fromRequest($request);
-        if (!is_null($loggedIn)) {
-            $url = $request->getUrl();
-            $logout = $url->getQuery()->exists(RouteChasmEnvironment::QUERY_LOGOUT);
-            if ($logout) {
-                $url->getQuery()->remove(RouteChasmEnvironment::QUERY_LOGOUT);
-                User::logout();
-                $response->redirect($url->toString());
-            }
+        $url = $request->getUrl();
+        $logout = $url->getQuery()->exists(RouteChasmEnvironment::QUERY_LOGOUT);
+        if ($logout) {
+            $url->getQuery()->remove(RouteChasmEnvironment::QUERY_LOGOUT);
+            User::logout();
+            $response->redirect($url->toString());
+        }
 
-            if (!$loggedIn->isAdmin()) {
-                $this->setTemplate(
-                    $this->getResource('AdminLogin.permissionDenied.phtml')
-                );
-
-                parent::perform($request, $response);
-            }
-
+        if (User::fromRequest($request)->isAdmin()) {
             return;
         }
 

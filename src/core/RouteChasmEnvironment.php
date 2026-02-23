@@ -52,6 +52,9 @@ class RouteChasmEnvironment {
 
     public const USER_RESOURCE_PAGE = 'Pages';
     public const USER_RESOURCE_FILE_SYSTEM = 'File System';
+    public const USER_RESOURCE_LOCALIZATION = 'Localization';
+    public const USER_RESOURCE_DOMAIN = 'Domains';
+    public const USER_RESOURCE_SYSTEM = 'System';
 
     public const GRID_DEFAULT_PORTION_SIZE = 20;
     public const ID_DIGITS = 4;

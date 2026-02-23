@@ -10,6 +10,7 @@ use core\database\sql\DatabaseAction;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
+use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\select\Select;
@@ -25,6 +26,8 @@ use core\view\View;
 #[Table('core_resource')]
 #[Database(App::DATABASE)]
 class UserResource extends Model {
+    use ModelCache;
+
     public const TYPE_SYSTEM = 1;
     public const TYPE_USER = 2;
     public const TYPES = [
@@ -45,6 +48,10 @@ class UserResource extends Model {
     }
 
     public static function getSystemResource(string $name): ?static {
+        if (!is_null($hit = static::modelCache_get($name))) {
+            return $hit;
+        }
+
         $resource = static::first(
             where: Query::infer('name = ? AND type = ?', $name, self::TYPE_SYSTEM)
         );
@@ -56,7 +63,7 @@ class UserResource extends Model {
             ]);
         }
 
-        return $resource;
+        return static::modelCache_set($name, $resource);
     }
 
 
