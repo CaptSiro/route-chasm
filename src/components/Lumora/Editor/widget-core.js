@@ -160,13 +160,13 @@ class Widget {
      * @param {Event} evt
      */
     inspectHandler(evt) {
-        if (currentlyInspecting === this) {
+        if (editor_currentlyInspecting === this) {
             evt.stopInspector = true;
             return;
         }
 
         const inspectorHTML = this.inspectorHTML;
-        if (inspectorHTML === NotInspectorAble() || evt.stopInspector === true || currentlyInspecting === this) {
+        if (inspectorHTML === NotInspectorAble() || evt.stopInspector === true || editor_currentlyInspecting === this) {
             return;
         }
 

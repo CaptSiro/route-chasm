@@ -852,14 +852,14 @@ editor_inspector.textContent = "";
 // TextAreaInspector(__, methods),
 // );
 
-let currentlyInspecting;
+let editor_currentlyInspecting;
 
 /**
  * @param {Content} inspectorHTML
  * @param {Widget} widget
  */
 function editor_inspect(inspectorHTML, widget) {
-    currentlyInspecting = widget;
+    editor_currentlyInspecting = widget;
     editor_inspector.textContent = "";
 
     jsml_addContent(editor_inspector, inspectorHTML);

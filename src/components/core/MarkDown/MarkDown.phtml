@@ -1,0 +1,15 @@
+<?php /** @var MarkDown $this */
+
+use components\core\Html\Html;
+use components\core\MarkDown\MarkDown;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('mark-down.js'));
+
+?><div class="mark-down row" x-init="md_markDownDisplay">
+    <pre class="mark-down-code" contenteditable="true"><?= Html::escape($this->markDown) ?></pre>
+
+    <button>Parse</button>
+
+    <div class="mark-down-display"></div>
+</div>

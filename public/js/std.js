@@ -195,6 +195,36 @@ function std_randomItem(array) {
 
 
 
+const STD_CHAR_0 = '0'.charCodeAt(0);
+const STD_CHAR_9 = '9'.charCodeAt(0);
+
+function std_isWhitespace(char) {
+    if (!is(char)) {
+        return true;
+    }
+
+    switch (char) {
+        case ' ':
+        case '\n':
+        case '\r':
+        case '\f':
+        case '\t':
+            return true;
+        default:
+            return false;
+    }
+}
+
+/**
+ * @param {string} char
+ */
+function std_isDigit(char) {
+    const code = char.charCodeAt(0);
+    return STD_CHAR_0 <= code && code <= STD_CHAR_9;
+}
+
+
+
 const STD_ID_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 const STD_ID_CHARSET_SAFE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const STD_HTML_ID_CHARSET_FIRST = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
