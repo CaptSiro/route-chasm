@@ -1,0 +1,24 @@
+<?php /** @var Markdown $this */
+
+use components\core\Html\Html;
+use components\core\MarkDown\Markdown;
+
+Markdown::import();
+
+?><div class="mark-down row" x-init="md_display">
+    <pre class="mark-down-code" contenteditable="true"><?= Html::escape($this->markDown) ?></pre>
+
+    <button>Parse</button>
+
+    <div class="mark-down-toc">
+        <h2>Table of Contents</h2>
+        <div class="content"></div>
+    </div>
+
+    <div class="mark-down-display"></div>
+
+    <div class="mark-down-gallery">
+        <h2>Gallery</h2>
+        <div class="content"></div>
+    </div>
+</div>

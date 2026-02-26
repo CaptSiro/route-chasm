@@ -223,6 +223,36 @@ function std_isDigit(char) {
     return STD_CHAR_0 <= code && code <= STD_CHAR_9;
 }
 
+function std_slug(text) {
+    if (!text || typeof text !== "string") {
+        return "";
+    }
+
+    // Normalize and remove diacritics
+    let id = text
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+    // Lowercase
+    id = id.toLowerCase();
+
+    // Replace non-alphanumeric characters with hyphen
+    id = id.replace(/[^a-z0-9]+/g, "-");
+
+    // Collapse multiple hyphens
+    id = id.replace(/-+/g, "-");
+
+    // Trim hyphens from start and end
+    id = id.replace(/^-|-$/g, "");
+
+    // IDs should not start with a digit
+    if (/^[0-9]/.test(id)) {
+        id = "id-" + id;
+    }
+
+    return id;
+}
+
 
 
 const STD_ID_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";

@@ -143,3 +143,31 @@
         padding: 0 15px;
     }
 }
+
+
+
+.toc ul {
+    margin-left: 2em;
+    padding: 0;
+}
+
+.toc li {
+    margin: 0.4em 0;
+}
+
+.toc a {
+    text-decoration: none;
+}
+
+.toc a:hover {
+    text-decoration: underline;
+}
+
+
+
+.gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    justify-content: center;
+}

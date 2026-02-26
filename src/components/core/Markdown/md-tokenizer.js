@@ -97,15 +97,11 @@ class MarkDownTokenizer {
 
                 switch (char) {
                     case "\\": {
-                        this.#appendText(char);
+                        this.#position++;
                         const next = line[this.#position];
 
                         if (is(next)) {
-                            if (next !== '\\') {
-                                this.#appendText(next);
-                            } else {
-                                this.#position++;
-                            }
+                            this.#appendText(next);
                         }
 
                         break;

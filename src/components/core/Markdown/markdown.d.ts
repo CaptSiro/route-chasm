@@ -34,7 +34,7 @@ declare type MarkDownTextNode = {
 declare type MarkDownHeadingNode = {
     type: "HEADING",
     level: number,
-    ast: MarkDownAstNode[]
+    ast: MarkDownAst
 }
 
 declare type MarkDownHorizontalLineNode = {
@@ -43,13 +43,13 @@ declare type MarkDownHorizontalLineNode = {
 
 declare type MarkDownParagraphNode = {
     type: "PARAGRAPH",
-    ast: MarkDownAstNode[]
+    ast: MarkDownAst
 }
 
 declare type MarkDownListItemNode = {
     type: "ORDERED" | "UNORDERED",
     indent: number,
-    ast: MarkDownAstNode[]
+    ast: MarkDownAst
 }
 
 declare type MarkDownListNode = {
@@ -60,7 +60,7 @@ declare type MarkDownListNode = {
 declare type MarkDownQuoteNode = {
     type: "QUOTE",
     indent: number,
-    ast: MarkDownAstNode[]
+    ast: MarkDownAst
 }
 
 declare type MarkDownCodeNode = {
@@ -81,7 +81,7 @@ declare type MarkDownHtmlNode = {
 declare type MarkDownLinkNode = {
     type: "LINK",
     href: string,
-    label: MarkDownAstNode[],
+    label: MarkDownAst,
     labelText: string,
     title?: string,
 }
@@ -100,7 +100,7 @@ declare type MarkDownNewLineNode = {
 declare type MarkDownDecorationNode = {
     type: "DECORATION",
     style: "ITALIC" | "BOLD" | "ITALIC-BOLD" | string,
-    ast: MarkDownAstNode[]
+    ast: MarkDownAst
 }
 
 declare type MarkDownAstNode =
@@ -117,3 +117,5 @@ declare type MarkDownAstNode =
     | MarkDownQuoteNode
     | MarkDownLinkNode
     | MarkDownImageNode;
+
+declare type MarkDownAst = MarkDownAstNode[];

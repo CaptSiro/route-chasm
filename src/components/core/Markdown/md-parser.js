@@ -627,7 +627,7 @@ class MarkDownAstParser {
 
 
 
-    /** @type {MarkDownAstNode[]} */
+    /** @type {MarkDownAst} */
     #ast;
 
     /**
@@ -670,7 +670,7 @@ class MarkDownAstParser {
 
     /**
      * @param {MarkDownToken[]} tokens
-     * @return {MarkDownAstNode[]}
+     * @return {MarkDownAst}
      */
     createAst(tokens) {
         // console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
