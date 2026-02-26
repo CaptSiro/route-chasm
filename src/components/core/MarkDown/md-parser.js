@@ -362,6 +362,7 @@ class MarkDownAstParser {
             this.#tokenCursor + offset,
             false
         );
+
         offset += labelTokens.length;
 
         const isHrefNext = this.#next("BRACKET_END", offset)
@@ -377,7 +378,7 @@ class MarkDownAstParser {
             this.#tokenCursor + offset,
             false
         );
-        offset += labelTokens.length;
+        offset += hrefTokens.length;
 
         const isHrefClosed = this.#next("PARENTHESIS_END", offset);
         if (!isHrefClosed) {
@@ -397,7 +398,7 @@ class MarkDownAstParser {
         for (let i = 0; i < hrefTokens.length; i++) {
             const token = hrefTokens[i];
 
-            if (href.type === "QUOTE") {
+            if (token.type === "QUOTE") {
                 quotePosition = i;
                 break;
             }
@@ -405,9 +406,11 @@ class MarkDownAstParser {
             href += token.literal;
         }
 
-        let title = undefined;
+        href = href.trim();
+
+        let title = '';
         if (quotePosition >= 0) {
-            for (let i = 0; i < hrefTokens.length; i++) {
+            for (let i = quotePosition + 1; i < hrefTokens.length; i++) {
                 if (hrefTokens[i].type === "QUOTE") {
                     break;
                 }
@@ -415,6 +418,18 @@ class MarkDownAstParser {
                 title += hrefTokens[i].literal;
             }
         }
+
+        if (title.trim() === "") {
+            title = undefined;
+        }
+
+        console.log({
+            type: "LINK",
+            href,
+            label,
+            labelText,
+            title,
+        });
 
         return {
             type: "LINK",
@@ -643,7 +658,7 @@ class MarkDownAstParser {
      * @return {MarkDownAstNode[]}
      */
     createAst(tokens) {
-        console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
+        // console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
         this.#tokens = tokens;
         this.#tokenCursor = 0;
         this.#ast = [];
