@@ -96,6 +96,21 @@ class MarkDownTokenizer {
                 const char = line[this.#position];
 
                 switch (char) {
+                    case "\\": {
+                        this.#appendText(char);
+                        const next = line[this.#position];
+
+                        if (is(next)) {
+                            if (next !== '\\') {
+                                this.#appendText(next);
+                            } else {
+                                this.#position++;
+                            }
+                        }
+
+                        break;
+                    }
+
                     case "-": {
                         const literal = this.#extractRepetition(char, line, this.#position);
                         if (literal.length <= 2) {
@@ -112,6 +127,23 @@ class MarkDownTokenizer {
                     }
                     case ">": {
                         this.#readRepetition(char, line, "QUOTE_BLOCK", null);
+                        break;
+                    }
+                    case "<": {
+                        const jump1 = line[this.#position + 1];
+                        const jump2 = line[this.#position + 2];
+
+                        if (jump1 === '>') {
+                            this.#pushToken({ type: "HTML_START", literal: '<>' });
+                            break;
+                        }
+
+                        if (jump1 === '/' && jump2 === ">") {
+                            this.#pushToken({ type: "HTML_END", literal: '</>' });
+                            break;
+                        }
+
+                        this.#appendText(char);
                         break;
                     }
 
@@ -211,7 +243,7 @@ class MarkDownTokenizer {
                         this.#pushToken({ type: "PARENTHESIS_END", literal: char });
                         break;
                     }
-                    case "\"": {
+                    case '"': {
                         this.#pushToken({ type: "QUOTE", literal: char });
                         break;
                     }

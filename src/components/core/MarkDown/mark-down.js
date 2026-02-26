@@ -51,6 +51,13 @@ class MarkDown {
                     break;
                 }
 
+                case "HTML": {
+                    const html = jsml.div('md-html');
+                    html.innerHTML = node.html;
+                    parent.append(html);
+                    break;
+                }
+
                 case "DECORATION": {
                     let decoration = jsml.span('md-decoration ' + node.style);
                     let container = decoration;
@@ -161,10 +168,9 @@ class MarkDown {
     }
 
     parse(markDown) {
-        console.time("MarkDown");
+        // console.time("MarkDown");
         const tokenizer = new MarkDownTokenizer();
         const parser = new MarkDownAstParser();
-        parser.debug = true;
         const ast = parser.createAst(
             tokenizer.tokenize(markDown)
         );
@@ -172,7 +178,7 @@ class MarkDown {
         const md = jsml.div('md');
         MarkDown.astToHtml(md, ast);
 
-        console.timeEnd("MarkDown");
+        // console.timeEnd("MarkDown");
         return md;
     }
 }

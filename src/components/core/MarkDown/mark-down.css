@@ -98,6 +98,10 @@
     border-radius: 6px;
 }
 
+.md .md-html {
+    padding: 1em 0;
+}
+
 .md pre code {
     background: transparent;
     padding: 0;

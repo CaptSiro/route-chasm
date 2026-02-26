@@ -11,7 +11,6 @@ class MarkDownAstParser {
      */
     constructor(allowBlockParsing = true) {
         this.#allowBlockParsing = allowBlockParsing;
-        this.debug = false;
     }
 
 
@@ -35,6 +34,7 @@ class MarkDownAstParser {
             case "HORIZONTAL_LINE":
             case "LIST_ITEM":
             case "CODE_BLOCK":
+            case "HTML_START":
             case "QUOTE_BLOCK":
                 return true;
             default:
@@ -326,19 +326,30 @@ class MarkDownAstParser {
         const position = this.#blockPosition();
 
         const tokens = this.#readUntil("CODE_BLOCK", position + 1, true, false);
-        let code = '';
-
         if (tokens[0]?.type === "NEW_LINE") {
             tokens.shift();
         }
 
-        for (const token of tokens) {
-            code += token.literal;
-        }
+        const code = this.#text(tokens);
 
         return {
             type: "CODE_BLOCK",
             code
+        };
+    }
+
+    /**
+     * @returns {MarkDownHtmlNode}
+     */
+    #parseHtml() {
+        const position = this.#blockPosition();
+
+        const tokens = this.#readUntil("HTML_END", position + 1, true, false);
+        const html = this.#text(tokens);
+
+        return {
+            type: "HTML",
+            html
         };
     }
 
@@ -531,7 +542,7 @@ class MarkDownAstParser {
         let tmp = 0;
 
         while (cursor < this.#tokens.length) {
-            if (tmp++ > 10_000_000) {
+            if (tmp++ > 100_000_000) {
                 console.log(this.#tokens, this.#tokenCursor);
                 throw new Error("max iter reached (parse decor)");
             }
@@ -662,7 +673,7 @@ class MarkDownAstParser {
      * @return {MarkDownAstNode[]}
      */
     createAst(tokens) {
-        console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
+        // console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
         this.#tokens = tokens;
         this.#tokenCursor = 0;
         this.#ast = [];
@@ -671,7 +682,7 @@ class MarkDownAstParser {
         while (this.#tokenCursor < this.#tokens.length) {
             const t = this.#tokens[this.#tokenCursor];
 
-            if (tmp++ > 10_000_000) {
+            if (tmp++ > 100_000_000) {
                 console.log(this.#tokens, this.#tokenCursor, this.#ast);
                 throw new Error("max iter reached");
             }
@@ -714,6 +725,11 @@ class MarkDownAstParser {
 
                 if (this.#isBlockNext("CODE_BLOCK")) {
                     this.#addNode(this.#parseCodeBlock());
+                    continue;
+                }
+
+                if (this.#isBlockNext("HTML_START")) {
+                    this.#addNode(this.#parseHtml());
                     continue;
                 }
 

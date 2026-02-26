@@ -18,6 +18,8 @@ declare type MarkDownTokenType =
     | "QUOTE_BLOCK"
     | "CODE"
     | "CODE_BLOCK"
+    | "HTML_START"
+    | "HTML_END"
 
 declare type MarkDownToken = {
     type: MarkDownTokenType,
@@ -71,6 +73,11 @@ declare type MarkDownCodeBlockNode = {
     code: string,
 }
 
+declare type MarkDownHtmlNode = {
+    type: "HTML",
+    html: string,
+}
+
 declare type MarkDownLinkNode = {
     type: "LINK",
     href: string,
@@ -106,6 +113,7 @@ declare type MarkDownAstNode =
     | MarkDownListNode
     | MarkDownCodeNode
     | MarkDownCodeBlockNode
+    | MarkDownHtmlNode
     | MarkDownQuoteNode
     | MarkDownLinkNode
     | MarkDownImageNode;

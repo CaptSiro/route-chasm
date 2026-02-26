@@ -5,47 +5,11 @@ use components\Home\Home;
 use core\fs\variants\ImageVariant;
 use modules\locales\EnglishUS;
 
-
-
-$md1 = "
-
-### Unordered
-
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
-    * Item 3a
-    * Item 3b
-
-### Ordered
-
-1. Item 1
-2. Item 2
-3. Item 3
-    1. Item 3a
-    2. Item 3b
-    
-## Images
-
-![This is an alt text.](/image/Markdown-mark.svg \"This is a sample image.\")
-
-## Links
-
-You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
-
-## Blocks of code
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
+$html = "
+    <button class='my-button'>Hello this is HTML in Markdown</button>
 ";
 
 $md = "
-# Markdown syntax guide
-
 ## Headers
 
 # This is a Heading h1
@@ -61,6 +25,8 @@ _This will also be italic_
 __This will also be bold__
 
 _You **can** combine them_
+
+## Horizontal line
 
 ---
 
@@ -90,18 +56,22 @@ You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
 ## Blockquotes
 
 > Markdown is a lightweight markup language
->> Markdown is often used to format readme
 
-## Blocks of code
+## Code
+
+This web site is using `markedjs/marked`.
 
 ```
 let message = 'Hello world';
 alert(message);
 ```
 
-## Inline code
+## HTML
 
-This web site is using `markedjs/marked`.
+<>
+    $html
+</>
+
 "
 
 ?><h1>Route Chasm</h1>
