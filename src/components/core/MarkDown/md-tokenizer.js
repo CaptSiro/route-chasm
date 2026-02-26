@@ -96,6 +96,16 @@ class MarkDownTokenizer {
                 const char = line[this.#position];
 
                 switch (char) {
+                    case "-": {
+                        const literal = this.#extractRepetition(char, line, this.#position);
+                        if (literal.length <= 2) {
+                            this.#appendText(literal);
+                            break;
+                        }
+
+                        this.#pushToken({ type: "HORIZONTAL_LINE", literal });
+                        break;
+                    }
                     case "#": {
                         this.#readRepetition(char, line, "HEADING");
                         break;

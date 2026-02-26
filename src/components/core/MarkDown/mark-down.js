@@ -30,6 +30,13 @@ class MarkDown {
                     break;
                 }
 
+                case "HORIZONTAL_LINE": {
+                    parent.append(
+                        jsml.hr('md-horizontal-line')
+                    );
+                    break;
+                }
+
                 case "CODE": {
                     parent.append(
                         jsml.code('md-code', node.code)

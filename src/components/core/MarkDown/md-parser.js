@@ -32,6 +32,7 @@ class MarkDownAstParser {
         switch (type) {
             case "PARAGRAPH":
             case "HEADING":
+            case "HORIZONTAL_LINE":
             case "LIST_ITEM":
             case "CODE_BLOCK":
             case "QUOTE_BLOCK":
@@ -243,6 +244,18 @@ class MarkDownAstParser {
     }
 
     /**
+     * @return {MarkDownHorizontalLineNode}
+     */
+    #parseHorizontalLine() {
+        const position = this.#blockPosition();
+        this.#advanceAbsolute(position + 1);
+
+        return {
+            type: "HORIZONTAL_LINE",
+        };
+    }
+
+    /**
      * @param {string} whitespace
      */
     #indent(whitespace) {
@@ -272,7 +285,6 @@ class MarkDownAstParser {
             : "ORDERED";
 
         const parser = new MarkDownAstParser(false);
-        console.log();
         const ast = parser.createAst(this.#readLine(position + 1));
 
         return {
@@ -423,14 +435,6 @@ class MarkDownAstParser {
             title = undefined;
         }
 
-        console.log({
-            type: "LINK",
-            href,
-            label,
-            labelText,
-            title,
-        });
-
         return {
             type: "LINK",
             href,
@@ -527,7 +531,7 @@ class MarkDownAstParser {
         let tmp = 0;
 
         while (cursor < this.#tokens.length) {
-            if (tmp++ > 1000) {
+            if (tmp++ > 10_000_000) {
                 console.log(this.#tokens, this.#tokenCursor);
                 throw new Error("max iter reached (parse decor)");
             }
@@ -658,7 +662,7 @@ class MarkDownAstParser {
      * @return {MarkDownAstNode[]}
      */
     createAst(tokens) {
-        // console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
+        console.log('create_ast:', tokens.map(x => x.literal + '[' + x.type + ']').join(''));
         this.#tokens = tokens;
         this.#tokenCursor = 0;
         this.#ast = [];
@@ -667,7 +671,7 @@ class MarkDownAstParser {
         while (this.#tokenCursor < this.#tokens.length) {
             const t = this.#tokens[this.#tokenCursor];
 
-            if (tmp++ > 1000) {
+            if (tmp++ > 10_000_000) {
                 console.log(this.#tokens, this.#tokenCursor, this.#ast);
                 throw new Error("max iter reached");
             }
@@ -690,6 +694,11 @@ class MarkDownAstParser {
                         this.#addNode(paragraph);
                     }
 
+                    continue;
+                }
+
+                if (this.#isBlockNext("HORIZONTAL_LINE")) {
+                    this.#addNode(this.#parseHorizontalLine());
                     continue;
                 }
 

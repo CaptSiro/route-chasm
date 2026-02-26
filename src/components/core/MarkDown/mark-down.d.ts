@@ -1,22 +1,23 @@
 declare type MarkDownTokenType =
-    "PARAGRAPH" //
-    | "TEXT" //
-    | "WHITESPACE" //
-    | "NEW_LINE" //
-    | "HEADING" //
+    "PARAGRAPH"
+    | "TEXT"
+    | "WHITESPACE"
+    | "NEW_LINE"
+    | "HEADING"
+    | "HORIZONTAL_LINE"
     | "DECORATION"
     | "DECORATION_START"
     | "DECORATION_END"
-    | "LIST_ITEM" //
-    | "EXCLAMATION" //
-    | "BRACKET_START" //
-    | "BRACKET_END" //
-    | "PARENTHESIS_START" //
-    | "PARENTHESIS_END" //
-    | "QUOTE" //
-    | "QUOTE_BLOCK" //
-    | "CODE" //
-    | "CODE_BLOCK" //
+    | "LIST_ITEM"
+    | "EXCLAMATION"
+    | "BRACKET_START"
+    | "BRACKET_END"
+    | "PARENTHESIS_START"
+    | "PARENTHESIS_END"
+    | "QUOTE"
+    | "QUOTE_BLOCK"
+    | "CODE"
+    | "CODE_BLOCK"
 
 declare type MarkDownToken = {
     type: MarkDownTokenType,
@@ -32,6 +33,10 @@ declare type MarkDownHeadingNode = {
     type: "HEADING",
     level: number,
     ast: MarkDownAstNode[]
+}
+
+declare type MarkDownHorizontalLineNode = {
+    type: "HORIZONTAL_LINE"
 }
 
 declare type MarkDownParagraphNode = {
@@ -96,6 +101,7 @@ declare type MarkDownAstNode =
     | MarkDownTextNode
     | MarkDownDecorationNode
     | MarkDownHeadingNode
+    | MarkDownHorizontalLineNode
     | MarkDownParagraphNode
     | MarkDownListNode
     | MarkDownCodeNode
