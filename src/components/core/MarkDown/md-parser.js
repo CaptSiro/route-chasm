@@ -719,6 +719,11 @@ class MarkDownAstParser {
                 continue;
             }
 
+            if (this.#current("BRACKET_START")) {
+                this.#addNode(this.#parseLink());
+                continue;
+            }
+
             if (this.#current("CODE")) {
                 this.#addNode(this.#parseCode());
                 continue;
