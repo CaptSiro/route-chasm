@@ -96,7 +96,7 @@ class WHtml extends Widget {
     save() {
         return {
             type: "WHtml",
-            html: std_dom_contentEditableText(this.#htmlEditor)
+            html: std_dom_getWhitespaceTextContent(this.#htmlEditor)
         };
     }
 }

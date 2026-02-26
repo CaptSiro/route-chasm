@@ -68,6 +68,10 @@ class Wireframe extends Component implements Container {
         return $this->head;
     }
 
+    public function getLocalization(): LocalizedPage {
+        return $this->localization;
+    }
+
     public function addContent(View $view): static {
         $this->content = $view;
 

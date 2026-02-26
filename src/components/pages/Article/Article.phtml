@@ -1,0 +1,23 @@
+<?php /** @var Article $this */
+
+use components\core\Html\Html;
+use components\core\Markdown\Markdown;
+use components\pages\Article\Article;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Markdown::importAssets();
+Javascript::import($this->getResource('article.js'));
+Css::import($this->getResource('article.css'));
+
+?><div class="article" x-init="article">
+    <pre id="data-content" class="display-none"><?= Html::escape($this->content) ?></pre>
+
+    <div class="article-toc"></div>
+
+    <div class="article-container">
+        <div class="article-content"></div>
+
+        <div class="article-gallery"></div>
+    </div>
+</div>

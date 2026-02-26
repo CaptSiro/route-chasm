@@ -3,6 +3,7 @@
 namespace models\core\Page;
 
 use core\App;
+use core\data\DataItem;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
@@ -10,6 +11,8 @@ use core\database\sql\Model;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\TextField;
+use core\RouteChasmEnvironment;
+use core\utils\Strings;
 use models\core\Language\Language;
 use models\core\Navigation\Slug;
 
@@ -120,5 +123,18 @@ class LocalizedPage extends Model {
     public function setSlug(Slug $slug): void {
         $this->set(['slugId' => $slug->getId()]);
         $this->slug = $slug;
+    }
+
+    public function get(string $item = ''): DataItem {
+        $file = Strings::lpad('0', (string) $this->getId(), RouteChasmEnvironment::ID_DIGITS);
+        $file .= '_' . $this->getLanguage()->code;
+        if (!empty($item)) {
+            $file .= '_'. $item;
+        }
+
+        return new DataItem(
+            Page::DATA_NAMESPACE,
+            $file
+        );
     }
 }

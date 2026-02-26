@@ -89,9 +89,15 @@ class PageEditorBehavior implements EditorBehavior {
             $tabs[$language->getLocale()->getName()] = $localizationFields;
         }
 
+        $selected = App::getInstance()
+            ->getRequest()
+            ->getLanguage()
+            ->getLocale()
+            ->getName();
+
         $layout->add(new Accordion(
             $this->tr('Localization'),
-            new Tabs($tabs)
+            new Tabs($tabs, $selected)
         ));
 
         return null;

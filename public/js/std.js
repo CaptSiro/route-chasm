@@ -359,7 +359,7 @@ function std_dateRelative(date) {
  * @param {HTMLElement} element
  * @return {string}
  */
-function std_dom_contentEditableText(element) {
+function std_dom_getWhitespaceTextContent(element) {
     const extractNode = node => {
         if (node.nodeType === Node.TEXT_NODE) {
             return node.nodeValue;

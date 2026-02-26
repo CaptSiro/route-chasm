@@ -1,0 +1,21 @@
+<?php /** @var MarkdownEditor $this */
+
+use components\core\Icon;
+use components\core\Markdown\Editor\MarkdownEditor;
+use components\core\Markdown\Markdown;
+use core\sideloader\importers\Javascript\Javascript;
+
+Markdown::importAssets();
+Javascript::import($this->getResource('md-editor.js'));
+
+?><div class="markdown-editor" x-init="md_editor">
+    <div class="tool-bar">
+        <button class="switch"><?= Icon::nf('nf-fa-edit', 'Switch between editor and display') ?></button>
+    </div>
+
+    <?= $this->getTextArea() ?>
+
+    <div class="display display-none">
+        <div class="content"></div>
+    </div>
+</div>

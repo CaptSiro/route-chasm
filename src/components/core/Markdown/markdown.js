@@ -356,7 +356,7 @@ function md_display(element) {
             return;
         }
 
-        const md = new Markdown(std_dom_contentEditableText(code));
+        const md = new Markdown(std_dom_getWhitespaceTextContent(code));
 
         display.textContent = "";
         display.append(md.getHtml());

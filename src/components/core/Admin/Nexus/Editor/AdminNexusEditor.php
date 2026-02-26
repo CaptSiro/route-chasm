@@ -42,6 +42,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         protected EditorBehavior $behaviour
     ) {
         parent::__construct($this->page = new AdminWebPage());
+        $this->setLexiconGroup(AdminNexus::LEXICON_GROUP);
         $this->behaviour->setEditor($this);
     }
 
@@ -93,12 +94,12 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         }
 
         $submitLabel = $this->getState() === self::STATE_CREATOR
-            ? 'Create'
-            : 'Update';
+            ? $this->tr('Create')
+            : $this->tr('Update');
 
         $actions = [];
         if (!$this->hasFlag(self::FLAG_REMOVE_CANCEL_BUTTON)) {
-            $actions[] = (new FormAction(FormAction::TYPE_BUTTON, 'Cancel'))
+            $actions[] = (new FormAction(FormAction::TYPE_BUTTON, $this->tr('Cancel')))
                 ->addJavascriptInit('nexus_cancelButton')
                 ->addAttribute('data-url', $this->context->getLink());
         }

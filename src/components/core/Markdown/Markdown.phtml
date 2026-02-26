@@ -3,7 +3,7 @@
 use components\core\Html\Html;
 use components\core\MarkDown\Markdown;
 
-Markdown::import();
+Markdown::importAssets();
 
 ?><div class="mark-down row" x-init="md_display">
     <pre class="mark-down-code" contenteditable="true"><?= Html::escape($this->markDown) ?></pre>

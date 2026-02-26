@@ -1,0 +1,12 @@
+.article {
+    display: flex;
+    gap: var(--gap);
+    margin: var(--gap) auto;
+    justify-content: center;
+}
+
+.article-toc {
+    position: sticky;
+    max-height: 100%;
+    overflow: auto;
+}
