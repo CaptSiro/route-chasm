@@ -2,9 +2,13 @@
 
 use components\core\Html\Html;
 use components\core\MarkDown\MarkDown;
+use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
 Javascript::import($this->getResource('mark-down.js'));
+Javascript::import($this->getResource('md-tokenizer.js'));
+Javascript::import($this->getResource('md-parser.js'));
+Css::import($this->getResource('mark-down.css'));
 
 ?><div class="mark-down row" x-init="md_markDownDisplay">
     <pre class="mark-down-code" contenteditable="true"><?= Html::escape($this->markDown) ?></pre>
