@@ -28,7 +28,6 @@
     translate: -50% -50%;
     background-color: var(--window-container-0);
     border: 2px solid var(--window-accent-0);
-    max-height: 80vh;
     overflow: auto;
 }
 
@@ -68,7 +67,7 @@
 
 .window .content {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 44px);
 }
 
 .text-window {

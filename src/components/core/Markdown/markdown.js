@@ -39,12 +39,13 @@ class Markdown {
 
     /**
      * @param {MarkDownHeadingNode} node
+     * @param {OnElementCreated} onElementCreated
      * @returns {HTMLHeadingElement}
      */
-    static #createHtmlHeading(node) {
+    static #createHtmlHeading(node, onElementCreated) {
         const tag = 'h' + std_clamp(1, 6, Math.round(node.level));
         const h = jsml[tag]('md-heading');
-        Markdown.astToHtml(h, node.ast);
+        Markdown.astToHtml(h, node.ast, onElementCreated);
         h.id = std_slug(h.textContent);
         return h;
     }
@@ -66,14 +67,20 @@ class Markdown {
     /**
      * @param {HTMLElement} parent
      * @param {MarkDownAst} ast
+     * @param {OnElementCreated} onElementCreated
      */
-    static astToHtml(parent, ast) {
+    static astToHtml(parent, ast, onElementCreated = () => {}) {
+        const append = (element, node) => {
+            onElementCreated(element, node);
+            parent.append(element);
+        }
+
         for (const node of ast) {
             switch (node.type) {
                 case "PARAGRAPH": {
                     const p = jsml.p('md-paragraph');
-                    Markdown.astToHtml(p, node.ast);
-                    parent.append(p);
+                    Markdown.astToHtml(p, node.ast, onElementCreated);
+                    append(p, node);
                     break;
                 }
 
@@ -83,35 +90,29 @@ class Markdown {
                 }
 
                 case "HEADING": {
-                    parent.append(Markdown.#createHtmlHeading(node));
+                    append(Markdown.#createHtmlHeading(node, onElementCreated), node);
                     break;
                 }
 
                 case "HORIZONTAL_LINE": {
-                    parent.append(
-                        jsml.hr('md-horizontal-line')
-                    );
+                    append(jsml.hr('md-horizontal-line'), node);
                     break;
                 }
 
                 case "CODE": {
-                    parent.append(
-                        jsml.code('md-code', node.code)
-                    );
+                    append(jsml.code('md-code', node.code), node);
                     break;
                 }
 
                 case "CODE_BLOCK": {
-                    parent.append(
-                        jsml.pre('md-code-block', node.code)
-                    );
+                    append(jsml.pre('md-code-block', node.code), node);
                     break;
                 }
 
                 case "HTML": {
                     const html = jsml.div('md-html');
                     html.innerHTML = node.html;
-                    parent.append(html);
+                    append(html, node);
                     break;
                 }
 
@@ -139,8 +140,8 @@ class Markdown {
                         default: break;
                     }
 
-                    parent.append(decoration);
-                    Markdown.astToHtml(container, node.ast);
+                    Markdown.astToHtml(container, node.ast, onElementCreated);
+                    append(decoration, node);
                     break;
                 }
 
@@ -150,13 +151,13 @@ class Markdown {
                         dataIndent: node.indent
                     });
 
-                    parent.append(quote);
-                    Markdown.astToHtml(quote, node.ast);
+                    Markdown.astToHtml(quote, node.ast, onElementCreated);
+                    append(quote, node);
                     break;
                 }
 
                 case "IMAGE": {
-                    parent.append(Markdown.#createHtmlImage(node));
+                    append(Markdown.#createHtmlImage(node), node);
                     break;
                 }
 
@@ -168,8 +169,8 @@ class Markdown {
                         title
                     });
 
-                    parent.append(a);
-                    Markdown.astToHtml(a, node.label);
+                    Markdown.astToHtml(a, node.label, onElementCreated);
+                    append(a, node);
                     break;
                 }
 
@@ -199,15 +200,16 @@ class Markdown {
                             dataIndent: item.indent
                         });
 
-                        Markdown.astToHtml(li, item.ast);
+                        Markdown.astToHtml(li, item.ast, onElementCreated);
                         l.append(li);
+                        onElementCreated(li, item);
                     }
 
                     if (is(l)) {
                         list.append(l);
                     }
 
-                    parent.append(l);
+                    append(list, node);
                     break;
                 }
 
@@ -231,7 +233,7 @@ class Markdown {
                 continue;
             }
 
-            const h = Markdown.#createHtmlHeading(node);
+            const h = Markdown.#createHtmlHeading(node, () => {});
             const item = jsml.li('toc-item',
                 jsml.a({ href: "#" + h.id }, h.textContent)
             );
@@ -305,18 +307,22 @@ class Markdown {
         );
     }
 
-    getHtml() {
+    /**
+     * @param {OnElementCreated} onElementCreated
+     * @return {HTMLElement}
+     */
+    getHtml(onElementCreated = () => {}) {
         if (is(this.#html)) {
             return this.#html;
         }
 
         this.#html = jsml.div('md');
-        Markdown.astToHtml(this.#html, this.#parse());
+        Markdown.astToHtml(this.#html, this.#parse(), onElementCreated);
 
         return this.#html;
     }
 
-    getTableOfContents() {
+    getTableOfContents(onElementCreated) {
         if (is(this.#tableOfContents)) {
             return this.#tableOfContents;
         }
@@ -337,36 +343,4 @@ class Markdown {
 
         return this.#gallery;
     }
-}
-
-
-
-/**
- * @param {HTMLElement} element
- */
-function md_display(element) {
-    const code = $(".mark-down-code", element);
-    const parse = $("button", element);
-    const display = $(".mark-down-display", element);
-    const toc = $(".mark-down-toc .content", element);
-    const gallery = $(".mark-down-gallery .content", element);
-
-    parse?.addEventListener("click", () => {
-        if (!is(display) || !is(code)) {
-            return;
-        }
-
-        const md = new Markdown(std_dom_getWhitespaceTextContent(code));
-
-        display.textContent = "";
-        display.append(md.getHtml());
-
-        toc.textContent = "";
-        toc.append(md.getTableOfContents());
-
-        gallery.textContent = "";
-        gallery.append(md.getGallery());
-    });
-
-    setTimeout(() => parse?.click(), 50);
 }

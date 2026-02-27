@@ -185,7 +185,7 @@ async function form_onSubmitFailure(form, response) {
 function form_extract(control) {
     const extract = std_getFunction(control.dataset.extract);
     if (is(extract)) {
-        return extract(control);
+        return extract(control, control.dataset);
     }
 
     if ('value' in control) {
@@ -196,12 +196,10 @@ function form_extract(control) {
 }
 
 /**
- * @param {FormData} data
- * @param name
- * @param value
+ * @param {HTMLElement} element
  */
-function form_formDataAppend(data, name, value) {
-
+function form_extractContentEditable(element) {
+    return std_dom_getWhitespaceTextContent(element);
 }
 
 /**
@@ -229,7 +227,7 @@ function form_formData(form) {
             continue;
         }
 
-        data.append(control.name, form_extract(control));
+        data.append(control.getAttribute('name'), form_extract(control));
     }
 
     return {

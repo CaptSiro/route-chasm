@@ -126,7 +126,7 @@ class LocalizedPage extends Model {
     }
 
     public function get(string $item = ''): DataItem {
-        $file = Strings::lpad('0', (string) $this->getId(), RouteChasmEnvironment::ID_DIGITS);
+        $file = Strings::lpad('0', (string) $this->getPage()->getId(), RouteChasmEnvironment::ID_DIGITS);
         $file .= '_' . $this->getLanguage()->code;
         if (!empty($item)) {
             $file .= '_'. $item;

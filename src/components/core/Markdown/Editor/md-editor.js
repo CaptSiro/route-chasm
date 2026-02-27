@@ -2,11 +2,12 @@
  * @param {HTMLElement} element
  */
 function md_editor(element) {
+    const editor = $('.editor', element);
     const display = $('.display', element);
-    const editor = $(".data-markdown", element);
+    const area = $(".data-markdown", element);
     const content = $('.content', element);
 
-    if (!is(display) || !is(editor) || !is(content)) {
+    if (!is(editor) || !is(display) || !is(area) || !is(content)) {
         return;
     }
 
@@ -14,13 +15,7 @@ function md_editor(element) {
         editor.classList.toggle('display-none');
         display.classList.toggle('display-none');
 
-        const sourceCode = editor instanceof HTMLTextAreaElement
-            ? editor.value
-            : std_dom_getWhitespaceTextContent(editor);
-
-        const markdown = new Markdown(sourceCode);
-
-        console.log(sourceCode);
+        const markdown = new Markdown(std_dom_getWhitespaceTextContent(area));
 
         content.textContent = '';
         content.append(markdown.getHtml());

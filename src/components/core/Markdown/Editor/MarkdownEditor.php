@@ -3,7 +3,6 @@
 namespace components\core\Markdown\Editor;
 
 use components\core\Html\Html;
-use core\forms\controls\TextArea\TextArea;
 use core\forms\Form;
 use core\view\Renderer;
 use core\view\View;
@@ -21,21 +20,21 @@ class MarkdownEditor implements View {
 
 
     protected function getTextArea(): string {
-        if (is_null($this->name)) {
-            return Html::wrap(
-                'pre',
-                $this->content,
-                [
-                    'class' => 'data-markdown',
-                    'contenteditable' => 'true'
-                ]
-            );
+        $attributes = [
+            'class' => 'data-markdown',
+            'contenteditable' => 'true'
+        ];
+
+        if (!is_null($this->name)) {
+            Form::importAssets();
+            $attributes['name'] = $this->name;
+            $attributes['data-extract'] = 'form_extractContentEditable';
         }
 
-        Form::importAssets();
-        $area = new TextArea($this->name, '', $this->content);
-        $area->addAttribute('rows', '50');
-        $area->addCssClass('data-markdown');
-        return $area;
+        return Html::wrap(
+            'pre',
+            $this->content,
+            $attributes
+        );
     }
 }

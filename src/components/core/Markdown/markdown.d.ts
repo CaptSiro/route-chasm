@@ -111,6 +111,7 @@ declare type MarkDownAstNode =
     | MarkDownHorizontalLineNode
     | MarkDownParagraphNode
     | MarkDownListNode
+    | MarkDownListItemNode
     | MarkDownCodeNode
     | MarkDownCodeBlockNode
     | MarkDownHtmlNode
@@ -119,3 +120,13 @@ declare type MarkDownAstNode =
     | MarkDownImageNode;
 
 declare type MarkDownAst = MarkDownAstNode[];
+
+declare type OnElementCreated = (element: HTMLElement, node: MarkDownAstNode) => void;
+
+
+
+declare type MarkdownGalleryImage = {
+    src: string,
+    alt: string,
+    title?: string
+}

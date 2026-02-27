@@ -10,15 +10,34 @@ function article(element) {
     }
 
     const markdown = new Markdown(std_dom_getWhitespaceTextContent(data));
-    content.append(markdown.getHtml());
+    const gallery = new Gallery();
 
-    const tableOfContents = $(".article-toc", element);
+    content.append(markdown.getHtml((element, node) => {
+        if (node.type !== "IMAGE") {
+            return;
+        }
+
+        element.classList.add('article-gallery-image');
+        const cursor = gallery.add(node.src, node.alt, node.title);
+
+        element.addEventListener("click", () => {
+            gallery.show();
+            gallery.goTo(cursor);
+        });
+    }));
+
+    const tableOfContents = $(".article-toc-content", element);
     if (is(tableOfContents)) {
         tableOfContents.append(markdown.getTableOfContents());
     }
 
-    const gallery = $('.article-gallery', element);
-    if (is(gallery)) {
-        gallery.append(markdown.getGallery());
+    const fragment = location.hash.startsWith('#')
+        ? location.hash.substring(1)
+        : location.hash;
+
+    if (fragment.trim() === "") {
+        return;
     }
+
+    $('#' + fragment)?.scrollIntoView();
 }

@@ -72,6 +72,10 @@ a.no-link:visited {
     color: var(--text-0);
 }
 
+[contenteditable=true]:focus {
+    outline: unset;
+}
+
 button,
 .button {
     padding: 0.5em 1em;

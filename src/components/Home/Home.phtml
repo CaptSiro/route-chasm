@@ -5,89 +5,10 @@ use components\Home\Home;
 use core\fs\variants\ImageVariant;
 use modules\locales\EnglishUS;
 
-$html = "
-    <button class='my-button'>Hello this is HTML in Markdown</button>
-";
-
-$md2 = "# This is my epic first article\n\nAs you can see this is my very epic new and never seen first article. Hell yeah. Lets get it\n\n## My life\n\nI am doing pretty good, thanks for asking";
-
-$md = "
-## Headers
-
-![This is an alt text.](https://picsum.photos/300/50 \"This is a sample image (1\).\")
-
-# This is a Heading h1
-## This is a Heading h2
-###### This is a Heading h6
-
-## Emphasis
-
-![This is an alt text.](https://picsum.photos/300/100 \"This is a sample image (2\).\")
-
-*This text will be italic*  
-_This will also be italic_
-
-**This text will be bold**  
-__This will also be bold__
-
-_You **can** combine them_
-
-## Horizontal line
-
----
-
-## Lists
-
-![This is an alt text.](https://picsum.photos/300/150 \"This is a sample image (3\).\")
-
-### Unordered
-
-* Item 1
-* Item 2
-* Item 2a
-* Item 2b
-
-### Ordered
-
-1. Item 1
-2. Item 2
-3. Item 3
-
-## Images
-
-![This is an alt text.](https://picsum.photos/300/200 \"This is a sample image (4\).\")
-
-## Links
-
-You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
-
-## Blockquotes
-
-> Markdown is a lightweight markup language
-
-## Code
-
-This web site is using `markedjs/marked`.
-
-```
-let message = 'Hello world';
-alert(message);
-```
-
-## HTML
-
-<>
-    $html
-</>
-
-"
-
 ?><h1>Route Chasm</h1>
 <a href="https://github.com/CaptSiro/route-chasm">GitHub repository</a>
 
 <p>Navigate to <code>src/components/Home/Home.phtml</code> to edit this page</p>
-
-<?= new \components\core\MarkDown\Markdown($md2) ?>
 
 <!--<hr>-->
 <!--<h3>Languages</h3>-->

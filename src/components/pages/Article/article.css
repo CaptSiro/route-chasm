@@ -1,12 +1,136 @@
-.article {
+:root {
+    --bg: var(--container-0);
+    --surface: var(--container-1);
+    --surface-light: var(--container-2);
+    --text: var(--text-0);
+    --text-muted: var(--text-1);
+    --accent: var(--accent-1);
+    --border: var(--container-2);
+
+    --max-width: var(--markdown-max-width);
+    --radius: var(--border-radius);
+}
+
+body {
+    line-height: 1.7;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.page {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+.article-wrapper {
     display: flex;
-    gap: var(--gap);
-    margin: var(--gap) auto;
     justify-content: center;
 }
 
-.article-toc {
+.article {
+    width: 100%;
+    max-width: var(--max-width);
+}
+
+.toc-wrapper {
     position: sticky;
-    max-height: 100%;
-    overflow: auto;
+    top: 2rem;
+    align-self: start;
+    height: fit-content;
+}
+
+.toc-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+}
+
+.toc-title {
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.toc {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc li {
+    margin-bottom: 0.5rem;
+}
+
+.toc a {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.toc a:hover {
+    color: var(--text);
+}
+
+.article-header {
+    margin-bottom: 3rem;
+}
+
+.article-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.article-meta {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.article-gallery-content .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.article-gallery-content img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--radius);
+}
+
+.article-gallery-image,
+.article-gallery-content img {
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.article-gallery-image:hover,
+.article-gallery-content img:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+}
+
+@media (max-width: 1000px) {
+    .page {
+        grid-template-columns: 1fr;
+    }
+
+    .toc-wrapper {
+        display: none;
+    }
 }
