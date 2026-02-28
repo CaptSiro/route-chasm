@@ -8,6 +8,7 @@ use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;
 use core\Identifier;
+use core\utils\Strings;
 use core\view\View;
 use JsonSerializable;
 use RuntimeException;
@@ -24,7 +25,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
 
     /**
-     * @param array<string, mixed> $properties
+     * @param array<string, mixed> $properties `[$phpPropertyName => $value]` Do not use column name as a key
      * @param bool $save
      * @return static
      */
@@ -159,6 +160,24 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         }
 
         return $this->{$id};
+    }
+
+    public function getModelType(): string {
+        return ModelDescription::extract(static::class)
+            ->getModelType();
+    }
+
+    /**
+     * @param string|null $subtype kebab-case subtype name used for string identifiers: model-type_sub-type#ID
+     * @return string
+     */
+    public function getIdentifier(?string $subtype = null): string {
+        $type = $this->getModelType();
+        if (is_null($subtype)) {
+            return $type .'#'. $this->getId();
+        }
+
+        return $type .'_'. $subtype .'#'. $this->getId();
     }
 
     public function __set(string $alias, $value): void {

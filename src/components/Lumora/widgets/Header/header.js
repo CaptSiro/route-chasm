@@ -20,7 +20,7 @@ class WHeader extends Widget {
         this.removeMargin();
         this.childSupport = this.childSupport;
 
-        const localization = lumora_loadLocalizationApi();
+        const localization = api_loadLocalization();
         const title = localization?.title ?? "Title";
 
         const headingContainer = (
@@ -49,7 +49,6 @@ class WHeader extends Widget {
             this.rootElement.classList.add("display-none");
         }
 
-        console.log(root.json.headerImageSrc);
         if (is(root.json.headerImageSrc)) {
             this.rootElement.style.backgroundImage = `url(${root.json.headerImageSrc})`;
         }

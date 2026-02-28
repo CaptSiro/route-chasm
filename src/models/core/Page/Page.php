@@ -29,6 +29,7 @@ use core\utils\Strings;
 use core\view\View;
 use DateTime as DateTimeObject;
 use http\Exception\RuntimeException;
+use models\core\fs\Shortcut;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
@@ -281,6 +282,17 @@ class Page extends Model implements Destination {
         );
     }
 
+    public function getCoverImageName(): string {
+        return $this->getIdentifier('cover-image');
+    }
+
+    public function getCoverImage(): ?Shortcut {
+        return Shortcut::fromName($this->getCoverImageName());
+    }
+
+
+
+    // Destination
     public function getPathToSelf(string $alias): Path {
         if (is_null($mount = Navigator::locate($alias))) {
             throw new RuntimeException("Alias '$alias' is not mounted properly. Use Navigator::route to create new mounting point");

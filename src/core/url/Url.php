@@ -8,9 +8,10 @@ use core\Copy;
 use core\route\Path;
 use core\utils\Arrays;
 use core\utils\Strings;
+use JsonSerializable;
 use RuntimeException;
 
-class Url implements Copy {
+class Url implements Copy, JsonSerializable {
     public const SEPARATOR_PROTOCOL = '://';
     public const SEPARATOR_PATH = '/';
     public const REGEX_URL = "/^(([^:\/?#]+):)?(\/\/(([^:\/?#\n]*):?([0-9]*)))?([^?#\n]*)(\?([^#\n]*))?(#([^\n]*))?/";
@@ -172,5 +173,12 @@ class Url implements Copy {
             ->setQuery(new StrictMap([...$this->query->toArray()]));
 
         return $instance;
+    }
+
+
+
+    // JsonSerializable
+    public function jsonSerialize(): string {
+        return $this->toString();
     }
 }

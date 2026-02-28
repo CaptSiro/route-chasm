@@ -42,11 +42,19 @@ use GdImage;
 class ImageVariantTransformer extends Model implements FileVariantTransformer {
     use ModelCache;
 
+
+
+    public const FUNCTION_FIT = 'fit';
+    public const FUNCTION_SCALE = 'scale';
+    public const FUNCTION_CROP = 'crop';
+
     public const FUNCTIONS = [
         'fit' => 'Fit',
         'scale' => 'Scale',
         'crop' => 'Crop',
     ];
+
+
 
     public static function getGridLayoutFactory(): GridLayoutFactory {
         $description = GridDescription::extract(self::class);
@@ -57,11 +65,27 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
         return $description;
     }
 
-    public static function fromTransformer(string $transformer): static {
+    public static function fromTransformer(string $transformer): ?static {
         self::modelCache_loadAll(fn($x) => $x->transformer);
 
         return self::modelCache_get($transformer)
             ?? self::first(where: Query::infer('transformer = ?', $transformer));
+    }
+
+    public static function createTransformer(
+        string $transformer,
+        int $width,
+        int $height,
+        string $function = self::FUNCTION_FIT,
+        float $quality = 1
+    ): static {
+        return static::create([
+            'transformer' => $transformer,
+            'width' => $width,
+            'height' => $height,
+            'function' => $function,
+            'quality' => $quality,
+        ]);
     }
 
 

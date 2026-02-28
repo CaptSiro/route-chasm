@@ -4,15 +4,22 @@ namespace models\extensions\Name;
 
 use components\layout\Grid\description\GridColumn;
 use core\database\sql\Column;
+use core\database\sql\ModelCache;
 use core\database\sql\ModelDescription;
 use core\database\sql\query\Query;
 use core\forms\description\TextField;
 
 trait NameExtension {
+    use ModelCache;
+
     public static function fromName(string $name): ?static {
-        return static::first(
+        if (!is_null($hit = static::modelCache_get($name))) {
+            return $hit;
+        }
+
+        return static::modelCache_set($name, static::first(
             where: Query::infer('name = ?', $name)
-        );
+        ));
     }
 
     public static function createOptions(Query|null|string $where = null): array {

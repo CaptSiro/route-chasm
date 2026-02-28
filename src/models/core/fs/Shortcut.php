@@ -41,6 +41,39 @@ class Shortcut extends Model {
         ]);
     }
 
+    public static function submit(File $file, ?Shortcut $shortcut, string $shortcutName): void {
+        if (is_null($shortcut)) {
+            $shortcut = new Shortcut();
+
+            $shortcut->set(['name' => $shortcutName]);
+            $shortcut->setFileRaw($file->getId());
+
+            $shortcut->save();
+            return;
+        }
+
+        if ($shortcut->getFileId() === $file->getId()) {
+            return;
+        }
+
+        $shortcut->setFile($file);
+        $shortcut->save();
+    }
+
+    public static function submitHash(string $hash, string $shortcutName): void {
+        $shortcut = Shortcut::fromName($shortcutName);
+        if (empty($hash)) {
+            $shortcut?->delete();
+            return;
+        }
+
+        if (is_null($file = File::fromHash($hash))) {
+            return;
+        }
+
+        static::submit($file, $shortcut, $shortcutName);
+    }
+
 
 
     #[Column('id_fs_shortcut', Column::TYPE_INTEGER, primaryKey: true)]
@@ -55,6 +88,10 @@ class Shortcut extends Model {
 
 
 
+    public function getFileId(): int {
+        return $this->fileId;
+    }
+
     public function getFile(): ?File {
         if (!isset($this->file)) {
             $this->file = File::fromId($this->fileId);
@@ -63,8 +100,8 @@ class Shortcut extends Model {
         return $this->file;
     }
 
-    public function setFileRaw(mixed $fileId): static {
-        $this->set(['fileId', $fileId]);
+    public function setFileRaw(int $fileId): static {
+        $this->set(['fileId' => $fileId]);
         $this->file = null;
         return $this;
     }

@@ -192,7 +192,7 @@ class WRoot extends ContainerWidget {
             return this.#imageVariantSelect;
         }
 
-        const api = editor_loadFileSystemApi();
+        const api = api_loadFileSystem();
         const url = new URL(api.imageVariantUrl);
         url.searchParams.set('name', 'Header image variants');
 
@@ -267,7 +267,7 @@ class WRoot extends ContainerWidget {
                         jsml.button({
                             class: "button-like-main",
                             onClick: async event => {
-                                const api = editor_loadFileSystemApi();
+                                const api = api_loadFileSystem();
                                 if (!is(api)) {
                                     return;
                                 }

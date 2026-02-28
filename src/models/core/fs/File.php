@@ -81,12 +81,24 @@ class File extends Model implements FileSystemEntry, Destination {
 
 
     protected ?Directory $parent;
+    /** @var array<Shortcut> */
+    protected array $shortcuts;
 
 
 
     public function delete(): DatabaseAction {
+        $result = parent::delete();
+        if ($result === DatabaseAction::NONE) {
+            return DatabaseAction::NONE;
+        }
+
         unlink($this->getRealPath());
-        return parent::delete();
+
+        foreach ($this->getShortcuts() as $shortcut) {
+            $shortcut->delete();
+        }
+
+        return DatabaseAction::DELETE;
     }
 
 
@@ -150,6 +162,19 @@ class File extends Model implements FileSystemEntry, Destination {
         $shortcut->save();
 
         return $shortcut;
+    }
+
+    /**
+     * @return array<Shortcut>
+     */
+    public function getShortcuts(): array {
+        if (isset($this->shortcuts)) {
+            return $this->shortcuts;
+        }
+
+        return $this->shortcuts = Shortcut::all(
+            where: Query::infer('id_fs_file = ?', $this->getId())
+        );
     }
 
     public function getHumanReadableSize(): string {

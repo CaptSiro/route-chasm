@@ -234,7 +234,8 @@ class FileServer extends Router {
                     'type' => $file->type,
                     'size' => $file->size,
                     'sizeHumanReadable' => $file->getHumanReadableSize(),
-                    'parent' => $file->getParent()?->getEntryName()
+                    'parent' => $file->getParent()?->getEntryName(),
+                    'icon' => $file->getEntryIcon()
                 ]);
             }),
         );

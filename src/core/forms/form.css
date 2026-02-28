@@ -186,6 +186,7 @@ input.form-invalid {
     flex: 1;
 }
 
+.form .control-label,
 .form label {
     margin-bottom: 0.25em;
 }

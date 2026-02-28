@@ -47,7 +47,7 @@ class WFileDownload extends Widget {
         this.childSupport = this.childSupport;
 
         const updateUrl = () => {
-            const api = editor_loadFileSystemApi();
+            const api = api_loadFileSystem();
             const url = api.createDownloadUrl(this.#hash.value, this.getFileName());
             button.disabled = !is(this.#url);
             if (!is(url)) {
@@ -72,7 +72,11 @@ class WFileDownload extends Widget {
         this.#hash.onChange(async hash => {
             updateUrl();
 
-            const api = editor_loadFileSystemApi();
+            if (hash.length === 0) {
+                return;
+            }
+
+            const api = api_loadFileSystem();
             const url = api.createInfoUrl(hash);
             if (!is(url)) {
                 return;
@@ -83,6 +87,7 @@ class WFileDownload extends Widget {
                 throw new Error('Could not fetch file size');
             }
 
+            /** @type {FileInfo} */
             const json = await response.json();
             if (!is(json['sizeHumanReadable'])) {
                 return;
@@ -218,7 +223,7 @@ class WFileDownload extends Widget {
                 jsml.button({
                     class: "button",
                     onClick: async evt => {
-                        const api = editor_loadFileSystemApi();
+                        const api = api_loadFileSystem();
                         const hash = await window_fileSelect(api.createDirectoryUrl());
                         if (!is(hash)) {
                             return;

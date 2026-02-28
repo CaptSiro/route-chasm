@@ -21,8 +21,6 @@ foreach ($this->editor->explodeWidgets() as $widget) {
 }
 
 ?><section>
-    <?= $this->editor->createLocalizationApi() ?>
-
     <div id="display-data" style="display: none">
         <?= Html::escape($this->editor->getStorage()->read()) ?>
     </div>

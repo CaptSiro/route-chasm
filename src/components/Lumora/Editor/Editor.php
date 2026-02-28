@@ -33,6 +33,7 @@ use components\Lumora\widgets\Text\TextWidget;
 use components\Lumora\widgets\TextEditor\TextEditorWidget;
 use components\Lumora\widgets\Widget;
 use components\Lumora\widgets\WidgetImporter;
+use components\pages\Wireframe\Wireframe;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
@@ -94,7 +95,7 @@ class Editor extends ContainerContent {
         string $title = "Editor",
         ?array $widgets = null
     ) {
-        parent::__construct($this->webPage = new WebPage());
+        parent::__construct($this->webPage = new WebPage(head: Wireframe::createHtmlHead($this->localization)));
         $this->webPage->getHead()->setTitle($title);
 
         $this->importer = new WidgetImporter();

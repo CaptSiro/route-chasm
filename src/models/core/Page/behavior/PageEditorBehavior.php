@@ -6,11 +6,13 @@ use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\core\Admin\Nexus\Editor\SetEditor;
 use components\core\Admin\Page\AdminPageEditor;
+use components\core\fs\FileControl;
 use components\core\Html\Html;
 use components\core\Message\Message;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\layout\Layout;
+use components\layout\Row\Row;
 use components\layout\Tabs\Tabs;
 use core\App;
 use core\communication\Request;
@@ -26,6 +28,7 @@ use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\utils\Models;
 use core\view\View;
+use models\core\fs\Shortcut;
 use models\core\Language\Language;
 use models\core\Navigation\NavigationContext;
 use models\core\Navigation\Slug;
@@ -38,6 +41,7 @@ class PageEditorBehavior implements EditorBehavior {
 
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_PARENT_ID = 'parentId';
+    public const NAME_COVER_IMAGE = 'coverImage';
 
 
 
@@ -63,12 +67,24 @@ class PageEditorBehavior implements EditorBehavior {
     public function addControls(Layout $layout, ?Model $model): ?View {
         /** @var ?Page $model */
         $error = FormDescription::extract(Page::class)
-            ->addControls($pageFields = new Column(), $model);
+            ->addControls($pageFields = new Column(0.5), $model);
         if (!is_null($error)) {
             return $error;
         }
 
-        $layout->add(new Accordion($this->tr('General'), $pageFields));
+        $row = new Row();
+        $row->add($pageFields);
+
+        $column = new Column(0.5);
+        $column->add(FileControl::fromShortcut(
+            self::NAME_COVER_IMAGE,
+            'Cover Image',
+            $model?->getCoverImage()
+        )->accept('image'));
+
+        $row->add($column);
+
+        $layout->add(new Accordion($this->tr('General'), $row));
 
         $tabs = [];
         $localizations = is_null($model)
@@ -177,6 +193,8 @@ class PageEditorBehavior implements EditorBehavior {
 
     protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request, ?Page $parent): ?View {
         $body = $request->getBody();
+
+        Shortcut::submitHash($body->getStrict(self::NAME_COVER_IMAGE), $page->getCoverImageName());
 
         $titles = $body->getStrict('title');
         if ($this->emptyTitles($titles)) {

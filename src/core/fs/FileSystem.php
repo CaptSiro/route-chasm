@@ -20,6 +20,7 @@ use core\data\Data;
 use core\database\sql\ModelDescription;
 use core\fs\variants\FileVariant;
 use core\fs\variants\FileVariantTransformer;
+use core\fs\variants\ImageVariant;
 use core\locale\Lexicon;
 use core\ResourceLoader;
 use core\route\Path;
@@ -38,6 +39,28 @@ class FileSystem {
     use ResourceLoader;
 
     public const LEXICON_GROUP = 'file-system';
+
+
+
+    public static function createApi(): string {
+        $fs = FileServer::getInstance();
+        return Html::wrapUnsafe(
+            'script',
+            json_encode([
+                'fileUrl' => $fs->createFileUrl(),
+                'downloadUrl' => $fs->createDownloadUrl(),
+                'infoUrl' => $fs->createInfoUrl(),
+                'variantQuery' => RouteChasmEnvironment::QUERY_FS_VARIANT,
+                'fileTypeQuery' => RouteChasmEnvironment::QUERY_FS_FILE_TYPE,
+                'directoryUrl' => $fs->createDirectoryUrl(),
+                'imageVariantUrl' => $fs->createVariantUrl(ImageVariant::getInstance()),
+            ]),
+            [
+                'type' => 'application/json',
+                'id' => 'api-file-system'
+            ]
+        );
+    }
 
 
 

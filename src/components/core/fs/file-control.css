@@ -1,0 +1,60 @@
+.file-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.file-control .file-preview {
+    display: inline-block;
+    border: 2px solid var(--container-3);
+    border-radius: var(--border-radius);
+    background: var(--container-0);
+    padding: var(--gap);
+    text-align: center;
+    width: 100%;
+}
+
+.file-preview.image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Image preview */
+.file-control .file-preview.image img {
+    max-width: 400px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border: 1px solid var(--container-2);
+}
+
+/* General file preview */
+.file-control .file-preview.general {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: var(--gap-smaller) var(--gap);
+}
+
+.file-control .file-preview.general .icon {
+    font-size: 40px;
+    margin-right: var(--gap);
+    color: var(--accent-3);
+}
+
+.file-control .file-preview.general .details {
+    text-align: left;
+}
+
+.file-control .file-preview.general .details .name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.file-control .file-preview.general .details .size {
+    font-size: 0.9em;
+    color: var(--text-1);
+}

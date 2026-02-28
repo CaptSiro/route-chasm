@@ -70,12 +70,3 @@ function lumora_viewport_resize() {
         viewportListener(lumora_viewport_dimension);
     }
 }
-
-
-
-/**
- * @return {LumoraLocalizationApi|null|any}
- */
-function lumora_loadLocalizationApi() {
-    return $("#localization-data")?.dataset;
-}

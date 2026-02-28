@@ -2,7 +2,9 @@
 
 namespace core\database\sql;
 
+use core\database\ModelType;
 use core\database\sql\query\SelectQuery;
+use core\utils\Strings;
 use ReflectionClass;
 use RuntimeException;
 
@@ -24,6 +26,11 @@ class ModelDescription {
         $database = empty($databases)
             ? new Database()
             : $databases[0]->newInstance();
+
+        $modelTypes = $reflection->getAttributes(ModelType::class);
+        $modelType = empty($modelTypes)
+            ? Strings::pascalToKebab($reflection->getShortName())
+            : $modelTypes[0]->newInstance()->getType();
 
         $idColumn = null;
         $columns = [];
@@ -63,6 +70,7 @@ class ModelDescription {
 
         return self::$descriptions[$class] = new ModelDescription(
             $class,
+            $modelType,
             $tables[0]->newInstance()->name,
             $database->getConnection(),
             $idColumn,
@@ -77,6 +85,7 @@ class ModelDescription {
 
     /**
      * @param string $class
+     * @param string $modelType
      * @param string $table
      * @param Connection $connection
      * @param ColumnDescription $idColumn
@@ -85,6 +94,7 @@ class ModelDescription {
      */
     public function __construct(
         protected string $class,
+        protected string $modelType,
         protected string $table,
         protected Connection $connection,
         protected ColumnDescription $idColumn,
@@ -100,6 +110,10 @@ class ModelDescription {
 
     public function getClass(): string {
         return $this->class;
+    }
+
+    public function getModelType(): string {
+        return $this->modelType;
     }
 
     public function getTable(): string {

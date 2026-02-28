@@ -2,16 +2,17 @@
 
 namespace components\pages\Wireframe;
 
+use components\core\Html\Html;
 use components\core\HtmlHead\HtmlHead;
-use components\core\WebPage\Head;
 use core\actions\Action;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
-use core\view\ArrayContainer;
 use core\view\Component;
 use core\view\Container;
+use core\view\StringRenderer;
 use core\view\View;
+use DateTime;
 use models\core\Language\Language;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
@@ -30,7 +31,29 @@ class Wireframe extends Component implements Container {
         $head->addMetaNonEmpty('og-title', $meta->ogTitle);
         $head->addMetaNonEmpty('og-description', $meta->ogDescription);
 
+        $head->addElement(new StringRenderer(self::createLocalizationApi($localization)));
+
         return $head;
+    }
+
+    public static function createLocalizationApi(LocalizedPage $localization): string {
+        $releaseDate = new DateTime($localization->getPage()->getReleaseDate());
+
+        return Html::wrapUnsafe(
+            'script',
+            json_encode([
+                'title' => $localization->title,
+                'description' => $localization->getMeta()->description,
+                'releaseDate' => $localization
+                    ->getLanguage()
+                    ->getLocale()
+                    ->formatDateTime($releaseDate->getTimestamp()),
+            ]),
+            [
+                'type' => 'application/json',
+                'id' => 'api-localization'
+            ]
+        );
     }
 
 

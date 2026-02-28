@@ -8,15 +8,17 @@ use Transliterator;
 
 class Strings extends Init {
     protected static string $charsAlpha;
+    protected static Charset $charsetAlpha;
     protected static string $charsAlphaUpper;
+    protected static Charset $charsetAlphaUpper;
     protected static string $charsAllAlpha;
     protected static string $charsNumbers;
 
     public static function init(): void {
-        self::$charsAlpha = (new Charset())
-            ->addRange('a', 'z')
-            ->asString();
+        self::$charsetAlpha = (new Charset())->addRange('a', 'z');
+        self::$charsAlpha = self::$charsetAlpha->asString();
 
+        self::$charsetAlphaUpper = (new Charset())->addRange('A', 'Z');
         self::$charsAlphaUpper = strtoupper(self::$charsAlpha);
         self::$charsAllAlpha = self::$charsAlpha . self::$charsAlphaUpper;
 
@@ -49,6 +51,14 @@ class Strings extends Init {
 
     public static function CHARS_SPECIALS(): string {
         return " !@#$%^&*()-_=+[{]}\\|;:'\",<.>/?";
+    }
+
+    public static function isUpper(string $char): string {
+        return self::$charsetAlphaUpper->contains($char);
+    }
+
+    public static function isLower(string $char): string {
+        return self::$charsetAlpha->contains($char);
     }
 
     public static function randomChar(string $charset): string {
@@ -206,5 +216,46 @@ class Strings extends Init {
         }
 
         return $content;
+    }
+
+    public static function pascalToKebab(string $string): string {
+        $len = strlen($string);
+        if ($len === 0) {
+            return '';
+        }
+
+        $ret = '';
+        $wasPreviousUpper = false;
+
+        for ($i = 0; $i < $len; $i++) {
+            $char = $string[$i];
+            $isUpper = self::isUpper($char);
+
+            if (!$isUpper) {
+                $wasPreviousUpper = false;
+                $ret .= $char;
+                continue;
+            }
+
+            if ($i + 1 >= $len) {
+                if (!$wasPreviousUpper) {
+                    $ret .= '-';
+                }
+
+                $wasPreviousUpper = true;
+                $ret .= strtolower($char);
+                continue;
+            }
+
+            $isNextLower = self::isLower($string[$i + 1]);
+            if (($i !== 0) && (!$wasPreviousUpper || $isNextLower)) {
+                $ret .= '-';
+            }
+
+            $wasPreviousUpper = true;
+            $ret .= strtolower($char);
+        }
+
+        return $ret;
     }
 }

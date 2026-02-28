@@ -507,9 +507,10 @@ function window_fileUpload(fileProgress, settings = {}) {
 
 /**
  * @param {string} url
+ * @param {?string} fileType
  * @return {Promise<string|null>}
  */
-async function window_fileSelect(url) {
+async function window_fileSelect(url, fileType = null) {
     return new Promise(resolve => {
         let result = null;
         const w = window_create(
@@ -526,6 +527,13 @@ async function window_fileSelect(url) {
                             window_close(w);
                         }
                     }, 'Ok'),
+
+                    jsml.button({
+                        onClick: () => {
+                            result = '';
+                            window_close(w);
+                        }
+                    }, 'Remove selected'),
 
                     jsml.button({
                         onClick: () => {

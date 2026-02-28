@@ -4,8 +4,10 @@ namespace components\core\HtmlHead;
 
 use components\core\WebPage\Head;
 use core\App;
+use core\fs\FileSystem;
 use core\RouteChasmEnvironment;
 use core\view\Component;
+use core\view\StringRenderer;
 use core\view\View;
 
 class HtmlHead extends Component implements Head {
@@ -26,6 +28,8 @@ class HtmlHead extends Component implements Head {
         if (!is_null($env)) {
             $this->addMeta("author", $env->get(RouteChasmEnvironment::PROJECT_AUTHOR));
         }
+
+        $this->addElement(new StringRenderer(FileSystem::createApi()));
     }
 
 
