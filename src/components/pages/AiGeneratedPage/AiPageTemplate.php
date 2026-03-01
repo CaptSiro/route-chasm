@@ -6,6 +6,7 @@ use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
 use components\core\Html\Html;
 use components\layout\Grid\description\GridDescription;
+use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\forms\description\FormDescription;
@@ -15,6 +16,7 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
 use core\view\StringRenderer;
 use core\view\View;
+use models\core\Language\Language;
 use models\core\Page\AiPage;
 use models\core\Page\Page;
 
@@ -57,11 +59,19 @@ class AiPageTemplate implements PageTemplate {
         return null;
     }
 
-    public function build(Wireframe $wireframe, Page $page): Component {
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
         return AiGeneratedPage::build($wireframe, $page);
     }
 
-    public function getEditor(Page $page): Action {
+    public function buildListingCard(Page $page, Language $language): View {
+        return new ListingCard($page, $page->getLocalization($language));
+    }
+
+    public function hasEditor(): bool {
+        return true;
+    }
+
+    public function buildEditor(Page $page): Action {
         $editor = new AdminNexusEditor(
             new AiPageEditorBehavior(
                 FormDescription::extract(AiPage::class),

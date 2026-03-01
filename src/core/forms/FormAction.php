@@ -20,6 +20,11 @@ class FormAction implements Attribute {
         return new self(self::TYPE_SUBMIT, $label);
     }
 
+
+
+    protected ?string $name = null;
+    protected ?string $value = null;
+
     /**
      * @param string $type
      * @param string $label
@@ -37,5 +42,19 @@ class FormAction implements Attribute {
 
     public function getLabel(): string {
         return $this->label;
+    }
+
+    public function getName(): ?string {
+        return $this->name;
+    }
+
+    public function getValue(): ?string {
+        return $this->value;
+    }
+
+    public function setValue(string $name, string $value): static {
+        $this->name = $name;
+        $this->value = $value;
+        return $this;
     }
 }

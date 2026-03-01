@@ -6,6 +6,7 @@ use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\view\Component;
 use core\view\View;
+use models\core\Language\Language;
 use models\core\Page\Page;
 
 interface PageTemplate {
@@ -15,7 +16,11 @@ interface PageTemplate {
 
     public function delete(Page $page): ?View;
 
-    public function build(Wireframe $wireframe, Page $page): Component;
+    public function buildContent(Wireframe $wireframe, Page $page): Component;
 
-    public function getEditor(Page $page): Action;
+    public function buildListingCard(Page $page, Language $language): View;
+
+    public function hasEditor(): bool;
+
+    public function buildEditor(Page $page): Action;
 }

@@ -3,6 +3,8 @@
 use components\core\Html\Html;
 use components\core\Markdown\Markdown;
 use components\pages\Article\Article;
+use components\pages\Article\ArticleTemplate;
+use core\fs\variants\ImageVariant;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
@@ -22,6 +24,24 @@ Css::import($this->getResource('article.css'));
     </aside>
 
     <article class="article">
+        <div class="article-header column pad-gap">
+            <div class="title">
+                <h1><?= Html::escape($this->localization->title) ?></h1>
+
+                <?php $description = $this->localization->getMeta()->description ?>
+                <?php if (!empty($description)): ?>
+                    <p><?= Html::escape($description) ?></p>
+                <?php endif; ?>
+            </div>
+
+            <?php if (!is_null($image = $this->page->getCoverImage()?->getFile())): ?>
+                <img
+                    src="<?= $image->getUrl(ArticleTemplate::getCoverTransformer()) ?>"
+                    alt="Article cover image"
+                >
+            <?php endif; ?>
+        </div>
+
         <section class="article-content"></section>
     </article>
 </div>

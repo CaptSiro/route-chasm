@@ -331,4 +331,8 @@ class Page extends Model implements Destination {
         $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
         return $ret;
     }
+
+    public function getUrl(): Url {
+        return $this->getUrlToModel(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT);
+    }
 }

@@ -40,7 +40,7 @@ class PageFactory implements NavigationFactory {
 
         $wireframe = new Wireframe($page);
         $wireframe->addContent(
-            $template->build($wireframe, $page)
+            $template->buildContent($wireframe, $page)
         );
 
         return $wireframe;

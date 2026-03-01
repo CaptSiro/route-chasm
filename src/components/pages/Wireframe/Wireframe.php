@@ -22,14 +22,14 @@ use RuntimeException;
 
 class Wireframe extends Component implements Container {
     public static function createHtmlHead(LocalizedPage $localization): HtmlHead {
-        $head = new HtmlHead($localization->title);
+        $head = new HtmlHead(Html::escape($localization->title));
 
         $meta = $localization->getMeta();
 
-        $head->addMetaNonEmpty('description', $meta->description);
-        $head->addMetaNonEmpty('keywords', $meta->keywords);
-        $head->addMetaNonEmpty('og-title', $meta->ogTitle);
-        $head->addMetaNonEmpty('og-description', $meta->ogDescription);
+        $head->addMetaNonEmpty('description', Html::escape($meta->description));
+        $head->addMetaNonEmpty('keywords', Html::escape($meta->keywords));
+        $head->addMetaNonEmpty('og-title', Html::escape($meta->ogTitle));
+        $head->addMetaNonEmpty('og-description', Html::escape($meta->ogDescription));
 
         $head->addElement(new StringRenderer(self::createLocalizationApi($localization)));
 

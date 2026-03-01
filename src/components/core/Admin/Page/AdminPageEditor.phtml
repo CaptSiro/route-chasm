@@ -12,9 +12,11 @@ use components\core\Admin\Page\AdminPageEditor;
             </a>
         <?php endif; ?>
 
-        <a href="<?= $this->getTemplateEditorLink() ?>" target="_blank" class="button">
-            <?= $this->tr('Edit page content') ?>
-        </a>
+        <?php if ($this->model?->getTemplate()?->hasEditor() ?? false): ?>
+            <a href="<?= $this->getTemplateEditorLink() ?>" target="_blank" class="button">
+                <?= $this->tr('Edit page content') ?>
+            </a>
+        <?php endif; ?>
     </div>
 
     <?= $this->getForm() ?>

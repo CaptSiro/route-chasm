@@ -2,15 +2,27 @@
 
 namespace components\pages\Article;
 
+use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
+use core\fs\variants\FileVariantTransformer;
+use core\fs\variants\ImageVariant;
 use core\pages\PageTemplate;
 use core\view\Component;
 use core\view\View;
+use models\core\Language\Language;
 use models\core\Page\Page;
 
 class ArticleTemplate implements PageTemplate {
     public const DATA_CONTENT = 'article.md';
+    public const TRANSFORMER_ARTICLE_COVER = 'article-cover';
+
+    public static function getCoverTransformer(): FileVariantTransformer {
+        return ImageVariant::resolve(
+            self::TRANSFORMER_ARTICLE_COVER,
+            900, 500,
+        );
+    }
 
 
 
@@ -32,13 +44,25 @@ class ArticleTemplate implements PageTemplate {
         return null;
     }
 
-    public function build(Wireframe $wireframe, Page $page): Component {
-        return new Article($wireframe->getLocalization()
-            ->get(self::DATA_CONTENT)
-            ->read() ?? '');
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
+        return new Article(
+            $page,
+            $wireframe->getLocalization(),
+            $wireframe->getLocalization()
+                ->get(self::DATA_CONTENT)
+                ->read() ?? ''
+        );
     }
 
-    public function getEditor(Page $page): Action {
+    public function buildListingCard(Page $page, Language $language): View {
+        return new ListingCard($page, $page->getLocalization($language));
+    }
+
+    public function hasEditor(): bool {
+        return true;
+    }
+
+    public function buildEditor(Page $page): Action {
         return new ArticleEditor($page);
     }
 }

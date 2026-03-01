@@ -28,6 +28,8 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
     public const FLAG_REMOVE_CANCEL_BUTTON = 1;
 
+    public const NAME_SUBMIT_ACTION = 'nexus_submitAction';
+
     public const STATE_CREATOR = 0;
     public const STATE_UPDATER = 1;
 
@@ -97,6 +99,8 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             ? $this->tr('Create')
             : $this->tr('Update');
 
+        $andReturnLabel = $this->tr('and return');
+
         $actions = [];
         if (!$this->hasFlag(self::FLAG_REMOVE_CANCEL_BUTTON)) {
             $actions[] = (new FormAction(FormAction::TYPE_BUTTON, $this->tr('Cancel')))
@@ -105,6 +109,8 @@ class AdminNexusEditor extends ContainerContent implements Editor {
         }
 
         $actions[] = new FormAction(FormAction::TYPE_SUBMIT, $submitLabel);
+        $actions[] = (new FormAction(FormAction::TYPE_SUBMIT, $submitLabel .' '. $andReturnLabel))
+            ->setValue(self::NAME_SUBMIT_ACTION, 'return');
 
         $form->add(new MultiSubmit($actions));
         return $form;
@@ -117,6 +123,30 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             : 'Update';
 
         return $title;
+    }
+
+    protected function sendResult(Request $request, Response $response, Model $model, EditorBehaviorAction $action): void {
+        $error = $this->behaviour->onSubmit($model, $action);
+
+        if ($error instanceof View) {
+            $response->setStatus(HttpCode::CE_BAD_REQUEST);
+            $response->renderRoot($error);
+        }
+
+        if ($action === EditorBehaviorAction::CREATE) {
+            $response->setStatus(HttpCode::S_CREATED);
+        } else {
+            $response->setStatus(HttpCode::S_OK);
+        }
+
+        $submitAction = $request->getBody()
+            ->get(self::NAME_SUBMIT_ACTION);
+
+        if ($submitAction === 'return' && !is_null($next = $this->context->getLink())) {
+            $response->setHeader(HttpHeader::X_NEXT, $next);
+        }
+
+        $response->flush();
     }
 
     public function perform(Request $request, Response $response): void {
@@ -147,15 +177,12 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                     ->getFactory()
                     ->new();
 
-                $error = $this->behaviour->onSubmit($model, EditorBehaviorAction::CREATE);
-
-                if ($error instanceof View) {
-                    $response->renderRoot($error);
-                }
-
-                $response->setStatus(HttpCode::S_CREATED);
-                $response->setHeader(HttpHeader::X_NEXT, $this->context->getLink());
-                $response->flush();
+                $this->sendResult(
+                    $request,
+                    $response,
+                    $model,
+                    EditorBehaviorAction::CREATE
+                );
             }
 
             case HttpMethod::PUT: {
@@ -175,18 +202,12 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                     ->getFactory()
                     ->fromId($this->model->getId());
 
-                $error = $this->behaviour->onSubmit($model, EditorBehaviorAction::UPDATE);
-
-                if ($error instanceof View) {
-                    $response->renderRoot($error);
-                }
-
-                $response->setStatus(HttpCode::S_OK);
-                if (!is_null($next = $this->context->getLink())) {
-                    $response->setHeader(HttpHeader::X_NEXT, $next);
-                }
-
-                $response->flush();
+                $this->sendResult(
+                    $request,
+                    $response,
+                    $model,
+                    EditorBehaviorAction::UPDATE
+                );
             }
 
             default:

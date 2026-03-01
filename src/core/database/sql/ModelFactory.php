@@ -65,11 +65,6 @@ class ModelFactory {
         return new $this->modelClass();
     }
 
-    public function finish(Model $model): Model {
-        $model->useUnsafeAccess(false);
-        return $model;
-    }
-
     public function fromRecord(?array $record, Origin $origin = Origin::EXTERNAL): ?Model {
         if (is_null($record)) {
             return null;

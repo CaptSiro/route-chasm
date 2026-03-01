@@ -1,0 +1,51 @@
+<?php /** @var ListingCard $this */
+
+use components\core\Html\Html;
+use components\core\Icon;
+use components\pages\Listing\ListingCard;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Css::import($this->getResource('listing-card.css'));
+Javascript::import($this->getResource('listing-card.js'));
+
+$url = $this->page->getUrl();
+$image = $this->page->getCoverImage()?->getFile();
+$title = $this->localization->title;
+$description = $this->localization->getMeta()->description;
+
+?><article
+    class="article-card <?= !is_null($image) ? 'has-image' : '' ?> <?= !empty($description) ? 'has-description' : '' ?>"
+    x-init="listing_card"
+    data-url="<?= $url ?>"
+>
+    <?php if (!is_null($image)): ?>
+        <img
+            src="<?= $this->getImageUrlMedium($image) ?>"
+            srcset="<?= $this->getImageUrlSmall($image) ?> 480w,
+            <?= $this->getImageUrlMedium($image) ?> 800w,
+            <?= $this->getImageUrlLarge($image) ?> 1200w"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            alt="Page cover image"
+            width="800"
+            height="450"
+            loading="lazy"
+            class="article-image"
+        >
+    <?php endif; ?>
+
+    <div class="article-content">
+        <h2 class="article-title">
+            <a href="<?= $url ?>"><?= Html::escape($title) ?></a>
+        </h2>
+
+        <?php if (!empty($description)): ?>
+            <p class="article-description"><?= Html::escape($description) ?></p>
+        <?php endif; ?>
+
+        <a href="<?= $url ?>" class="read-more">
+            <span><?= $this->tr('Read more') ?></span>
+            <?= Icon::nf('nf-fa-arrow_right', '→') ?>
+        </a>
+    </div>
+</article>

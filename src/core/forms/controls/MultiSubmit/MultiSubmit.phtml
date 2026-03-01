@@ -1,8 +1,15 @@
-<?php /** @var \core\forms\controls\MultiSubmit\MultiSubmit $this */ ?>
-<div class="form-actions">
+<?php /** @var MultiSubmit $this */
+
+use core\forms\controls\MultiSubmit\MultiSubmit;
+
+?><div class="form-actions">
     <?php foreach ($this->actions as $action): ?>
         <button
             type="<?= $action->getType() ?>"
+            <?php if (!is_null($action->getName())): ?>
+                name="<?= $action->getName() ?>"
+                value="<?= $action->getValue() ?>"
+            <?php endif; ?>
             <?= $action->stringifyAttributes() ?>
         ><?= $action->getLabel() ?></button>
     <?php endforeach; ?>

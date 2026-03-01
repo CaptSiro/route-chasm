@@ -117,7 +117,7 @@ class AdminPageEditor extends AdminNexusEditor {
 
             $template = Pages::getTemplate($templateRecord->getId());
             $response->setHeader("X-Template", "created|performed");
-            return $template->getEditor($page);
+            return $template->buildEditor($page);
         });
     }
 

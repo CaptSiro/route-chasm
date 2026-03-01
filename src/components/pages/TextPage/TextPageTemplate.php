@@ -5,14 +5,15 @@ namespace components\pages\TextPage;
 use components\core\ToolBar\ToolBarItem;
 use components\Lumora\Display\Display;
 use components\Lumora\Editor\Editor;
+use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
-use core\App;
 use core\pages\PageTemplate;
 use core\route\Route;
 use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\View;
+use models\core\Language\Language;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
 
@@ -44,8 +45,8 @@ class TextPageTemplate implements PageTemplate {
         return $editor;
     }
 
-    public function build(Wireframe $wireframe, Page $page): Component {
-        $localization = $page->getLocalizationOrDefault();
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
+        $localization = $wireframe->getLocalization();
 
         return new Display(
             $localization->title,
@@ -53,11 +54,19 @@ class TextPageTemplate implements PageTemplate {
         );
     }
 
+    public function buildListingCard(Page $page, Language $language): View {
+        return new ListingCard($page, $page->getLocalization($language));
+    }
+
     public function create(Page $page): ?View {
         return null;
     }
 
-    public function getEditor(Page $page): Action {
+    public function hasEditor(): bool {
+        return true;
+    }
+
+    public function buildEditor(Page $page): Action {
         $localization = $page->getLocalizationOrDefault();
         return $this->createEditor($page, $localization);
     }

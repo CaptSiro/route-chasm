@@ -1,0 +1,47 @@
+<?php
+
+namespace components\pages\Listing;
+
+use components\core\Message\Message;
+use components\pages\Article\ArticleEditor;
+use components\pages\Wireframe\Wireframe;
+use core\actions\Action;
+use core\pages\PageTemplate;
+use core\view\Component;
+use core\view\View;
+use models\core\Language\Language;
+use models\core\Page\Page;
+
+class ListingTemplate implements PageTemplate {
+    public const DATA_CONTENT = 'article.md';
+
+
+
+    public function getName(): string {
+        return "Page Listing";
+    }
+
+    public function create(Page $page): ?View {
+        return null;
+    }
+
+    public function delete(Page $page): ?View {
+        return null;
+    }
+
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
+        return new Listing($page, $wireframe->getLocalization());
+    }
+
+    public function buildListingCard(Page $page, Language $language): View {
+        return new ListingCard($page, $page->getLocalization($language));
+    }
+
+    public function hasEditor(): bool {
+        return false;
+    }
+
+    public function buildEditor(Page $page): Action {
+        return new Message('Page Listing has no content editor associated with its template');
+    }
+}

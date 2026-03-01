@@ -88,7 +88,7 @@ function form_onError(input, form, message) {
 
 /**
  * @param {HTMLElement} form
- * @param {Event} event
+ * @param {SubmitEvent} event
  */
 async function form_submit(form, event) {
     event.preventDefault();
@@ -97,13 +97,13 @@ async function form_submit(form, event) {
     const w = window_createNotice("Submitting form...", { isDialog: true });
     window_open(w);
 
-    /** @type {(HTMLElement) => Payload} */
+    /** @type {(form: HTMLElement, event: SubmitEvent) => Payload} */
     const transformer = std_getFunction(form.dataset.transformer ?? '');
     if (!is(transformer)) {
         throw new Error("Mandatory form attribute 'data-transformer' was not set. " + form);
     }
 
-    const payload = transformer(form);
+    const payload = transformer(form, event);
     const headers = {
         'X-Request-Type': payload.type,
         'X-Response-Type': 'application/json'
@@ -123,7 +123,7 @@ async function form_submit(form, event) {
         body: payload.body
     });
 
-    window_destroy(w);
+    window_close(w);
 
     if (response.status >= 400) {
         const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onSubmitFailure;
@@ -204,13 +204,21 @@ function form_extractContentEditable(element) {
 
 /**
  * @param {HTMLElement} form
+ * @param {SubmitEvent} event
  * @returns {Payload}
  */
-function form_formData(form) {
+function form_formData(form, event) {
     const data = new FormData();
 
+    if (event.submitter.hasAttribute('name')) {
+        data.append(
+            event.submitter.getAttribute('name'),
+            event.submitter.getAttribute('value') ?? ''
+        );
+    }
+
     for (const control of form.querySelectorAll("[name]")) {
-        if (Boolean(control.dataset.skipSubmit)) {
+        if (Boolean(control.dataset.skipSubmit) || control.type === 'submit') {
             continue;
         }
 
@@ -260,14 +268,24 @@ function form_jsonAppend(json, arrays, name, value) {
 
 /**
  * @param {HTMLElement} form
+ * @param {SubmitEvent} event
  * @returns {Payload}
  */
-function form_json(form) {
+function form_json(form, event) {
     const json = {};
     const arrays = new Set();
 
+    if (event.submitter.hasAttribute('name')) {
+        form_jsonAppend(
+            json,
+            arrays,
+            event.submitter.getAttribute('name'),
+            event.submitter.getAttribute('value') ?? ''
+        );
+    }
+
     for (const control of form.querySelectorAll("[name]")) {
-        if (Boolean(control.dataset.skipSubmit)) {
+        if (Boolean(control.dataset.skipSubmit) || control.type === "submit") {
             continue;
         }
 

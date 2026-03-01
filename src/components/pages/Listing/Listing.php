@@ -1,20 +1,16 @@
 <?php
 
-namespace components\pages\Article;
+namespace components\pages\Listing;
 
 use core\view\Component;
 use models\core\Page\LocalizedPage;
 use models\core\Page\Page;
 
-class Article extends Component {
-    public const LEXICON_GROUP = 'article';
-
+class Listing extends Component {
     public function __construct(
         protected Page $page,
         protected LocalizedPage $localization,
-        protected string $content
     ) {
         parent::__construct();
-        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 }

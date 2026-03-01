@@ -160,7 +160,6 @@ class SideLoader implements View {
             }
 
             $require = '';
-            $test = [];
 
             foreach ($this->files as $type => $files) {
                 $hashed = $this->joinHashed($files);
@@ -168,7 +167,6 @@ class SideLoader implements View {
                     continue;
                 }
 
-                $test[] = array_unique(array_map(fn($x) => basename($x), $files));
                 $require .= "$type($hashed);";
             }
 
@@ -177,7 +175,6 @@ class SideLoader implements View {
             }
 
             $response->setHeader(self::HEADER_X_REQUIRE, $require);
-            $response->setHeader('X-Test', json_encode($test));
         });
 
         $this->router->use(

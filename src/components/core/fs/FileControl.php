@@ -70,10 +70,10 @@ class FileControl implements Control, Attribute {
     }
 
     public function getTransformer(): FileVariantTransformer {
-        return ImageVariant::get(ImageVariant::TRANSFORMER_FILE_IMAGE_PREVIEW)
-            ?? ImageVariantTransformer::createTransformer(
-                ImageVariant::TRANSFORMER_FILE_IMAGE_PREVIEW,
-                400, 300,
-            );
+        return ImageVariant::resolve(
+            ImageVariant::TRANSFORMER_FILE_IMAGE_PREVIEW,
+            400,
+            300,
+        );
     }
 }

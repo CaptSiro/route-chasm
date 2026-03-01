@@ -157,8 +157,9 @@ function window_maximize(element, maximize = undefined, minimize = undefined) {
 
 /**
  * @param {HTMLElement} element
+ * @param destroy
  */
-function window_close(element) {
+function window_close(element, destroy = true) {
     if (!isWindowModuleLoaded) {
         queue.push({
             fn: window_close,
@@ -177,6 +178,10 @@ function window_close(element) {
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_CLOSED));
 
     window.onbeforeunload = null;
+
+    if (destroy) {
+        window_destroy(element);
+    }
 }
 
 /**
@@ -391,11 +396,7 @@ function window_alert(message, settings = {}) {
             settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
-            resolve(undefined);
-            window_destroy(w);
-        });
-
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(undefined));
         window_open(w);
     });
 }
@@ -454,11 +455,7 @@ function window_prompt(message, settings = {}) {
             settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
-            resolve(result);
-            window_destroy(w);
-        });
-
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
 }
@@ -496,11 +493,7 @@ async function window_confirm(message, settings = {}) {
             settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
-            resolve(result);
-            window_destroy(w);
-        });
-
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
 }
@@ -613,11 +606,7 @@ async function window_fileSelect(url, fileType = null) {
             link.click();
         });
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
-            resolve(result);
-            window_destroy(w);
-        });
-
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
 }
