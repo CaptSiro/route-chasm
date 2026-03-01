@@ -367,26 +367,22 @@ window.addEventListener('load', () => {
             return;
         }
         
-        const target = element.hasAttribute(X_TARGET)
-            ? document.querySelector(element.getAttribute(X_TARGET))
-            : element;
-        
         const event = element.hasAttribute(X_EVENT)
             ? element.getAttribute(X_EVENT)
             : 'click';
-
-        const body = element.hasAttribute(X_DATA)
-            ? element.getAttribute(X_DATA)
-            : undefined;
-        
-        const swap = element.hasAttribute(X_SWAP)
-            ? element.getAttribute(X_SWAP)
-            : 'inner';
         
         element.addEventListener(event, async () => {
+            const target = element.hasAttribute(X_TARGET)
+                ? document.querySelector(element.getAttribute(X_TARGET))
+                : element;
+
             const url = new URL(ajaxInfo.url, document.baseURI);
             url.searchParams.set('s', '');
             url.searchParams.set('f', '');
+
+            const body = element.hasAttribute(X_DATA)
+                ? element.getAttribute(X_DATA)
+                : undefined;
 
             const response = await fetch(url, {
                 method: ajaxInfo.httpMethod,
@@ -406,6 +402,10 @@ window.addEventListener('load', () => {
             if (target === null) {
                 return;
             }
+
+            const swap = element.hasAttribute(X_SWAP)
+                ? element.getAttribute(X_SWAP)
+                : 'inner';
             
             if (swap === "inner") {
                 target.innerHTML = text;

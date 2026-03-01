@@ -123,7 +123,7 @@ async function form_submit(form, event) {
         body: payload.body
     });
 
-    window_close(w);
+    window_destroy(w);
 
     if (response.status >= 400) {
         const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onSubmitFailure;

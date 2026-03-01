@@ -51,7 +51,7 @@ function aiPage_save(element, { fileContentHtml, fileContentCss, fileContentJs }
             body: JSON.stringify(body)
         });
 
-        window_close(w);
+        window_destroy(w);
         if (!response.ok) {
             await window_alert("Source files could not be saved");
             return;

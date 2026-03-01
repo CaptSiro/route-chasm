@@ -8,7 +8,6 @@ use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;
 use core\Identifier;
-use core\utils\Strings;
 use core\view\View;
 use JsonSerializable;
 use RuntimeException;
@@ -121,8 +120,6 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
 
     private Origin $_origin;
-    private array $_updated = [];
-    private bool $_unsafeAccess = false;
 
     public function __construct() {
         $this->_origin = Origin::APPLICATION;
@@ -130,26 +127,39 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
 
 
-    public function useUnsafeAccess(bool $access): void {
-        $this->_unsafeAccess = $access;
-    }
-
-    public function getUpdatedUnsafe(): array {
-        $ret = [];
-
-        foreach ($this->_updated as $property => $_) {
-            $ret[$property] = $this->$property;
-        }
-
-        return $ret;
-    }
-
     public function __get(string $name) {
         if (!isset($this->$name)) {
             return null;
         }
 
         return $this->$name;
+    }
+
+    public function __set(string $alias, $value): void {
+        $this->$alias = $value;
+    }
+
+    /**
+     * @param array $data `[$phpPropertyName => $value]` Do not use column name as a key
+     * @return $this
+     */
+    public function set(array $data): static {
+        $description = ModelDescription::extract(static::class);
+
+        foreach ($data as $property => $value) {
+            if (!isset($description->getAlias()[$property])) {
+                continue;
+            }
+
+            $column = $description->getAlias()[$property];
+            if (!isset($column)) {
+                continue;
+            }
+
+            $this->$property = $column->transform($value);
+        }
+
+        return $this;
     }
 
     public function getId(): mixed {
@@ -180,37 +190,6 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         return $type .'_'. $subtype .'#'. $this->getId();
     }
 
-    public function __set(string $alias, $value): void {
-        if (!$this->_unsafeAccess) {
-            $this->_updated[$alias] = 0;
-        }
-
-        $this->$alias = $value;
-    }
-
-    /**
-     * @param array $data `[$phpPropertyName => $value]` Do not use column name as a key
-     * @return $this
-     */
-    public function set(array $data): static {
-        $description = ModelDescription::extract(static::class);
-
-        foreach ($data as $property => $value) {
-            if (!isset($description->getAlias()[$property])) {
-                continue;
-            }
-
-            $column = $description->getAlias()[$property];
-            if (!isset($column)) {
-                continue;
-            }
-
-            $this->__set($property, $column->transform($value));
-        }
-
-        return $this;
-    }
-
     public function setOrigin(Origin $_origin): void {
         $this->_origin = $_origin;
     }
@@ -238,16 +217,16 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
     private function insertQuery(): SqlQuery {
         $description = ModelDescription::extract(static::class);
         $sql = Sql::insert($description->getTable());
-
-        $properties = empty($this->_updated)
-            ? $description->getAlias()
-            : $this->_updated;
+        $idColumnName = $description->getIdColumn()->getName();
 
         $columns = [];
         $record = [];
 
-        foreach ($properties as $alias => $ignored) {
-            $column = $description->getAlias()[$alias];
+        foreach ($description->getAlias() as $alias => $column) {
+            if ($column->getName() === $idColumnName) {
+                continue;
+            }
+
             $columns[] = $column->getName();
             $record[] = new Parameter($this->{$column->getAlias()}, $column->getType());
         }
@@ -265,8 +244,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
         $setClauses = 0;
 
-        foreach ($this->_updated as $alias => $ignored) {
-            $column = $description->getAlias()[$alias];
+        foreach ($description->getAlias() as $alias => $column) {
             if ($column->getName() === $idColumnName) {
                 continue;
             }
@@ -324,6 +302,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     private function insert(): DatabaseAction|View {
         $description = ModelDescription::extract(static::class);
+
         /** @var SideEffect $sideEffect */
         $sideEffect = $this->insertQuery()->run($description->getConnection());
         if ($sideEffect->getRowsAffected() === 0) {

@@ -77,7 +77,6 @@ class ModelFactory {
 
         $description = ModelDescription::extract($this->modelClass);
         $instance = $this->new();
-        $instance->useUnsafeAccess(true);
 
         foreach ($description->getColumns() as $column) {
             if (!$column->isNullable() && !isset($record[$column->getName()])) {
@@ -88,7 +87,7 @@ class ModelFactory {
         }
 
         $instance->setOrigin($origin);
-        return $this->finish($instance);
+        return $instance;
     }
 
     /**

@@ -362,6 +362,13 @@ function window_create(title, content, settings = {}) {
     return w;
 }
 
+/**
+ * @param {HTMLElement} element
+ */
+function window_destroy(element) {
+    element.remove();
+}
+
 
 
 /**
@@ -384,7 +391,11 @@ function window_alert(message, settings = {}) {
             settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(undefined));
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
+            resolve(undefined);
+            window_destroy(w);
+        });
+
         window_open(w);
     });
 }
@@ -443,7 +454,11 @@ function window_prompt(message, settings = {}) {
             settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
+            resolve(result);
+            window_destroy(w);
+        });
+
         window_open(w);
     });
 }
@@ -481,7 +496,11 @@ async function window_confirm(message, settings = {}) {
             settings
         );
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
+            resolve(result);
+            window_destroy(w);
+        });
+
         window_open(w);
     });
 }
@@ -516,8 +535,7 @@ async function window_fileSelect(url, fileType = null) {
         const w = window_create(
             "File Select",
             jsml.div("content-window file-select-window", [
-                    jsml.div({
-                    class: "file-select-window",
+                jsml.div({
                     "x-get": url,
                     "x-event": "jsmlLoad"
                 }),
@@ -595,7 +613,11 @@ async function window_fileSelect(url, fileType = null) {
             link.click();
         });
 
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => {
+            resolve(result);
+            window_destroy(w);
+        });
+
         window_open(w);
     });
 }
