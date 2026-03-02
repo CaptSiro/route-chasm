@@ -235,6 +235,29 @@ CREATE TABLE IF NOT EXISTS core_ai_page (
 
 
 
+DROP TABLE IF EXISTS `core_menu_x_pages`;
+DROP TABLE IF EXISTS `core_menu`;
+CREATE TABLE IF NOT EXISTS `core_menu` (
+    `id_menu` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_menu`),
+    UNIQUE (`name`)
+);
+
+INSERT INTO `core_menu` (id_menu, name)
+VALUES (1, 'Header'),
+       (2, 'Footer');
+
+CREATE TABLE IF NOT EXISTS `core_menu_x_pages` (
+    `id_menu` INT NOT NULL,
+    `id_page` INT NOT NULL,
+    UNIQUE (`id_menu`, `id_page`),
+    FOREIGN KEY (`id_menu`) REFERENCES `core_menu` (`id_menu`),
+    FOREIGN KEY (`id_page`) REFERENCES `core_page` (`id_page`)
+);
+
+
+
 DROP TABLE IF EXISTS `core_domain`;
 CREATE TABLE IF NOT EXISTS `core_domain` (
     `id_domain` INT NOT NULL AUTO_INCREMENT,

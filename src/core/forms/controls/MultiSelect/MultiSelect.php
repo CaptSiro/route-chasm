@@ -22,6 +22,12 @@ class MultiSelect implements Control, Attribute {
 
 
 
+    /**
+     * @param string $name
+     * @param string $label
+     * @param array $values `[value => label]` pairs of values and labels
+     * @param array $selected `[value]` array of selected values
+     */
     public function __construct(
         protected string $name = self::class,
         protected string $label = self::class,

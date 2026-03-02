@@ -1,0 +1,10 @@
+<?php /** @var Header $this */
+
+use components\core\PageMenu\Header;
+use core\sideloader\importers\Css\Css;
+
+Css::import($this->getResource('header.css'));
+
+?><header>
+    <?= $this->menu ?>
+</header>

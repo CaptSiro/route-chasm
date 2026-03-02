@@ -1,0 +1,14 @@
+<?php /** @var PageMenuItem $this */
+
+use components\core\Html\Html;
+use components\core\PageMenu\PageMenuItem;
+
+?><div class="item-label">
+    <?php if ($this->hasItem()): ?>
+        <a href="<?= $this->createUrl() ?>">
+            <?= Html::escape($this->title) ?>
+        </a>
+    <?php else: ?>
+        <span><?= Html::escape($this->title) ?></span>
+    <?php endif; ?>
+</div>

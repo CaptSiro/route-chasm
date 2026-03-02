@@ -8,7 +8,7 @@ use core\view\View;
 /**
  * @template T
  */
-interface MenuItem extends View {
+interface  MenuItem extends View {
     public function hasItem(): bool;
 
     public function getStateClasses(): string;
@@ -18,7 +18,7 @@ interface MenuItem extends View {
     public function hasChildren(): bool;
 
     /**
-     * @return array<MenuItem>
+     * @return array<MenuItem<T>>
      */
     public function getChildren(): array;
 

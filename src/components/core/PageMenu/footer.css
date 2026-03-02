@@ -1,0 +1,205 @@
+/* ===============================
+   FOOTER BASE
+================================= */
+
+.site-footer {
+    background: #0f1115;
+    color: #cbd5e1;
+    padding-top: 4rem;
+    font-size: 0.95rem;
+    border-top: 1px solid #1f2430;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem 2rem;
+
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1.5fr;
+    gap: 3rem;
+}
+
+/* ===============================
+   BRAND
+================================= */
+
+.footer-logo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.footer-description {
+    color: #94a3b8;
+    line-height: 1.6;
+    max-width: 320px;
+}
+
+/* ===============================
+   MENU TRANSFORMATION
+   (Convert auto menu to columns)
+================================= */
+
+.footer-navigation > .menu {
+    display: flex;
+    gap: 3rem;
+}
+
+/* Top level items become columns */
+.footer-navigation > .menu > .menu-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 140px;
+}
+
+/* Top level links become column headers */
+.footer-navigation > .menu > .menu-item > .head .item-label a {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+/* Remove hover underline from header level */
+.footer-navigation .item-label a::after {
+    display: none !important;
+}
+
+/* Nested menu styling */
+.footer-navigation .menu .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.footer-navigation .menu .menu .item-label a {
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-navigation .menu .menu .item-label a:hover {
+    color: #ffffff;
+}
+
+/* Remove dropdown positioning behavior */
+.footer-navigation .menu .menu {
+    position: static !important;
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    box-shadow: none !important;
+    background: none !important;
+    padding: 0;
+    border: none;
+}
+
+/* ===============================
+   NEWSLETTER
+================================= */
+
+.footer-newsletter h4 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+.footer-newsletter form {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.footer-newsletter input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #1f2430;
+    background: #151922;
+    color: #ffffff;
+}
+
+.footer-newsletter input:focus {
+    outline: none;
+    border-color: #4f8cff;
+}
+
+.footer-newsletter button {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    background: linear-gradient(90deg, #4f8cff, #7b5cff);
+    color: #ffffff;
+    transition: opacity 0.2s ease;
+}
+
+.footer-newsletter button:hover {
+    opacity: 0.9;
+}
+
+/* ===============================
+   BOTTOM BAR
+================================= */
+
+.footer-bottom {
+    border-top: 1px solid #1f2430;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.footer-legal {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-legal a {
+    color: #6b7280;
+    text-decoration: none;
+}
+
+.footer-legal a:hover {
+    color: #ffffff;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 900px) {
+    .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .footer-navigation > .menu {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .footer-newsletter form {
+        flex-direction: column;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}

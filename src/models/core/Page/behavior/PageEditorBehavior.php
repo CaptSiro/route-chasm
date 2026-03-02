@@ -15,11 +15,13 @@ use components\layout\Layout;
 use components\layout\Row\Row;
 use components\layout\Tabs\Tabs;
 use core\App;
+use core\collections\StrictDictionary;
 use core\communication\Request;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\Sql;
 use core\forms\controls\HiddenField;
+use core\forms\controls\MultiSelect\MultiSelect;
 use core\forms\description\FormDescription;
 use core\forms\Form;
 use core\locale\LexiconUnit;
@@ -30,6 +32,7 @@ use core\utils\Models;
 use core\view\View;
 use models\core\fs\Shortcut;
 use models\core\Language\Language;
+use models\core\Menu;
 use models\core\Navigation\NavigationContext;
 use models\core\Navigation\Slug;
 use models\core\Page\LocalizedPage;
@@ -41,6 +44,7 @@ class PageEditorBehavior implements EditorBehavior {
 
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_PARENT_ID = 'parentId';
+    public const NAME_MENUS = 'menuIds';
     public const NAME_COVER_IMAGE = 'coverImage';
 
 
@@ -71,6 +75,18 @@ class PageEditorBehavior implements EditorBehavior {
         if (!is_null($error)) {
             return $error;
         }
+
+        $menus = Menu::createOptions();
+        $selected = !is_null($model)
+            ? array_map(fn(Menu $x) => $x->getId(), Menu::forPage($model))
+            : [];
+
+        $pageFields->add(new MultiSelect(
+            self::NAME_MENUS,
+            $this->tr('Place into menus'),
+            $menus,
+            $selected
+        ));
 
         $row = new Row();
         $row->add($pageFields);
@@ -191,6 +207,40 @@ class PageEditorBehavior implements EditorBehavior {
         return null;
     }
 
+    protected function onSubmitPlaceInMenus(Page $page, StrictDictionary $body): void {
+        $alreadyAssigned = Menu::forPage($page);
+        $newlyAssigned = array_map(
+            fn($x) => intval($x),
+            MultiSelect::parse($body->get(self::NAME_MENUS, ''))
+        );
+
+        $sameLength = count($alreadyAssigned) === count($newlyAssigned);
+        $sameMenus = true;
+
+        if ($sameLength) {
+            foreach ($newlyAssigned as $id) {
+                if (isset($alreadyAssigned[$id])) {
+                    continue;
+                }
+
+                $sameMenus = false;
+                break;
+            }
+        }
+
+        if ($sameLength && $sameMenus) {
+            return;
+        }
+
+        foreach ($alreadyAssigned as $menu) {
+            $menu->deletePage($page);
+        }
+
+        foreach ($newlyAssigned as $id) {
+            Menu::fromId($id)?->addPage($page);
+        }
+    }
+
     protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request, ?Page $parent): ?View {
         $body = $request->getBody();
 
@@ -236,6 +286,7 @@ class PageEditorBehavior implements EditorBehavior {
         $page->updated = Sql::datetimeNow();
         $page->save();
 
+        $this->onSubmitPlaceInMenus($page, $body);
         return null;
     }
 

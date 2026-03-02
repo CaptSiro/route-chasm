@@ -48,6 +48,9 @@ class TextPageTemplate implements PageTemplate {
     public function buildContent(Wireframe $wireframe, Page $page): Component {
         $localization = $wireframe->getLocalization();
 
+        $wireframe->setDoAddHeader(false);
+        $wireframe->setDoAddFooter(false);
+
         return new Display(
             $localization->title,
             $this->createEditor($page, $localization)

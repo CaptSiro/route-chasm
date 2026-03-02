@@ -41,7 +41,7 @@ trait NameExtension {
     #[GridColumn]
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
 
 

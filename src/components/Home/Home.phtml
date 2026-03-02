@@ -1,14 +1,19 @@
 <?php /** @var Home $this */
 
-use components\core\fs\FileControl;
+use components\core\PageMenu\Footer;
+use components\core\PageMenu\Header;
 use components\Home\Home;
-use core\fs\variants\ImageVariant;
-use modules\locales\EnglishUS;
 
-?><h1>Route Chasm</h1>
-<a href="https://github.com/CaptSiro/route-chasm">GitHub repository</a>
+?><?= Header::default() ?>
 
-<p>Navigate to <code>src/components/Home/Home.phtml</code> to edit this page</p>
+<main style="min-height: 90vh">
+    <h1>Route Chasm</h1>
+    <a href="https://github.com/CaptSiro/route-chasm">GitHub repository</a>
+
+    <p>Navigate to <code>src/components/Home/Home.phtml</code> to edit this page</p>
+</main>
+
+<?= Footer::default() ?>
 
 <!--<hr>-->
 <!--<h3>Languages</h3>-->

@@ -31,6 +31,7 @@ use DateTime as DateTimeObject;
 use http\Exception\RuntimeException;
 use models\core\fs\Shortcut;
 use models\core\Language\Language;
+use models\core\Menu;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
 use models\core\Privilege\Privilege;
@@ -92,6 +93,17 @@ class Page extends Model implements Destination {
         return is_null($parentId)
             ? Query::static('id_page_parent IS NULL')
             : Query::infer('id_page_parent = ?', $parentId);
+    }
+
+    public static function hasPageAccess(User $user, Privilege $privilege): bool {
+        if ($user->isRoot()) {
+            return true;
+        }
+
+        return $user->hasAccess(
+            UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE),
+            $privilege
+        );
     }
 
 
@@ -172,9 +184,13 @@ class Page extends Model implements Destination {
     /**
      * @return array<Page>
      */
-    public function getParents(): array {
+    public function getParents(bool $addSelf = false): array {
         $ret = [];
         $current = $this;
+
+        if ($addSelf) {
+            $ret[] = $this;
+        }
 
         while (true) {
             if (is_null($parent = $current->getParent())) {
@@ -278,6 +294,16 @@ class Page extends Model implements Destination {
         return Pages::getTemplate($record->getId());
     }
 
+    protected bool $hasChildren;
+
+    public function hasChildren(): bool {
+        if (isset($this->hasChildren)) {
+            return $this->hasChildren;
+        }
+
+        return $this->hasChildren = static::count(Query::infer('id_parent = ?', $this->getId())) !== 0;
+    }
+
     /**
      * @return array<Page>
      */
@@ -307,6 +333,13 @@ class Page extends Model implements Destination {
 
     public function getCoverImage(): ?Shortcut {
         return Shortcut::fromName($this->getCoverImageName());
+    }
+
+    /**
+     * @return array<Menu>
+     */
+    public function in(): array {
+        return Menu::forPage($this);
     }
 
 

@@ -1,0 +1,27 @@
+<?php /** @var Menu $this */
+
+use components\core\Menu\Menu;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('menu.js'));
+Css::import($this->getResource('menu.css'));
+
+?><?php if ($this->item->hasChildren()): ?>
+    <div
+        class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?>"
+        x-init="menu_init"
+        style="--menu-level: <?= $this->level ?>"
+    >
+        <?php foreach ($this->item->getChildren() as $child): ?>
+            <?php $subMenu = $this->createSubMenu($child) ?>
+            <div
+                class="menu-item <?= $subMenu->getStateClasses() ?>"
+            >
+                <div class="head"><?= $subMenu->createItem() ?></div>
+
+                <?= $subMenu ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

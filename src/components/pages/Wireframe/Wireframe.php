@@ -67,6 +67,8 @@ class Wireframe extends Component implements Container {
     protected LocalizedPage $localization;
     protected View $content;
     protected ?Action $action;
+    protected bool $doAddHeader = true;
+    protected bool $doAddFooter = true;
 
     public function __construct(
         protected Page $page,
@@ -95,6 +97,14 @@ class Wireframe extends Component implements Container {
 
     public function getHead(): HtmlHead {
         return $this->head;
+    }
+
+    public function setDoAddHeader(bool $doAddHeader): void {
+        $this->doAddHeader = $doAddHeader;
+    }
+
+    public function setDoAddFooter(bool $doAddFooter): void {
+        $this->doAddFooter = $doAddFooter;
     }
 
     public function getLocalization(): LocalizedPage {

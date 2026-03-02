@@ -30,6 +30,10 @@ class Sql {
         return static::$connections[$name];
     }
 
+    /**
+     * @param string $table You may escape the table
+     * @return SelectQuery
+     */
     public static function select(string $table): SelectQuery {
         return (new SelectQuery())
             ->from($table);
@@ -39,6 +43,10 @@ class Sql {
         return new UpdateQuery($table);
     }
 
+    /**
+     * @param string $table Do not escape the table
+     * @return InsertQuery
+     */
     public static function insert(string $table): InsertQuery {
         return new InsertQuery($table);
     }
