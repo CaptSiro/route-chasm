@@ -12,6 +12,16 @@ function article(element) {
     const markdown = new Markdown(std_dom_getWhitespaceTextContent(data));
     const gallery = new Gallery();
 
+    const cover = $('.article-cover-image', element);
+    if (is(cover)) {
+        const coverCursor = gallery.add(cover.dataset.srcFull, 'Article cover image');
+        cover.classList.add('article-gallery-image');
+        cover.addEventListener("click", () => {
+            gallery.show();
+            gallery.goTo(coverCursor);
+        });
+    }
+
     content.append(markdown.getHtml((element, node) => {
         if (node.type !== "IMAGE") {
             return;

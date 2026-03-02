@@ -86,7 +86,7 @@ class PageGridRow extends Model {
     }
 
     public static function phrasesCount(int $languageId, ?int $parentId = null): int {
-        return ModelFactory::countExecute(
+        return ModelFactory::countExecuteConnection(
             self::childrenCountQuery($languageId, $parentId),
             self::getDescription()->getConnection()
         );

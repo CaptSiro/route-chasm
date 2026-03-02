@@ -6,12 +6,18 @@ use components\pages\Wireframe\Wireframe;
 <html lang="<?= $this->language ?>">
 <?= $this->head ?>
 <body>
+    <?php if (!$this->page->isReleased()): ?>
+        <div class="release-notice center" style="background-color: var(--error)">
+            <strong class="pad-gap"><?= $this->tr('This is page is not released') ?></strong>
+        </div>
+    <?php endif; ?>
+
     <main class="wireframe" style="height: 100%; overflow: auto">
         <?php if ($this->hasContentAccess()): ?>
             <?= $this->content ?>
         <?php else: ?>
             <div class="center">
-                <h1>Page is not accessible</h1>
+                <h1><?= $this->tr('Page is not accessible') ?></h1>
             </div>
         <?php endif; ?>
     </main>

@@ -11,22 +11,12 @@ Css::import($this->getResource('listing.css'));
 
     <div class="article-grid">
         <?php $language = $this->localization->getLanguage() ?>
-        <?php foreach ($this->page->getChildren() as $page): ?>
+        <?php foreach ($this->getPages() as $page): ?>
             <?= $page->getTemplate()->buildListingCard($page, $language) ?>
         <?php endforeach; ?>
     </div>
 
     <nav class="pagination">
-        <span class="disabled">« First</span>
-        <span class="disabled">‹ Prev</span>
-        <a href="#">1</a>
-        <a href="#">2</a>
-        <span class="active">3</span>
-        <a href="#">4</a>
-        <a href="#">5</a>
-        <span>…</span>
-        <a href="#">12</a>
-        <a href="#">Next ›</a>
-        <a href="#">Last »</a>
+        <?= $this->getPagination() ?>
     </nav>
 </div>

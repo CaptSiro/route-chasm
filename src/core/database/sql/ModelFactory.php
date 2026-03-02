@@ -14,18 +14,6 @@ class ModelFactory {
 
     private static array $factories = [];
 
-    public static function countExecute(SqlQuery $query, Connection $connection): int {
-        $result = $connection->fetch(
-            $query->toQuery($connection)
-        );
-
-        if (is_null($result)) {
-            return -1;
-        }
-
-        return intval($result[self::PROJECTION_COUNT_COLUMN_NAME]);
-    }
-
     public static function extract(string $modelClass): ModelFactory {
         if (isset(self::$factories[$modelClass])) {
             return self::$factories[$modelClass];
@@ -48,6 +36,18 @@ class ModelFactory {
             $sql->projection($column);
         }
     }
+    public static function countExecuteConnection(SqlQuery $query, Connection $connection): int {
+        $result = $connection->fetch(
+            $query->toQuery($connection)
+        );
+
+        if (is_null($result)) {
+            return -1;
+        }
+
+        return intval($result[self::PROJECTION_COUNT_COLUMN_NAME]);
+    }
+
 
 
 
@@ -126,20 +126,28 @@ class ModelFactory {
         );
     }
 
+    public function countProjection(): string {
+        return self::PROJECTION_COUNT;
+    }
+
     public function countQuery(Query|string|null $where = null): SelectQuery {
         return $this->firstQuery([self::PROJECTION_COUNT], $where);
     }
 
+    public function countExecute(SqlQuery $query): int {
+        return static::countExecuteConnection($query, $this->getDescription()
+            ->getConnection());
+    }
+
     public function count(Query|string|null $where = null): int {
-        return self::countExecute(
-            $this->countQuery($where),
-            $this->getDescription()->getConnection()
+        return $this->countExecute(
+            $this->countQuery($where)
         );
     }
 
     public function fromIdQuery(mixed $id, ?array $projection = null): SelectQuery {
-        $description = ModelDescription::extract($this->modelClass);
-        $idColumnName = $description->getEscapedIdColumnName();
+        $idColumnName = $this->getDescription()
+            ->getEscapedIdColumnName();
 
         return $this->firstQuery(
             $projection,
@@ -154,7 +162,7 @@ class ModelFactory {
     }
 
     public function allQuery(?array $projection = null, Query|string|null $where = null): SelectQuery {
-        $description = ModelDescription::extract($this->modelClass);
+        $description = $this->getDescription();
         $sql = Sql::select($description->getEscapedTable());
 
         static::addProjection($description, $sql, $projection);
@@ -172,7 +180,8 @@ class ModelFactory {
     public function allExecute(SqlQuery $query): array {
         return self::fromRecords(
             $query->fetchAll(
-                ModelDescription::extract($this->modelClass)->getConnection()
+                $this->getDescription()
+                    ->getConnection()
             )
         );
     }

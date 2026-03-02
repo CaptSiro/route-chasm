@@ -36,7 +36,9 @@ Css::import($this->getResource('article.css'));
 
             <?php if (!is_null($image = $this->page->getCoverImage()?->getFile())): ?>
                 <img
+                    class="article-cover-image"
                     src="<?= $image->getUrl(ArticleTemplate::getCoverTransformer()) ?>"
+                    data-src-full="<?= $image->getUrl() ?>"
                     alt="Article cover image"
                 >
             <?php endif; ?>

@@ -41,6 +41,7 @@ use models\extensions\Name\NameValues;
 /**
  * @property int $templateId
  * @property int $statusId
+ * @property int $parentId
  * @property string $created
  * @property string $updated
  * @property string $publish
@@ -64,6 +65,18 @@ class Page extends Model implements Destination {
             ->setLinkCreator(new PageLinkCreator());
     }
 
+    public static function publishedQuery(): Query {
+        $description = static::getDescription();
+        $publish = $description->getEscapedColumn('publish');
+        $remove = $description->getEscapedColumn('remove');
+
+        return Query::static("($publish IS NULL OR NOW() >= $publish) AND ($remove IS NULL OR NOW() <= $remove)");
+    }
+
+    public static function isStatusQuery(int $statusId): Query {
+        return Query::infer('id_page_status = ?', $statusId);
+    }
+
     /**
      * @return array<Page>
      */
@@ -72,9 +85,13 @@ class Page extends Model implements Destination {
     }
 
     public static function childrenRaw(?int $parentId = null): array {
-        return self::all(where: is_null($parentId)
+        return self::all(where: self::childrenQuery($parentId));
+    }
+
+    public static function childrenQuery(?int $parentId = null): Query {
+        return is_null($parentId)
             ? Query::static('id_page_parent IS NULL')
-            : Query::infer('id_page_parent = ?', $parentId));
+            : Query::infer('id_page_parent = ?', $parentId);
     }
 
 
@@ -218,6 +235,17 @@ class Page extends Model implements Destination {
         return $this->publish ?? $this->updated;
     }
 
+    public function isReleased(): bool {
+        $releaseDate = new DateTimeObject($this->getReleaseDate());
+        $endDate = !is_null($this->remove)
+            ? new DateTimeObject($this->remove)
+            : null;
+
+        $now = new DateTimeObject();
+
+        return $now >= $releaseDate && (is_null($endDate) || $now <= $endDate);
+    }
+
     public function hasAccess(User $user, Privilege $privilege): bool {
         if ($user->isRoot()) {
             return true;
@@ -231,16 +259,7 @@ class Page extends Model implements Destination {
             );
         }
 
-        $releaseDate = new DateTimeObject();
-
-        $releaseDate = new DateTimeObject($this->getReleaseDate());
-        $endDate = !is_null($this->remove)
-            ? new DateTimeObject($this->remove)
-            : null;
-
-        $now = new DateTimeObject();
-
-        return $now >= $releaseDate && (is_null($endDate) || $now <= $endDate);
+        return $this->isReleased();
     }
 
     public function getTemplateRecord(): ?PageTemplateRecord {

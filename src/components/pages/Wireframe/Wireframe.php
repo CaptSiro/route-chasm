@@ -21,6 +21,10 @@ use models\core\User\User;
 use RuntimeException;
 
 class Wireframe extends Component implements Container {
+    public const LEXICON_GROUP = 'page';
+
+
+
     public static function createHtmlHead(LocalizedPage $localization): HtmlHead {
         $head = new HtmlHead(Html::escape($localization->title));
 
@@ -70,6 +74,8 @@ class Wireframe extends Component implements Container {
         ?Language $language = null
     ) {
         parent::__construct($isMiddleware);
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+
         $this->language = $language ?? App::getInstance()
             ->getRequest()
             ->getLanguage();

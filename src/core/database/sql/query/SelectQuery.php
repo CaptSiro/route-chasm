@@ -25,6 +25,11 @@ class SelectQuery implements Portion, SqlQuery {
 
 
 
+    public function clearProjection(): static {
+        $this->projection = [];
+        return $this;
+    }
+
     /**
      * Adds column to projection
      *

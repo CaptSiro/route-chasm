@@ -31,7 +31,8 @@ class RouteChasmEnvironment {
      * <code>HEADER_X_REQUIRE</code> will always be set on response
      */
     public const QUERY_SIDELOADER_FORCE = 'f';
-    public const QUERY_GRID_PORTION = 'p';
+    public const QUERY_PORTION = 'p';
+    public const QUERY_GRID_PORTION = self::QUERY_PORTION;
     public const QUERY_FS_VARIANT = 'v';
     public const QUERY_FS_FILE_TYPE = 'file-type';
     public const QUERY_FILE_SYSTEM_DIRECTORY = 'directory';
@@ -57,6 +58,7 @@ class RouteChasmEnvironment {
     public const USER_RESOURCE_SYSTEM = 'System';
 
     public const GRID_DEFAULT_PORTION_SIZE = 20;
+    public const LISTING_PORTION_SIZE = 21;
     public const ID_DIGITS = 4;
 
     const BREAD_CRUMBS_DELIMITOR = '>';

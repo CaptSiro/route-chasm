@@ -4,6 +4,7 @@ namespace components\layout\Grid\Loader;
 
 use components\core\PaginationControl\Pagination;
 use components\core\PaginationControl\PaginationControl;
+use components\core\PaginationControl\PortionUrlCreator;
 use components\layout\Grid\GridLayout;
 use core\App;
 use core\database\sql\ModelFactory;
@@ -32,12 +33,6 @@ class ModelGridLoader implements GridPortionLoader {
         return $factory->allQuery();
     }
 
-    protected function setLimit(SelectQuery $query, int $portion, int $portionSize): SelectQuery {
-        return $query
-            ->limit($portionSize)
-            ->offset(($portion - 1) * $portionSize);
-    }
-
     protected function getCount(ModelFactory $factory): int {
         return $factory->count();
     }
@@ -54,16 +49,21 @@ class ModelGridLoader implements GridPortionLoader {
             ? $this->portionSize
             : RouteChasmEnvironment::GRID_DEFAULT_PORTION_SIZE;
 
-        $max = intval(ceil($this->getCount($factory) / $portionSize));
+        $count = $this->getCount($factory);
+        $max = $this->calculateMax($portionSize, $count);
         if ($max === 1) {
             return $factory->allExecute($query);
         }
 
-        $portion = min(max(1, GridLoaderUrlCreator::getPortion($request)), $max);
+        $current = $this->calculateCurrent(
+            $portionSize,
+            $count,
+            PortionUrlCreator::getPortion($request)
+        );
 
         $context->setFooter(
             $this->pagination
-                ->setCurrent($portion)
+                ->setCurrent($current)
                 ->setMax($max)
                 ->setUrlCreator(new GridLoaderUrlCreator(
                     $request->getUrl(),
@@ -71,9 +71,9 @@ class ModelGridLoader implements GridPortionLoader {
                 ))
         );
 
-        return $factory->allExecute($this->setLimit(
+        return $factory->allExecute($this->setQueryLimit(
             $query,
-            $portion,
+            $current,
             $portionSize
         ));
     }
