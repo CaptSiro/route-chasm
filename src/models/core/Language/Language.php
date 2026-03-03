@@ -84,6 +84,10 @@ class Language extends Model implements IsDefault {
         return $this->code;
     }
 
+    public function getHumanIdentifier(): string {
+        return $this->code;
+    }
+
 
 
     public function isEditable(): bool {

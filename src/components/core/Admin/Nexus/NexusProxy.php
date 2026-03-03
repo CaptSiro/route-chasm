@@ -2,6 +2,7 @@
 
 namespace components\core\Admin\Nexus;
 
+use components\core\Html\Html;
 use components\core\Icon;
 use components\layout\Grid\Proxy\TypeProxy;
 use core\Identifier;
@@ -68,6 +69,21 @@ class NexusProxy extends TypeProxy {
 
     protected function createDeleteValue(?string $url): string {
         $content = Icon::delete();
-        return "<button class='link no-style' x-init='nexus_deleteButton' data-url='$url'>$content</button>";
+
+        $attributes = [
+            'class' => 'link no-style',
+            'x-init' => 'nexus_deleteButton',
+            'data-url' => $url,
+        ];
+
+        if ($this->isItemIdentifier) {
+            $attributes['data-id'] = $this->item->getHumanIdentifier();
+        }
+
+        return Html::wrapUnsafe(
+            'button',
+            $content,
+            $attributes
+        );
     }
 }

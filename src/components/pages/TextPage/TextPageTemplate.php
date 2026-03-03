@@ -14,7 +14,7 @@ use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\View;
 use models\core\Language\Language;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 
 class TextPageTemplate implements PageTemplate {
@@ -26,7 +26,7 @@ class TextPageTemplate implements PageTemplate {
         return "Text";
     }
 
-    protected function createEditor(Page $page, LocalizedPage $localization): Editor {
+    protected function createEditor(Page $page, PageLocalization $localization): Editor {
         $editor = new Editor($page->get(self::DATA_ITEM_CONTENT), $localization);
         $editor->setTitle($localization->title .' - Content Editor');
 

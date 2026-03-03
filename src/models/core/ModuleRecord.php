@@ -39,4 +39,10 @@ class ModuleRecord extends Model {
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     protected string $version;
+
+
+
+    public function getHumanIdentifier(): string {
+        return $this->identifier;
+    }
 }

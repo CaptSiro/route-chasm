@@ -22,8 +22,8 @@ body {
 }
 
 .article-toc-wrapper {
-    position: sticky;
-    top: 3rem;
+    /*position: sticky;*/
+    /*top: 3rem;*/
     display: block;
 }
 

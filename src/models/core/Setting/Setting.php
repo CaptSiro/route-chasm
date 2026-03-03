@@ -73,6 +73,11 @@ final class Setting extends Model implements Editable {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
     public function save(): View|DatabaseAction {
         if (!(gettype($this->value) === 'string')) {
             $this->value = (string) $this->value;

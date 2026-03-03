@@ -139,13 +139,18 @@ class Page extends Model implements Destination {
 
 
     protected ?Page $parent;
-    /** @var array<LocalizedPage> */
+    /** @var array<PageLocalization> */
     protected array $localizations;
     protected PageStatus $status;
     protected PageTemplateRecord $template;
     protected array $children;
 
 
+
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->getLocalizationOrDefault()->getHumanIdentifier();
+    }
 
     public function save(): DatabaseAction|View {
         $result = parent::save();
@@ -208,11 +213,11 @@ class Page extends Model implements Destination {
         $this->parent = $parent;
     }
 
-    public function getLocalization(Language $language): ?LocalizedPage {
+    public function getLocalization(Language $language): ?PageLocalization {
         return $this->getLocalizations()[$language->getId()] ?? null;
     }
 
-    public function getLocalizationOrDefault(?Language $language = null): ?LocalizedPage {
+    public function getLocalizationOrDefault(?Language $language = null): ?PageLocalization {
         $language ??= App::getInstance()
             ->getRequest()
             ->getLanguage();
@@ -222,7 +227,7 @@ class Page extends Model implements Destination {
     }
 
     /**
-     * @return array<int, LocalizedPage>
+     * @return array<int, PageLocalization>
      */
     public function getLocalizations(): array {
         if (is_null($id = $this->getId())) {
@@ -231,8 +236,8 @@ class Page extends Model implements Destination {
 
         if (!isset($this->localizations)) {
             $this->localizations = Arrays::changeKeys(
-                LocalizedPage::forPageRaw($id),
-                fn(LocalizedPage $x) => $x->languageId
+                PageLocalization::forPageRaw($id),
+                fn(PageLocalization $x) => $x->languageId
             );
         }
 
@@ -328,7 +333,7 @@ class Page extends Model implements Destination {
     }
 
     public function getCoverImageName(): string {
-        return $this->getIdentifier('cover-image');
+        return $this->getMachineIdentifier('cover-image');
     }
 
     public function getCoverImage(): ?Shortcut {

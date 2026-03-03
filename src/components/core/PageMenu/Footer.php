@@ -12,12 +12,16 @@ class Footer implements View {
 
 
     public static function default(): static {
-        return new static(PageMenu::fromModelName(Menu::NAME_FOOTER));
+        return new static(
+            PageMenu::fromModelName(Menu::NAME_FOOTER),
+            PageMenu::fromModelName(Menu::NAME_LEGAL),
+        );
     }
 
 
 
     public function __construct(
-        protected PageMenu $menu
+        protected PageMenu $menu,
+        protected PageMenu $legal
     ) {}
 }

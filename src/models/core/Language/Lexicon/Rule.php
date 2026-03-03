@@ -86,6 +86,13 @@ class Rule extends Model {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->getLabel();
+    }
+
+
+
     public function match(string $value): bool {
         return preg_match($this->rule, $value);
     }

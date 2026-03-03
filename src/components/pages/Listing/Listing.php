@@ -11,7 +11,7 @@ use core\database\sql\query\SelectQuery;
 use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\View;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
 
@@ -25,7 +25,7 @@ class Listing extends Component {
 
     public function __construct(
         protected Page $page,
-        protected LocalizedPage $localization,
+        protected PageLocalization $localization,
         protected int $portionSize = RouteChasmEnvironment::LISTING_PORTION_SIZE,
         protected Pagination&View $pagination = new PaginationControl(),
     ) {

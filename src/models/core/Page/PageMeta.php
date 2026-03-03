@@ -21,10 +21,17 @@ use core\forms\description\TextField;
 #[Table('ext_page_meta')]
 #[Database(App::DATABASE)]
 class PageMeta extends Model {
-    public static function fromLocalizedPage(LocalizedPage $page): ?static {
-        return static::first(
-            where: Query::infer('id_localized_page = ?', $page->getId())
+    public static function fromLocalization(PageLocalization $localization, bool $create = false): ?static {
+        $meta = static::first(
+            where: Query::infer('id_localized_page = ?', $localization->getId())
         );
+
+        if (is_null($meta) && $create) {
+            $meta = new static();
+            $meta->setLocalization($localization);
+        }
+
+        return $meta;
     }
 
 
@@ -33,7 +40,7 @@ class PageMeta extends Model {
     protected int $id;
 
     #[Column('id_localized_page', type: Column::TYPE_INTEGER)]
-    protected int $localizedPageId;
+    protected int $localizationId;
 
     #[TextArea]
     #[Column(type: Column::TYPE_STRING)]
@@ -51,16 +58,12 @@ class PageMeta extends Model {
     #[Column('og_description', type: Column::TYPE_STRING)]
     protected string $ogDescription;
 
-//    todo
-//      #[Column('og_image', type: Column::TYPE_IMAGE)]
-//      protected string $image;
-
-    protected LocalizedPage $localization;
+    protected PageLocalization $localization;
 
 
 
-    public function setLocalization(LocalizedPage $localization): void {
-        $this->set(['localizedPageId' => $localization->getId()]);
+    public function setLocalization(PageLocalization $localization): void {
+        $this->localizationId = $localization->getId();
         $this->localization = $localization;
     }
 }

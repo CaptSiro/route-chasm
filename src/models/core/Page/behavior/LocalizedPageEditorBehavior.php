@@ -10,7 +10,7 @@ use core\database\sql\Model;
 use core\forms\description\FormDescription;
 use core\forms\Form;
 use core\view\View;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\PageMeta;
 
 class LocalizedPageEditorBehavior implements EditorBehavior {
@@ -19,12 +19,12 @@ class LocalizedPageEditorBehavior implements EditorBehavior {
     public function initForm(Form $form, ?Model $model): ?View {
         //todo
         //  - add PageMeta->initForm(...)
-        return FormDescription::extract(LocalizedPage::class)->initForm($form, $model);
+        return FormDescription::extract(PageLocalization::class)->initForm($form, $model);
     }
 
     public function addControls(Layout $layout, ?Model $model): ?View {
-        /** @var ?LocalizedPage $model */
-        $error = FormDescription::extract(LocalizedPage::class)->addControls($layout, $model);
+        /** @var ?PageLocalization $model */
+        $error = FormDescription::extract(PageLocalization::class)->addControls($layout, $model);
         if (!is_null($error)) {
             return $error;
         }
@@ -33,7 +33,7 @@ class LocalizedPageEditorBehavior implements EditorBehavior {
 
         $error = FormDescription::extract(PageMeta::class)->addControls($layout, is_null($model)
             ? null
-            : PageMeta::fromLocalizedPage($model)
+            : PageMeta::fromLocalization($model)
         );
         if (!is_null($error)) {
             return $error;

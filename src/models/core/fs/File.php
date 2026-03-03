@@ -86,6 +86,11 @@ class File extends Model implements FileSystemEntry, Destination {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->getFileName();
+    }
+
     public function delete(): DatabaseAction {
         $result = parent::delete();
         if ($result === DatabaseAction::NONE) {

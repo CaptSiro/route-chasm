@@ -17,7 +17,7 @@ use core\http\HttpMethod;
 use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\view\ContainerContent;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Privilege\Privilege;
 use models\core\UserResource;
@@ -44,7 +44,7 @@ class ArticleEditor extends ContainerContent {
 
 
 
-    protected function createName(LocalizedPage $localization, string $element): string {
+    protected function createName(PageLocalization $localization, string $element): string {
         return 'localization-'. $localization->getId() .'_'. $element;
     }
 

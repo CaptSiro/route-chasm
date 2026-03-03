@@ -3,7 +3,7 @@
 namespace components\pages\Article;
 
 use core\view\Component;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 
 class Article extends Component {
@@ -11,7 +11,7 @@ class Article extends Component {
 
     public function __construct(
         protected Page $page,
-        protected LocalizedPage $localization,
+        protected PageLocalization $localization,
         protected string $content
     ) {
         parent::__construct();

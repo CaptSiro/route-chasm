@@ -58,6 +58,10 @@ class Group extends Model implements Editable {
 
 
     // Model
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
     public function save(): DatabaseAction|View {
         if (!is_null(static::fromName($this->name))) {
             return new SaveError('name', 'Name is already taken');

@@ -181,13 +181,17 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
      * @param string|null $subtype kebab-case subtype name used for string identifiers: model-type_sub-type#ID
      * @return string
      */
-    public function getIdentifier(?string $subtype = null): string {
+    public function getMachineIdentifier(?string $subtype = null): string {
         $type = $this->getModelType();
         if (is_null($subtype)) {
             return $type .'#'. $this->getId();
         }
 
         return $type .'_'. $subtype .'#'. $this->getId();
+    }
+
+    public function getHumanIdentifier(): string {
+        return $this->getMachineIdentifier();
     }
 
     public function setOrigin(Origin $_origin): void {

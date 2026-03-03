@@ -246,7 +246,8 @@ CREATE TABLE IF NOT EXISTS `core_menu` (
 
 INSERT INTO `core_menu` (id_menu, name)
 VALUES (1, 'Header'),
-       (2, 'Footer');
+       (2, 'Footer'),
+       (2, 'Legal');
 
 CREATE TABLE IF NOT EXISTS `core_menu_x_pages` (
     `id_menu` INT NOT NULL,

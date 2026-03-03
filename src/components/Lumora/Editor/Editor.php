@@ -46,7 +46,7 @@ use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use DateTime;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use modules\ai\OpenAi;
 
 class Editor extends ContainerContent {
@@ -85,13 +85,13 @@ class Editor extends ContainerContent {
 
     /**
      * @param DataItem $storage
-     * @param LocalizedPage $localization
+     * @param PageLocalization $localization
      * @param string $title
      * @param array<Widget>|null $widgets
      */
     public function __construct(
         protected DataItem $storage,
-        protected LocalizedPage $localization,
+        protected PageLocalization $localization,
         string $title = "Editor",
         ?array $widgets = null
     ) {

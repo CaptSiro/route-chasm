@@ -61,6 +61,10 @@ class Privilege extends Model implements Editable {
 
 
 
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
     public function save(): DatabaseAction|View {
         if ($this->isNewRecord()) {
             $privilege = self::fromName($this->name);

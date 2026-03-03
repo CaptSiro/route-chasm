@@ -86,6 +86,11 @@ class Directory extends Model implements FileSystemEntry {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
     public function delete(): DatabaseAction {
         foreach ($this->getFiles() as $file) {
             $file->delete();

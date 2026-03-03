@@ -25,7 +25,7 @@ use models\core\Navigation\Slug;
 
 #[Table('core_page_localization')]
 #[Database(App::DATABASE)]
-class LocalizedPage extends Model {
+class PageLocalization extends Model {
     public static function fromPageRaw(int $pageId, int $languageId): ?static {
         return self::first(
             where: Query::infer('id_page = ? AND id_language = ?', $pageId, $languageId)
@@ -66,6 +66,10 @@ class LocalizedPage extends Model {
     protected Language $language;
 
 
+
+    public function getHumanIdentifier(): string {
+        return $this->title;
+    }
 
     public function delete(): DatabaseAction {
         $this->getMeta()->delete();
@@ -109,7 +113,7 @@ class LocalizedPage extends Model {
 
     public function getMeta(): PageMeta {
         if (!isset($this->meta)) {
-            $this->meta = PageMeta::fromLocalizedPage($this);
+            $this->meta = PageMeta::fromLocalization($this);
         }
 
         return $this->meta;

@@ -99,6 +99,11 @@ class User extends Model {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return '@'. $this->tag;
+    }
+
     public function save(): DatabaseAction|View {
         if ($this->isNewRecord()) {
             $user = self::fromTag($this->tag);

@@ -109,6 +109,11 @@ class LexiconGridRow extends Model {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->default;
+    }
+
     public function isDeletable(): bool {
         return false;
     }

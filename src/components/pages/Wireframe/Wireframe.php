@@ -14,7 +14,7 @@ use core\view\StringRenderer;
 use core\view\View;
 use DateTime;
 use models\core\Language\Language;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Privilege\Privilege;
 use models\core\User\User;
@@ -25,7 +25,7 @@ class Wireframe extends Component implements Container {
 
 
 
-    public static function createHtmlHead(LocalizedPage $localization): HtmlHead {
+    public static function createHtmlHead(PageLocalization $localization): HtmlHead {
         $head = new HtmlHead(Html::escape($localization->title));
 
         $meta = $localization->getMeta();
@@ -40,7 +40,7 @@ class Wireframe extends Component implements Container {
         return $head;
     }
 
-    public static function createLocalizationApi(LocalizedPage $localization): string {
+    public static function createLocalizationApi(PageLocalization $localization): string {
         $releaseDate = new DateTime($localization->getPage()->getReleaseDate());
 
         return Html::wrapUnsafe(
@@ -64,7 +64,7 @@ class Wireframe extends Component implements Container {
 
     protected Language $language;
     protected HtmlHead $head;
-    protected LocalizedPage $localization;
+    protected PageLocalization $localization;
     protected View $content;
     protected ?Action $action;
     protected bool $doAddHeader = true;
@@ -107,7 +107,7 @@ class Wireframe extends Component implements Container {
         $this->doAddFooter = $doAddFooter;
     }
 
-    public function getLocalization(): LocalizedPage {
+    public function getLocalization(): PageLocalization {
         return $this->localization;
     }
 

@@ -44,6 +44,11 @@ class Data {
     }
 
     public static function delete(string $namespace, string $file): bool {
-        return unlink(self::file($namespace, $file));
+        $location = self::file($namespace, $file);
+        if (!file_exists($location)) {
+            return false;
+        }
+
+        return unlink($location);
     }
 }

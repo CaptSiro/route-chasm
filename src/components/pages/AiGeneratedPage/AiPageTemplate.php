@@ -60,9 +60,6 @@ class AiPageTemplate implements PageTemplate {
     }
 
     public function buildContent(Wireframe $wireframe, Page $page): Component {
-        $wireframe->setDoAddHeader(false);
-        $wireframe->setDoAddFooter(false);
-
         return AiGeneratedPage::build($wireframe, $page);
     }
 

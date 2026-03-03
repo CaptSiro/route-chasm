@@ -8,7 +8,7 @@ use core\url\Url;
 use core\view\Renderer;
 use core\view\View;
 use models\core\fs\File;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 
 class ListingCard implements View {
@@ -27,7 +27,7 @@ class ListingCard implements View {
 
     public function __construct(
         protected Page $page,
-        protected LocalizedPage $localization
+        protected PageLocalization $localization
     ) {
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }

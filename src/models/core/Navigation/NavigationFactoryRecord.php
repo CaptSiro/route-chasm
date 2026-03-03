@@ -45,4 +45,11 @@ class NavigationFactoryRecord extends Model {
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
     protected string $name;
+
+
+
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
 }

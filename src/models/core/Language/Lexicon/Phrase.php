@@ -130,6 +130,10 @@ class Phrase extends Model {
 
 
 
+    public function getHumanIdentifier(): string {
+        return $this->default;
+    }
+
     public function delete(): DatabaseAction {
         $group = $this->getLexiconGroup();
 

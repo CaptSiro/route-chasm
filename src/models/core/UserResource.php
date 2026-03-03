@@ -82,6 +82,12 @@ class UserResource extends Model {
 
 
 
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
+
+
     public function save(): DatabaseAction|View {
         if ($this->isNewRecord()) {
             $resource = static::fromName($this->name);

@@ -18,7 +18,7 @@ use core\database\sql\Sql;
 use core\database\sql\Table;
 use models\core\Language\Language;
 use models\core\Page\behavior\PageProxy;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
 use models\core\Page\PageTemplateRecord;
@@ -51,7 +51,7 @@ class PageGridRow extends Model {
         $id_parent = $page->getEscapedColumn('id_page_parent');
         $page_id_page_status = $page->getEscapedColumn('id_page_status');
 
-        $localizedPage = LocalizedPage::getDescription();
+        $localizedPage = PageLocalization::getDescription();
         $id_language = $localizedPage->getEscapedColumn('id_language');
 
         $pageTemplate = PageTemplateRecord::getDescription();
@@ -70,7 +70,7 @@ class PageGridRow extends Model {
     }
 
     public static function childrenQuery(int $languageId, ?int $parentId = null): SelectQuery {
-        $localizedPage = LocalizedPage::getDescription();
+        $localizedPage = PageLocalization::getDescription();
         $pageTemplate = PageTemplateRecord::getDescription();
         $pageStatus = PageStatus::getDescription();
 
@@ -117,4 +117,10 @@ class PageGridRow extends Model {
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     protected string $template;
+
+
+
+    public function getHumanIdentifier(): string {
+        return $this->title;
+    }
 }

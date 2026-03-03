@@ -1,5 +1,6 @@
 /** @type {WindowSettings} */
 const WINDOW_ALERT_SETTINGS = {
+    width: '400px',
     isMinimizable: true,
     isDraggable: true,
     isResizable: false,
@@ -7,6 +8,7 @@ const WINDOW_ALERT_SETTINGS = {
 
 /** @type {WindowSettings} */
 const WINDOW_CONFIRM_SETTINGS = {
+    width: '400px',
     isMinimizable: true,
     isDraggable: true,
     isResizable: false

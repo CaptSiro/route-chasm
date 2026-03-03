@@ -35,7 +35,7 @@ use models\core\Language\Language;
 use models\core\Menu;
 use models\core\Navigation\NavigationContext;
 use models\core\Navigation\Slug;
-use models\core\Page\LocalizedPage;
+use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Page\PageMeta;
 
@@ -299,27 +299,27 @@ class PageEditorBehavior implements EditorBehavior {
      * @return void
      */
     protected function createLocalization(array $object, Page $page, ?Page $parent, array $languages, int $navigationContextId): void {
-        $localizedPage = new LocalizedPage();
-        $localizedPage->set($object);
-        $localizedPage->pageId = $page->getId();
+        $localization = new PageLocalization();
+        $localization->set($object);
+        $localization->pageId = $page->getId();
 
-        $languageId = $localizedPage->languageId = intval($object[self::NAME_LANGUAGE_ID]);
+        $languageId = $localization->languageId = intval($object[self::NAME_LANGUAGE_ID]);
         $language = $languages[$languageId];
 
         $slugParentId = $this->getSlugParent($parent, $languageId);
-        $localizedPage->setSlug(PageFactory::getInstance()->createSlug(
+        $localization->setSlug(PageFactory::getInstance()->createSlug(
             $languageId,
             $navigationContextId,
-            $localizedPage->getSlugLiteral($language),
+            $localization->getSlugLiteral($language),
             $slugParentId,
             $page
         ));
 
-        $localizedPage->save();
+        $localization->save();
 
         $meta = new PageMeta();
         $meta->set($object);
-        $meta->setLocalization($localizedPage);
+        $meta->setLocalization($localization);
         $meta->save();
     }
 
@@ -330,7 +330,7 @@ class PageEditorBehavior implements EditorBehavior {
         $languages = Models::identity(Language::all());
 
         $columns = array_merge(
-            ModelDescription::extract(LocalizedPage::class)->getColumnAlias(),
+            ModelDescription::extract(PageLocalization::class)->getColumnAlias(),
             ModelDescription::extract(PageMeta::class)->getColumnAlias()
         );
         $columns[] = self::NAME_LANGUAGE_ID;
@@ -386,7 +386,7 @@ class PageEditorBehavior implements EditorBehavior {
                     $slug->save();
                 }
 
-                $meta = PageMeta::fromLocalizedPage($localization) ?? new PageMeta();
+                $meta = PageMeta::fromLocalization($localization, true);
                 $meta->set($object);
                 $meta->save();
             }

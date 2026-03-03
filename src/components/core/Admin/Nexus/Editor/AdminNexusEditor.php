@@ -108,7 +108,8 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                 ->addAttribute('data-url', $this->context->getLink());
         }
 
-        $actions[] = new FormAction(FormAction::TYPE_SUBMIT, $submitLabel);
+        $actions[] = (new FormAction(FormAction::TYPE_SUBMIT, $submitLabel))
+            ->setValue(self::NAME_SUBMIT_ACTION, 'stay');
         $actions[] = (new FormAction(FormAction::TYPE_SUBMIT, $submitLabel .' '. $andReturnLabel))
             ->setValue(self::NAME_SUBMIT_ACTION, 'return');
 
@@ -141,6 +142,14 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         $submitAction = $request->getBody()
             ->get(self::NAME_SUBMIT_ACTION);
+
+        if ($submitAction === 'stay') {
+            if ($action === EditorBehaviorAction::CREATE) {
+                $response->setHeader(HttpHeader::X_NEXT, $this->context->getUpdateLink($model->getId()));
+            } else {
+                $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
+            }
+        }
 
         if ($submitAction === 'return' && !is_null($next = $this->context->getLink())) {
             $response->setHeader(HttpHeader::X_NEXT, $next);

@@ -1,15 +1,20 @@
 /**
  * @param {HTMLElement} button
+ * @param {string} url
+ * @param {string} id
  */
-function nexus_deleteButton(button) {
-    const url = button.dataset.url;
+function nexus_deleteButton(button, { url, id }) {
     if (!is(url)) {
         button.remove()
         return;
     }
 
     button.addEventListener('click', async () => {
-        if (!(await window_confirm("Do you want to delete the record?", WINDOW_CONFIRM_SETTINGS))) {
+        const message = is(id)
+            ? `Do you want to delete '${id}'?`
+            : "Do you want to delete the record?"
+
+        if (!(await window_confirm(message, WINDOW_CONFIRM_SETTINGS))) {
             return;
         }
 

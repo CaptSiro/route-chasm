@@ -9,22 +9,18 @@
 .footer-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem 3rem 2rem;
+    padding: 0 var(--gap) calc(var(--gap) * 3) var(--gap);
 
     display: grid;
-    grid-template-columns: 1.5fr 2fr 1.5fr;
+    grid-template-columns: 1.5fr 3.5fr;
     gap: 3rem;
 }
-
-/* ===============================
-   BRAND
-================================= */
 
 .footer-logo {
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--text-0);
-    margin-bottom: 1rem;
+    margin-bottom: var(--gap);
 }
 
 .footer-description {
@@ -33,58 +29,42 @@
     max-width: 320px;
 }
 
-/* ===============================
-   MENU TRANSFORMATION
-   (Convert auto menu to columns)
-================================= */
-
 .footer-navigation > .menu {
     display: flex;
-    gap: 3rem;
+    gap: calc(var(--gap) * 2);
 }
 
-/* Top level items become columns */
 .footer-navigation > .menu > .menu-item {
     display: flex;
     flex-direction: column;
     min-width: 140px;
 }
 
-/* Top level links become column headers */
 .footer-navigation > .menu > .menu-item > .head .item-label a {
     font-weight: 600;
     font-size: 0.9rem;
     text-transform: uppercase;
     color: var(--text-0);
-    margin-bottom: 1rem;
+    margin-bottom: var(--gap);
     display: inline-block;
 }
 
-/* Remove hover underline from header level */
 .footer-navigation .item-label a::after {
     display: none !important;
 }
 
-/* Nested menu styling */
 .footer-navigation .menu .menu {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: var(--gap);
 }
 
 .footer-navigation .menu .menu .item-label a {
     font-weight: 400;
     font-size: 0.9rem;
-    color: var(--text-2);
-    text-decoration: none;
     transition: color 0.2s ease;
 }
 
-.footer-navigation .menu .menu .item-label a:hover {
-    color: var(--text-0);
-}
-
-/* Remove dropdown positioning behavior */
 .footer-navigation .menu .menu {
     position: static !important;
     opacity: 1 !important;
@@ -97,59 +77,9 @@
     border: none;
 }
 
-/* ===============================
-   NEWSLETTER
-================================= */
-
-.footer-newsletter h4 {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 1rem;
-    color: var(--text-0);
-}
-
-.footer-newsletter form {
-    display: flex;
-    gap: 0.6rem;
-}
-
-.footer-newsletter input {
-    flex: 1;
-    padding: 0.6rem 0.8rem;
-    border-radius: 8px;
-    border: 1px solid var(--container-2);
-    background: var(--container-1);
-    color: var(--text-0);
-}
-
-.footer-newsletter input:focus {
-    outline: none;
-    border-color: var(--accent-1);
-}
-
-.footer-newsletter button {
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    background: linear-gradient(90deg, var(--accent-0), var(--accent-3));
-    color: var(--text-0);
-    transition: opacity 0.2s ease;
-}
-
-.footer-newsletter button:hover {
-    opacity: 0.9;
-}
-
-/* ===============================
-   BOTTOM BAR
-================================= */
-
 .footer-bottom {
     border-top: 1px solid var(--container-2);
-    padding: 1.5rem 2rem;
+    padding: var(--gap);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -159,33 +89,20 @@
     font-size: 0.85rem;
 }
 
-.footer-legal {
+.footer-legal > .menu {
     display: flex;
-    gap: 1.5rem;
+    gap: var(--gap);
 }
-
-.footer-legal a {
-    color: var(--text-2);
-    text-decoration: none;
-}
-
-.footer-legal a:hover {
-    color: var(--text-0);
-}
-
-/* ===============================
-   RESPONSIVE
-================================= */
 
 @media (max-width: 900px) {
     .footer-inner {
         grid-template-columns: 1fr;
-        gap: 2.5rem;
+        gap: calc(var(--gap) * 2);
     }
 
     .footer-navigation > .menu {
         flex-direction: column;
-        gap: 2rem;
+        gap: var(--gap);
     }
 
     .footer-newsletter form {
@@ -194,7 +111,7 @@
 
     .footer-bottom {
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--gap-smaller);
         text-align: center;
     }
 }

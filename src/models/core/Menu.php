@@ -29,6 +29,7 @@ class Menu extends Model implements Name {
 
     public const NAME_HEADER = 'Header';
     public const NAME_FOOTER = 'Footer';
+    public const NAME_LEGAL = 'Legal';
 
 
 

@@ -45,6 +45,10 @@ trait NameExtension {
 
 
 
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
     public function getName(): string {
         return $this->name;
     }

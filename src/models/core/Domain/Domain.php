@@ -55,12 +55,10 @@ class Domain extends Model implements Enable {
 
         $domain = new static();
 
-        $domain->set([
-            'protocol' => $url->getProtocol(),
-            'host' => $url->getHost(),
-            'port' => $url->getPort(),
-            'path' => $url->getPath(),
-        ]);
+        $domain->protocol = $url->getProtocol();
+        $domain->host = $url->getHost();
+        $domain->port = $url->getPort();
+        $domain->path = $url->getPath();
 
         $domain->notSavable();
         return $domain;
@@ -87,31 +85,39 @@ class Domain extends Model implements Enable {
     use EnableExtension;
 
     #[Column('id_domain', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    public int $id;
 
     #[TextField('Protocol')]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $protocol;
+    public string $protocol;
 
     #[TextField('Host')]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $host;
+    public string $host;
 
     #[NumberField('Port')]
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $port;
+    public int $port;
 
     #[TextField('Path')]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $path;
-    private ?Path $pathObject;
+    public string $path;
 
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $cost;
+    public int $cost;
 
 
 
+    protected ?Path $pathObject;
+
+
+
+    // Model
     public function __toString(): string {
+        return $this->getLiteral();
+    }
+
+    public function getHumanIdentifier(): string {
         return $this->getLiteral();
     }
 

@@ -54,6 +54,13 @@ class LexiconGroup extends Model {
 
 
 
+    // Model
+    public function getHumanIdentifier(): string {
+        return $this->name;
+    }
+
+
+
     /**
      * @return array<Phrase>
      */
