@@ -5,6 +5,7 @@ namespace models\core\Page\Grid;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
+use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Connection;
@@ -36,7 +37,7 @@ class PageGridRow extends Model {
 
         return new GridDescription(
             $grid->getColumns(),
-            new PageGridLoader(),
+            new PageGridLoader(portionSize: ModelGridLoader::getPortionSizeSetting()),
             proxy: new PageProxy()
         );
     }

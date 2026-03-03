@@ -1,13 +1,9 @@
-/* ===============================
-   FOOTER BASE
-================================= */
-
 .site-footer {
-    background: #0f1115;
-    color: #cbd5e1;
-    padding-top: 4rem;
+    background: var(--container-1);
+    color: var(--text-1);
+    padding-top: calc(var(--gap) * 4);
     font-size: 0.95rem;
-    border-top: 1px solid #1f2430;
+    border-top: 1px solid var(--container-2);
 }
 
 .footer-inner {
@@ -27,12 +23,12 @@
 .footer-logo {
     font-size: 1.4rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-0);
     margin-bottom: 1rem;
 }
 
 .footer-description {
-    color: #94a3b8;
+    color: var(--text-2);
     line-height: 1.6;
     max-width: 320px;
 }
@@ -59,8 +55,7 @@
     font-weight: 600;
     font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #ffffff;
+    color: var(--text-0);
     margin-bottom: 1rem;
     display: inline-block;
 }
@@ -80,13 +75,13 @@
 .footer-navigation .menu .menu .item-label a {
     font-weight: 400;
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: var(--text-2);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .footer-navigation .menu .menu .item-label a:hover {
-    color: #ffffff;
+    color: var(--text-0);
 }
 
 /* Remove dropdown positioning behavior */
@@ -111,7 +106,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 1rem;
-    color: #ffffff;
+    color: var(--text-0);
 }
 
 .footer-newsletter form {
@@ -123,14 +118,14 @@
     flex: 1;
     padding: 0.6rem 0.8rem;
     border-radius: 8px;
-    border: 1px solid #1f2430;
-    background: #151922;
-    color: #ffffff;
+    border: 1px solid var(--container-2);
+    background: var(--container-1);
+    color: var(--text-0);
 }
 
 .footer-newsletter input:focus {
     outline: none;
-    border-color: #4f8cff;
+    border-color: var(--accent-1);
 }
 
 .footer-newsletter button {
@@ -139,8 +134,8 @@
     border: none;
     cursor: pointer;
     font-weight: 500;
-    background: linear-gradient(90deg, #4f8cff, #7b5cff);
-    color: #ffffff;
+    background: linear-gradient(90deg, var(--accent-0), var(--accent-3));
+    color: var(--text-0);
     transition: opacity 0.2s ease;
 }
 
@@ -153,14 +148,14 @@
 ================================= */
 
 .footer-bottom {
-    border-top: 1px solid #1f2430;
+    border-top: 1px solid var(--container-2);
     padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    color: #6b7280;
+    color: var(--text-2);
     font-size: 0.85rem;
 }
 
@@ -170,12 +165,12 @@
 }
 
 .footer-legal a {
-    color: #6b7280;
+    color: var(--text-2);
     text-decoration: none;
 }
 
 .footer-legal a:hover {
-    color: #ffffff;
+    color: var(--text-0);
 }
 
 /* ===============================

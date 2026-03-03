@@ -36,7 +36,7 @@ class Language extends Model implements IsDefault {
 
         return new GridDescription(
             $columns,
-            new ModelGridLoader(static::class),
+            new ModelGridLoader(static::class, portionSize: ModelGridLoader::getPortionSizeSetting()),
             proxy: new LanguageProxy()
         );
     }

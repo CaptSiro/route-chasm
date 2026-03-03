@@ -3,17 +3,20 @@
 namespace components\pages\Listing;
 
 use components\core\Message\Message;
-use components\pages\Article\ArticleEditor;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\pages\PageTemplate;
+use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\View;
 use models\core\Language\Language;
 use models\core\Page\Page;
+use models\core\Setting\Setting;
+use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class ListingTemplate implements PageTemplate {
     public const DATA_CONTENT = 'article.md';
+    public const NAME_PORTION_SIZE = 'route-chasm-core:number_of_articles_per_listing_page';
 
 
 
@@ -30,7 +33,18 @@ class ListingTemplate implements PageTemplate {
     }
 
     public function buildContent(Wireframe $wireframe, Page $page): Component {
-        return new Listing($page, $wireframe->getLocalization());
+        $setting = Setting::fromName(
+            self::NAME_PORTION_SIZE,
+            true,
+            RouteChasmEnvironment::LISTING_PORTION_SIZE,
+            [PROPERTY_EDITABLE => true]
+        );
+
+        return new Listing(
+            $page,
+            $wireframe->getLocalization(),
+            $setting->toInt()
+        );
     }
 
     public function buildListingCard(Page $page, Language $language): View {

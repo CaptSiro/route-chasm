@@ -43,7 +43,7 @@ class Domain extends Model implements Enable {
 
         return new GridDescription(
             $columns,
-            new ModelGridLoader(static::class),
+            new ModelGridLoader(static::class, portionSize: ModelGridLoader::getPortionSizeSetting()),
             proxy: new DomainProxy()
         );
     }

@@ -10,9 +10,26 @@ use core\App;
 use core\database\sql\ModelFactory;
 use core\database\sql\query\SelectQuery;
 use core\RouteChasmEnvironment;
+use models\core\Setting\Setting;
+use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class ModelGridLoader implements GridPortionLoader {
     use GridPortion;
+
+
+
+    public const NAME_PORTION_SIZE = 'route-chasm-core:number_of_model_rows_in_grid';
+
+    public static function getPortionSizeSetting(): int {
+        return Setting::fromName(
+            self::NAME_PORTION_SIZE,
+            true,
+            RouteChasmEnvironment::GRID_DEFAULT_PORTION_SIZE,
+            [PROPERTY_EDITABLE => true]
+        )->toInt();
+    }
+
+
 
     public function __construct(
         protected string $modelClass,

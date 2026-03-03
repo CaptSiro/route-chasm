@@ -6,7 +6,6 @@ use components\core\PaginationControl\Pagination;
 use components\core\PaginationControl\PaginationControl;
 use components\core\PaginationControl\Portion;
 use components\core\PaginationControl\PortionUrlCreator;
-use components\layout\Grid\Loader\GridLoaderUrlCreator;
 use core\App;
 use core\database\sql\query\SelectQuery;
 use core\RouteChasmEnvironment;

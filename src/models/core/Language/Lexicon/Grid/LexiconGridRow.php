@@ -6,6 +6,7 @@ use components\core\Admin\Nexus\NexusProxy;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
+use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Connection;
@@ -29,7 +30,7 @@ class LexiconGridRow extends Model {
 
         return new GridDescription(
             $grid->getColumns(),
-            new LexiconGridLoader(),
+            new LexiconGridLoader(portionSize: ModelGridLoader::getPortionSizeSetting()),
             proxy: new NexusProxy()
         );
     }
@@ -64,7 +65,7 @@ class LexiconGridRow extends Model {
 
     public static function phrasesCount(): int {
         $connection = self::getDescription()->getConnection();
-        return ModelFactory::countExecute(
+        return ModelFactory::countExecuteConnection(
             self::phrasesCountQuery($connection),
             $connection
         );

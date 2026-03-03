@@ -61,5 +61,5 @@ class RouteChasmEnvironment {
     public const LISTING_PORTION_SIZE = 21;
     public const ID_DIGITS = 4;
 
-    const BREAD_CRUMBS_DELIMITOR = '>';
+    public const BREAD_CRUMBS_DELIMITOR = '>';
 }

@@ -1,30 +1,19 @@
-/* ===============================
-   HEADER BASE
-================================= */
-
 header {
     position: sticky;
     top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(14px);
-    background: rgba(15, 17, 21, 0.85);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--container-1);
+    border-bottom: 1px solid var(--container-2);
 }
 
-/* Level 0 menu (root) */
 header > .menu {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 var(--gap);
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: calc(var(--gap) * 2);
     height: 64px;
 }
-
-/* ===============================
-   TOP LEVEL ITEMS
-================================= */
 
 header .menu-item {
     position: relative;
@@ -35,49 +24,43 @@ header .menu-item > .head .item-label a {
     padding: 0.5rem 0;
     font-size: 0.95rem;
     font-weight: 500;
-    letter-spacing: 0.4px;
     text-decoration: none;
-    color: #e5e7eb;
+    color: var(--text-1);
     transition: color 0.2s ease;
 }
 
-/* Underline animation */
 header .menu-item > .head .item-label a::after {
     content: "";
     position: absolute;
     left: 0;
     bottom: -6px;
-    width: 0%;
+    width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #4f8cff, #7b5cff);
+    background: linear-gradient(90deg, var(--accent-0), var(--accent-3));
     transition: width 0.25s ease;
 }
 
 header .menu-item:hover > .head .item-label a {
-    color: #ffffff;
+    color: var(--text-0);
 }
 
 header .menu-item:hover > .head .item-label a::after {
     width: 100%;
 }
 
-/* ===============================
-   DROPDOWN BASE (Level 1+)
-================================= */
-
 header .menu-item.has-sub-menu > .menu {
     position: absolute;
     top: calc(100% + 14px);
     left: 0;
     min-width: 220px;
-    padding: 0.6rem;
+    padding: var(--gap-smaller);
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: var(--gap-smaller);
 
-    background: #151922;
-    border: 1px solid #222733;
-    border-radius: 12px;
+    background: var(--container-1);
+    border: 1px solid var(--container-2);
+    border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 
     opacity: 0;
@@ -89,8 +72,6 @@ header .menu-item.has-sub-menu > .menu {
             visibility 0s linear 0.18s;
 }
 
-/* Show dropdown */
-/*header .menu-item.has-sub-menu > .menu:hover,*/
 header .menu-item.has-sub-menu:hover > .menu {
     opacity: 1;
     transform: translateY(0);
@@ -101,21 +82,17 @@ header .menu-item.has-sub-menu:hover > .menu {
             visibility 0s;
 }
 
-/* ===============================
-   DROPDOWN ITEMS
-================================= */
-
 header .menu-item.has-sub-menu > .menu .menu-item {
     width: 100%;
 }
 
 header .menu-item.has-sub-menu > .menu .item-label a {
     display: block;
-    padding: 0.55rem 0.8rem;
-    border-radius: 8px;
+    padding: var(--gap-smaller);
+    border-radius: var(--border-radius-smaller);
     font-size: 0.9rem;
     font-weight: 400;
-    color: #cbd5e1;
+    color: var(--text-1);
     transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -124,23 +101,14 @@ header .menu-item.has-sub-menu > .menu .item-label a::after {
 }
 
 header .menu-item.has-sub-menu > .menu .item-label a:hover {
-    background: rgba(79, 140, 255, 0.12);
-    color: #ffffff;
+    background: var(--accent-0);
+    color: var(--text-0);
 }
 
-/* ===============================
-   MULTI-LEVEL SUPPORT
-================================= */
-
-/* Nested inside dropdown */
 header .menu-item.has-sub-menu > .menu .menu-item.has-sub-menu > .menu {
     top: 0;
     left: calc(100% + 10px);
 }
-
-/* ===============================
-   OPTIONAL: Arrow Indicator
-================================= */
 
 header .menu-item.has-sub-menu > .head .item-label a::before {
     content: "▾";
@@ -149,28 +117,25 @@ header .menu-item.has-sub-menu > .head .item-label a::before {
     opacity: 0.6;
 }
 
-/* ===============================
-   RESPONSIVE (Optional Collapse)
-================================= */
-
 @media (max-width: 900px) {
-
     header > .menu {
-        gap: 1.2rem;
+        height: unset;
+        flex-direction: column;
     }
 
     header .menu-item.has-sub-menu > .menu {
         position: static;
-        opacity: 1;
-        transform: none;
         pointer-events: auto;
         box-shadow: none;
         border: none;
         background: transparent;
-        padding: 0.4rem 0 0 0.8rem;
+        padding: var(--gap-smaller);
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        visibility: visible !important;
     }
 
-    header .menu-item.has-sub-menu > .menu .item-label a {
-        padding: 0.4rem 0;
+    header .menu-item > .head .item-label a::after {
+        background: transparent !important;
     }
 }
