@@ -18,11 +18,6 @@ use core\fs\FileSystemEntry;
 use core\RouteChasmEnvironment;
 use core\url\Url;
 
-/**
- * @property int $parentId
- * @property string $name
- */
-
 #[Database(App::DATABASE)]
 #[Table('core_fs_directory')]
 class Directory extends Model implements FileSystemEntry {
@@ -35,11 +30,9 @@ class Directory extends Model implements FileSystemEntry {
 
         $dir = new static();
 
-        $dir->set([
-            'id' => null,
-            'parentId' => 0,
-            'name' => '/'
-        ]);
+        $dir->id = 0;
+        $dir->parentId = 0;
+        $dir->name = '/';
 
         $dir->notSavable();
         return static::$root = $dir;
@@ -62,21 +55,21 @@ class Directory extends Model implements FileSystemEntry {
     public static function fromName(Directory $parent, string $name): ?Directory {
         $where = $parent->isRoot()
             ? Query::infer('id_fs_parent IS NULL AND name = ?', $name)
-            : Query::infer('id_fs_parent = ? AND name = ?', $parent->getId(), $name);
+            : Query::infer('id_fs_parent = ? AND name = ?', $parent->id, $name);
 
         return static::first(where: $where);
     }
 
 
 
-    #[Column('id_fs_directory', Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_fs_directory', Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_fs_parent', Column::TYPE_INTEGER, nullable: true)]
-    protected ?int $parentId;
+    public ?int $parentId;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
 
 
@@ -118,7 +111,7 @@ class Directory extends Model implements FileSystemEntry {
             $this->subDirectories = static::all(
                 where: $this->isRoot()
                     ? Query::infer('id_fs_parent IS NULL')
-                    : Query::infer('id_fs_parent = ?', $this->getId())
+                    : Query::infer('id_fs_parent = ?', $this->id)
             );
         }
 
@@ -133,7 +126,7 @@ class Directory extends Model implements FileSystemEntry {
             $this->files = File::all(
                 where: $this->isRoot()
                     ? Query::infer('id_fs_parent IS NULL')
-                    : Query::infer('id_fs_parent = ?', $this->getId())
+                    : Query::infer('id_fs_parent = ?', $this->id)
             );
         }
 
@@ -159,11 +152,11 @@ class Directory extends Model implements FileSystemEntry {
         }
 
         $this->parent = $directory;
-        return $this->setParentRaw($directory->getId());
+        return $this->setParentRaw($directory->id);
     }
 
     public function setParentRaw(mixed $parentId): static {
-        $this->set(['parentId' => $parentId]);
+        $this->parentId = $parentId;
         return $this;
     }
 
@@ -175,7 +168,7 @@ class Directory extends Model implements FileSystemEntry {
             return $this;
         }
 
-        $this->set(['name' => $name]);
+        $this->name = $name;
         $this->save();
 
         return $this;

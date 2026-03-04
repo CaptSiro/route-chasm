@@ -3,7 +3,6 @@
 namespace components\Lumora\widgets\Ai;
 
 use components\core\Icon;
-use components\Lumora\widgets\TextEditor\TextEditorWidget;
 use components\Lumora\widgets\Widget;
 use core\ResourceLoader;
 use core\Singleton;

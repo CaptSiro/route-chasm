@@ -92,7 +92,7 @@ class FileSystemEntryProxy extends NexusProxy {
         }
 
         $rename = $this->item->createRenameEntryUrl();
-        $id = $this->item->getId();
+        $id = $this->item->id;
         $type = Html::escapeAttribute($this->item::class);
         $content = Icon::edit();
 
@@ -105,7 +105,7 @@ class FileSystemEntryProxy extends NexusProxy {
         }
 
         $delete = $this->item->createDeleteEntryUrl();
-        $id = $this->item->getId();
+        $id = $this->item->id;
         $type = Html::escapeAttribute($this->item::class);
         $content = Icon::delete();
         return "<button class='link no-style' x-init='fs_deleteButton_init' data-url='$delete' data-id='$id'>$content</button>";

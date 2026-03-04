@@ -1,6 +1,10 @@
-<?php /** @var \core\forms\controls\Checkbox\Checkbox $this */?>
-<?php $id = $this->getId() ?>
-<label class="checkbox-container <?= $this->cssClass ?>" for="<?= $id ?>">
+<?php /** @var Checkbox $this */
+
+use core\forms\controls\Checkbox\Checkbox;
+
+$id = $this->getId();
+
+?><label class="checkbox-container <?= $this->cssClass ?>" for="<?= $id ?>">
     <input
         type="checkbox"
         name="<?= $this->name ?>"

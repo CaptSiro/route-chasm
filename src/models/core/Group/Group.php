@@ -20,11 +20,6 @@ use core\view\View;
 use models\extensions\Editable\Editable;
 use models\extensions\Editable\EditableExtension;
 
-/**
- * @property int $id
- * @property string $name
- */
-
 #[Grid(proxy: new GroupProxy())]
 #[Table('core_group')]
 #[Database(App::DATABASE)]
@@ -47,13 +42,13 @@ class Group extends Model implements Editable {
 
     use EditableExtension;
 
-    #[Column('id_group', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_group', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn]
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
 
 
@@ -93,7 +88,7 @@ class Group extends Model implements Editable {
         $sql = Sql::select($gr)
             ->projection("$gr.id_resource")
             ->projection("$gr.id_privilege")
-            ->where(Query::infer("$gr.id_group = ?", $this->getId()));
+            ->where(Query::infer("$gr.id_group = ?", $this->id));
 
         return $sql->fetchAll($connection);
     }
@@ -102,7 +97,7 @@ class Group extends Model implements Editable {
         $connection = static::getDescription()->getConnection();
 
         $sql = Sql::delete(self::TABLE_GROUPS_X_RESOURCES)
-            ->where(Query::infer("id_group = ?", $this->getId()));
+            ->where(Query::infer("id_group = ?", $this->id));
 
         return $sql->run($connection);
     }
@@ -121,11 +116,9 @@ class Group extends Model implements Editable {
         $sql = Sql::insert(self::TABLE_GROUPS_X_RESOURCES)
             ->columns(['id_group', 'id_resource', 'id_privilege']);
 
-        $groupId = $this->getId();
-
         foreach ($mappings as $mapping) {
             $sql->value([
-                Parameter::infer($groupId),
+                Parameter::infer($this->id),
                 Parameter::infer($mapping[self::MAPPING_RESOURCE]),
                 Parameter::infer($mapping[self::MAPPING_PRIVILEGE]),
             ]);

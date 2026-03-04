@@ -18,11 +18,6 @@ use core\view\View;
 use models\extensions\Editable\Editable;
 use models\extensions\Editable\EditableExtension;
 
-/**
- * @property int $id
- * @property string $name
- */
-
 #[Grid(proxy: new PrivilegeProxy())]
 #[Table('core_privilege')]
 #[Database(App::DATABASE)]
@@ -51,13 +46,13 @@ class Privilege extends Model implements Editable {
 
     use EditableExtension;
 
-    #[Column('id_privilege', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_privilege', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn]
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
 
 

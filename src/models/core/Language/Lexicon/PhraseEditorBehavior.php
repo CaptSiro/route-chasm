@@ -64,7 +64,7 @@ class PhraseEditorBehavior implements EditorBehavior {
         if ($this->editor instanceof AdminPhraseEditor) {
             foreach ($languages as $language) {
                 $tabs[$language->getLocale()->getName()]->add(
-                    new StringRenderer($this->editor->createAddTranslationButton($language->getId()))
+                    new StringRenderer($this->editor->createAddTranslationButton($language->id))
                 );
             }
         }
@@ -75,7 +75,7 @@ class PhraseEditorBehavior implements EditorBehavior {
 
         foreach (Language::all() as $language) {
             $tabs[$language->getLocale()->getName()] = $column = new Column();
-            $languageId = $language->getId();
+            $languageId = $language->id;
 
             foreach ($translations as $translation) {
                 if ($languageId === $translation->languageId) {

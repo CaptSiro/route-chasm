@@ -3,7 +3,6 @@
 namespace components\core\Admin\Phrase;
 
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
-use components\core\Admin\Nexus\Editor\EditorBehavior;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;

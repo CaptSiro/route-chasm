@@ -9,9 +9,6 @@ use core\forms\description\Checkbox;
 
 const PROPERTY_ENABLED = 'enabled';
 
-/**
- * @property bool $enabled
- */
 trait EnableExtension {
     public static function addEnableGridColumn(array &$columns): void {
         $columns[PROPERTY_ENABLED] = new GridColumn('Enabled', '96px');
@@ -26,17 +23,19 @@ trait EnableExtension {
     #[Checkbox('Enabled', isFirst: true)]
     #[GridColumn('Enabled', '96px', isFirst: true)]
     #[Column('is_enabled', Column::TYPE_BOOLEAN)]
-    protected bool $enabled;
+    public bool $enabled;
+
+
 
     public function isEnabled(): bool {
         return $this->enabled;
     }
 
     public function enable(bool $enable = true): void {
-        $this->set([PROPERTY_ENABLED => $enable]);
+        $this->enabled = $enable;
     }
 
     public function disable(): void {
-        $this->enable(false);
+        $this->enabled = false;
     }
 }

@@ -92,20 +92,20 @@ class LexiconGridRow extends Model {
 
 
 
-    #[Column('id_phrase', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_phrase', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn]
     #[Column('name', type: Column::TYPE_STRING)]
-    protected string $group;
+    public string $group;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $default;
+    public string $default;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $translations = 0;
+    public int $translations = 0;
 
 
 

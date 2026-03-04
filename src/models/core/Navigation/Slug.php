@@ -11,25 +11,14 @@ use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\navigation\NavigationFactory;
 use core\navigation\Navigator;
-use core\route\Route;
 use core\view\Component;
-use core\view\View;
 use models\core\Language\Language;
-
-/**
- * @property int $parentId
- * @property int $contextId
- * @property int $languageId
- * @property string $slug
- * @property int $factoryId
- * @property string $data
- */
 
 #[Table('core_navigation')]
 #[Database(App::DATABASE)]
 class Slug extends Model {
     public static function fromSlug(Language $language, int $contextId, string $slug, ?int $parentId = null): ?static {
-        return self::fromSlugRaw($language->getId(), $contextId, $slug, $parentId);
+        return self::fromSlugRaw($language->id, $contextId, $slug, $parentId);
     }
 
     public static function fromSlugRaw(int $languageId, int $contextId, string $slug, ?int $parentId = null): ?static {
@@ -57,58 +46,54 @@ class Slug extends Model {
 
 
 
-    #[Column('id_slug', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_slug', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_navigation_context', type: Column::TYPE_INTEGER)]
-    protected int $contextId;
+    public int $contextId;
 
     #[Column('id_parent', type: Column::TYPE_INTEGER, nullable: true)]
-    protected ?int $parentId;
+    public ?int $parentId;
 
     #[Column('id_language', type: Column::TYPE_INTEGER)]
-    protected int $languageId;
+    public int $languageId;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $slug;
+    public string $slug;
 
     #[Column('id_navigation_factory', type: Column::TYPE_INTEGER, nullable: true)]
-    protected ?int $factoryId;
+    public ?int $factoryId;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $data;
+    public string $data;
 
 
 
     public function setParentId(?int $parentId): static {
-        return $this->set(['parentId' => $parentId]);
+        $this->parentId = $parentId ?? 0;
+        return $this;
     }
 
     public function setLanguage(Language $language): static {
-        return $this->set(['languageId' => $language->getId()]);
+        $this->languageId = $language->id;
+        return $this;
     }
 
     public function setFactory(NavigationFactory $factory, string $data): static {
         return $this->setFactoryRaw(
-            NavigationFactoryRecord::fromName($factory->getName(), create: true)->getId(),
+            NavigationFactoryRecord::fromName($factory->getName(), create: true)->id,
             $data
         );
     }
 
     public function setFactoryRaw(int $factoryId, string $data): static {
-        return $this->set([
-            'factoryId' => $factoryId,
-            'data' => $data
-        ]);
+        $this->factoryId = $factoryId;
+        $this->data = $data;
+        return $this;
     }
 
     public function build(): Component {
         return Navigator::build($this->factoryId, $this->data);
     }
-
-//    public function getRoute(): Route {
-//        $context =
-//        $navigator =
-//    }
 }

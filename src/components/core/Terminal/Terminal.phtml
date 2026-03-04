@@ -1,5 +1,8 @@
-<?php /** @var \components\core\Terminal\Terminal $this */ ?>
-<?php if ($this->shouldDisplay()): ?>
+<?php /** @var Terminal $this */
+
+use components\core\Terminal\Terminal;
+
+?><?php if ($this->shouldDisplay()): ?>
     <div class="terminal">
         <div class="logs">
             <?php foreach ($this->messages as $var): ?>

@@ -18,9 +18,6 @@ use models\extensions\IsDefault\IsDefaultExtension;
 use models\extensions\IsDefault\IsDefault;
 use RuntimeException;
 
-/**
- * @property string $code
- */
 
 #[Grid]
 #[Table('core_language')]
@@ -52,9 +49,7 @@ class Language extends Model implements IsDefault {
         $code = App::getEnvStatic()->getOrDie(RouteChasmEnvironment::ENV_LANGUAGE);
         $language = new static();
 
-        $language->set([
-            'code' => $code,
-        ]);
+        $language->code = $code;
 
         $language->notSavable();
         return $language;
@@ -71,12 +66,12 @@ class Language extends Model implements IsDefault {
 
     use IsDefaultExtension;
 
-    #[Column('id_language', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_language', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $code;
+    public string $code;
 
 
 

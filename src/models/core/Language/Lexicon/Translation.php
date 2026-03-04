@@ -46,9 +46,10 @@ class Translation extends Model {
 
     public static function createTranslation(Phrase $phrase, Language $language, string $translation, ?Rule $rule = null): static {
         return static::createTranslationRaw(
-            $phrase->getId(),
-            $language->getId(),
+            $phrase->id,
+            $language->id,
             $translation,
+            $rule?->id
         );
     }
 
@@ -83,7 +84,7 @@ class Translation extends Model {
         $row = new Row();
         $row->addCssClass(self::CSS_CLASS_TRANSLATION_CONTROL);
 
-        $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->getId()));
+        $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->id));
         $row->add(new HiddenField(
             self::NAME_LANGUAGE_ID,
             Models::get($translation, 'languageId', $languageId)
@@ -108,7 +109,7 @@ class Translation extends Model {
         $remove->addJavascriptInit('phraseEditor_removeTranslationButton');
 
         if (!is_null($translation)) {
-            $remove->addAttribute('data-id', $translation->getId());
+            $remove->addAttribute('data-id', $translation->id);
             $remove->addAttribute('data-accumulator', $deletionAccumulator);
         }
 
@@ -120,7 +121,7 @@ class Translation extends Model {
     public static function createStaticTranslationControl(int $languageId, ?Translation $translation = null): View {
         $row = new Row();
 
-        $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->getId()));
+        $row->add(new HiddenField(self::NAME_TRANSLATION_ID, $translation?->id));
         $row->add(new HiddenField(
             self::NAME_LANGUAGE_ID,
             Models::get($translation, 'languageId', $languageId)
@@ -136,7 +137,7 @@ class Translation extends Model {
     }
 
     public static function forPhrase(Phrase $phrase): array {
-        return static::forPhraseRaw($phrase->getId());
+        return static::forPhraseRaw($phrase->id);
     }
 
     public static function forPhraseRaw(int $phraseId): array {
@@ -147,21 +148,21 @@ class Translation extends Model {
 
 
 
-    #[Column('id_translation', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_translation', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_phrase', type: Column::TYPE_INTEGER)]
-    protected int $phraseId;
+    public int $phraseId;
 
     #[Column('id_language', type: Column::TYPE_INTEGER)]
-    protected int $languageId;
+    public int $languageId;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $translation;
+    public string $translation;
 
     #[Column('id_rule', type: Column::TYPE_INTEGER)]
-    protected ?int $ruleId;
+    public ?int $ruleId;
 
     protected Phrase $phrase;
     protected ?Rule $rule;
@@ -174,9 +175,7 @@ class Translation extends Model {
 
     public function setPhrase(Phrase $phrase): void {
         $this->setPhraseModel($phrase);
-        $this->set([
-            'phraseId' => $phrase->getId()
-        ]);
+        $this->phraseId = $phrase->id;
     }
 
     public function getPhrase(): Phrase {
@@ -205,7 +204,7 @@ class Translation extends Model {
     }
 
     public function setRule(Rule $rule): static {
-        $this->setRuleId($rule->getId());
+        $this->setRuleId($rule->id);
         return $this;
     }
 
@@ -214,7 +213,7 @@ class Translation extends Model {
 
         return Sql::update($description->getEscapedTable())
             ->set('id_rule', Parameter::infer($ruleId))
-            ->where(Query::infer('id_translation = ?', $this->getId()))
+            ->where(Query::infer('id_translation = ?', $this->id))
             ->run($description->getConnection());
     }
 

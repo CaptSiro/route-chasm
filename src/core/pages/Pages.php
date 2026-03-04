@@ -17,7 +17,7 @@ class Pages {
 
     public static function register(PageTemplate $template): void {
         $templateRecord = PageTemplateRecord::fromNameCreate($template->getName(), create: true);
-        self::$templates[$templateRecord->getId()] = $template;
+        self::$templates[$templateRecord->id] = $template;
     }
 
     public static function getTemplate(int $templateId): PageTemplate {

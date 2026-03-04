@@ -37,7 +37,7 @@ class AdminUserEditor extends AdminNexusEditor {
 
         $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
         if (!is_null($user)) {
-            $ret->setQueryArgument(self::QUERY_USER_ID, $user->getId());
+            $ret->setQueryArgument(self::QUERY_USER_ID, $user->id);
         }
 
         return $ret;

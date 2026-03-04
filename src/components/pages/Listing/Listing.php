@@ -38,7 +38,7 @@ class Listing extends Component {
         $description = $this->page::getDescription();
         return $description->getFactory()
             ->allQuery()
-            ->where(Page::childrenQuery($this->page->getId()))
+            ->where(Page::childrenQuery($this->page->id))
             ->where(Page::isStatusQuery(PageStatus::ID_PUBLIC))
             ->where(Page::publishedQuery());
     }

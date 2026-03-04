@@ -4,17 +4,13 @@ namespace components\pages\AiGeneratedPage;
 
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
-use components\core\Html\Html;
 use components\layout\Grid\description\GridDescription;
 use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\forms\description\FormDescription;
 use core\pages\PageTemplate;
-use core\sideloader\importers\Css\Css;
-use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
-use core\view\StringRenderer;
 use core\view\View;
 use models\core\Language\Language;
 use models\core\Page\AiPage;
@@ -34,7 +30,7 @@ class AiPageTemplate implements PageTemplate {
     public function create(Page $page): ?View {
         $aiPage = new AiPage();
 
-        $aiPage->pageId = $page->getId();
+        $aiPage->pageId = $page->id;
         $aiPage->description = '';
         $aiPage->save();
 

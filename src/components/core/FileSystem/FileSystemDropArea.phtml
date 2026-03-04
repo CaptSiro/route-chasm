@@ -11,7 +11,7 @@ Css::import($this->getResource('fs-drop-area.css'));
 ?><div
     class="fs-drop-area"
     x-init="fs_dropArea_init"
-    data-directory="<?= $this->directory?->getId() ?? 0 ?>"
+    data-directory="<?= $this->directory?->id ?? 0 ?>"
     data-accept="<?= $this->acceptFileType ?>"
     data-upload="<?= FileServer::getInstance()->createFileUploadUrl($this->directory) ?>"
 >

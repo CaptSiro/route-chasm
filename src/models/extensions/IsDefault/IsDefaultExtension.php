@@ -11,9 +11,6 @@ use core\database\sql\Sql;
 
 const PROPERTY_IS_DEFAULT = 'default';
 
-/**
- * @property bool $default
- */
 trait IsDefaultExtension {
     private static mixed $defaultModel = 0; // unset
 
@@ -34,7 +31,9 @@ trait IsDefaultExtension {
 
 
     #[Column('is_default', Column::TYPE_BOOLEAN)]
-    protected bool $default;
+    public bool $default;
+
+
 
     public function isDefault(): bool {
         return $this->default;
@@ -46,7 +45,7 @@ trait IsDefaultExtension {
             ->set(PROPERTY_IS_DEFAULT, Parameter::infer(false))
             ->run($description->connection);
 
-        $this->set([PROPERTY_IS_DEFAULT => true]);
+        $this->default = true;
         $this->save();
     }
 }

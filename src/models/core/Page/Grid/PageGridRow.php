@@ -8,7 +8,6 @@ use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\database\sql\Column;
-use core\database\sql\Connection;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\ModelFactory;
@@ -22,11 +21,6 @@ use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
 use models\core\Page\PageTemplateRecord;
-
-/**
- * @property string $title
- * @property string $template
- */
 
 #[Grid]
 #[Table]
@@ -43,7 +37,7 @@ class PageGridRow extends Model {
     }
 
     public static function children(Language $language, ?int $parentId = null): array {
-        return self::childrenRaw($language->getId(), $parentId);
+        return self::childrenRaw($language->id, $parentId);
     }
 
     public static function childrenBaseQuery(int $languageId, ?int $parentId = null): SelectQuery {
@@ -103,20 +97,20 @@ class PageGridRow extends Model {
 
 
 
-    #[Column('id_page', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_page', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn(template: '128px')]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $status;
+    public string $status;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $title;
+    public string $title;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $template;
+    public string $template;
 
 
 

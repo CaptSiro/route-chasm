@@ -8,8 +8,6 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\Table;
-use core\RouteChasmEnvironment;
-use models\core\UserResource;
 use models\extensions\Editable\EditableExtension;
 use models\extensions\Name\CachedNameExtension;
 use models\extensions\Name\Name;
@@ -26,8 +24,8 @@ class PageStatus extends Model implements Name {
 
     use EditableExtension, CachedNameExtension;
 
-    #[Column('id_page_status', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_page_status', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
 
 

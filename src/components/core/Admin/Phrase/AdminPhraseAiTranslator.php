@@ -85,8 +85,8 @@ class AdminPhraseAiTranslator implements View {
                 }
 
                 $ret[] = [
-                    Translation::NAME_RULE_ID => $rule->getId(),
-                    Translation::NAME_LANGUAGE_ID => $language->getId(),
+                    Translation::NAME_RULE_ID => $rule->id,
+                    Translation::NAME_LANGUAGE_ID => $language->id,
                     Translation::NAME_TRANSLATION => $translation,
                 ];
             }
@@ -110,7 +110,7 @@ class AdminPhraseAiTranslator implements View {
             }
 
             $ret[] = [
-                Translation::NAME_LANGUAGE_ID => $language->getId(),
+                Translation::NAME_LANGUAGE_ID => $language->id,
                 Translation::NAME_TRANSLATION => $translation,
             ];
         }

@@ -8,7 +8,6 @@ use core\database\sql\Origin;
 use core\database\sql\query\Query;
 use core\database\sql\Record;
 use core\database\sql\SideEffect;
-use Exception;
 use PDO;
 use PDOException;
 use PDOStatement;

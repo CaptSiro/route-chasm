@@ -45,7 +45,7 @@ class ArticleEditor extends ContainerContent {
 
 
     protected function createName(PageLocalization $localization, string $element): string {
-        return 'localization-'. $localization->getId() .'_'. $element;
+        return 'localization-'. $localization->id .'_'. $element;
     }
 
     public function createForm(): Form {

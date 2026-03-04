@@ -27,15 +27,6 @@ use core\RouteChasmEnvironment;
 use core\view\View;
 use GdImage;
 
-/**
- * @property string $transformer
- * @property int $version
- * @property float $quality
- * @property string $function
- * @property int $width
- * @property int $height
- */
-
 #[Grid(proxy: new ImageVariantProxy())]
 #[Database(App::DATABASE)]
 #[Table('core_fs_image_variant')]
@@ -90,33 +81,33 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
 
 
 
-    #[Column('id_fs_image_variant', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_fs_image_variant', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn("Name")]
     #[TextField("Name")]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $transformer;
+    public string $transformer;
 
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $version = 0;
+    public int $version = 0;
 
     #[NumberField("Quality (0 worst, 1 best)", step: 0.01)]
     #[Column(type: Column::TYPE_FLOAT)]
-    protected float $quality = 1;
+    public float $quality = 1;
 
     #[GridColumn(template: '96px')]
     #[Select(self::FUNCTIONS)]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $function;
+    public string $function;
 
     #[NumberField]
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $width;
+    public int $width;
 
     #[NumberField]
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $height;
+    public int $height;
 
 
 
@@ -152,8 +143,7 @@ class ImageVariantTransformer extends Model implements FileVariantTransformer {
             return $result;
         }
 
-        $this->version ??= 1;
-        $this->set(['version' => $this->version + 1]);
+        $this->version++;
 
         return parent::save();
     }

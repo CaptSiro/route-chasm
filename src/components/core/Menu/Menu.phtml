@@ -1,13 +1,13 @@
-<?php /** @var \components\core\Menu\Menu $this */
+<?php /** @var Menu $this */
 
+use components\core\Menu\Menu;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
 Javascript::import($this->getResource('menu.js'));
 Css::import($this->getResource('menu.css'));
 
-?>
-<?php if ($this->item->hasChildren()): ?>
+?><?php if ($this->item->hasChildren()): ?>
     <div
         class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isRoot() ? '' : 'hide' ?>"
         style="--menu-level: <?= $this->level ?>"

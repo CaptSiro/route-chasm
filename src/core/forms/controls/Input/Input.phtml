@@ -1,8 +1,10 @@
-<?php /** @var \core\forms\controls\Input\Input $this */
+<?php /** @var Input $this */
 
-?>
-<?php $id = $this->getId() ?>
-<div class="form-control <?= $this->cssClass ?>">
+use core\forms\controls\Input\Input;
+
+$id = $this->getId();
+
+?><div class="form-control <?= $this->cssClass ?>">
     <?php if (!empty($this->label)): ?>
         <label for="<?= $id ?>"><?= $this->label ?></label>
     <?php endif; ?>

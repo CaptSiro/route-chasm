@@ -8,7 +8,6 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
-use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\fs\FileServer;
@@ -20,15 +19,6 @@ use core\route\Path;
 use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\utils\Files;
-
-/**
- * @property int $parentId
- * @property string $name
- * @property string $hash
- * @property string $type
- * @property string $extension
- * @property int $size
- */
 
 #[Database(App::DATABASE)]
 #[Table('core_fs_file')]
@@ -50,33 +40,33 @@ class File extends Model implements FileSystemEntry, Destination {
     public static function fromName(?Directory $parent, string $name): static {
         $where = $parent->isRoot()
             ? Query::infer('id_fs_parent IS NULL AND name = ?', $name)
-            : Query::infer('id_fs_parent = ? AND name = ?', $parent->getId(), $name);
+            : Query::infer('id_fs_parent = ? AND name = ?', $parent->id, $name);
 
         return static::first(where: $where);
     }
 
 
 
-    #[Column('id_fs_file', Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_fs_file', Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_fs_parent', Column::TYPE_INTEGER, nullable: true)]
-    protected ?int $parentId;
+    public ?int $parentId;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $hash;
+    public string $hash;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $type;
+    public string $type;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $extension;
+    public string $extension;
 
     #[Column(type: Column::TYPE_LONG)]
-    protected int $size;
+    public int $size;
 
 
 
@@ -125,7 +115,7 @@ class File extends Model implements FileSystemEntry, Destination {
     }
 
     public function isChildOf(Directory $directory): bool {
-        return $this->isChildOfRaw($directory->getId());
+        return $this->isChildOfRaw($directory->id);
     }
 
     public function isChildOfRaw(int $directoryId): bool {
@@ -151,11 +141,11 @@ class File extends Model implements FileSystemEntry, Destination {
         }
 
         $this->parent = $directory;
-        return $this->setParentRaw($directory->getId());
+        return $this->setParentRaw($directory->id);
     }
 
     public function setParentRaw(mixed $parentId): static {
-        $this->set(['parentId' => $parentId]);
+        $this->parentId = $parentId;
         return $this;
     }
 
@@ -178,7 +168,7 @@ class File extends Model implements FileSystemEntry, Destination {
         }
 
         return $this->shortcuts = Shortcut::all(
-            where: Query::infer('id_fs_file = ?', $this->getId())
+            where: Query::infer('id_fs_file = ?', $this->id)
         );
     }
 
@@ -194,7 +184,7 @@ class File extends Model implements FileSystemEntry, Destination {
             return $this;
         }
 
-        $this->set(['name' => $name]);
+        $this->name = $name;
         $this->save();
         return $this;
     }

@@ -3,7 +3,6 @@
 namespace core\sideloader;
 
 use core\App;
-use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\Cors;
@@ -14,7 +13,6 @@ use core\module\Loader;
 use core\patterns\Ident;
 use core\route\Path;
 use core\route\Router;
-use core\RouteChasmEnvironment;
 use core\sideloader\api\SideLoaderApi;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;

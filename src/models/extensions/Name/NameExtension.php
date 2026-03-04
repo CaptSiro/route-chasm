@@ -30,7 +30,7 @@ trait NameExtension {
         $idColumn = $description->getIdColumn()->getName();
 
         foreach (static::all([$idColumn, 'name'], $where) as $model) {
-            $ret[$model->getId()] = $model->name;
+            $ret[$model->id] = $model->name;
         }
 
         return $ret;

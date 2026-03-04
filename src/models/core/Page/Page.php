@@ -39,16 +39,6 @@ use models\core\UserResource;
 use models\core\User\User;
 use models\extensions\Name\NameValues;
 
-/**
- * @property int $templateId
- * @property int $statusId
- * @property int $parentId
- * @property string $created
- * @property string $updated
- * @property string $publish
- * @property string $remove
- */
-
 #[Table('core_page')]
 #[Database(App::DATABASE)]
 class Page extends Model implements Destination {
@@ -82,7 +72,7 @@ class Page extends Model implements Destination {
      * @return array<Page>
      */
     public static function children(?Page $parent = null): array {
-        return self::childrenRaw($parent?->getId());
+        return self::childrenRaw($parent?->id);
     }
 
     public static function childrenRaw(?int $parentId = null): array {
@@ -108,33 +98,33 @@ class Page extends Model implements Destination {
 
 
 
-    #[Column('id_page', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_page', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_page_parent', type: Column::TYPE_INTEGER, nullable: true)]
-    protected ?int $parentId;
+    public ?int $parentId;
 
     #[Select(new NameValues(PageTemplateRecord::class), 'Template')]
     #[Column('id_page_template', type: Column::TYPE_INTEGER)]
-    protected int $templateId;
+    public int $templateId;
 
     #[Select(new NameValues(PageStatus::class), 'Status', PageStatus::ID_DRAFT)]
     #[Column('id_page_status', type: Column::TYPE_INTEGER)]
-    protected int $statusId;
+    public int $statusId;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $created;
+    public string $created;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $updated;
+    public string $updated;
 
     #[DateTime]
     #[Column(type: Column::TYPE_STRING, nullable: true)]
-    protected ?string $publish;
+    public ?string $publish;
 
     #[DateTime]
     #[Column(type: Column::TYPE_STRING, nullable: true)]
-    protected ?string $remove;
+    public ?string $remove;
 
 
 
@@ -209,12 +199,12 @@ class Page extends Model implements Destination {
     }
 
     public function setParent(?Page $parent): void {
-        $this->set(['parentId' => $parent?->getId()]);
+        $this->parentId = $parent->id;
         $this->parent = $parent;
     }
 
     public function getLocalization(Language $language): ?PageLocalization {
-        return $this->getLocalizations()[$language->getId()] ?? null;
+        return $this->getLocalizations()[$language->id] ?? null;
     }
 
     public function getLocalizationOrDefault(?Language $language = null): ?PageLocalization {
@@ -230,7 +220,7 @@ class Page extends Model implements Destination {
      * @return array<int, PageLocalization>
      */
     public function getLocalizations(): array {
-        if (is_null($id = $this->getId())) {
+        if (is_null($id = $this->id)) {
             return [];
         }
 
@@ -296,7 +286,7 @@ class Page extends Model implements Destination {
             return null;
         }
 
-        return Pages::getTemplate($record->getId());
+        return Pages::getTemplate($record->id);
     }
 
     protected bool $hasChildren;
@@ -306,7 +296,7 @@ class Page extends Model implements Destination {
             return $this->hasChildren;
         }
 
-        return $this->hasChildren = static::count(Query::infer('id_parent = ?', $this->getId())) !== 0;
+        return $this->hasChildren = static::count(Query::infer('id_parent = ?', $this->id)) !== 0;
     }
 
     /**
@@ -314,14 +304,14 @@ class Page extends Model implements Destination {
      */
     public function getChildren(): array {
         if (!isset($this->children)) {
-            $this->children = self::childrenRaw($this->getId());
+            $this->children = self::childrenRaw($this->id);
         }
 
         return $this->children;
     }
 
     public function get(string $item = ''): DataItem {
-        $file = Strings::lpad('0', (string) $this->getId(), RouteChasmEnvironment::ID_DIGITS);
+        $file = Strings::lpad('0', (string) $this->id, RouteChasmEnvironment::ID_DIGITS);
         if (!empty($item)) {
             $file .= '_'. $item;
         }
@@ -362,16 +352,14 @@ class Page extends Model implements Destination {
 
         foreach ($this->getParents() as $page) {
             if (is_null($localization = $page->getLocalizationOrDefault($language))) {
-                $id = $page->getId();
-                throw new RuntimeException("Page($id) does not have title for current or default language");
+                throw new RuntimeException($page->getMachineIdentifier() ." does not have title for current or default language");
             }
 
             $route->add(RouteSegment::static($localization->getSlug()->slug));
         }
 
         if (is_null($localization = $this->getLocalization($language))) {
-            $id = $this->getId();
-            throw new RuntimeException("Page($id) does not have title for current or default language");
+            throw new RuntimeException($this->getMachineIdentifier(). " does not have title for current or default language");
         }
 
         $route->add(RouteSegment::static($localization->getSlug()->slug));

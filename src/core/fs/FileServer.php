@@ -53,7 +53,7 @@ class FileServer extends Router {
         if (!is_null($directory)) {
             $ret->setQueryArgument(
                 RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY,
-                $directory->getId()
+                $directory->id
             );
         }
 
@@ -101,7 +101,7 @@ class FileServer extends Router {
         if (!is_null($directory)) {
             $ret->setQueryArgument(
                 RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY,
-                $directory->getId()
+                $directory->id
             );
         }
 

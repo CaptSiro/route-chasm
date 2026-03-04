@@ -187,7 +187,7 @@ class FileSystem {
 
         $directoryLinkProvider = function (Directory $directory) {
             $url = App::getInstance()->getRequest()->getUrl()->copy();
-            $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->getId());
+            $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->id);
 
             return Html::createLinkUnsafe(
                 $url,
@@ -318,7 +318,7 @@ class FileSystem {
 
     public static function getBreadCrumbUrl(Directory $directory): string {
         $url = App::getInstance()->getRequest()->getUrl()->copy();
-        $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->getId());
+        $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->id);
         return $url->toString();
     }
 }

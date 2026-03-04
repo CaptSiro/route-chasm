@@ -2,7 +2,6 @@
 
 namespace components\Lumora\widgets;
 
-use components\Lumora\widgets\Widget;
 use core\ResourceLoader;
 use core\view\Renderer;
 use core\view\View;

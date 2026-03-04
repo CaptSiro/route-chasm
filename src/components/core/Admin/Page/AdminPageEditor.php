@@ -85,7 +85,7 @@ class AdminPageEditor extends AdminNexusEditor {
         foreach ($page->getParents() as $parent) {
             $parentUrl = $url
                 ->copy()
-                ->setQueryArgument(RouteChasmEnvironment::QUERY_PAGE_PARENT, $parent->getId());
+                ->setQueryArgument(RouteChasmEnvironment::QUERY_PAGE_PARENT, $parent->id);
             $breadCrumbs[$parentUrl->toString()] = $parent->getLocalizationOrDefault($language)->title;
         }
 
@@ -115,7 +115,7 @@ class AdminPageEditor extends AdminNexusEditor {
                 $response->renderRoot(new Message($this->tr("Template is not set for this page")));
             }
 
-            $template = Pages::getTemplate($templateRecord->getId());
+            $template = Pages::getTemplate($templateRecord->id);
             $response->setHeader("X-Template", "created|performed");
             return $template->buildEditor($page);
         });

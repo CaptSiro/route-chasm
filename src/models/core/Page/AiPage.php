@@ -12,17 +12,12 @@ use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\TextArea;
 
-/**
- * @property int $pageId
- * @property string $description
- */
-
 #[Grid]
 #[Database(App::DATABASE)]
 #[Table('core_ai_page')]
 class AiPage extends Model {
     public static function fromPage(Page $page): ?static {
-        return static::fromPageRaw($page->getId());
+        return static::fromPageRaw($page->id);
     }
 
     public static function fromPageRaw(int $pageId): ?static {
@@ -33,16 +28,16 @@ class AiPage extends Model {
 
 
 
-    #[Column('id_ai_page', Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_ai_page', Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_page', Column::TYPE_INTEGER)]
-    protected int $pageId;
+    public int $pageId;
 
     #[GridColumn]
     #[TextArea]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $description;
+    public string $description;
 
 
 

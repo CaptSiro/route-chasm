@@ -25,7 +25,7 @@ class Navigator extends Router {
 
     public static function register(NavigationFactory $factory): void {
         $factoryRecord = NavigationFactoryRecord::fromName($factory->getName(), create: true);
-        self::$factories[$factoryRecord->getId()] = $factory;
+        self::$factories[$factoryRecord->id] = $factory;
     }
 
     public static function build(int $factoryId, string $data): Component {
@@ -61,7 +61,7 @@ class Navigator extends Router {
                 $s->save();
             }
 
-            $parentId = $s->getId();
+            $parentId = $s->id;
         }
     }
 
@@ -78,7 +78,7 @@ class Navigator extends Router {
                 return null;
             }
 
-            $parentId = $slug->getId();
+            $parentId = $slug->id;
         }
 
         return $slug?->build();

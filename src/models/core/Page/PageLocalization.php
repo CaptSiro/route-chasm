@@ -16,13 +16,6 @@ use core\utils\Strings;
 use models\core\Language\Language;
 use models\core\Navigation\Slug;
 
-/**
- * @property int $pageId
- * @property int $languageId
- * @property int $slugId
- * @property string $title
- */
-
 #[Table('core_page_localization')]
 #[Database(App::DATABASE)]
 class PageLocalization extends Model {
@@ -44,21 +37,21 @@ class PageLocalization extends Model {
 
 
 
-    #[Column('id_localized_page', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_localized_page', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[Column('id_page', type: Column::TYPE_INTEGER)]
-    protected int $pageId;
+    public int $pageId;
 
     #[Column('id_language', type: Column::TYPE_INTEGER)]
-    protected int $languageId;
+    public int $languageId;
 
     #[Column('id_slug', type: Column::TYPE_INTEGER)]
-    protected int $slugId;
+    public int $slugId;
 
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $title;
+    public string $title;
 
     protected Page $page;
     protected PageMeta $meta;
@@ -120,17 +113,17 @@ class PageLocalization extends Model {
     }
 
     public function setPage(Page $page): void {
-        $this->set(['pageId' => $page->getId()]);
+        $this->pageId = $page->id;
         $this->page = $page;
     }
 
     public function setSlug(Slug $slug): void {
-        $this->set(['slugId' => $slug->getId()]);
+        $this->slugId = $slug->id;
         $this->slug = $slug;
     }
 
     public function get(string $item = ''): DataItem {
-        $file = Strings::lpad('0', (string) $this->getPage()->getId(), RouteChasmEnvironment::ID_DIGITS);
+        $file = Strings::lpad('0', (string) $this->getPage()->id, RouteChasmEnvironment::ID_DIGITS);
         $file .= '_' . $this->getLanguage()->code;
         if (!empty($item)) {
             $file .= '_'. $item;

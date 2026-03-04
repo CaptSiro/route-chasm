@@ -17,11 +17,6 @@ use core\forms\description\select\Select;
 use core\forms\description\TextField;
 use core\view\View;
 
-/**
- * @property string $name
- * @property int $type
- */
-
 #[Grid]
 #[Table('core_resource')]
 #[Database(App::DATABASE)]
@@ -68,17 +63,17 @@ class UserResource extends Model {
 
 
 
-    #[Column('id_resource', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_resource', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn]
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
     #[Select(UserResource::TYPES, label: 'Types')]
     #[Column(type: Column::TYPE_INTEGER)]
-    protected int $type;
+    public int $type;
 
 
 

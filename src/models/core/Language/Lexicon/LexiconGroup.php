@@ -13,10 +13,6 @@ use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\forms\description\TextField;
 
-/**
- * @property string $name
- */
-
 #[Grid]
 #[Table('core_lexicon_group')]
 #[Database(App::DATABASE)]
@@ -42,13 +38,13 @@ class LexiconGroup extends Model {
 
 
 
-    #[Column('id_lexicon_group', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_lexicon_group', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[TextField]
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
     private array $phrases;
 
@@ -70,13 +66,13 @@ class LexiconGroup extends Model {
         }
 
         return $this->phrases = Phrase::all(
-            where: Query::infer('id_lexicon_group = ?', $this->getId())
+            where: Query::infer('id_lexicon_group = ?', $this->id)
         );
     }
 
     public function getPhraseCount(): int {
         return Phrase::count(
-            where: Query::infer('id_lexicon_group = ?', $this->getId())
+            where: Query::infer('id_lexicon_group = ?', $this->id)
         );
     }
 }

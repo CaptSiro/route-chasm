@@ -10,11 +10,6 @@ use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\utils\Strings;
 
-/**
- * @property string hash
- * @property string path
- */
-
 #[Table('core_sideloader')]
 #[Database(App::DATABASE)]
 class SideLoaderRecord extends Model {
@@ -54,11 +49,11 @@ class SideLoaderRecord extends Model {
 
 
     #[Column('id_cache', Column::TYPE_INTEGER, true)]
-    protected int $id;
+    public int $id;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $hash;
+    public string $hash;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $path;
+    public string $path;
 }

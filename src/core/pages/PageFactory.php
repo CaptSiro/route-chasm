@@ -51,14 +51,12 @@ class PageFactory implements NavigationFactory {
 
         $s = new Slug();
 
-        $s->set([
-            'slug' => $slug,
-            'parentId' => $parentId,
-            'languageId' => $languageId,
-            'factoryId' => $factory->getId(),
-            'data' => (string) $page->getId(),
-            'contextId' => $contextId,
-        ]);
+        $s->slug = $slug;
+        $s->parentId = $parentId;
+        $s->languageId = $languageId;
+        $s->factoryId = $factory->id;
+        $s->data = (string) $page->id;
+        $s->contextId = $contextId;
 
         $s->save();
         return $s;

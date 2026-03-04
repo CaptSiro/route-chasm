@@ -12,11 +12,6 @@ use core\database\sql\ModelCache;
 use core\database\sql\Table;
 use core\forms\description\TextField;
 
-/**
- * @property string $rule
- * @property string|null $label
- */
-
 #[Grid]
 #[Table('core_lexicon_rule')]
 #[Database(App::DATABASE)]
@@ -71,18 +66,18 @@ class Rule extends Model {
 
 
 
-    #[Column('id_rule', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_rule', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[TextField]
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $rule;
+    public string $rule;
 
     #[TextField]
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected ?string $label;
+    public ?string $label;
 
 
 

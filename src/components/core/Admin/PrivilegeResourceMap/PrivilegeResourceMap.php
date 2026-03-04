@@ -13,7 +13,7 @@ class PrivilegeResourceMap implements View {
 
 
     public static function createPosition(Privilege $privilege, UserResource $resource): string {
-        return $privilege->getId() .'-'. $resource->getId();
+        return $privilege->id .'-'. $resource->id;
     }
 
     public static function createPositionRaw(int $privilegeId, int $resourceId): string {

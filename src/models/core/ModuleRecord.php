@@ -11,11 +11,6 @@ use core\database\sql\Model;
 use core\database\sql\Table;
 use core\module\ModuleInfo;
 
-/**
- * @property string $identifier
- * @property string $version
- */
-
 #[Grid]
 #[Table('core_module')]
 #[Database(App::DATABASE)]
@@ -33,12 +28,12 @@ class ModuleRecord extends Model {
 
 
     #[GridColumn]
-    #[Column(type: Column::TYPE_STRING, primaryKey: true)]
-    protected string $identifier;
+    #[Column(type: Column::TYPE_STRING, isPrimaryKey: true)]
+    public string $identifier;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $version;
+    public string $version;
 
 
 

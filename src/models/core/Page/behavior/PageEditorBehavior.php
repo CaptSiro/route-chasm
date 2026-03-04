@@ -78,7 +78,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         $menus = Menu::createOptions();
         $selected = !is_null($model)
-            ? array_map(fn(Menu $x) => $x->getId(), Menu::forPage($model))
+            ? array_map(fn(Menu $x) => $x->id, Menu::forPage($model))
             : [];
 
         $pageFields->add(new MultiSelect(
@@ -110,14 +110,14 @@ class PageEditorBehavior implements EditorBehavior {
         foreach (Language::all() as $language) {
             $error = $this->localization->addControls(
                 $localizationFields = new Column(),
-                $localizations[$language->getId()] ?? null
+                $localizations[$language->id] ?? null
             );
 
             if (!is_null($error)) {
                 return $error;
             }
 
-            $localizationFields->add(new HiddenField(self::NAME_LANGUAGE_ID, $language->getId()));
+            $localizationFields->add(new HiddenField(self::NAME_LANGUAGE_ID, $language->id));
             $tabs[$language->getLocale()->getName()] = $localizationFields;
         }
 
@@ -145,7 +145,7 @@ class PageEditorBehavior implements EditorBehavior {
             return $localizations[$languageId]->slugId;
         }
 
-        $defaultLanguageId = Language::getDefault()?->getId() ?? 1; // todo
+        $defaultLanguageId = Language::getDefault()?->id ?? 1; // todo
         if (isset($localizations[$defaultLanguageId])) {
             return $localizations[$defaultLanguageId]->slugId;
         }
@@ -195,7 +195,7 @@ class PageEditorBehavior implements EditorBehavior {
             );
 
             if (!is_null($slug)) {
-                if ($hasLocalization && $localizations[$languageId]->getSlug()->getId() === $slug->getId()) {
+                if ($hasLocalization && $localizations[$languageId]->getSlug()->id === $slug->id) {
                     continue;
                 }
 
@@ -251,7 +251,7 @@ class PageEditorBehavior implements EditorBehavior {
             return new Message($this->tr('Page must have at least one title'));
         }
 
-        $defaultLanguageId = App::getDefaultLanguage()->getId();
+        $defaultLanguageId = App::getDefaultLanguage()->id;
         $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
         foreach ($languageIds as $i => $id) {
             if ($defaultLanguageId === intval($id)) {
@@ -265,7 +265,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         $languages = Arrays::changeKeys(
             Language::all(),
-            fn(Language $x) => $x->getId()
+            fn(Language $x) => $x->id
         );
 
         $page->set($body->toArray());
@@ -301,7 +301,7 @@ class PageEditorBehavior implements EditorBehavior {
     protected function createLocalization(array $object, Page $page, ?Page $parent, array $languages, int $navigationContextId): void {
         $localization = new PageLocalization();
         $localization->set($object);
-        $localization->pageId = $page->getId();
+        $localization->pageId = $page->id;
 
         $languageId = $localization->languageId = intval($object[self::NAME_LANGUAGE_ID]);
         $language = $languages[$languageId];

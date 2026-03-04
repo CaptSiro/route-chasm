@@ -41,7 +41,7 @@ class Menu extends Model implements Name {
         $factory = static::getDescription()->getFactory();
 
         $sql = $factory
-            ->allQuery(where: Query::infer('id_page = ?', $page->getId()))
+            ->allQuery(where: Query::infer('id_page = ?', $page->id))
             ->naturalJoin(self::TABLE_MENU_X_PAGES);
 
         return $factory->allExecute($sql);
@@ -49,7 +49,7 @@ class Menu extends Model implements Name {
 
 
 
-    #[Column('id_menu', type: Column::TYPE_INTEGER, primaryKey: true)]
+    #[Column('id_menu', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
 
 
@@ -63,7 +63,7 @@ class Menu extends Model implements Name {
         $description = Page::getDescription();
         $factory = $description->getFactory();
         return $factory
-            ->allQuery(where: Query::infer('id_menu = ?', $this->getId()))
+            ->allQuery(where: Query::infer('id_menu = ?', $this->id))
             ->naturalJoin(self::TABLE_MENU_X_PAGES);
     }
 
@@ -106,7 +106,7 @@ class Menu extends Model implements Name {
         $description = static::getDescription();
 
         $sql = Sql::select(self::TABLE_MENU_X_PAGES)
-            ->where(Query::infer('id_menu = ? AND id_page = ?', $this->getId(), $page->getId()));
+            ->where(Query::infer('id_menu = ? AND id_page = ?', $this->id, $page->id));
 
         return !is_null($sql->fetch($description->getConnection()));
     }
@@ -116,7 +116,7 @@ class Menu extends Model implements Name {
 
         $sql = Sql::insert(self::TABLE_MENU_X_PAGES)
             ->columns(['id_menu', 'id_page'])
-            ->value([Parameter::infer($this->getId()), Parameter::infer($page->getId())]);
+            ->value([Parameter::infer($this->id), Parameter::infer($page->id)]);
 
         $sql->run($description->getConnection());
         return $this;
@@ -126,7 +126,7 @@ class Menu extends Model implements Name {
         $description = static::getDescription();
 
         $sql = Sql::delete(self::TABLE_MENU_X_PAGES)
-            ->where(Query::infer('id_menu = ? AND id_page = ?', $this->getId(), $page->getId()));
+            ->where(Query::infer('id_menu = ? AND id_page = ?', $this->id, $page->id));
 
         $sql->run($description->getConnection());
         return $this;
@@ -136,7 +136,7 @@ class Menu extends Model implements Name {
         $description = static::getDescription();
 
         $sql = Sql::delete(self::TABLE_MENU_X_PAGES)
-            ->where(Query::infer('id_menu = ?', $this->getId()));
+            ->where(Query::infer('id_menu = ?', $this->id));
 
         $sql->run($description->getConnection());
         return $this;

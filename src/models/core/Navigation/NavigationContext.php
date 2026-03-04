@@ -3,6 +3,7 @@
 namespace models\core\Navigation;
 
 use core\App;
+use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\Table;
@@ -21,7 +22,12 @@ class NavigationContext extends Model implements Name {
             return self::DEFAULT_CONTEXT_ID;
         }
 
-        return self::fromName($contextName)?->getId()
+        return self::fromName($contextName)?->id
             ?? self::DEFAULT_CONTEXT_ID;
     }
+
+
+
+    #[Column('id_navigation_context', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 }

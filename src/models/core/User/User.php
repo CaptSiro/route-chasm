@@ -23,12 +23,6 @@ use models\core\Group\Group;
 use models\core\Privilege\Privilege;
 use models\core\UserResource;
 
-/**
- * @property string $username
- * @property string $password
- * @property string $tag
- */
-
 #[Grid(proxy: new UserProxy)]
 #[Table('core_user')]
 #[Database(App::DATABASE)]
@@ -80,18 +74,18 @@ class User extends Model {
 
 
     #[Column('id_user', Column::TYPE_INTEGER, true)]
-    protected int $id;
+    public int $id;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $username;
+    public string $username;
 
     #[Column(type: Column::TYPE_STRING)]
-    protected string $password;
+    public string $password;
 
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $tag;
+    public string $tag;
 
 
 
@@ -117,7 +111,7 @@ class User extends Model {
     }
 
     public function delete(): DatabaseAction {
-        if (self::fromSessionId(App::getInstance()->getRequest()->getSession()) === $this->getId()) {
+        if (self::fromSessionId(App::getInstance()->getRequest()->getSession()) === $this->id) {
             self::logout();
         }
 
@@ -130,7 +124,7 @@ class User extends Model {
         App::getInstance()
             ->getRequest()
             ->getSession()
-            ->set(App::KEY_LOGGED_IN_USER, $this->getId());
+            ->set(App::KEY_LOGGED_IN_USER, $this->id);
     }
 
     /**
@@ -149,7 +143,7 @@ class User extends Model {
         $sql = Sql::select($groupTable)
             ->join(
                 $driver->escapeTable('core_users_x_groups') ." AS $ug",
-                Query::infer("$ug.id_group = $groupTable.id_group AND $ug.id_user = ?", $this->getId())
+                Query::infer("$ug.id_group = $groupTable.id_group AND $ug.id_user = ?", $this->id)
             );
 
         $group->projection($sql);
@@ -173,7 +167,7 @@ class User extends Model {
             ->where(Query::infer(
                 "$ug.id_group = ? AND $ug.id_user = ?",
                 $groupId,
-                $this->getId()
+                $this->id
             ));
 
         return !is_null($sql->fetch($connection));
@@ -183,7 +177,7 @@ class User extends Model {
         $ug = self::TABLE_USERS_X_GROUPS;
 
         return Sql::delete(self::TABLE_USERS_X_GROUPS)
-            ->where(Query::infer("$ug.id_user = ?", $this->getId()))
+            ->where(Query::infer("$ug.id_user = ?", $this->id))
             ->run(static::getDescription()->getConnection());
     }
 
@@ -213,7 +207,7 @@ class User extends Model {
         $sql = Sql::insert(self::TABLE_USERS_X_GROUPS)
             ->columns(['id_group', 'id_user']);
 
-        $userId = new Parameter($this->getId(), Parameter::TYPE_INTEGER);
+        $userId = new Parameter($this->id, Parameter::TYPE_INTEGER);
 
         $memberOf = [];
         foreach ($this->getGroups() as $group) {
@@ -265,7 +259,7 @@ class User extends Model {
     }
 
     public function hasAccess(UserResource $resource, Privilege $privilege): bool {
-        return $this->hasAccessRaw($resource->getId(), $privilege->getId());
+        return $this->hasAccessRaw($resource->id, $privilege->id);
     }
 
     private array $accessCache = [];
@@ -293,7 +287,7 @@ class User extends Model {
                 $gr,
                 Query::infer(
                     "$ug.id_group = $gr.id_group AND $ug.id_user = ? AND $gr.id_resource = ? AND $gr.id_privilege = ?",
-                    $this->getId(),
+                    $this->id,
                     $resourceId,
                     $privilegeId
                 )

@@ -15,17 +15,9 @@ use core\database\sql\ModelDescription;
 use core\database\sql\Table;
 use core\forms\description\TextField;
 use core\locale\Lexicon;
-use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use models\core\Language\Language;
 use models\core\Language\Lexicon\Grid\LexiconGridRow;
-use models\core\UserResource;
-
-/**
- * @property int $groupId
- * @property string $default
- * @property bool $isDynamic
- */
 
 #[Grid]
 #[Table('core_lexicon')]
@@ -62,7 +54,7 @@ class Phrase extends Model {
         $lexiconGroup = LexiconGroup::fromName($group, create: true);
 
         return static::create([
-            "groupId" => $lexiconGroup->getId(),
+            "groupId" => $lexiconGroup->id,
             "default" => $default,
             "isDynamic" => $isDynamic,
         ]);
@@ -105,22 +97,22 @@ class Phrase extends Model {
 
 
 
-    #[Column('id_phrase', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_phrase', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[TextField]
     #[GridColumn]
     #[Column('id_lexicon_group', type: Column::TYPE_STRING)]
-    protected int $groupId;
+    public int $groupId;
 
     #[TextField]
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $default;
+    public string $default;
 
     #[GridColumn]
     #[Column('is_dynamic', type: Column::TYPE_BOOLEAN)]
-    protected bool $isDynamic;
+    public bool $isDynamic;
 
     /** @var array<Translation> */
     private array $translations;
@@ -130,6 +122,7 @@ class Phrase extends Model {
 
 
 
+    // Model
     public function getHumanIdentifier(): string {
         return $this->default;
     }
@@ -186,9 +179,9 @@ class Phrase extends Model {
 
     public function addTranslation(Language $language, string $translation, ?Rule $rule = null): Translation {
         return $this->addTranslationRaw(
-            $language->getId(),
+            $language->id,
             $translation,
-            $rule?->getId()
+            $rule?->id
         );
     }
 
@@ -203,7 +196,7 @@ class Phrase extends Model {
         }
 
         $t = Translation::createTranslationRaw(
-            $this->getId(),
+            $this->id,
             $languageId,
             $translation,
             $ruleId
@@ -218,7 +211,7 @@ class Phrase extends Model {
     }
 
     public function translate(Language $language): ?string {
-        return $this->translateRaw($language->getId());
+        return $this->translateRaw($language->id);
     }
 
     public function translateRaw(int $languageId): ?string {
@@ -232,7 +225,7 @@ class Phrase extends Model {
     }
 
     public function translateTemplate(string $value, Language $language): ?string {
-        return $this->translateTemplateRaw($value, $language->getId());
+        return $this->translateTemplateRaw($value, $language->id);
     }
 
     public function translateTemplateRaw(string $value, int $languageId): ?string {

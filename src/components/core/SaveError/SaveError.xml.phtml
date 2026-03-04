@@ -1,5 +1,8 @@
-<?php /** @var \components\core\SaveError\SaveError $this */ ?>
-<error type="<?= $this->getClass() ?>">
+<?php /** @var SaveError $this */
+
+use components\core\SaveError\SaveError;
+
+?><error type="<?= $this->getClass() ?>">
     <property><?= $this->property ?></property>
     <message><?= $this->message ?></message>
 </error>

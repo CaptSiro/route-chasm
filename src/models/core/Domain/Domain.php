@@ -23,15 +23,6 @@ use core\view\View;
 use models\extensions\Enable\Enable;
 use models\extensions\Enable\EnableExtension;
 
-/**
- * @property int $id
- * @property string $protocol
- * @property string $host
- * @property int $port
- * @property string $path
- * @property int $cost
- */
-
 #[Table('core_domain')]
 #[Database(App::DATABASE)]
 class Domain extends Model implements Enable {
@@ -84,7 +75,7 @@ class Domain extends Model implements Enable {
 
     use EnableExtension;
 
-    #[Column('id_domain', type: Column::TYPE_INTEGER, primaryKey: true)]
+    #[Column('id_domain', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
 
     #[TextField('Protocol')]

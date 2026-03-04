@@ -33,6 +33,7 @@ use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\mounts\StaticMount;
 use core\navigation\Navigator;
+use core\pages\PageFactory;
 use core\pages\Pages;
 use core\RouteChasmEnvironment;
 use core\sideloader\SideLoader;
@@ -185,7 +186,7 @@ $router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
 //    $response->send('ok');
 //});
 
-Navigator::register(\core\pages\PageFactory::getInstance());
+Navigator::register(PageFactory::getInstance());
 
 $router->bind(
     Navigator::mount(new StaticMount(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT), '/'),

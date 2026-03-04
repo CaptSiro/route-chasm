@@ -38,13 +38,13 @@ class NavigationFactoryRecord extends Model {
 
 
 
-    #[Column('id_navigation_factory', Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_navigation_factory', Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[GridColumn]
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
 
 

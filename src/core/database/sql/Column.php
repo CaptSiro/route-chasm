@@ -22,14 +22,14 @@ class Column {
     /**
      * @param string|null $name
      * @param string $type
-     * @param bool $primaryKey
+     * @param bool $isPrimaryKey
      * @param bool $nullable
      * @param Closure|null $transform Function signature: fn(mixed $value) => mixed
      */
     public function __construct(
         protected ?string $name = null,
         protected string $type = Parameter::TYPE_INFER,
-        protected bool $primaryKey = false,
+        protected bool $isPrimaryKey = false,
         protected bool $nullable = false,
         protected ?Closure $transform = null
     ) {}
@@ -45,7 +45,7 @@ class Column {
     }
 
     public function isPrimaryKey(): bool {
-        return $this->primaryKey;
+        return $this->isPrimaryKey;
     }
 
     public function isNullable(): bool {

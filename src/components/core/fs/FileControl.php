@@ -12,7 +12,6 @@ use core\html\HtmlAttribute;
 use core\locale\LexiconUnit;
 use core\view\Renderer;
 use models\core\fs\File;
-use models\core\fs\ImageVariantTransformer;
 use models\core\fs\Shortcut;
 
 class FileControl implements Control, Attribute {

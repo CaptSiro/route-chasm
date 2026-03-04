@@ -6,12 +6,11 @@ use core\database\sql\Column;
 
 const PROPERTY_EDITABLE = 'editable';
 
-/**
- * @property bool $editable
- */
 trait EditableExtension {
     #[Column('is_editable', Column::TYPE_BOOLEAN)]
-    protected bool $editable;
+    public bool $editable;
+
+
 
     public function isEditable(): bool {
         return $this->editable;
@@ -22,6 +21,6 @@ trait EditableExtension {
     }
 
     public function setEditable(bool $editable): void {
-        $this->set([PROPERTY_EDITABLE => $editable]);
+        $this->editable = $editable;
     }
 }

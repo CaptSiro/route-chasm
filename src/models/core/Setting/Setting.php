@@ -18,11 +18,6 @@ use core\view\View;
 use models\extensions\Editable\Editable;
 use models\extensions\Editable\EditableExtension;
 
-/**
- * @property string $name
- * @property string|null $value
- */
-
 #[Grid(proxy: new SettingProxy())]
 #[Table('core_setting')]
 #[Database(App::DATABASE)]
@@ -45,10 +40,9 @@ final class Setting extends Model implements Editable {
 
         $setting = new self();
         $setting->set($properties);
-        $setting->set([
-            'name' => $name,
-            'value' => $default
-        ]);
+        $setting->name = $name;
+        $setting->value = $default;
+
         $setting->save();
 
         return $setting;
@@ -58,18 +52,18 @@ final class Setting extends Model implements Editable {
 
     use EditableExtension;
 
-    #[Column('id_setting', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_setting', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 
     #[TextField('Setting', readonly: true)]
     #[GridColumn('Setting')]
     #[Column(type: Column::TYPE_STRING)]
-    protected string $name;
+    public string $name;
 
     #[TextField]
     #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
-    protected mixed $value;
+    public mixed $value;
 
 
 

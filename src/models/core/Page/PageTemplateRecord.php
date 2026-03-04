@@ -25,6 +25,6 @@ class PageTemplateRecord extends Model implements Name {
 
     use CachedNameExtension;
 
-    #[Column('id_page_template', type: Column::TYPE_INTEGER, primaryKey: true)]
-    protected int $id;
+    #[Column('id_page_template', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
+    public int $id;
 }
