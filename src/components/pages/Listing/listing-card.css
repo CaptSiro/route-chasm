@@ -38,13 +38,18 @@
 }
 
 .article-card.has-description .article-description {
-    display: block;
+    display: -webkit-box;
 }
 
 .article-description {
     color: var(--text-1);
     margin-bottom: 1rem;
     display: none;
+
+    overflow: hidden;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 .read-more {

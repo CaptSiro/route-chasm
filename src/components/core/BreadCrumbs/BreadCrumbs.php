@@ -11,13 +11,18 @@ class BreadCrumbs implements View {
 
     /**
      * @param array<string, string|View> $breadcrumbs url => label
-     * @param string $delimitor
+     * @param ?string $delimitor
      * @return static
      */
-    public static function from(array $breadcrumbs, string $delimitor = RouteChasmEnvironment::BREAD_CRUMBS_DELIMITOR): static {
+    public static function from(array $breadcrumbs, ?string $delimitor = RouteChasmEnvironment::BREAD_CRUMBS_DELIMITOR): static {
         $items = [];
 
         foreach ($breadcrumbs as $url => $label) {
+            if (!is_string($url)) {
+                $items[] = new BreadCrumb($label);
+                continue;
+            }
+
             $items[] = new BreadCrumb($label, $url);
         }
 
@@ -31,8 +36,10 @@ class BreadCrumbs implements View {
      */
     public function __construct(
         protected array $items,
-        protected string $delimitor = '>'
+        protected ?string $delimitor = null
     ) {}
+
+
 
     /**
      * @return array<BreadCrumb>
@@ -51,6 +58,11 @@ class BreadCrumbs implements View {
             $item->setTemplate($template);
         }
 
+        return $this;
+    }
+
+    public function setDelimitor(?string $delimitor): static {
+        $this->delimitor = $delimitor;
         return $this;
     }
 }

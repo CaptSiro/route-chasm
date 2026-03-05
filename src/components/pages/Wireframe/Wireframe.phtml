@@ -18,7 +18,13 @@ use components\pages\Wireframe\Wireframe;
         </div>
     <?php endif; ?>
 
-    <main class="wireframe" style="height: 100%; overflow: auto">
+    <?php if ($this->doAddBreadCrumbs): ?>
+        <div class="wireframe page-section bc-no-margin">
+            <?= $this->getBreadCrumbs() ?>
+        </div>
+    <?php endif; ?>
+
+    <main class="wireframe" style="height: 100%; min-height: 80vh; overflow: auto">
         <?php if ($this->hasContentAccess()): ?>
             <?= $this->content ?>
         <?php else: ?>

@@ -13,7 +13,7 @@ if ($count > 0) {
 <?php if ($count > 0): ?>
     <ul class="bread-crumbs">
         <?php $first = true; foreach ($this->items as $item): ?>
-            <?php if (!$first): ?>
+            <?php if (!$first && !is_null($this->delimitor)): ?>
                 <li class="delimitor"><?= $this->delimitor ?></li>
             <?php endif; ?>
 

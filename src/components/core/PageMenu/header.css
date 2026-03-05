@@ -6,7 +6,7 @@ header {
 }
 
 header > .menu {
-    max-width: 1200px;
+    max-width: var(--page-width);
     margin: 0 auto;
     padding: 0 var(--gap);
     display: flex;

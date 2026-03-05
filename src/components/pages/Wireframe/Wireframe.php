@@ -2,8 +2,10 @@
 
 namespace components\pages\Wireframe;
 
+use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Html\Html;
 use components\core\HtmlHead\HtmlHead;
+use components\core\Icon;
 use core\actions\Action;
 use core\App;
 use core\communication\Request;
@@ -60,6 +62,26 @@ class Wireframe extends Component implements Container {
         );
     }
 
+    public static function createBreadCrumbs(Page $page): array {
+        $request = App::getInstance()->getRequest();
+
+        $url = $request->getDomain()->createUrl()
+            ->setQuery($request->getUrl()->getQuery());
+
+        $breadCrumbs = [
+            $url->toString() => Icon::home()
+        ];
+
+        $language = $request->getLanguage();
+
+        foreach ($page->getParents() as $parent) {
+            $breadCrumbs[$parent->getUrl()->toString()] = $parent->getLocalizationOrDefault($language)->title;
+        }
+
+        $breadCrumbs[] = $page->getLocalizationOrDefault($language)->title;
+        return $breadCrumbs;
+    }
+
 
 
     protected Language $language;
@@ -69,6 +91,7 @@ class Wireframe extends Component implements Container {
     protected ?Action $action;
     protected bool $doAddHeader = true;
     protected bool $doAddFooter = true;
+    protected bool $doAddBreadCrumbs = true;
 
     public function __construct(
         protected Page $page,
@@ -99,8 +122,17 @@ class Wireframe extends Component implements Container {
         return $this->head;
     }
 
+    public function getBreadCrumbs(): BreadCrumbs {
+        return BreadCrumbs::from(static::createBreadCrumbs($this->page))
+            ->setDelimitor(null);
+    }
+
     public function setDoAddHeader(bool $doAddHeader): void {
         $this->doAddHeader = $doAddHeader;
+    }
+
+    public function setDoAddBreadCrumbs(bool $doAddBreadCrumbs): void {
+        $this->doAddBreadCrumbs = $doAddBreadCrumbs;
     }
 
     public function setDoAddFooter(bool $doAddFooter): void {

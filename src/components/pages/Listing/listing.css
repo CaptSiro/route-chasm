@@ -12,7 +12,7 @@ body {
 }
 
 .listing {
-    max-width: 1200px;
+    max-width: var(--page-width);
     margin: auto;
     padding: calc(var(--gap) * 2);
 }

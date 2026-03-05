@@ -7,7 +7,7 @@
 }
 
 .footer-inner {
-    max-width: 1200px;
+    max-width: var(--page-width);
     margin: 0 auto;
     padding: 0 var(--gap) calc(var(--gap) * 3) var(--gap);
 
@@ -83,7 +83,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: var(--page-width);
     margin: 0 auto;
     color: var(--text-2);
     font-size: 0.85rem;

@@ -13,7 +13,7 @@ class AdminHome extends ContainerContent {
             return $crumbs;
         }
 
-        $items[0]->setLabel(Icon::nf('nf-fa-home', 'Home'));
+        $items[0]->setLabel(Icon::home());
         return $crumbs;
     }
 }

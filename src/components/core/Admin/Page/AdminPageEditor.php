@@ -72,7 +72,7 @@ class AdminPageEditor extends AdminNexusEditor {
             ->copy()
             ->setQueryArgument(RouteChasmEnvironment::QUERY_PAGE_PARENT);
         $breadCrumbs = [
-            $url->toString() => Icon::nf('nf-fa-home', 'Home')
+            $url->toString() => Icon::home()
         ];
 
         if (empty($parentId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE_PARENT))) {
