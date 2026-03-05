@@ -14,6 +14,10 @@ function fs_renameButton_init(element) {
             body: JSON.stringify({ id, name })
         });
 
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
+
         if (!response.ok) {
             await window_alert((await response.json())?.message ?? "Unknown error");
             return;
@@ -35,6 +39,10 @@ function fs_deleteButton_init(element) {
             method: 'delete',
             body: JSON.stringify({ id, name }),
         });
+
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
 
         if (!response.ok) {
             await window_alert((await response.json())?.message ?? "Unknown error");

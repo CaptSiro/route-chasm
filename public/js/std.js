@@ -357,10 +357,12 @@ function std_dateRelative(date) {
 
 /**
  * @param {RequestInit} options
+ * @returns {RequestInit}
  */
 function std_fetch_json(options = {}) {
     options.headers ??= {};
     options.headers['X-Response-Format'] = 'application/json';
+    return options;
 }
 
 async function std_fetch_renderTextError(response) {

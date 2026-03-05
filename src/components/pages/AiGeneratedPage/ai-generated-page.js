@@ -46,12 +46,16 @@ function aiPage_save(element, { fileContentHtml, fileContentCss, fileContentJs }
             body.js = js.textContent;
         }
 
-        const response = await fetch(location.href, {
+        const response = await fetch(std_jsonEndpoint(location.href), {
             method: "put",
             body: JSON.stringify(body)
         });
 
         window_close(w);
+
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
 
         if (!response.ok) {
             await window_alert("Source files could not be saved");

@@ -23,6 +23,10 @@ function phraseTranslator_init(element) {
         const response = await fetch(translateUrl);
         window_close(w);
 
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
+
         if (response.status >= 300) {
             await window_alert(await response.text());
         }

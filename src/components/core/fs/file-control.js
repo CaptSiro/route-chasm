@@ -35,7 +35,11 @@ function form_fs_fileControl(element, { url, controlId, fileType }) {
             return;
         }
 
-        const response = await fetch(api.createInfoUrl(hash));
+        const response = await fetch(std_jsonEndpoint(api.createInfoUrl(hash)));
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
+
         if (!response.ok) {
             console.warn('Could not fetch information about selected file. ' + response.statusText);
             return;

@@ -135,6 +135,10 @@ class WAi extends Widget {
                         })
                     });
 
+                    if (await std_fetch_handleServerError(response)) {
+                        return;
+                    }
+
                     const json = await response.json();
                     window_close(w);
 

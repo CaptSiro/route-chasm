@@ -810,6 +810,10 @@ async function file_save() {
         body: JSON.stringify(structure)
     });
 
+    if (await std_fetch_handleServerError(response)) {
+        return;
+    }
+
     if (!response.ok) {
         await window_alert("Website was not saved properly");
         return;

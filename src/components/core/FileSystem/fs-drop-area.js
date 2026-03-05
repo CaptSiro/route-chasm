@@ -71,6 +71,10 @@ function fs_dropArea_init(element) {
             body: formData
         });
 
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
+
         if (!response.ok) {
             hide();
             window_close(w);

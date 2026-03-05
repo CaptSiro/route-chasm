@@ -18,12 +18,10 @@ function nexus_deleteButton(button, { url, id }) {
             return;
         }
 
-        const response = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                'X-Response-Type': 'application/json'
-            }
-        });
+        const response = await fetch(url, std_fetch_json({ method: 'DELETE' }));
+        if (await std_fetch_handleServerError(response)) {
+            return;
+        }
 
         if (response.status >= 400) {
             const result = response.json();

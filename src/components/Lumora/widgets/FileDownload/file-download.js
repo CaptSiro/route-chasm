@@ -82,7 +82,11 @@ class WFileDownload extends Widget {
                 return;
             }
 
-            const response = await fetch(url);
+            const response = await fetch(std_jsonEndpoint(url));
+            if (await std_fetch_handleServerError(response)) {
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error('Could not fetch file size');
             }

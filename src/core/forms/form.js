@@ -125,6 +125,10 @@ async function form_submit(form, event) {
 
     window_close(w);
 
+    if (await std_fetch_handleServerError(response)) {
+        return;
+    }
+
     if (response.status >= 400) {
         const fn = std_getFunction(form.dataset.onSubmitFailure) ?? form_onSubmitFailure;
         await fn(form, response);

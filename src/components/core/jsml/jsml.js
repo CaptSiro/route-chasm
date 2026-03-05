@@ -389,7 +389,12 @@ window.addEventListener('load', () => {
                 body
             });
 
+            if (await std_fetch_handleServerError(response)) {
+                return;
+            }
+
             if (!response.ok) {
+                console.warn(response.statusText);
                 return;
             }
 
