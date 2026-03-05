@@ -107,7 +107,7 @@ class FileSystem {
             "x-get" => $url,
             "x-target" => ".file-select-window .nexus",
             "x-swap" => "outer",
-            "class" => "link no-style",
+            "class" => "link no-decoration",
         ];
     }
 

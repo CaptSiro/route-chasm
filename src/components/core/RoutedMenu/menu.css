@@ -14,7 +14,7 @@
 }
 
 .menu .menu-item .head:hover {
-    background-color: var(--accent-0) !important;
+    background-color: var(--container-2) !important;
 }
 
 .menu .item-label {
@@ -23,7 +23,7 @@
 }
 
 .admin-menu .menu-item.selected > .head {
-    background-color: var(--accent-1);
+    background-color: var(--container-3);
 }
 
 .admin-menu .menu-item:not(.has-target) > .head > a {

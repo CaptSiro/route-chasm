@@ -96,7 +96,7 @@ class FileSystemEntryProxy extends NexusProxy {
         $type = Html::escapeAttribute($this->item::class);
         $content = Icon::edit();
 
-        return "<button class='link no-style' x-init='fs_renameButton_init' data-url='$rename' data-id='$id'>$content</button>";
+        return "<button class='link no-decoration' x-init='fs_renameButton_init' data-url='$rename' data-id='$id'>$content</button>";
     }
 
     protected function createDeleteValue(?string $url): string {
@@ -108,6 +108,6 @@ class FileSystemEntryProxy extends NexusProxy {
         $id = $this->item->id;
         $type = Html::escapeAttribute($this->item::class);
         $content = Icon::delete();
-        return "<button class='link no-style' x-init='fs_deleteButton_init' data-url='$delete' data-id='$id'>$content</button>";
+        return "<button class='link no-decoration' x-init='fs_deleteButton_init' data-url='$delete' data-id='$id'>$content</button>";
     }
 }

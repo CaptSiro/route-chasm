@@ -54,7 +54,7 @@ class NexusProxy extends TypeProxy {
 
     protected function createEditValue(?string $url): string {
         $content = Icon::edit();
-        return "<a href='$url' class='link no-style'>$content</a>";
+        return "<a href='$url' class='no-decoration'>$content</a>";
     }
 
     protected function getDeleteValue(): string {
@@ -71,7 +71,7 @@ class NexusProxy extends TypeProxy {
         $content = Icon::delete();
 
         $attributes = [
-            'class' => 'link no-style',
+            'class' => 'link no-decoration',
             'x-init' => 'nexus_deleteButton',
             'data-url' => $url,
         ];

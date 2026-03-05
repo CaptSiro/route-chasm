@@ -10,7 +10,7 @@ use core\App;
     <div class="project">
         <h2>
             <a
-                class="no-link"
+                class="no-decoration"
                 href="<?= $app->attach(AdminRouter::getInstance()->getPath()) ?>"
             >
                 <?= $project ?>
@@ -20,7 +20,7 @@ use core\App;
             <span class="author">
                 <?php if (!is_null($authorLink = $app->getProjectAuthorLink())): ?>
                     <?= $this->tr('by') ?> <a
-                        class="no-link"
+                        class="no-decoration"
                         href="<?= $authorLink ?>"
                         target="_blank"
                     ><?= $author ?></a>

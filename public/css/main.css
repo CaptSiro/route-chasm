@@ -56,24 +56,47 @@ a {
     color: var(--text-0);
 }
 
-a.no-link {
+a.no-decoration {
     text-decoration: none;
 }
 
-a:hover {
-    color: var(--text-0);
+a:hover,
+a:visited:hover,
+a.no-decoration:visited:hover {
+    color: var(--accent-3);
 }
 
 a:visited {
-    color: var(--text-1);
+    color: var(--text-2);
 }
 
-a.no-link:visited {
+a.no-decoration:visited {
     color: var(--text-0);
 }
 
 [contenteditable=true]:focus {
     outline: unset;
+}
+
+.link {
+    all: unset;
+    text-decoration: underline;
+    color: var(--text-0);
+}
+
+.link.no-decoration {
+    text-decoration: unset !important;
+}
+
+.link:hover {
+    all: unset;
+    cursor: pointer;
+    text-decoration: underline;
+    color: var(--accent-3);
+}
+
+.link.no-decoration:hover {
+    text-decoration: unset !important;
 }
 
 button,
@@ -105,27 +128,6 @@ button:disabled:hover {
     background-color: var(--container-1);
     cursor: not-allowed;
     text-decoration: none;
-}
-
-.link {
-    all: unset;
-    text-decoration: underline;
-    color: var(--text-0);
-}
-
-.link.no-style {
-    text-decoration: unset !important;
-}
-
-.link:hover {
-    all: unset;
-    cursor: pointer;
-    text-decoration: underline;
-    color: var(--accent-3);
-}
-
-.link.no-style:hover {
-    text-decoration: unset !important;
 }
 
 .transition-background {
