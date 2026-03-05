@@ -356,6 +356,90 @@ function std_dateRelative(date) {
 
 
 /**
+ * @param {RequestInit} options
+ */
+function std_fetch_json(options = {}) {
+    options.headers ??= {};
+    options.headers['X-Response-Format'] = 'application/json';
+}
+
+async function std_fetch_renderTextError(response) {
+    await window_alert(await response.text(), WINDOW_ALERT_SETTINGS);
+}
+
+async function std_fetch_renderHtmlError(response) {
+    const domParser = new DOMParser();
+    const dom = domParser.parseFromString(await response.text(), 'text/html');
+
+    const content = jsml.div("pad-gap");
+    content.innerHTML = dom.body.innerHTML;
+
+    return new Promise(resolve => {
+        const w = window_create(
+            'Internal Server Error',
+            content,
+            WINDOW_ALERT_SETTINGS
+        );
+
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve());
+        window_open(w);
+    });
+}
+
+async function std_fetch_renderJsonError(response) {
+    /** @type {InternalServerError} */
+    const e = await response.json();
+    const message = e.type === 'exception'
+        ? e.exception + ': ' + e.message
+        : 'Error: ' + e.message;
+    const trace = e.type === 'exception'
+        ? e.trace
+        : [{ file: e.file, line: e.line }];
+
+    const section = jsml.section("pad-gap", [
+        jsml.h1({ style: { color: 'var(--error)' } }, message)
+    ]);
+
+    for (const t of trace) {
+        section.append(jsml.div(_, `at ${t.file}: ${t.line}`));
+    }
+
+    return new Promise(resolve => {
+        const w = window_create(
+            'Internal Server Error',
+            section,
+            WINDOW_ALERT_SETTINGS
+        );
+
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve());
+        window_open(w);
+    });
+}
+
+/**
+ * @param {Response} response
+ * @return {Promise<boolean>}
+ */
+async function std_fetch_handleServerError(response) {
+    if (response.status < 500) {
+        return false;
+    }
+
+    const contentType = response.headers.get('Content-Type') ?? 'text/plain';
+    if (contentType.startsWith('application/json') || contentType === 'json') {
+        await std_fetch_renderJsonError(response);
+    } else if (contentType.startsWith('text/html') || contentType === 'html') {
+        await std_fetch_renderHtmlError(response);
+    } else {
+        await std_fetch_renderTextError(response);
+    }
+
+    return true;
+}
+
+
+
+/**
  * @param {HTMLElement} element
  * @return {string}
  */

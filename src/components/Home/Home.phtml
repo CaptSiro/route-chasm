@@ -14,36 +14,3 @@ use components\Home\Home;
 </main>
 
 <?= Footer::default() ?>
-
-<!--<hr>-->
-<!--<h3>Languages</h3>-->
-<!--<span>--><?php //= $this->trg('home', 'Selected') ?><!--: --><?php //= \core\App::getInstance()->getRequest()->getLanguage()->getLocale()->getName() ?><!--</span>-->
-<?php //foreach (\core\App::getInstance()->getLocales() as $locale): ?>
-<!--    <div>-->
-<!--        --><?php //= $this->createLanguageLink($locale) ?>
-<!--    </div>-->
-<?php //endforeach; ?>
-<!---->
-<!--<div>-->
-<!---->
-<!--    --><?php //= $this->trtg('home', '{} flowers', 0,
-//        templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?>
-<!---->
-<!--</div>-->
-<!--<div>--><?php //= $this->trtg('home', '{} flowers', 1, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?><!--</div>-->
-<!--<div>--><?php //= $this->trtg('home', '{} flowers', 2, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?><!--</div>-->
-<!--<div>--><?php //= $this->trtg('home', '{} flowers', 3, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?><!--</div>-->
-<!--<div>--><?php //= $this->trtg('home', '{} flowers', 4, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?><!--</div>-->
-<!--<div>--><?php //= $this->trtg('home', '{} flowers', 5, templates: EnglishUS::pluralize('{} flower', '{} flowers')) ?><!--</div>-->
-<!---->
-<!---->
-<!---->
-<?php //$file = \models\core\fs\File::fromId(5) ?>
-<!--<img src="--><?php //= $file->getUrl(ImageVariant::get(ImageVariant::TRANSFORMER_ARTICLE_THUMBNAIL)) ?><!--"-->
-<!--     alt="hom" width="400" height="300">-->
-<!--<img src="--><?php //= $file->getUrl(ImageVariant::get('article-icon')) ?><!--"-->
-<!--     alt="hom" width="100" height="100">-->
-<!--<img src="--><?php //= $file->getUrlToModel() ?><!--" alt="hom" width="384" height="216">-->
-<!---->
-<!---->
-<?php //= new FileControl('image', 'Homepage Image') ?>

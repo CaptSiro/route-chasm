@@ -149,6 +149,10 @@ class Request {
     }
 
     public function getHeaders(): ?array {
+        if ($this->headers === null) {
+            $this->headers = apache_request_headers();
+        }
+
         return $this->headers;
     }
 
