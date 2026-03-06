@@ -22,8 +22,14 @@ class SelectQuery implements Portion, SqlQuery {
     protected array $joins = [];
     protected ?array $groups;
     protected ?array $orders;
+    protected bool $isDistinct = false;
 
 
+
+    public function distinct(bool $isDistinct = true): static {
+        $this->isDistinct = $isDistinct;
+        return $this;
+    }
 
     public function clearProjection(): static {
         $this->projection = [];
@@ -109,6 +115,10 @@ class SelectQuery implements Portion, SqlQuery {
 
         $parameters = [];
         $sql = 'SELECT ';
+
+        if ($this->isDistinct) {
+            $sql .= 'DISTINCT ';
+        }
 
         if (isset($this->projection)) {
             $sql .= join(', ', $this->projection);

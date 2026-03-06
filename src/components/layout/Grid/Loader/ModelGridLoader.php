@@ -2,9 +2,9 @@
 
 namespace components\layout\Grid\Loader;
 
-use components\core\PaginationControl\Pagination;
-use components\core\PaginationControl\PaginationControl;
-use components\core\PaginationControl\PortionUrlCreator;
+use components\core\Pagination\Pagination;
+use components\core\Pagination\PaginationControl;
+use components\core\Pagination\PortionUrlCreator;
 use components\layout\Grid\GridLayout;
 use core\App;
 use core\database\sql\ModelFactory;

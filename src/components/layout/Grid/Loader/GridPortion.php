@@ -2,7 +2,7 @@
 
 namespace components\layout\Grid\Loader;
 
-use components\core\PaginationControl\Portion;
+use components\core\Pagination\Portion;
 
 trait GridPortion {
     use Portion;

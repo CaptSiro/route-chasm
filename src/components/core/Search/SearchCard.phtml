@@ -1,0 +1,11 @@
+<?php /** @var SearchCard $this */
+
+use components\core\Search\SearchCard;
+
+?><a href="<?= $this->page->getUrl() ?>" class="search-result">
+    <div class="search-result-title"><?= $this->localization->title ?></div>
+
+    <?php if (!is_null($template = $this->page->getTemplate())): ?>
+        <div class="search-result-meta"><?= $template->getName() ?></div>
+    <?php endif; ?>
+</a>

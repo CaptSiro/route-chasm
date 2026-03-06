@@ -26,3 +26,10 @@ declare type LocalizationApi = {
     description: string,
     releaseDate: string,
 }
+
+
+
+declare type SearchApi = {
+    searchFullTextUrl: string,
+    searchQuery: string
+}

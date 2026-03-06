@@ -24,7 +24,7 @@ use components\pages\Wireframe\Wireframe;
         </div>
     <?php endif; ?>
 
-    <main class="wireframe" style="height: 100%; min-height: 80vh; overflow: auto">
+    <main class="wireframe page-container">
         <?php if ($this->hasContentAccess()): ?>
             <?= $this->content ?>
         <?php else: ?>

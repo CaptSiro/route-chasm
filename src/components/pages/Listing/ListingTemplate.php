@@ -3,6 +3,7 @@
 namespace components\pages\Listing;
 
 use components\core\Message\Message;
+use components\core\Search\SearchCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\pages\PageTemplate;
@@ -33,7 +34,7 @@ class ListingTemplate implements PageTemplate {
     }
 
     public function buildContent(Wireframe $wireframe, Page $page): Component {
-        $setting = Setting::fromName(
+        $portionSize = Setting::fromName(
             self::NAME_PORTION_SIZE,
             true,
             RouteChasmEnvironment::LISTING_PORTION_SIZE,
@@ -43,12 +44,16 @@ class ListingTemplate implements PageTemplate {
         return new Listing(
             $page,
             $wireframe->getLocalization(),
-            $setting->toInt()
+            $portionSize->toInt()
         );
     }
 
     public function buildListingCard(Page $page, Language $language): View {
         return new ListingCard($page, $page->getLocalization($language));
+    }
+
+    public function buildSearchCard(Page $page, Language $language): View {
+        return new SearchCard($page, $page->getLocalization($language));
     }
 
     public function hasEditor(): bool {

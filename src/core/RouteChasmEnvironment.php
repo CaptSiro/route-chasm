@@ -15,6 +15,7 @@ class RouteChasmEnvironment {
     public const MOUNT_DEFAULT_CONTEXT = '';
     public const MOUNT_FILE_SERVER = 'fs';
 
+    public const QUERY_SEARCH = 'q';
     public const QUERY_EXECUTE = 'x';
     public const QUERY_REQUEST_FORMAT = 'i';
     public const QUERY_REQUEST_FORMAT_LONG = 'in';
@@ -37,6 +38,11 @@ class RouteChasmEnvironment {
     public const QUERY_FS_FILE_TYPE = 'file-type';
     public const QUERY_FILE_SYSTEM_DIRECTORY = 'directory';
 
+    public const TRANSITIVE_QUERIES = [
+        self::QUERY_LANGUAGE,
+        self::QUERY_LANGUAGE_LONG,
+    ];
+
     public const PROJECT = "PROJECT";
     public const PROJECT_AUTHOR = "PROJECT_AUTHOR";
     public const PROJECT_AUTHOR_LINK = "PROJECT_AUTHOR_LINK";
@@ -57,6 +63,8 @@ class RouteChasmEnvironment {
     public const USER_RESOURCE_DOMAIN = 'Domains';
     public const USER_RESOURCE_SYSTEM = 'System';
 
+    public const SEARCH_MIN_LENGTH = 3;
+    public const SEARCH_DROPDOWN_MAX_ENTRIES = 5;
     public const GRID_DEFAULT_PORTION_SIZE = 20;
     public const LISTING_PORTION_SIZE = 21;
     public const ID_DIGITS = 4;

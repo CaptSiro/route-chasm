@@ -1,6 +1,6 @@
 <?php
 
-namespace components\core\PaginationControl;
+namespace components\core\Pagination;
 
 use core\database\sql\query\SelectQuery;
 

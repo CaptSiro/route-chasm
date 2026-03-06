@@ -2,6 +2,7 @@
 
 namespace components\core\HtmlHead;
 
+use components\core\Search\Search;
 use components\core\WebPage\Head;
 use core\App;
 use core\fs\FileSystem;
@@ -30,6 +31,7 @@ class HtmlHead extends Component implements Head {
         }
 
         $this->addElement(new StringRenderer(FileSystem::createApi()));
+        $this->addElement(new StringRenderer(Search::createApi()));
     }
 
 

@@ -2,10 +2,12 @@
 
 namespace core\url;
 
+use core\collections\Dictionary;
 use core\collections\dictionary\StrictMap;
 use core\collections\StrictDictionary;
 use core\Copy;
 use core\route\Path;
+use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\utils\Strings;
 use JsonSerializable;
@@ -123,6 +125,16 @@ class Url implements Copy, JsonSerializable {
      */
     public function getQuery(): StrictDictionary {
         return $this->query;
+    }
+
+    public function loadTransitiveQueries(Dictionary $query): static {
+        foreach (RouteChasmEnvironment::TRANSITIVE_QUERIES as $transitive) {
+            if (!is_null($value = $query->get($transitive))) {
+                $this->setQueryArgument($transitive, $value);
+            }
+        }
+
+        return $this;
     }
 
     public function getQueryString(): string {

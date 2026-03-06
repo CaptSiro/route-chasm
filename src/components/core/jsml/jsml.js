@@ -378,6 +378,7 @@ window.addEventListener('load', () => {
 
             const url = new URL(ajaxInfo.url, document.baseURI);
             url.searchParams.set('s', '');
+            url.searchParams.set('jsml', '');
             url.searchParams.set('f', '');
 
             const body = element.hasAttribute(X_DATA)

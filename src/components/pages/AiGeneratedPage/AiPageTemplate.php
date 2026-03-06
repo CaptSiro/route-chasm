@@ -4,6 +4,7 @@ namespace components\pages\AiGeneratedPage;
 
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor\AdminNexusEditor;
+use components\core\Search\SearchCard;
 use components\layout\Grid\description\GridDescription;
 use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
@@ -61,6 +62,10 @@ class AiPageTemplate implements PageTemplate {
 
     public function buildListingCard(Page $page, Language $language): View {
         return new ListingCard($page, $page->getLocalization($language));
+    }
+
+    public function buildSearchCard(Page $page, Language $language): View {
+        return new SearchCard($page, $page->getLocalization($language));
     }
 
     public function hasEditor(): bool {

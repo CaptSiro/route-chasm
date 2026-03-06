@@ -48,7 +48,7 @@ class FileServer extends Router {
             ->getDomain()
             ->createUrl($path);
 
-        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
 
         if (!is_null($directory)) {
             $ret->setQueryArgument(
@@ -73,7 +73,7 @@ class FileServer extends Router {
             ->getDomain()
             ->createUrl($path);
 
-        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
         return $ret;
     }
 
@@ -96,7 +96,7 @@ class FileServer extends Router {
             ->getDomain()
             ->createUrl($path);
 
-        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
 
         if (!is_null($directory)) {
             $ret->setQueryArgument(
@@ -118,9 +118,7 @@ class FileServer extends Router {
             ->getDomain()
             ->createUrl($path);
 
-        $ret->getQuery()
-            ->load($request->getUrl()->getQuery()->toArray());
-
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
         return $ret;
     }
 

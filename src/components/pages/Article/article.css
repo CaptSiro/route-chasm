@@ -6,9 +6,9 @@ body {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: var(--gap);
-    max-width: 1400px;
+    max-width: var(--page-width);
     margin: 0 auto;
-    padding: calc(var(--gap) * 2);
+    padding: var(--gap);
 }
 
 .article-wrapper {

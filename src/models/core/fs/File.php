@@ -264,7 +264,7 @@ class File extends Model implements FileSystemEntry, Destination {
             ->getDomain()
             ->createUrl($path);
 
-        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
         return $ret;
     }
 

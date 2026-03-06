@@ -2,7 +2,7 @@
 
 namespace components\layout\Grid\Loader;
 
-use components\core\PaginationControl\PortionUrlCreator;
+use components\core\Pagination\PortionUrlCreator;
 use components\layout\Grid\GridLayout;
 use core\RouteChasmEnvironment;
 use core\url\Url;

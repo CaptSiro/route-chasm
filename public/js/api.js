@@ -79,3 +79,12 @@ function api_loadFileSystem() {
 function api_loadLocalization() {
     return api_getObject("#api-localization");
 }
+
+
+
+/**
+ * @return {SearchApi|null|any}
+ */
+function api_loadSearch() {
+    return api_getObject("#api-search");
+}

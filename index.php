@@ -1,12 +1,15 @@
 <?php
 
 use components\core\Admin\Home\AdminHome;
+use components\core\Search\Search;
 use components\Home\Home;
 use core\actions\Assets\Assets;
 use core\actions\Assets\policy\ShowExplorerPolicy;
 use core\admin\Admin;
 use core\admin\AdminRouter;
 use core\App;
+use core\communication\Request;
+use core\communication\Response;
 use core\configs\AppConfig;
 use core\configs\EnvConfig;
 use core\database\sql\connections\MySqlDriver;
@@ -37,6 +40,7 @@ $router = $app->getMainRouter();
 
 
 
+$router->bind('/search', Search::getInstance());
 $router->bind('/fs', FileServer::getInstance());
 $router->bind('/import', SideLoader::getInstance()->initRouter($app));
 $router->bind(
@@ -52,11 +56,6 @@ $router->expose('public', (new Assets(__DIR__ .'/public'))
 
 
 $router->use('/', new Home());
-
-
-
-$router->use('/exc', fn() => throw new Exception('Test exception'));
-$router->use('/err', fn() => trigger_error("Test error", E_USER_ERROR));
 
 
 

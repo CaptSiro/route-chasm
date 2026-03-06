@@ -12,6 +12,8 @@ use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\query\Query;
+use core\database\sql\query\SelectQuery;
+use core\database\sql\Sql;
 use core\database\sql\Table;
 use core\forms\description\DateTime;
 use core\forms\description\select\Select;
@@ -94,6 +96,43 @@ class Page extends Model implements Destination {
             UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE),
             $privilege
         );
+    }
+
+    public static function searchFullTextQuery(string $query, ?int $languageId = null): SelectQuery {
+        $page = static::getDescription();
+        $localization = PageLocalization::getDescription();
+        $title = $localization->getEscapedColumn('title');
+        $meta = PageMeta::getDescription();
+        $description = $meta->getEscapedColumn('description');
+
+        $expression = "%$query%";
+
+        $sql = Sql::select($page->getEscapedTable())
+            ->distinct()
+            ->naturalJoin($localization->getEscapedTable())
+            ->naturalJoin($meta->getEscapedTable())
+            ->where(static::publishedQuery())
+            ->where(static::isStatusQuery(PageStatus::ID_PUBLIC))
+            ->where(Query::infer("($title LIKE ? OR $description LIKE ?)", $expression, $expression));
+
+        if (!is_null($languageId)) {
+            $sql->where(Query::infer('id_language = ?', $languageId));
+        }
+
+        $page->projection($sql);
+
+        return $sql;
+    }
+
+    /**
+     * @param string $query
+     * @return array<Page>
+     */
+    public static function searchFullText(string $query, ?int $languageId = null): array {
+        $description = static::getDescription();
+
+        return $description->getFactory()
+            ->allExecute(static::searchFullTextQuery($query, $languageId));
     }
 
 
@@ -373,7 +412,7 @@ class Page extends Model implements Destination {
             ->getDomain()
             ->createUrl($path);
 
-        $ret->getQuery()->load($request->getUrl()->getQuery()->toArray());
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
         return $ret;
     }
 

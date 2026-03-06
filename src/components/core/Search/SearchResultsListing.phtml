@@ -1,0 +1,29 @@
+<?php /** @var SearchResultsListing $this */
+
+use components\core\Html\Html;
+use components\core\PageMenu\Footer;
+use components\core\PageMenu\Header;
+use components\core\Search\SearchResultsListing;
+use components\pages\Listing\Listing;
+use core\App;
+
+Listing::importAssets();
+
+?><?= Header::default() ?>
+
+<div class="listing page-container">
+    <h1 class="page-title"><?= $this->tr('Search results for') ?>: <?= Html::escape($this->query) ?></h1>
+
+    <div class="article-grid">
+        <?php $language = App::getInstance()->getRequest()->getLanguage() ?>
+        <?php foreach ($this->factory->getModels() as $page): ?>
+            <?= $page->getTemplate()->buildListingCard($page, $language) ?>
+        <?php endforeach; ?>
+    </div>
+
+    <nav class="pagination">
+        <?= $this->factory->createPagination() ?>
+    </nav>
+</div>
+
+<?= Footer::default() ?>

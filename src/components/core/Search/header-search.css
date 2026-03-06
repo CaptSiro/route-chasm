@@ -1,0 +1,126 @@
+.header-search {
+    position: relative;
+    width: 320px;
+}
+
+/* input container */
+
+.header-search-form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    background: var(--container-0);
+    border: 2px solid var(--container-2);
+    border-radius: var(--border-radius);
+
+    overflow: hidden;
+}
+
+/* input */
+
+.header-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+
+    padding: 0.55rem 0.75rem;
+    color: var(--text-0);
+
+    font-size: 0.9rem;
+}
+
+.header-search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    padding: 0.5rem 0.7rem;
+
+    cursor: pointer;
+    color: var(--text-0);
+}
+
+.header-search-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+
+    background: var(--container-1);
+    border: 2px solid var(--container-2);
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+    overflow: hidden;
+
+    display: none;
+}
+
+.header-search:focus-within .header-search-dropdown {
+    display: block;
+}
+
+.search-results {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.search-result {
+    display: block;
+    text-decoration: none;
+
+    padding: 0.6rem 0.9rem;
+
+    border-bottom: 1px solid var(--container-2);
+}
+
+.search-result:hover {
+    background: var(--accent-0);
+}
+
+.search-result-title {
+    font-size: 0.9rem;
+    color: var(--text-1);
+}
+
+.search-result-meta {
+    font-size: 0.75rem;
+    color: var(--text-2);
+}
+
+.search-empty {
+    padding: 1rem;
+    text-align: center;
+
+    font-size: 0.85rem;
+    color: var(--text-2);
+}
+
+.search-footer {
+    border-top: 1px solid var(--container-2);
+}
+
+.search-footer a {
+    display: block;
+
+    text-align: center;
+    text-decoration: none;
+
+    padding: 0.6rem;
+
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    color: var(--text-2);
+}
+
+.search-footer a:hover {
+    background: var(--accent-0);
+    color: var(--text-1);
+}

@@ -2,8 +2,8 @@
 
 namespace models\core\Language\Lexicon\Grid;
 
-use components\core\PaginationControl\Pagination;
-use components\core\PaginationControl\PaginationControl;
+use components\core\Pagination\Pagination;
+use components\core\Pagination\PaginationControl;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\database\sql\ModelFactory;
 use core\database\sql\query\SelectQuery;

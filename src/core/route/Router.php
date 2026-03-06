@@ -5,11 +5,13 @@ namespace core\route;
 use Closure;
 use core\actions\Action;
 use core\actions\Procedure;
+use core\App;
 use core\collections\dictionary\StrictStack;
 use core\collections\graph\TreeVertex;
 use core\communication\Request;
 use core\communication\Response;
 use core\RouteChasmEnvironment;
+use core\url\Url;
 
 class Router {
     protected RouteTree $structure;
@@ -141,5 +143,23 @@ class Router {
 
     public function getRoute(): Route {
         return $this->structure->getRoute();
+    }
+
+    protected function createUrl(?Path $relative = null): Url {
+        $request = App::getInstance()->getRequest();
+        $path = $this->getRoute()->toStaticPath();
+
+        if (!is_null($relative)) {
+            foreach ($relative as $segment) {
+                $path->append($segment);
+            }
+        }
+
+        $ret = $request
+            ->getDomain()
+            ->createUrl($path);
+
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
+        return $ret;
     }
 }

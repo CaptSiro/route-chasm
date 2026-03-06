@@ -1,12 +1,3 @@
-:root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --muted: #94a3b8;
-    --text: #f1f5f9;
-    --accent: #3b82f6;
-    --border: #334155;
-}
-
 body {
     line-height: 1.4;
 }
@@ -14,7 +5,7 @@ body {
 .listing {
     max-width: var(--page-width);
     margin: auto;
-    padding: calc(var(--gap) * 2);
+    padding: var(--gap);
 }
 
 .page-title {

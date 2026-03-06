@@ -2,21 +2,20 @@
 
 use components\core\Html\Html;
 use components\pages\Listing\Listing;
-use core\sideloader\importers\Css\Css;
 
-Css::import($this->getResource('listing.css'));
+Listing::importAssets();
 
 ?><div class="listing">
     <h1 class="page-title"><?= Html::escape($this->localization->title) ?></h1>
 
     <div class="article-grid">
         <?php $language = $this->localization->getLanguage() ?>
-        <?php foreach ($this->getPages() as $page): ?>
+        <?php foreach ($this->factory->getModels() as $page): ?>
             <?= $page->getTemplate()->buildListingCard($page, $language) ?>
         <?php endforeach; ?>
     </div>
 
     <nav class="pagination">
-        <?= $this->getPagination() ?>
+        <?= $this->factory->createPagination() ?>
     </nav>
 </div>

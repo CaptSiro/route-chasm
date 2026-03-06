@@ -2,8 +2,8 @@
 
 namespace models\core\Page\Grid;
 
-use components\core\PaginationControl\Pagination;
-use components\core\PaginationControl\PaginationControl;
+use components\core\Pagination\Pagination;
+use components\core\Pagination\PaginationControl;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\communication\Request;

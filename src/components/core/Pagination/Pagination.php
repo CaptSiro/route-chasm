@@ -1,6 +1,6 @@
 <?php
 
-namespace components\core\PaginationControl;
+namespace components\core\Pagination;
 
 interface Pagination {
     public function setCurrent(int $current): static;

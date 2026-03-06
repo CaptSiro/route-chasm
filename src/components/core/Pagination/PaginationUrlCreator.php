@@ -1,6 +1,6 @@
 <?php
 
-namespace components\core\PaginationControl;
+namespace components\core\Pagination;
 
 use core\url\Url;
 
