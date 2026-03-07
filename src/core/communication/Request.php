@@ -142,7 +142,8 @@ class Request {
 
         $selected = $this->languageSelector->select($this);
         if (!is_null($selected)) {
-            return $this->language = Language::fromCode($selected) ?? App::getDefaultLanguage();
+            return $this->language = Language::fromCode($selected)
+                ?? App::getDefaultLanguage();
         }
 
         return $this->language = App::getDefaultLanguage();

@@ -98,7 +98,7 @@ class Route implements ArrayIterator, Copy {
 
 
     public function __construct(
-        protected string $source
+        protected string $source = ''
     ) {
         $this->segments = [];
     }

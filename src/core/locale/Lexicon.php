@@ -12,7 +12,9 @@ class Lexicon {
     }
 
     public static function translate(string $group, string $default, ?Language $targetLanguage = null): string {
-        $language = $targetLanguage ?? App::getInstance()->getRequest()->getLanguage();
+        $language = $targetLanguage ?? App::getInstance()
+            ->getRequest()
+            ->getLanguage();
 
         if ($language->code === App::getDefaultLanguage()->code) {
             return $default;

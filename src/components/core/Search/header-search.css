@@ -3,21 +3,17 @@
     width: 320px;
 }
 
-/* input container */
-
 .header-search-form {
     width: 100%;
     display: flex;
     align-items: center;
 
     background: var(--container-0);
-    border: 2px solid var(--container-2);
+    border: 2px solid var(--container-3);
     border-radius: var(--border-radius);
 
     overflow: hidden;
 }
-
-/* input */
 
 .header-search-input {
     flex: 1;

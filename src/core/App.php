@@ -69,7 +69,8 @@ class App implements Loader {
     }
 
     public static function getDefaultLanguage(): Language {
-        return Language::getDefault() ?? Language::fromEnv();
+        return Language::getDefault()
+            ?? Language::fromEnv();
     }
 
     public static function createOptionDoNotAutoload(string $moduleClass): string {

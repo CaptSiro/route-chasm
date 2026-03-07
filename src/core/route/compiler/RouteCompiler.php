@@ -29,7 +29,7 @@ class RouteCompiler {
      * @return Route
      */
     public function parse(string $pattern, array $parameters = []): Route {
-        $route = new Route($pattern);
+        $route = new Route();
         $segment = '';
         $source = '';
 
@@ -86,7 +86,8 @@ class RouteCompiler {
                     }
 
                     $route->add(new RouteSegment($source, $segment));
-                    $segment = $source = "";
+                    $segment = "";
+                    $source = "";
                     break;
                 }
 
