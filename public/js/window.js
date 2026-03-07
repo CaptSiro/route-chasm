@@ -262,8 +262,9 @@ function window_init(element) {
         window_addDraggable(element);
     }
 
+    const destroyOnClose = Boolean(element.dataset.destroyOnClose ?? false);
     $('.close', element)?.addEventListener('click', () => {
-        window_close(element);
+        window_close(element, destroyOnClose);
     });
 
     element.addEventListener("pointerdown", () => {

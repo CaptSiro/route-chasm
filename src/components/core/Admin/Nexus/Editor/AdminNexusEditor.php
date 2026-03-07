@@ -18,6 +18,7 @@ use core\forms\FormAction;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\route\RouteNode;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\ContainerContent;
 use core\view\View;
@@ -124,6 +125,12 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             : 'Update';
 
         return $title;
+    }
+
+    public function onBind(RouteNode $bindingPoint): void {
+        parent::onBind($bindingPoint);
+
+        $router = $bindingPoint->getRouter();
     }
 
     protected function sendResult(Request $request, Response $response, Model $model, EditorBehaviorAction $action): void {

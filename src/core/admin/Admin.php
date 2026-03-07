@@ -2,6 +2,7 @@
 
 namespace core\admin;
 
+use components\core\Admin\AdminLanguageEditor;
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\PhpInfo\PhpInfo;
 use components\core\Admin\SptfTests\SptfTests;
@@ -34,6 +35,7 @@ use models\core\Setting\Setting;
 use models\core\User\User;
 use models\core\User\UserEditorBehavior;
 use models\core\UserResource;
+use models\extensions\IsDefault\IsDefaultExtension;
 
 class Admin {
     private static Mount $mount;
@@ -105,6 +107,7 @@ class Admin {
             Language::getGridDescription(),
             createButtonLabel: 'Add'
         );
+        $language->addExtension(new IsDefaultExtension());
         $language->setUserResource($localization);
         $language->setRouter(
             Route::menu("/Localization/Languages")

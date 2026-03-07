@@ -8,13 +8,15 @@ use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
+use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelCache;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\locale\Locale;
 use core\RouteChasmEnvironment;
-use models\extensions\IsDefault\IsDefaultExtension;
+use core\view\View;
+use models\extensions\IsDefault\IsDefaultTrait;
 use models\extensions\IsDefault\IsDefault;
 use RuntimeException;
 
@@ -64,7 +66,7 @@ class Language extends Model implements IsDefault {
 
 
 
-    use IsDefaultExtension;
+    use IsDefaultTrait;
 
     #[Column('id_language', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
@@ -74,6 +76,17 @@ class Language extends Model implements IsDefault {
     public string $code;
 
 
+
+    public function save(): DatabaseAction|View {
+        $ret = parent::save();
+
+        if ($ret instanceof View) {
+            return $ret;
+        }
+
+        $this->saveIsDefault();
+        return $ret;
+    }
 
     public function __toString(): string {
         return $this->code;

@@ -27,7 +27,7 @@ Css::import($this->getResource('article.css'));
             <div class="title">
                 <h1><?= Html::escape($this->localization->title) ?></h1>
 
-                <?php $description = $this->localization->getMeta()->description ?>
+                <?php $description = $this->localization->getMeta()?->description ?>
                 <?php if (!empty($description)): ?>
                     <p><?= Html::escape($description) ?></p>
                 <?php endif; ?>

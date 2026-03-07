@@ -2,50 +2,60 @@
 
 namespace models\extensions\IsDefault;
 
-use components\layout\Grid\description\GridColumn;
-use core\database\sql\Column;
-use core\database\sql\ModelDescription;
-use core\database\sql\query\Parameter;
-use core\database\sql\query\Query;
-use core\database\sql\Sql;
+use components\core\Admin\Nexus\AdminNexus;
+use components\core\Admin\Nexus\NexusExtension;
+use core\communication\Request;
+use core\communication\Response;
+use core\database\sql\Model;
+use core\http\HttpCode;
+use core\http\HttpHeader;
+use core\ResourceLoader;
+use core\route\Router;
+use core\url\Url;
 
-const PROPERTY_IS_DEFAULT = 'default';
+class IsDefaultExtension implements NexusExtension {
+    use ResourceLoader;
 
-trait IsDefaultExtension {
-    private static mixed $defaultModel = 0; // unset
+    public const QUERY_MODEL_ID = 'default-model-id';
 
-    public static function getDefault(bool $override = false): ?static {
-        if (static::$defaultModel === 0 || $override) {
-            static::$defaultModel = static::first(
-                where: Query::infer("is_default = ?", true)
-            );
+
+
+    protected AdminNexus $context;
+
+
+
+    public function createSetAsDefaultUrl(Model $model): ?Url {
+        if (!isset($this->context)) {
+            return null;
         }
 
-        return static::$defaultModel;
+        $ret = $this->context->getLink();
+        $ret->getPath()
+            ->append('set-as-default');
+
+        $ret->setQueryArgument(self::QUERY_MODEL_ID, $model->getId());
+        return $ret;
     }
 
-    public static function addIsDefaultGridColumn(array &$columns): void {
-        $columns[PROPERTY_IS_DEFAULT] = new GridColumn('Is Default', '96px');
-    }
+    public function onBind(AdminNexus $context, Router $router): void {
+        $this->context = $context;
 
+        $router->use('/set-as-default', function (Request $request, Response $response) {
+            $id = $request->getUrl()
+                ->getQuery()
+                ->get(self::QUERY_MODEL_ID);
 
+            $model = $this->context->getModelDescription()
+                ->getFactory()
+                ->fromId($id);
 
-    #[Column('is_default', Column::TYPE_BOOLEAN)]
-    public bool $default;
+            if (!($model instanceof IsDefault)) {
+                $response->sendStatus(HttpCode::CE_BAD_REQUEST);
+            }
 
-
-
-    public function isDefault(): bool {
-        return $this->default;
-    }
-
-    public function setAsDefault(): void {
-        $description = ModelDescription::extract(static::class);
-        Sql::update($description->getEscapedTable())
-            ->set(PROPERTY_IS_DEFAULT, Parameter::infer(false))
-            ->run($description->connection);
-
-        $this->default = true;
-        $this->save();
+            $model->setAsDefault();
+            $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
+            $response->sendStatus(HttpCode::S_OK);
+        });
     }
 }

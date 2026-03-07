@@ -22,9 +22,18 @@ class Form extends Component implements Layout, Attribute {
         return self::$form;
     }
 
-    public static function importAssets(): void {
+    private static bool $imported = false;
+
+    public static function importAssets(): bool {
+        if (self::$imported) {
+            return false;
+        }
+
+        self::$imported = true;
         Css::import(Form::getStaticResource('form.css'));
         Javascript::import(Form::getStaticResource('form.js'));
+
+        return true;
     }
 
 

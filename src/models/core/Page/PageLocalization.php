@@ -54,7 +54,7 @@ class PageLocalization extends Model {
     public string $title;
 
     protected Page $page;
-    protected PageMeta $meta;
+    protected ?PageMeta $meta;
     protected Slug $slug;
     protected Language $language;
 
@@ -65,7 +65,7 @@ class PageLocalization extends Model {
     }
 
     public function delete(): DatabaseAction {
-        $this->getMeta()->delete();
+        $this->getMeta()?->delete();
         $status = parent::delete();
         $this->getSlug()->delete();
         return $status;
@@ -104,7 +104,7 @@ class PageLocalization extends Model {
         return $this->slug;
     }
 
-    public function getMeta(): PageMeta {
+    public function getMeta(): ?PageMeta {
         if (!isset($this->meta)) {
             $this->meta = PageMeta::fromLocalization($this);
         }

@@ -22,9 +22,14 @@ declare type FileSystemApi = {
 
 
 declare type LocalizationApi = {
+    language: string,
     title: string,
     description: string,
     releaseDate: string,
+    localizations: {
+        language: string,
+        url: string
+    }[]
 }
 
 

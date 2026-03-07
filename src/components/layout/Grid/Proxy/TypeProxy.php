@@ -11,6 +11,10 @@ class TypeProxy implements Proxy {
         $this->item = $item;
     }
 
+    public function getItem(): mixed {
+        return $this->item;
+    }
+
     public function getValue(string $name): string {
         $value = $this->item->$name ?? null;
 

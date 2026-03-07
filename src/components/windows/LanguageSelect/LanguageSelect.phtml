@@ -11,7 +11,7 @@ $appLocale = App::getInstance()
     ->getLanguage()
     ->getLocale();
 
-?><div class="language-select column pad-gap">
+?><div class="language-select column pad-gap" x-init="languageSelect">
     <?php foreach (Language::all() as $language): ?>
         <?php $locale = $language->getLocale(); ?>
         <button

@@ -19,7 +19,7 @@ class PageMenu extends Menu {
             $current = $root;
 
             foreach ($pages as $page) {
-                $title = $page->getLocalization($language)->title;
+                $title = $page->getLocalizationOrDefault($language)->title;
                 $current = $current->getChild($title, true);
             }
 

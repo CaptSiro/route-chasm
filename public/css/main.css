@@ -193,6 +193,7 @@ button:disabled:hover {
     display: flex;
     flex-direction: row;
     gap: var(--gap);
+    align-items: center;
 }
 
 .pad-gap {

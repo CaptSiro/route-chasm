@@ -30,12 +30,12 @@ class Wireframe extends Component implements Container {
     public static function createHtmlHead(PageLocalization $localization): HtmlHead {
         $head = new HtmlHead(Html::escape($localization->title));
 
-        $meta = $localization->getMeta();
-
-        $head->addMetaNonEmpty('description', Html::escape($meta->description));
-        $head->addMetaNonEmpty('keywords', Html::escape($meta->keywords));
-        $head->addMetaNonEmpty('og-title', Html::escape($meta->ogTitle));
-        $head->addMetaNonEmpty('og-description', Html::escape($meta->ogDescription));
+        if (!is_null($meta = $localization->getMeta())) {
+            $head->addMetaNonEmpty('description', Html::escape($meta->description));
+            $head->addMetaNonEmpty('keywords', Html::escape($meta->keywords));
+            $head->addMetaNonEmpty('og-title', Html::escape($meta->ogTitle));
+            $head->addMetaNonEmpty('og-description', Html::escape($meta->ogDescription));
+        }
 
         $head->addElement(new StringRenderer(self::createLocalizationApi($localization)));
 
@@ -45,16 +45,39 @@ class Wireframe extends Component implements Container {
     public static function createLocalizationApi(PageLocalization $localization): string {
         $releaseDate = new DateTime($localization->getPage()->getReleaseDate());
 
+        $localizations = [];
+        $page = $localization->getPage();
+        foreach ($page->getLocalizations() as $l) {
+            $language = $l->getLanguage();
+            $localizations[] = [
+                'language' => $language->getLocale()
+                    ->getName(),
+                'code' => $language->code,
+                'url' => $page->getUrl($language)
+            ];
+        }
+
+        $api = [
+            'language' => App::getInstance()
+                ->getRequest()
+                ->getLanguage()
+                ->getLocale()
+                ->getName(),
+            'title' => $localization->title,
+            'releaseDate' => $localization
+                ->getLanguage()
+                ->getLocale()
+                ->formatDateTime($releaseDate->getTimestamp()),
+            'localizations' => $localizations
+        ];
+
+        if (!is_null($meta = $localization->getMeta())) {
+            $api['description'] = $meta->description;
+        }
+
         return Html::wrapUnsafe(
             'script',
-            json_encode([
-                'title' => $localization->title,
-                'description' => $localization->getMeta()->description,
-                'releaseDate' => $localization
-                    ->getLanguage()
-                    ->getLocale()
-                    ->formatDateTime($releaseDate->getTimestamp()),
-            ]),
+            json_encode($api),
             [
                 'type' => 'application/json',
                 'id' => 'api-localization'

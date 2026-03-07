@@ -2,6 +2,7 @@
 
 namespace components\core\Window;
 
+use components\core\Html\Html;
 use core\Flags;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
@@ -14,8 +15,23 @@ class Window implements View, Attribute {
 
     public const FLAG_MINIMIZABLE = 1;
     public const FLAG_DRAGGABLE = 2;
+    public const FLAG_DESTROY_ON_CLOSE = 8;
     // todo
 //    public const FLAG_RESIZEABLE = 4;
+
+
+
+    public static function createWindowOpener(Window $window, string $label, array $attributes = []): string {
+        $id = $window->getId();
+
+        return Html::wrapUnsafe(
+            'button',
+            $label,
+            array_merge($attributes, ["onclick" => "window_open($('#$id'))"])
+        );
+    }
+
+
 
     protected static int $idLength = 4;
     protected static array $ids;
@@ -51,14 +67,4 @@ class Window implements View, Attribute {
     public function getId(): string {
         return $this->id;
     }
-
-
-
-//    public function bindClose(Attribute $trigger, string $event = 'click'): void {
-//        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'close')");
-//    }
-//
-//    public function bindOpen(Attribute $trigger, string $event = 'click'): void {
-//        $trigger->addAttribute('on'. $event, "window_requestAction('$this->id', 'open')");
-//    }
 }

@@ -39,6 +39,10 @@ class AdminNexus extends ContainerContent {
     protected bool $showHeader = true;
     protected bool $doAddGridControls = true;
     protected ?View $headerContent = null;
+    /**
+     * @var array<NexusExtension>
+     */
+    protected array $extensions = [];
 
 
 
@@ -137,6 +141,18 @@ class AdminNexus extends ContainerContent {
         return $this;
     }
 
+    public function addExtension(NexusExtension $extension): static {
+        $this->extensions[] = $extension;
+        return $this;
+    }
+
+    /**
+     * @return array<NexusExtension>
+     */
+    public function getExtensions(): array {
+        return $this->extensions;
+    }
+
     public function createGrid(): ?GridLayout {
         $proxy = $this->gridFactory->getProxy() ?? new NexusProxy();
 
@@ -224,6 +240,10 @@ class AdminNexus extends ContainerContent {
                 $response->sendStatus(HttpCode::S_OK);
             })
         );
+
+        foreach ($this->extensions as $extension) {
+            $extension->onBind($this, $router);
+        }
     }
 
     public function getLink(): ?Url {

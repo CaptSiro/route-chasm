@@ -30,7 +30,6 @@ use core\utils\Arrays;
 use core\utils\Strings;
 use core\view\View;
 use DateTime as DateTimeObject;
-use http\Exception\RuntimeException;
 use models\core\fs\Shortcut;
 use models\core\Language\Language;
 use models\core\Menu;
@@ -40,6 +39,7 @@ use models\core\Privilege\Privilege;
 use models\core\UserResource;
 use models\core\User\User;
 use models\extensions\Name\NameValues;
+use RuntimeException;
 
 #[Table('core_page')]
 #[Database(App::DATABASE)]
@@ -378,16 +378,12 @@ class Page extends Model implements Destination {
 
 
 
-    // Destination
-    public function getPathToSelf(string $alias): Path {
+    protected function getPathToSelfUsingLanguage(string $alias, Language $language): Path {
         if (is_null($mount = Navigator::locate($alias))) {
             throw new RuntimeException("Alias '$alias' is not mounted properly. Use Navigator::route to create new mounting point");
         }
 
         $route = $mount->getMountingPoint();
-        $language = App::getInstance()
-            ->getRequest()
-            ->getLanguage();
 
         foreach ($this->getParents() as $page) {
             if (is_null($localization = $page->getLocalizationOrDefault($language))) {
@@ -397,7 +393,7 @@ class Page extends Model implements Destination {
             $route->add(RouteSegment::static($localization->getSlug()->slug));
         }
 
-        if (is_null($localization = $this->getLocalization($language))) {
+        if (is_null($localization = $this->getLocalizationOrDefault($language))) {
             throw new RuntimeException($this->getMachineIdentifier(). " does not have title for current or default language");
         }
 
@@ -405,18 +401,30 @@ class Page extends Model implements Destination {
         return $mount->transform($route);
     }
 
-    public function getUrlToModel(string $navigatorMountAlias): Url {
+    // Destination
+    public function getPathToSelf(string $alias): Path {
+        $language = App::getInstance()
+            ->getRequest()
+            ->getLanguage();
+
+        return $this->getPathToSelfUsingLanguage($alias, $language);
+    }
+
+    public function getUrlToModel(string $navigatorMountAlias, ?Language $language = null): Url {
         $request = App::getInstance()->getRequest();
-        $path = $this->getPathToSelf($navigatorMountAlias);
+        $language ??= $request->getLanguage();
+        $path = $this->getPathToSelfUsingLanguage($navigatorMountAlias, $language);
         $ret = $request
             ->getDomain()
             ->createUrl($path);
 
         $ret->loadTransitiveQueries($request->getUrl()->getQuery());
+        $ret->setQueryArgument(RouteChasmEnvironment::QUERY_LANGUAGE, $language->code);
+        $ret->getQuery()->remove(RouteChasmEnvironment::QUERY_LANGUAGE_LONG);
         return $ret;
     }
 
-    public function getUrl(): Url {
-        return $this->getUrlToModel(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT);
+    public function getUrl(?Language $language = null): Url {
+        return $this->getUrlToModel(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT, $language);
     }
 }

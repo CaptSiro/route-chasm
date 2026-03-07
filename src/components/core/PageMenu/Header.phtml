@@ -1,7 +1,10 @@
 <?php /** @var Header $this */
 
+use components\core\Icon;
 use components\core\PageMenu\Header;
 use components\core\Search\HeaderSearch;
+use components\core\Window\Window;
+use components\windows\LanguageSelect\LanguageSelect;
 use core\sideloader\importers\Css\Css;
 
 Css::import($this->getResource('header.css'));
@@ -10,6 +13,15 @@ Css::import($this->getResource('header.css'));
     <div class="header-items">
         <?= $this->menu ?>
 
-        <?= new HeaderSearch() ?>
+        <div class="row">
+            <?= new HeaderSearch() ?>
+
+            <?= $languageWindow = LanguageSelect::window(false) ?>
+            <?= Window::createWindowOpener(
+                $languageWindow,
+                Icon::nf('nf-fa-language', 'Languages'),
+                ['style' => 'font-size: 2rem; padding: unset', 'class' => 'link no-decoration']
+            ) ?>
+        </div>
     </div>
 </header>
