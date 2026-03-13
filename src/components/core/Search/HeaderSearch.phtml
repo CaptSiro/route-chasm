@@ -8,14 +8,21 @@ use core\sideloader\importers\Javascript\Javascript;
 Css::import($this->getResource('header-search.css'));
 Javascript::import($this->getResource('search.js'));
 
-?><div class="header-search" x-init="search_headerSearch" data-min-length="<?= $this->minLength ?>">
+?><div
+    class="header-search"
+    x-init="search_headerSearch"
+    <?php if (!is_null($this->url)): ?>
+        data-url="<?= $this->url ?>"
+    <?php endif; ?>
+    data-min-length="<?= $this->minLength ?>"
+>
     <div class="header-search-form">
         <input
             id="header-search"
             class="header-search-input"
             type="search"
             name="q"
-            placeholder="<?= $this->tr('Search articles...') ?>"
+            placeholder="<?= $this->tr($this->placeholder) ?>"
             autocomplete="off"
         >
 
@@ -26,7 +33,7 @@ Javascript::import($this->getResource('search.js'));
 
     <div class="header-search-dropdown">
         <div class="search-empty">
-            <?= $this->tr('No articles found') ?>
+            <?= $this->tr('No results found') ?>
         </div>
     </div>
 </div>

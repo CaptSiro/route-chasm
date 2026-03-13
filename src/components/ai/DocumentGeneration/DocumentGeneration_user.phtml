@@ -1,0 +1,33 @@
+<?php /** @var DocumentGeneration $this */
+
+use components\ai\DocumentGeneration\DocumentGeneration;
+
+?>
+
+Generate MDN-style Markdown documentation for the following source file.
+The documentation should contain sections such as:
+- Overview
+- Class or Module Description
+- Responsibilities or Methods
+- Dependencies
+- Usage Notes (if applicable)
+- Use the dependency fragments to describe related components in the Dependencies section.
+- Only use the dependency information provided. Do not invent additional relationships.
+
+Source file:
+<?php readfile($this->file) ?>
+
+Dependency fragments:
+<?= json_encode($this->getFragments(), JSON_PRETTY_PRINT) ?>
+
+Each dependency fragment has the structure:
+{
+    "name": "fully qualified name",
+    "summary": "short description"
+}
+
+Rules:
+- Output Markdown only.
+- Do not include explanations outside the Markdown.
+- Use headings and lists for structure.
+- Use inline code formatting for class names and identifiers.

@@ -80,13 +80,13 @@ class Search extends Router {
                 ->limit($maxEntries);
 
             $results = array_map(
-                fn(Page $x) => $x->getTemplate()->buildSearchCard($x, $language),
+                fn(Page $x) => $x->getTemplate()->buildSearchResult($x, $language),
                 Page::getDescription()
                     ->getFactory()
                     ->allExecute($sql)
             );
 
-            $viewAll = count($results) >= $maxEntries || true
+            $viewAll = count($results) >= $maxEntries
                 ? new StringRenderer(Html::wrapUnsafe(
                     'a',
                     $this->tr('View all results...'),

@@ -20,7 +20,7 @@ interface PageTemplate {
 
     public function buildListingCard(Page $page, Language $language): View;
 
-    public function buildSearchCard(Page $page, Language $language): View;
+    public function buildSearchResult(Page $page, Language $language): View;
 
     public function hasEditor(): bool;
 

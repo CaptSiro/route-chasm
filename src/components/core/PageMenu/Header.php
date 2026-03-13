@@ -2,6 +2,7 @@
 
 namespace components\core\PageMenu;
 
+use components\core\Search\HeaderSearch;
 use core\view\Renderer;
 use core\view\View;
 use models\core\Menu;
@@ -12,12 +13,16 @@ class Header implements View {
 
 
     public static function default(): static {
-        return new static(PageMenu::fromModelName(Menu::NAME_HEADER));
+        return new static(
+            PageMenu::fromModelName(Menu::NAME_HEADER),
+            new HeaderSearch()
+        );
     }
 
 
 
     public function __construct(
-        protected PageMenu $menu
+        protected PageMenu $menu,
+        protected View $search
     ) {}
 }

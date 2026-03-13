@@ -4,7 +4,7 @@ use components\core\Search\SearchResults;
 
 ?><?php if (empty($this->results)): ?>
     <div class="search-empty">
-        No articles found
+        <?= $this->tr('No results found') ?>
     </div>
 <?php else: ?>
     <div class="search-results">

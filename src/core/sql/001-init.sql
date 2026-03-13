@@ -382,3 +382,34 @@ CREATE TABLE IF NOT EXISTS `core_groups_x_resources` (
     FOREIGN KEY (`id_resource`) REFERENCES `core_resource` (`id_resource`),
     FOREIGN KEY (`id_privilege`) REFERENCES `core_privilege` (`id_privilege`)
 ) ENGINE = InnoDB;
+
+
+
+DROP TABLE IF EXISTS `docs_contents_x_fragments`;
+DROP TABLE IF EXISTS `docs_fragment`;
+CREATE TABLE IF NOT EXISTS `docs_fragment` (
+    `id_fragment` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `summary` TEXT NOT NULL,
+    PRIMARY KEY (`id_fragment`),
+    UNIQUE (`name`)
+) ENGINE = InnoDB;
+
+DROP TABLE IF EXISTS `docs_content`;
+CREATE TABLE IF NOT EXISTS `docs_content` (
+    `id_content` INT NOT NULL AUTO_INCREMENT,
+    `file` VARCHAR(255) NOT NULL,
+    `file_size` INT NOT NULL,
+    `last_updated` INT NOT NULL,
+    `hash` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id_content`),
+    UNIQUE (`file`)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `docs_contents_x_fragments` (
+    `id_content` INT NOT NULL,
+    `id_fragment` INT NOT NULL,
+    UNIQUE (`id_content`, `id_fragment`),
+    FOREIGN KEY (`id_content`) REFERENCES `docs_content` (`id_content`),
+    FOREIGN KEY (`id_fragment`) REFERENCES `docs_fragment` (`id_fragment`)
+) ENGINE = InnoDB;

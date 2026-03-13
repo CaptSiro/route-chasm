@@ -1,0 +1,37 @@
+<?php /** @var DocumentPage $this */
+
+use components\core\Markdown\Markdown;
+use components\core\PageMenu\Footer;
+use components\docs\DocumentPage;
+use components\pages\Article\Article;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('docs.js'));
+Markdown::importAssets();
+Article::importAssets();
+
+?><?= $this->createHeader() ?>
+
+<div class="page-container">
+    <div class="page" x-init="docs_documentPage">
+        <aside class="article-toc-wrapper">
+            <div class="article-toc-container">
+                <h3><?= $this->tr("Table of Contents") ?></h3>
+
+                <div class="article-toc-content"></div>
+            </div>
+
+            <div class="article-related-container column">
+                <h3><?= $this->tr("Related") ?></h3>
+
+                <div class="article-related-content column"></div>
+            </div>
+        </aside>
+
+        <article class="article">
+            <section class="article-content"></section>
+        </article>
+    </div>
+</div>
+
+<?= Footer::default() ?>

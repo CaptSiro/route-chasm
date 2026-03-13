@@ -1,0 +1,14 @@
+<?php /** @var FragmentGeneration $this */
+
+use components\ai\FragmentGeneration\FragmentGeneration;
+
+?>
+
+Generate a documentation fragment for the following source file.
+
+Rules:
+- The summary must describe the purpose and role of the file.
+- The dependencies field must be returned with all fully qualified classes used in the source file.
+
+Source file:
+<?php readfile($this->file) ?>

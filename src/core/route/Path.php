@@ -6,11 +6,12 @@ use core\collections\iterator\ArrayIterator;
 use core\collections\iterator\ArrayIteratorTrait;
 use core\Copy;
 use core\utils\Arrays;
+use JsonSerializable;
 
 /**
  * @template-implements ArrayIterator<int, string>
  */
-class Path implements ArrayIterator, Copy {
+class Path implements ArrayIterator, Copy, JsonSerializable {
     use ArrayIteratorTrait;
 
 
@@ -31,7 +32,7 @@ class Path implements ArrayIterator, Copy {
         foreach (array_map(fn($x) => Path::resolve($x), $paths) as $path) {
             $segments = array_merge(
                 $segments,
-                array_slice($path->getSegments(), $path->getOffset())
+                $path->getSegments()
             );
         }
 
@@ -53,10 +54,10 @@ class Path implements ArrayIterator, Copy {
         return 1 + substr_count($literal, '/', $start, $length);
     }
 
-    public static function from(string $literal, int $offset = 0): self {
+    public static function from(string $literal, int $offset = 0, string $separator = '/'): self {
         $segments = [];
 
-        foreach (explode('/', $literal) as $segment) {
+        foreach (explode($separator, $literal) as $segment) {
             if ($segment !== '') {
                 $segments[] = $segment;
             }
@@ -144,6 +145,14 @@ class Path implements ArrayIterator, Copy {
         return array_slice($this->segments, $this->offset);
     }
 
+    public function first(): ?string {
+        return Arrays::first($this->segments);
+    }
+
+    public function last(): ?string {
+        return Arrays::last($this->segments);
+    }
+
     public function append(string $segment): static {
         $this->segments[] = $segment;
         return $this;
@@ -160,8 +169,14 @@ class Path implements ArrayIterator, Copy {
         return $this->segments[$this->offset + $index] ?? null;
     }
 
-    public function toString(): string {
-        return (string) $this;
+    public function toString(string $separator = '/', bool $prependSlash = true): string {
+        $ret = implode($separator, $this->getSegments());
+
+        if ($prependSlash) {
+            return $separator . $ret;
+        }
+
+        return $ret;
     }
 
 
@@ -184,5 +199,12 @@ class Path implements ArrayIterator, Copy {
     // Copy
     public function copy(): static {
         return new static(Arrays::copy($this->segments), $this->offset);
+    }
+
+
+
+    // JsonSerializable
+    public function jsonSerialize(): array {
+        return $this->segments;
     }
 }

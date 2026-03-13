@@ -4,10 +4,13 @@ namespace core\database\sql;
 
 use components\core\Admin\Nexus\NexusProxyItem;
 use components\core\SaveError\SaveError;
+use core\data\DataItem;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;
 use core\Identifier;
+use core\RouteChasmEnvironment;
+use core\utils\Strings;
 use core\view\View;
 use JsonSerializable;
 use RuntimeException;
@@ -192,6 +195,15 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
 
     public function getHumanIdentifier(): string {
         return $this->getMachineIdentifier();
+    }
+
+    public function getDataItem(string $namespace, string $item = ''): DataItem {
+        $file = Strings::lpad('0', (string) $this->getId(), RouteChasmEnvironment::ID_DIGITS);
+        if (!empty($item)) {
+            $file .= '_'. $item;
+        }
+
+        return new DataItem($namespace, $file);
     }
 
     public function setOrigin(Origin $_origin): void {

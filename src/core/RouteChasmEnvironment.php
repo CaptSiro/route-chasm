@@ -9,6 +9,7 @@ class RouteChasmEnvironment {
     public const FILE_SYSTEM_NAMESPACE = 'fs';
     public const FILE_SYSTEM_DIRECTORY_HASH_OFFSET = 2;
 
+    public const SRC = __DIR__ .'/../';
     public const FILE_ENV = __DIR__ ."/../../.env";
     public const DIRECTORY_DATA = __DIR__ . '/../../data';
 

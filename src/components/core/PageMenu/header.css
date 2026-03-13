@@ -12,13 +12,13 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 64px;
 }
 
-.header-items > .menu {
+.header-menu-wrapper > .menu {
     display: flex;
     align-items: center;
     gap: calc(var(--gap) * 2);
-    height: 64px;
 }
 
 header .menu-item {
@@ -132,12 +132,12 @@ header .menu-item.has-sub-menu > .head .item-label a::before {
     header .header-items {
         height: unset;
         flex-direction: column;
+        padding: var(--gap) 0;
     }
 
-    .header-items > .menu {
+    .header-menu-wrapper > .menu {
         align-items: start;
         flex-direction: column;
-        height: unset;
         gap: unset;
     }
 

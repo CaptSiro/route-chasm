@@ -1,0 +1,12 @@
+<?php /** @var SearchResult $this */
+
+use components\core\Html\Html;
+use components\core\Search\SearchResult;
+
+?><a href="<?= $this->url ?>" class="search-result">
+    <div class="search-result-title"><?= Html::escape($this->title) ?></div>
+
+    <?php if (!is_null($this->meta)): ?>
+        <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
+    <?php endif; ?>
+</a>

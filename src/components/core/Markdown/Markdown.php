@@ -10,10 +10,10 @@ class Markdown {
     use ResourceLoader;
 
     public static function importAssets(): void {
-        Javascript::import(self::getSelfResource('markdown.js'));
-        Javascript::import(self::getSelfResource('md-tokenizer.js'));
-        Javascript::import(self::getSelfResource('md-parser.js'));
-        Javascript::import(self::getSelfResource('md-gallery.js'));
-        Css::import(self::getSelfResource('markdown.css'));
+        Javascript::import(self::getStaticResource('markdown.js'));
+        Javascript::import(self::getStaticResource('md-tokenizer.js'));
+        Javascript::import(self::getStaticResource('md-parser.js'));
+        Javascript::import(self::getStaticResource('md-gallery.js'));
+        Css::import(self::getStaticResource('markdown.css'));
     }
 }

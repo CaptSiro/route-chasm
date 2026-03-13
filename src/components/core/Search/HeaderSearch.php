@@ -18,7 +18,9 @@ class HeaderSearch implements View {
 
 
     public function __construct(
-        protected ?int $minLength = null
+        protected ?string $url = null,
+        protected ?int $minLength = null,
+        protected string $placeholder = "Search articles...",
     ) {
         $this->setLexiconGroup(self::LEXICON_GROUP);
 

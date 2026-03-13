@@ -41,13 +41,5 @@ function article(element) {
         tableOfContents.append(markdown.getTableOfContents());
     }
 
-    const fragment = location.hash.startsWith('#')
-        ? location.hash.substring(1)
-        : location.hash;
-
-    if (fragment.trim() === "") {
-        return;
-    }
-
-    $('#' + fragment)?.scrollIntoView();
+    std_dom_scrollToFragment();
 }

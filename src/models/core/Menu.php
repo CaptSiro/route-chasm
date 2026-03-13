@@ -28,6 +28,7 @@ class Menu extends Model implements Name {
     public const TABLE_MENU_X_PAGES = 'core_menu_x_pages';
 
     public const NAME_HEADER = 'Header';
+    public const NAME_HEADER_DOCS = 'Header (Docs)';
     public const NAME_FOOTER = 'Footer';
     public const NAME_LEGAL = 'Legal';
 

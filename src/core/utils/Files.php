@@ -46,6 +46,15 @@ class Files {
         return [$name, $extension];
     }
 
+    public static function removeExtension(string $path): string {
+        $period = self::periodPosition($path);
+        if ($period < 0) {
+            return $path;
+        }
+
+        return substr($path, 0, $period);
+    }
+
     public static function mimeType(string $path): string {
         $extension = self::extension($path);
 

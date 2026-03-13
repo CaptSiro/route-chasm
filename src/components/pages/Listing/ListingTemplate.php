@@ -3,7 +3,7 @@
 namespace components\pages\Listing;
 
 use components\core\Message\Message;
-use components\core\Search\SearchCard;
+use components\core\Search\SearchResult;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\pages\PageTemplate;
@@ -52,8 +52,8 @@ class ListingTemplate implements PageTemplate {
         return new ListingCard($page, $page->getLocalization($language));
     }
 
-    public function buildSearchCard(Page $page, Language $language): View {
-        return new SearchCard($page, $page->getLocalization($language));
+    public function buildSearchResult(Page $page, Language $language): View {
+        return SearchResult::fromPage($page, $page->getLocalization($language));
     }
 
     public function hasEditor(): bool {

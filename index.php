@@ -2,6 +2,7 @@
 
 use components\core\Admin\Home\AdminHome;
 use components\core\Search\Search;
+use components\docs\Docs;
 use components\Home\Home;
 use core\actions\Assets\Assets;
 use core\actions\Assets\policy\ShowExplorerPolicy;
@@ -38,6 +39,7 @@ $router = $app->getMainRouter();
 
 
 
+$router->bind('/docs', Docs::getInstance());
 $router->bind('/search', Search::getInstance());
 $router->bind('/fs', FileServer::getInstance());
 $router->bind('/import', SideLoader::getInstance()->initRouter($app));

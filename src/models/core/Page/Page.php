@@ -350,15 +350,7 @@ class Page extends Model implements Destination {
     }
 
     public function get(string $item = ''): DataItem {
-        $file = Strings::lpad('0', (string) $this->id, RouteChasmEnvironment::ID_DIGITS);
-        if (!empty($item)) {
-            $file .= '_'. $item;
-        }
-
-        return new DataItem(
-            self::DATA_NAMESPACE,
-            $file
-        );
+        return $this->getDataItem(self::DATA_NAMESPACE, $item);
     }
 
     public function getCoverImageName(): string {

@@ -2,7 +2,7 @@
 
 namespace components\pages\TextPage;
 
-use components\core\Search\SearchCard;
+use components\core\Search\SearchResult;
 use components\core\ToolBar\ToolBarItem;
 use components\Lumora\Display\Display;
 use components\Lumora\Editor\Editor;
@@ -62,8 +62,8 @@ class TextPageTemplate implements PageTemplate {
         return new ListingCard($page, $page->getLocalization($language));
     }
 
-    public function buildSearchCard(Page $page, Language $language): View {
-        return new SearchCard($page, $page->getLocalization($language));
+    public function buildSearchResult(Page $page, Language $language): View {
+        return SearchResult::fromPage($page, $page->getLocalization($language));
     }
 
     public function create(Page $page): ?View {

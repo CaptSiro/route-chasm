@@ -21,6 +21,7 @@ class SearchResults extends Component implements JsonSerializable {
         protected ?View $searchFooter = null
     ) {
         parent::__construct();
+        $this->setLexiconGroup(Search::LEXICON_GROUP);
 
         $this->formatter = new Formatter(fn(string $format) => match ($format) {
             Format::IDENT_HTML => parent::render(),

@@ -1,8 +1,9 @@
 /**
  * @param {HTMLElement} element
  * @param {string} minLength
+ * @param {?string} url
  */
-function search_headerSearch(element, { minLength }) {
+function search_headerSearch(element, { minLength, url }) {
     const input = $('#header-search', element);
     const dropdown = $('.header-search-dropdown', element);
 
@@ -17,11 +18,14 @@ function search_headerSearch(element, { minLength }) {
             return;
         }
 
-        const url = new URL(api.searchFullTextUrl);
-        url.searchParams.set(api.searchQuery, value);
-        url.searchParams.set('o', 'html');
+        const request = new URL(is(url)
+            ? url
+            : api.searchFullTextUrl);
 
-        const response = await fetch(url);
+        request.searchParams.set(api.searchQuery, value);
+        request.searchParams.set('o', 'html');
+
+        const response = await fetch(request);
         if (await std_fetch_handleServerError(response)) {
             return;
         }

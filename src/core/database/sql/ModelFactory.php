@@ -22,20 +22,6 @@ class ModelFactory {
         return self::$factories[$modelClass] = new static($modelClass);
     }
 
-    protected static function addProjection(ModelDescription $description, SelectQuery $sql, ?array $projection = null): void {
-        $driver = $description->getConnection()->getDriver();
-        if (is_null($projection)) {
-            foreach ($description->getColumns() as $column) {
-                $sql->projection($driver->escapeColumn($column->getName()));
-            }
-
-            return;
-        }
-
-        foreach ($projection as $column) {
-            $sql->projection($column);
-        }
-    }
     public static function countExecuteConnection(SqlQuery $query, Connection $connection): int {
         $result = $connection->fetch(
             $query->toQuery($connection)
@@ -98,11 +84,28 @@ class ModelFactory {
         return $records;
     }
 
+    public function addProjection(SelectQuery $sql, ?array $projection = null): void {
+        $description = ModelDescription::extract($this->modelClass);
+        $driver = $description->getConnection()->getDriver();
+
+        if (is_null($projection)) {
+            foreach ($description->getColumns() as $column) {
+                $sql->projection($driver->escapeColumn($column->getName()));
+            }
+
+            return;
+        }
+
+        foreach ($projection as $column) {
+            $sql->projection($column);
+        }
+    }
+
     public function firstQuery(?array $projection = null, Query|string|null $where = null): SelectQuery {
         $description = ModelDescription::extract($this->modelClass);
 
         $sql = Sql::select($description->getEscapedTable());
-        static::addProjection($description, $sql, $projection);
+        $this->addProjection($sql, $projection);
 
         if (!is_null($where)) {
             $sql->where($where);
@@ -165,7 +168,7 @@ class ModelFactory {
         $description = $this->getDescription();
         $sql = Sql::select($description->getEscapedTable());
 
-        static::addProjection($description, $sql, $projection);
+        $this->addProjection($sql, $projection);
 
         if (!is_null($where)) {
             $sql->where($where);

@@ -2,7 +2,6 @@
 
 use components\core\Icon;
 use components\core\PageMenu\Header;
-use components\core\Search\HeaderSearch;
 use components\core\Window\Window;
 use components\windows\LanguageSelect\LanguageSelect;
 use core\sideloader\importers\Css\Css;
@@ -11,10 +10,12 @@ Css::import($this->getResource('header.css'));
 
 ?><header>
     <div class="header-items">
-        <?= $this->menu ?>
+        <div class="header-menu-wrapper">
+            <?= $this->menu ?>
+        </div>
 
         <div class="row">
-            <?= new HeaderSearch() ?>
+            <?= $this->search ?>
 
             <?= $languageWindow = LanguageSelect::window(false) ?>
             <?= Window::createWindowOpener(

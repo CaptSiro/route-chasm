@@ -355,6 +355,12 @@ function std_dateRelative(date) {
 
 
 
+function std_fetch_window_settings() {
+    const settings = { ...WINDOW_ALERT_SETTINGS };
+    settings.width = '50vw';
+    return settings;
+}
+
 /**
  * @param {RequestInit} options
  * @returns {RequestInit}
@@ -366,7 +372,7 @@ function std_fetch_json(options = {}) {
 }
 
 async function std_fetch_renderTextError(response) {
-    await window_alert(await response.text(), WINDOW_ALERT_SETTINGS);
+    await window_alert(await response.text(), std_fetch_window_settings());
 }
 
 async function std_fetch_renderHtmlError(response) {
@@ -380,7 +386,7 @@ async function std_fetch_renderHtmlError(response) {
         const w = window_create(
             'Internal Server Error',
             content,
-            WINDOW_ALERT_SETTINGS
+            std_fetch_window_settings()
         );
 
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve());
@@ -410,7 +416,7 @@ async function std_fetch_renderJsonError(response) {
         const w = window_create(
             'Internal Server Error',
             section,
-            WINDOW_ALERT_SETTINGS
+            std_fetch_window_settings()
         );
 
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve());
@@ -440,6 +446,18 @@ async function std_fetch_handleServerError(response) {
 }
 
 
+
+function std_dom_scrollToFragment() {
+    const fragment = location.hash.startsWith('#')
+        ? location.hash.substring(1)
+        : location.hash;
+
+    if (fragment.trim() === "") {
+        return;
+    }
+
+    $('#' + fragment)?.scrollIntoView();
+}
 
 /**
  * @param {HTMLElement} element
