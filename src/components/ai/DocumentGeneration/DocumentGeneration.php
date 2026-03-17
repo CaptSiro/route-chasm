@@ -6,16 +6,19 @@ use components\ai\InputMessage;
 use core\route\Path;
 use core\RouteChasmEnvironment;
 use core\utils\Files;
+use models\core\Language\Language;
 use models\docs\Fragment;
 
 class DocumentGeneration extends InputMessage {
     /**
      * @param string $role
+     * @param Language $language
      * @param string $file
      * @param array<Fragment> $fragments
      */
     public function __construct(
         string $role,
+        protected Language $language,
         protected string $file,
         protected array $fragments
     ) {

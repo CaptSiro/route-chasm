@@ -20,7 +20,6 @@ use models\extensions\IsDefault\IsDefaultTrait;
 use models\extensions\IsDefault\IsDefault;
 use RuntimeException;
 
-
 #[Grid]
 #[Table('core_language')]
 #[Database(App::DATABASE)]

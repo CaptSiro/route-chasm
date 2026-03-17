@@ -12,6 +12,7 @@ use core\database\sql\query\Query;
 use core\database\sql\SideEffect;
 use core\database\sql\Sql;
 use core\database\sql\Table;
+use models\core\Language\Language;
 
 #[Database(App::DATABASE)]
 #[Table('docs_content')]
@@ -96,8 +97,8 @@ class Document extends Model {
         }
     }
 
-    public function getContent(): DataItem {
-        return $this->getDataItem(self::DATA_NAMESPACE, 'content.md');
+    public function getContent(Language $language): DataItem {
+        return $this->getDataItem(self::DATA_NAMESPACE, $language->code .'_content.md');
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace core\data;
 
 class DataItem {
-    private mixed $content;
+    private ?string $content;
     private bool $isDeleted = false;
 
     public function __construct(
@@ -28,7 +28,7 @@ class DataItem {
         return file_exists($this->getFilePath());
     }
 
-    public function read(): mixed {
+    public function read(): ?string {
         if (!isset($this->content)) {
             $this->content = Data::retrieve($this->namespace, $this->file);
         }

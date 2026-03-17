@@ -23,6 +23,10 @@ abstract class Locale {
 
     abstract public function getName(): string;
 
+    public function getLongIdentifier(): string {
+        return '['. $this->getIdentifier() .'] '. $this->getName();
+    }
+
     public function compare(string $a, string $b): int {
         return strcmp($a, $b);
     }

@@ -1,5 +1,7 @@
 <?php /** @var DocumentPage $this */
 
+use components\core\Html\Html;
+use components\core\Icon;
 use components\core\Markdown\Markdown;
 use components\core\PageMenu\Footer;
 use components\docs\DocumentPage;
@@ -12,26 +14,44 @@ Article::importAssets();
 
 ?><?= $this->createHeader() ?>
 
-<div class="page-container">
-    <div class="page" x-init="docs_documentPage">
-        <aside class="article-toc-wrapper">
-            <div class="article-toc-container">
-                <h3><?= $this->tr("Table of Contents") ?></h3>
+<?php if (is_null($this->directory)): ?>
+    <div class="page-container">
+        <div class="page" x-init="docs_documentPage">
+            <aside class="article-toc-wrapper">
+                <div class="article-toc-container">
+                    <h3><?= $this->tr("Table of Contents") ?></h3>
 
-                <div class="article-toc-content"></div>
-            </div>
+                    <div class="article-toc-content"></div>
+                </div>
 
-            <div class="article-related-container column">
-                <h3><?= $this->tr("Related") ?></h3>
+                <div class="article-related-container column">
+                    <h3><?= $this->tr("Related") ?></h3>
 
-                <div class="article-related-content column"></div>
-            </div>
-        </aside>
+                    <div class="article-related-content column"></div>
+                </div>
+            </aside>
 
-        <article class="article">
-            <section class="article-content"></section>
-        </article>
+            <article class="article">
+                <section class="article-content"></section>
+            </article>
+        </div>
     </div>
-</div>
+<?php else: ?>
+    <div class="page-container">
+        <ul class="page-section column">
+            <?php foreach ($this->getEntries() as $entry => $path): ?>
+                <?php if (is_dir($path)): ?>
+                    <a href="<?= $this->docs->createEntryUrl($path) ?>">
+                        <?= Icon::nf('nf-fa-folder') ?> <?= Html::escape($entry) ?>
+                    </a>
+                <?php else: ?>
+                    <a href="<?= $this->docs->createEntryUrl($path) ?>">
+                        <?= Html::escape($entry) ?>
+                    </a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
 
 <?= Footer::default() ?>

@@ -9,6 +9,7 @@ use components\core\Search\HeaderSearch;
 use components\core\Search\Search;
 use components\core\WebPage\WebPage;
 use components\pages\Article\Article;
+use core\route\Path;
 use core\view\ContainerContent;
 use core\view\StringRenderer;
 use models\core\Menu;
@@ -20,7 +21,10 @@ class DocumentPage extends ContainerContent {
 
     protected WebPage $webPage;
 
-    public function __construct() {
+    public function __construct(
+        protected Docs $docs,
+        protected ?string $directory = null
+    ) {
         parent::__construct($this->webPage = new WebPage(head: $head = new HtmlHead()));
         $head->addElement(new StringRenderer(Search::createApi()));
 
@@ -37,5 +41,22 @@ class DocumentPage extends ContainerContent {
                 placeholder: "Search documents..."
             )
         );
+    }
+
+    protected function getEntries(): array {
+        if (is_null($this->directory)) {
+            return [];
+        }
+
+        $entries = [];
+        foreach (scandir($this->directory) as $entry) {
+            if ($entry === '..' || $entry === '.') {
+                continue;
+            }
+
+            $entries[$entry] = Path::joinArray([$this->directory, $entry], DIRECTORY_SEPARATOR);
+        }
+
+        return $entries;
     }
 }

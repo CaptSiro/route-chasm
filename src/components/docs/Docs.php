@@ -12,7 +12,6 @@ use components\ai\Schema\Schema;
 use components\ai\Schema\StringSchema;
 use components\core\Search\SearchResult;
 use components\core\Search\SearchResults;
-use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -24,6 +23,7 @@ use core\Singleton;
 use core\url\Url;
 use core\utils\Files;
 use FilesystemIterator;
+use models\core\Language\Language;
 use models\core\Setting\Setting;
 use models\docs\Document;
 use models\docs\Fragment;
@@ -37,6 +37,10 @@ class Docs extends Router {
     use Singleton;
 
     public const SETTING_NAME_DROPDOWN_MAX_ENTRIES = 'route-chasm-docs:search_dropdown_max_entries';
+
+    public const PROPERTY_DOCUMENT_CONTENT = 'content';
+    public const PROPERTY_FRAGMENT_SUMMARY = 'summary';
+    public const PROPERTY_FRAGMENT_DEPENDENCIES = 'dependencies';
 
 
 
@@ -72,15 +76,15 @@ class Docs extends Router {
         return $this->createUrl(Path::from('search'));
     }
 
-    public function createFragmentRequest(string $file): AiRequest {
+    public function requestFragmentGeneration(OpenAi $client, string $file): array {
         $request = new AiRequest('gpt-4o-mini');
 
         $schema = new Schema(
             'fragment_generation',
             (new ObjectSchema())
-                ->add('summary', new StringSchema())
-                ->add('dependencies', new ArraySchema(new StringSchema()))
-                ->setRequired(['summary', 'dependencies'])
+                ->add(self::PROPERTY_FRAGMENT_SUMMARY, new StringSchema())
+                ->add(self::PROPERTY_FRAGMENT_DEPENDENCIES, new ArraySchema(new StringSchema()))
+                ->setRequired([self::PROPERTY_FRAGMENT_SUMMARY, self::PROPERTY_FRAGMENT_DEPENDENCIES])
         );
 
         $request
@@ -88,42 +92,44 @@ class Docs extends Router {
             ->add(new FragmentGeneration(InputMessage::ROLE_SYSTEM, $file))
             ->add(new FragmentGeneration(InputMessage::ROLE_USER, $file));
 
-        return $request;
+        return $client->parseResponse(
+            $client->chat($request)
+        );
     }
 
     /**
+     * @param OpenAi $client
+     * @param Language $language
      * @param string $file
      * @param array<Fragment> $fragments
-     * @return AiRequest
+     * @return array
      */
-    public function createDocumentRequest(string $file, array $fragments): AiRequest {
+    public function requestDocumentGeneration(OpenAi $client, Language $language, string $file, array $fragments): array {
         $request = new AiRequest('gpt-4o-mini');
 
         $schema = new Schema(
             'document_generation',
             (new ObjectSchema())
-                ->add('content', new StringSchema())
-                ->setRequired(['content'])
+                ->add(self::PROPERTY_DOCUMENT_CONTENT, new StringSchema())
+                ->setRequired([self::PROPERTY_DOCUMENT_CONTENT])
         );
 
         $request
             ->setSchema($schema)
-            ->add(new DocumentGeneration(InputMessage::ROLE_SYSTEM, $file, $fragments))
-            ->add(new DocumentGeneration(InputMessage::ROLE_USER, $file, $fragments));
+            ->add(new DocumentGeneration(InputMessage::ROLE_SYSTEM, $language, $file, $fragments))
+            ->add(new DocumentGeneration(InputMessage::ROLE_USER, $language, $file, $fragments));
 
-        return $request;
+        return $client->parseResponse(
+            $client->chat($request)
+        );
     }
 
     public function documentFragment(OpenAi $client, string $file, ?array &$dependencies = null): ?Fragment {
-        $fragmentRequest = $this->createFragmentRequest($file);
-        $result = $client->chat($fragmentRequest);
-        $fragmentResponse = $client->parseResponse($result);
-
-        if (is_null($fragmentResponse)) {
+        if (empty($fragmentResponse = $this->requestFragmentGeneration($client, $file))) {
             return null;
         }
 
-        if (!isset($fragmentResponse['summary'])) {
+        if (!isset($fragmentResponse[self::PROPERTY_FRAGMENT_SUMMARY])) {
             var_dump($fragmentResponse);
             exit;
         }
@@ -131,37 +137,59 @@ class Docs extends Router {
         $fragment = new Fragment();
 
         $fragment->name = $file;
-        $fragment->summary = $fragmentResponse['summary'];
+        $fragment->summary = $fragmentResponse[self::PROPERTY_FRAGMENT_SUMMARY];
         $fragment->save();
 
-        $dependencies = $fragmentResponse['dependencies'];
+        $dependencies = $fragmentResponse[self::PROPERTY_FRAGMENT_DEPENDENCIES];
 
         return $fragment;
     }
 
-    public function document(string $file): ?Document {
+    protected function createFragment(OpenAi $client, string $file, mixed &$fragmentResponse = null): ?Fragment {
+        $fragment = Fragment::fromName($file) ?? new Fragment();
+        $fragment->name = $file;
+
+        if (empty($fragmentResponse = $this->requestFragmentGeneration($client, $file))) {
+            $fragment->summary = 'Route Chasm source file';
+            $fragment->save();
+            return null;
+        }
+
+        $fragment->summary = $fragmentResponse[self::PROPERTY_FRAGMENT_SUMMARY];
+        $fragment->save();
+
+        return $fragment;
+    }
+
+    protected function generateDocumentation(
+        Document $document,
+        OpenAi $client,
+        Language $language,
+        string $file,
+        array $fragments
+    ): void {
+        $documentResponse = $this->requestDocumentGeneration($client, $language, $file, $fragments);
+
+        if (empty($documentResponse)) {
+            $document->getContent($language)
+                ->write('# '. Files::split($file)[0]);
+        } else {
+            $document->getContent($language)
+                ->write($documentResponse[self::PROPERTY_DOCUMENT_CONTENT]);
+        }
+    }
+
+    public function document(string $file, Language $language): ?Document {
         $client = OpenAi::fromEnv();
 
         $fragments = [];
         $src = realpath(RouteChasmEnvironment::SRC);
 
-        $f = Fragment::fromName($file) ?? new Fragment();
-        $f->name = $file;
-
-        $fragmentResponse = $client->parseResponse($client->chat($this->createFragmentRequest($file)));
-
-        if (is_null($fragmentResponse)) {
-            $f->summary = 'Route Chasm source file';
-            $f->save();
-            return null;
-        }
-
-        $f->summary = $fragmentResponse['summary'];
-        $f->save();
+        $this->createFragment($client, $file, $fragmentResponse);
 
         foreach ($fragmentResponse['dependencies'] as $dependency) {
-            $f = Path::merge($src, Path::from($dependency .'.php', separator: '\\'));
-            $filePath = $f->toString(DIRECTORY_SEPARATOR, false);
+            $path = Path::merge($src, Path::from($dependency .'.php', separator: '\\'));
+            $filePath = $path->toString(DIRECTORY_SEPARATOR, false);
             if (!file_exists($filePath)) {
                 continue;
             }
@@ -175,19 +203,23 @@ class Docs extends Router {
         }
 
         $document = Document::fromFile($file, true);
-        $documentResponse = $client->parseResponse($client->chat($this->createDocumentRequest($file, $fragments)));
-        if (is_null($documentResponse)) {
-            $document->getContent()
-                ->write('# '. Files::split($file)[0]);
-        } else {
-            $document->getContent()
-                ->write($documentResponse['content']);
-        }
+        $this->generateDocumentation(
+            $document, $client, $language, $file, $fragments
+        );
 
         $document->clearFragments();
         $document->addFragments($fragments);
 
         return $document;
+    }
+
+    public function createEntryUrl(string $entryPath): Url {
+        $srcLength = strlen(realpath(RouteChasmEnvironment::SRC));
+
+        return $this->createUrl(Path::from(
+            substr($entryPath, $srcLength),
+            separator: DIRECTORY_SEPARATOR
+        ));
     }
 
     /**
@@ -242,13 +274,19 @@ class Docs extends Router {
         });
 
         $router->use('/**', function (Request $request, Response $response) {
-            if (!$request->getUrl()->getQuery()->exists('content')) {
-                $response->renderRoot(new DocumentPage());
-            }
-
             $src = realpath(RouteChasmEnvironment::SRC);
             $file = Path::merge($src, $request->getRemainingPath());
             $filePath = $file->toString(prependSlash: false);
+
+            if (!$request->getUrl()->getQuery()->exists('content')) {
+                if (is_dir($filePath)) {
+                    $response->renderRoot(new DocumentPage($this, $filePath));
+                }
+
+                $response->renderRoot(new DocumentPage($this));
+            }
+
+            $language = $request->getLanguage();
 
             if (!str_starts_with($filePath, $src) || !file_exists($filePath)) {
                 $response->sendStatus(HttpCode::CE_NOT_FOUND);
@@ -256,21 +294,32 @@ class Docs extends Router {
 
             $doc = Document::fromFile($filePath);
             if (!is_null($doc) && !$doc->needsUpdate()) {
+                if ($doc->getContent($language)->exists()) {
+                    $response->json([
+                        'content' => $doc->getContent($language)->read(),
+                        'related' => $this->createRelated($doc->getFragments())
+                    ]);
+                }
+
+                $this->generateDocumentation(
+                    $doc, OpenAi::fromEnv(), $language, $filePath, $doc->getFragments()
+                );
+
                 $response->json([
-                    'content' => $doc->getContent()->read(),
+                    'content' => $doc->getContent($language)->read(),
                     'related' => $this->createRelated($doc->getFragments())
                 ]);
             }
 
-            if (is_null($doc = $this->document($filePath))) {
+            if (is_null($doc = $this->document($filePath, $language))) {
                 $response->json([
-                    'content' => '# '. $request->getRemainingPath(),
+                    'content' => '# Failed to generate documentation for: '. $request->getRemainingPath(),
                     'related' => [],
                 ]);
             }
 
             $response->json([
-                'content' => $doc->getContent()->read(),
+                'content' => $doc->getContent($language)->read(),
                 'related' => $this->createRelated($doc->getFragments())
             ]);
         });

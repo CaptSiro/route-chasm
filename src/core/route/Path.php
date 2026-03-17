@@ -72,9 +72,10 @@ class Path implements ArrayIterator, Copy, JsonSerializable {
 
     /**
      * @param array<string> $segments
+     * @param string $separator
      * @return string
      */
-    public static function joinArray(array $segments): string {
+    public static function joinArray(array $segments, string $separator = '/'): string {
         $segments = array_values(array_filter($segments, fn($x) => $x !== ''));
 
         if (empty($segments)) {
@@ -92,7 +93,7 @@ class Path implements ArrayIterator, Copy, JsonSerializable {
 
         if ($count === 0) {
             return rtrim($start, '/\\')
-                .'/'. ltrim($end, '/\\');
+                .$separator. ltrim($end, '/\\');
         }
 
         for ($i = 0; $i < $count; $i++) {
@@ -100,8 +101,8 @@ class Path implements ArrayIterator, Copy, JsonSerializable {
         }
 
         return rtrim($start, '/\\')
-            .'/'. implode('/', $segments)
-            .'/'. ltrim($end, '/\\');
+            .$separator. implode($separator, $segments)
+            .$separator. ltrim($end, '/\\');
     }
 
 
