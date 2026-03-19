@@ -12,7 +12,9 @@ class TextArea implements ControlAttribute {
     public function __construct(
         protected ?string $label = null,
         protected bool $readonly = false,
-        protected bool $isFirst = false
+        protected bool $isFirst = false,
+        protected ?int $rows = null,
+        protected ?int $columns = null,
     ) {}
 
 
@@ -26,6 +28,14 @@ class TextArea implements ControlAttribute {
 
         if ($this->readonly) {
             $control->addAttribute('readonly');
+        }
+
+        if (!is_null($this->rows)) {
+            $control->addAttribute('rows', $this->rows);
+        }
+
+        if (!is_null($this->columns)) {
+            $control->addAttribute('columns', $this->columns);
         }
 
         return $control;

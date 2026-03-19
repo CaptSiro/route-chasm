@@ -2,6 +2,7 @@
 
 namespace core\pages;
 
+use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\view\Component;
@@ -25,4 +26,6 @@ interface PageTemplate {
     public function hasEditor(): bool;
 
     public function buildEditor(Page $page): Action;
+
+    public function buildEditorBehavior(): ?EditorBehavior;
 }

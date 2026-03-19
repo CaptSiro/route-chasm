@@ -157,7 +157,7 @@ async function form_submit(form, event) {
  * @param {string} redirect
  */
 function form_onRedirect(form, response, redirect) {
-    window.location.replace(redirect);
+    location.assign(redirect);
 }
 
 /**

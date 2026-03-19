@@ -31,7 +31,7 @@ function languageSelect(element) {
  */
 function languageSelect_languageButton(element) {
     element.addEventListener('click', () => {
-        const url = new URL(window.location.href);
+        const url = new URL(location.href);
 
         if (url.searchParams.get("l") === element.dataset.code) {
             window_issueClose(element);
@@ -39,6 +39,6 @@ function languageSelect_languageButton(element) {
         }
 
         url.searchParams.set("l", element.dataset.code);
-        window.location.replace(url);
+        location.replace(url);
     });
 }

@@ -27,7 +27,6 @@ use core\route\RouteSegment;
 use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\utils\Arrays;
-use core\utils\Strings;
 use core\view\View;
 use DateTime as DateTimeObject;
 use models\core\fs\Shortcut;
@@ -126,6 +125,7 @@ class Page extends Model implements Destination {
 
     /**
      * @param string $query
+     * @param int|null $languageId
      * @return array<Page>
      */
     public static function searchFullText(string $query, ?int $languageId = null): array {
@@ -238,7 +238,12 @@ class Page extends Model implements Destination {
     }
 
     public function setParent(?Page $parent): void {
-        $this->parentId = $parent->id;
+        if (is_null($parent)) {
+            $this->parentId = 0;
+        } else {
+            $this->parentId = $parent->id;
+        }
+
         $this->parent = $parent;
     }
 
@@ -259,13 +264,13 @@ class Page extends Model implements Destination {
      * @return array<int, PageLocalization>
      */
     public function getLocalizations(): array {
-        if (is_null($id = $this->id)) {
+        if (!isset($this->id)) {
             return [];
         }
 
         if (!isset($this->localizations)) {
             $this->localizations = Arrays::changeKeys(
-                PageLocalization::forPageRaw($id),
+                PageLocalization::forPageRaw($this->id),
                 fn(PageLocalization $x) => $x->languageId
             );
         }
@@ -312,16 +317,16 @@ class Page extends Model implements Destination {
         return $this->isReleased();
     }
 
-    public function getTemplateRecord(): ?PageTemplateRecord {
-        if (!isset($this->template)) {
+    public function getTemplateRecord(bool $force = false): ?PageTemplateRecord {
+        if (!isset($this->template) || $force) {
             $this->template = PageTemplateRecord::fromId($this->templateId);
         }
 
         return $this->template;
     }
 
-    public function getTemplate(): ?PageTemplate {
-        if (is_null($record = $this->getTemplateRecord())) {
+    public function getTemplate(bool $force = false): ?PageTemplate {
+        if (is_null($record = $this->getTemplateRecord($force))) {
             return null;
         }
 

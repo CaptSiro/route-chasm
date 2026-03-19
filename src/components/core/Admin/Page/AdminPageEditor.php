@@ -13,6 +13,7 @@ use core\App;
 use core\communication\Request;
 use core\communication\Response;
 use core\pages\Pages;
+use core\pages\PageTemplate;
 use core\route\RouteNode;
 use core\RouteChasmEnvironment;
 use core\url\Url;
@@ -95,13 +96,24 @@ class AdminPageEditor extends AdminNexusEditor {
         return $ret;
     }
 
+    public function getPageTemplate(?Request $request = null): ?PageTemplate {
+        $request ??= App::getInstance()
+            ->getRequest();
+
+        $pageId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE);
+        if (is_null($pageId)) {
+            return null;
+        }
+
+        $page = Page::fromId(intval($pageId));
+        return $page->getTemplate();
+    }
+
     public function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
 
         $router = $bindingPoint->getRouter();
         $router->use('template', function (Request $request, Response $response) {
-            $response->setHeader("X-Template", "created");
-
             $pageId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE);
             if (is_null($pageId)) {
                 $queryParameter = RouteChasmEnvironment::QUERY_PAGE;
@@ -111,12 +123,10 @@ class AdminPageEditor extends AdminNexusEditor {
             }
 
             $page = Page::fromId(intval($pageId));
-            if (is_null($templateRecord = $page->getTemplateRecord())) {
+            if (is_null($template = $page->getTemplate())) {
                 $response->renderRoot(new Message($this->tr("Template is not set for this page")));
             }
 
-            $template = Pages::getTemplate($templateRecord->id);
-            $response->setHeader("X-Template", "created|performed");
             return $template->buildEditor($page);
         });
     }

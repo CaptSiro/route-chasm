@@ -2,6 +2,7 @@
 
 namespace components\pages\TextPage;
 
+use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Search\SearchResult;
 use components\core\ToolBar\ToolBarItem;
 use components\Lumora\Display\Display;
@@ -77,6 +78,10 @@ class TextPageTemplate implements PageTemplate {
     public function buildEditor(Page $page): Action {
         $localization = $page->getLocalizationOrDefault();
         return $this->createEditor($page, $localization);
+    }
+
+    public function buildEditorBehavior(): ?EditorBehavior {
+        return null;
     }
 
     public function delete(Page $page): ?View {

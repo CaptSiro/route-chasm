@@ -19,18 +19,27 @@ use core\forms\controls\MultiSelect\MultiSelect;
 use core\forms\controls\PasswordField\PasswordField;
 use core\forms\controls\TextField;
 use core\forms\Form;
+use core\locale\LexiconUnit;
 use core\utils\Components;
 use core\utils\Models;
 use core\view\View;
 use models\core\Group\Group;
 
 class UserEditorBehavior implements EditorBehavior {
-    use Editor\GetEditor, Editor\SetEditor;
+    use LexiconUnit, Editor\GetEditor, Editor\SetEditor;
+
+    public const LEXICON_GROUP = 'editor.user';
 
     public const NAME_TAG = 'tag';
     public const NAME_USERNAME = 'username';
     public const NAME_PASSWORD = 'password';
     public const NAME_GROUPS = 'groups';
+
+
+
+    public function __construct() {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+    }
 
 
 
@@ -46,7 +55,7 @@ class UserEditorBehavior implements EditorBehavior {
         if ($this->editor instanceof AdminUserEditor) {
             $row = new Row();
 
-            $loginAsUser = new Button('Login as user');
+            $loginAsUser = new Button($this->tr('Login as user'));
             $loginAsUser->addDataAttribute('url', $this->editor->createLoginAsUserUrl($model));
             $loginAsUser->addJavascriptInit('admin_user_loginAsUser');
 
@@ -61,7 +70,7 @@ class UserEditorBehavior implements EditorBehavior {
 
         $tagField = new TextField(
             self::NAME_TAG,
-            'Tag',
+            $this->tr('Tag'),
         );
 
         if (!is_null($model)) {
@@ -73,12 +82,12 @@ class UserEditorBehavior implements EditorBehavior {
             ->add($tagField)
             ->add(new TextField(
                 self::NAME_USERNAME,
-                'Username',
+                $this->tr('Username'),
                 Models::getString($model, 'username')
             ))
             ->add(new PasswordField(
                 self::NAME_PASSWORD,
-                'Password',
+                $this->tr('Password'),
                 '',
                 addVisibilityControl: true
             ));
@@ -94,7 +103,7 @@ class UserEditorBehavior implements EditorBehavior {
 
         $column->add(new MultiSelect(self::NAME_GROUPS, 'Groups', $groups, $userGroups));
 
-        $layout->add(new Accordion('RouteChasm user profile', $column));
+        $layout->add(new Accordion($this->tr('RouteChasm user profile'), $column));
 
         return null;
     }
@@ -117,7 +126,10 @@ class UserEditorBehavior implements EditorBehavior {
         $len = strlen($password);
         if ($len !== 0) {
             if ($len < 8) {
-                return new SaveError(self::NAME_PASSWORD, 'Password must be at least 8 characters long');
+                return new SaveError(
+                    self::NAME_PASSWORD,
+                    $this->tr('Password must be at least 8 characters long')
+                );
             }
 
             $model->password = password_hash($password, PASSWORD_DEFAULT);

@@ -11,25 +11,39 @@ use components\ai\Schema\StringSchema;
 use components\core\Admin\Nexus\Editor;
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
+use components\layout\Accordion\Accordion;
+use components\layout\Column\Column;
 use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
 use core\forms\Form;
+use core\locale\LexiconUnit;
 use core\ResourceLoader;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\View;
 use models\core\Page\AiPage;
+use models\core\Page\Page;
 use modules\ai\OpenAi;
+use RuntimeException;
 
 class AiPageEditorBehavior implements EditorBehavior {
-    use ResourceLoader;
+    use ResourceLoader, LexiconUnit;
+
+    public const LEXICON_GROUP = 'editor.ai-generated-page';
+
+    public const NAME_PROMPT = 'prompt';
+    public const PROPERTY_WEBPAGE_HTML = 'html';
+    public const PROPERTY_WEBPAGE_CSS = 'css';
+    public const PROPERTY_WEBPAGE_JS = 'js';
 
 
 
     public function __construct(
         protected EditorBehavior $behavior,
         protected AiPageTemplate $context
-    ) {}
+    ) {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+    }
 
 
 
@@ -45,7 +59,15 @@ class AiPageEditorBehavior implements EditorBehavior {
     }
 
     public function addControls(Layout $layout, ?Model $model): ?View {
-        return $this->behavior->addControls($layout, $model);
+        $aiPage = $model instanceof Page
+            ? AiPage::fromPage($model)
+            : null;
+
+        $column = new Column();
+        $ret = $this->behavior->addControls($column, $aiPage);
+
+        $layout->add(new Accordion($this->tr('AI Page Generation'), $column));
+        return $ret;
     }
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
@@ -53,7 +75,15 @@ class AiPageEditorBehavior implements EditorBehavior {
             ->getRequest()
             ->getBody();
 
-        if ($action === EditorBehaviorAction::UPDATE && $model instanceof AiPage) {
+        if (!($model instanceof Page)) {
+            throw new RuntimeException($this->tr("Provided model must be type of Page"));
+        }
+
+        $aiPage = AiPage::fromPage($model);
+        $samePrompt = !is_null($aiPage)
+            && $aiPage->prompt === $body->get(self::NAME_PROMPT);
+
+        if ($action === EditorBehaviorAction::UPDATE && !$samePrompt) {
             $client = OpenAi::fromEnv();
 
             $request = new AiRequest('gpt-4o-mini');
@@ -61,13 +91,13 @@ class AiPageEditorBehavior implements EditorBehavior {
             $schema = new Schema(
                 'webpage_generation',
                 (new ObjectSchema())
-                    ->add('html', new StringSchema())
-                    ->add('css', new StringSchema())
-                    ->add('js', new StringSchema())
-                    ->setRequired(['html', 'css', 'js'])
+                    ->add(self::PROPERTY_WEBPAGE_HTML, new StringSchema())
+                    ->add(self::PROPERTY_WEBPAGE_CSS, new StringSchema())
+                    ->add(self::PROPERTY_WEBPAGE_JS, new StringSchema())
+                    ->setRequired([self::PROPERTY_WEBPAGE_HTML, self::PROPERTY_WEBPAGE_CSS, self::PROPERTY_WEBPAGE_JS])
             );
 
-            $description = $body->get('description');
+            $description = $body->get(self::NAME_PROMPT);
 
             $request
                 ->setSchema($schema)
@@ -75,21 +105,20 @@ class AiPageEditorBehavior implements EditorBehavior {
                 ->add(new PageGeneration(InputMessage::ROLE_USER, $description));
 
             if (!is_null($response = $client->parseResponse($client->chat($request)))) {
-                $page = $model->getPage();
-                $page
+                $model
                     ->get(AiPageTemplate::DATA_ITEM_HTML)
-                    ->write($response['html']);
+                    ->write($response[self::PROPERTY_WEBPAGE_HTML]);
 
-                $page
+                $model
                     ->get(AiPageTemplate::DATA_ITEM_JS)
-                    ->write($response['js']);
+                    ->write($response[self::PROPERTY_WEBPAGE_JS]);
 
-                $page
+                $model
                     ->get(AiPageTemplate::DATA_ITEM_CSS)
-                    ->write($response['css']);
+                    ->write($response[self::PROPERTY_WEBPAGE_CSS]);
             }
         }
 
-        return $this->behavior->onSubmit($model, $action);
+        return $this->behavior->onSubmit($aiPage, $action);
     }
 }

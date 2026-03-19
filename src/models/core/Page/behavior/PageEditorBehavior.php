@@ -58,6 +58,21 @@ class PageEditorBehavior implements EditorBehavior {
 
 
 
+    protected function getTemplateBehavior(?Model $model): ?EditorBehavior {
+        if (!($model instanceof Page)) {
+            return null;
+        }
+
+        $behavior = $model->getTemplate()
+            ->buildEditorBehavior();
+
+        if (isset($this->editor)) {
+            $behavior?->setEditor($this->editor);
+        }
+
+        return $behavior;
+    }
+
     public function initForm(Form $form, ?Model $model): ?View {
         $form->setBodyTransformer('form_json');
         $form->add(new HiddenField(self::NAME_PARENT_ID, App::getInstance()
@@ -65,6 +80,11 @@ class PageEditorBehavior implements EditorBehavior {
             ->getUrl()
             ->getQuery()
             ->get(RouteChasmEnvironment::QUERY_PAGE_PARENT, '')));
+
+        if (!is_null($behavior = $this->getTemplateBehavior($model))) {
+            $behavior->initForm($form, $model);
+        }
+
         return null;
     }
 
@@ -131,6 +151,10 @@ class PageEditorBehavior implements EditorBehavior {
             $this->tr('Localization'),
             new Tabs($tabs, $selected)
         ));
+
+        if (!is_null($behavior = $this->getTemplateBehavior($model))) {
+            $behavior->addControls($layout, $model);
+        }
 
         return null;
     }
@@ -244,8 +268,6 @@ class PageEditorBehavior implements EditorBehavior {
     protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request, ?Page $parent): ?View {
         $body = $request->getBody();
 
-        Shortcut::submitHash($body->getStrict(self::NAME_COVER_IMAGE), $page->getCoverImageName());
-
         $titles = $body->getStrict('title');
         if ($this->emptyTitles($titles)) {
             return new Message($this->tr('Page must have at least one title'));
@@ -268,6 +290,14 @@ class PageEditorBehavior implements EditorBehavior {
             fn(Language $x) => $x->id
         );
 
+        $hasTemplateChanged = isset($page->templateId)
+            && $page->templateId !== intval($body->get("templateId"));
+
+        if ($hasTemplateChanged) {
+            $page->getTemplate()
+                ?->delete($page);
+        }
+
         $page->set($body->toArray());
         $page->setParent($parent);
 
@@ -285,6 +315,13 @@ class PageEditorBehavior implements EditorBehavior {
 
         $page->updated = Sql::datetimeNow();
         $page->save();
+
+        Shortcut::submitHash($body->getStrict(self::NAME_COVER_IMAGE), $page->getCoverImageName());
+
+        if ($hasTemplateChanged) {
+            $page->getTemplate(true)
+                ?->create($page);
+        }
 
         $this->onSubmitPlaceInMenus($page, $body);
         return null;
@@ -429,6 +466,10 @@ class PageEditorBehavior implements EditorBehavior {
 
         if (!is_null($error = $this->onSubmitLocalization($model, $action, $request, $parent))) {
             return $error;
+        }
+
+        if (!is_null($behavior = $this->getTemplateBehavior($model))) {
+            return $behavior->onSubmit($model, $action);
         }
 
         return null;

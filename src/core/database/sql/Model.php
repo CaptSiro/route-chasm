@@ -146,8 +146,9 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
      * @param array $data `[$phpPropertyName => $value]` Do not use column name as a key
      * @return $this
      */
-    public function set(array $data): static {
+    public function set(array $data, bool $canSetIdColumn = false): static {
         $description = ModelDescription::extract(static::class);
+        $idColumnName = $description->getIdColumn()->getName();
 
         foreach ($data as $property => $value) {
             if (!isset($description->getAlias()[$property])) {
@@ -155,7 +156,7 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
             }
 
             $column = $description->getAlias()[$property];
-            if (!isset($column)) {
+            if (!$canSetIdColumn && $column->getName() === $idColumnName) {
                 continue;
             }
 

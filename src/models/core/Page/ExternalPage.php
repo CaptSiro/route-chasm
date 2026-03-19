@@ -10,12 +10,12 @@ use core\database\sql\Database;
 use core\database\sql\Model;
 use core\database\sql\query\Query;
 use core\database\sql\Table;
-use core\forms\description\TextArea;
+use core\forms\description\TextField;
 
 #[Grid]
 #[Database(App::DATABASE)]
-#[Table('core_ai_page')]
-class AiPage extends Model {
+#[Table('core_external_page')]
+class ExternalPage extends Model {
     public static function fromPage(Page $page): ?static {
         return static::fromPageRaw($page->id);
     }
@@ -28,16 +28,16 @@ class AiPage extends Model {
 
 
 
-    #[Column('id_ai_page', Column::TYPE_INTEGER, isPrimaryKey: true)]
+    #[Column('id_external_page', Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
 
     #[Column('id_page', Column::TYPE_INTEGER)]
     public int $pageId;
 
     #[GridColumn]
-    #[TextArea(rows: 10)]
+    #[TextField('URL')]
     #[Column(type: Column::TYPE_STRING)]
-    public string $prompt;
+    public string $url = '';
 
 
 

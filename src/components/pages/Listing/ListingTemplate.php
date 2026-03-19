@@ -2,6 +2,7 @@
 
 namespace components\pages\Listing;
 
+use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Message\Message;
 use components\core\Search\SearchResult;
 use components\pages\Wireframe\Wireframe;
@@ -62,5 +63,9 @@ class ListingTemplate implements PageTemplate {
 
     public function buildEditor(Page $page): Action {
         return new Message('Page Listing has no content editor associated with its template');
+    }
+
+    public function buildEditorBehavior(): ?EditorBehavior {
+        return null;
     }
 }

@@ -131,7 +131,7 @@ class WFileDownload extends Widget {
                 return;
             }
 
-            window.location.replace(this.#url);
+            location.replace(this.#url);
         });
     }
 

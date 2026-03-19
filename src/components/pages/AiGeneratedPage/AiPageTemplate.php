@@ -2,10 +2,9 @@
 
 namespace components\pages\AiGeneratedPage;
 
-use components\core\Admin\Nexus\AdminNexus;
-use components\core\Admin\Nexus\Editor\AdminNexusEditor;
+use components\core\Admin\Nexus\Editor\EditorBehavior;
+use components\core\Message\Message;
 use components\core\Search\SearchResult;
-use components\layout\Grid\description\GridDescription;
 use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
@@ -32,7 +31,7 @@ class AiPageTemplate implements PageTemplate {
         $aiPage = new AiPage();
 
         $aiPage->pageId = $page->id;
-        $aiPage->description = '';
+        $aiPage->prompt = '';
         $aiPage->save();
 
         return null;
@@ -69,28 +68,17 @@ class AiPageTemplate implements PageTemplate {
     }
 
     public function hasEditor(): bool {
-        return true;
+        return false;
     }
 
     public function buildEditor(Page $page): Action {
-        $editor = new AdminNexusEditor(
-            new AiPageEditorBehavior(
-                FormDescription::extract(AiPage::class),
-                $this
-            )
+        return new Message('AI Generated Page has no content editor associated with its template');
+    }
+
+    public function buildEditorBehavior(): ?EditorBehavior {
+        return new AiPageEditorBehavior(
+            FormDescription::extract(AiPage::class),
+            $this
         );
-        $nexus = new AdminNexus(
-            AiPage::getDescription(),
-            $editor,
-            GridDescription::extract(AiPage::class)
-        );
-
-        $nexus->setTitle('AI Generated page');
-
-        $editor->setContext($nexus);
-        $editor->setModel(AiPage::fromPage($page));
-        $editor->setFlag(AdminNexusEditor::FLAG_REMOVE_CANCEL_BUTTON);
-
-        return $editor;
     }
 }

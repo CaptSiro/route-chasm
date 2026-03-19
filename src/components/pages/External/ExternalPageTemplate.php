@@ -1,59 +1,42 @@
 <?php
 
-namespace components\pages\Article;
+namespace components\pages\External;
 
 use components\core\Admin\Nexus\Editor\EditorBehavior;
+use components\core\Message\Message;
 use components\core\Search\SearchResult;
 use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
-use core\fs\variants\FileVariantTransformer;
-use core\fs\variants\ImageVariant;
+use core\forms\description\FormDescription;
 use core\pages\PageTemplate;
 use core\view\Component;
 use core\view\View;
 use models\core\Language\Language;
+use models\core\Page\ExternalPage;
 use models\core\Page\Page;
 
-class ArticleTemplate implements PageTemplate {
-    public const DATA_CONTENT = 'article.md';
-    public const TRANSFORMER_ARTICLE_COVER = 'article-cover';
-
-    public static function getCoverTransformer(): FileVariantTransformer {
-        return ImageVariant::resolve(
-            self::TRANSFORMER_ARTICLE_COVER,
-            900, 500,
-        );
-    }
-
-
-
+class ExternalPageTemplate implements PageTemplate {
     public function getName(): string {
-        return "Article";
+        return "External";
     }
 
     public function create(Page $page): ?View {
+        $external = new ExternalPage();
+
+        $external->pageId = $page->id;
+        $external->save();
+
         return null;
     }
 
     public function delete(Page $page): ?View {
-        foreach ($page->getLocalizations() as $localization) {
-            $localization
-                ->get(self::DATA_CONTENT)
-                ->delete();
-        }
-
+        ExternalPage::fromPage($page)->delete();
         return null;
     }
 
     public function buildContent(Wireframe $wireframe, Page $page): Component {
-        return new Article(
-            $page,
-            $wireframe->getLocalization(),
-            $wireframe->getLocalization()
-                ->get(self::DATA_CONTENT)
-                ->read() ?? ''
-        );
+        return new External(ExternalPage::fromPage($page)->url);
     }
 
     public function buildListingCard(Page $page, Language $language): View {
@@ -65,14 +48,16 @@ class ArticleTemplate implements PageTemplate {
     }
 
     public function hasEditor(): bool {
-        return true;
+        return false;
     }
 
     public function buildEditor(Page $page): Action {
-        return new ArticleEditor($page);
+        return new Message('External Page has no content editor associated with its template');
     }
 
     public function buildEditorBehavior(): ?EditorBehavior {
-        return null;
+        return new ExternalPageEditorBehavior(
+            FormDescription::extract(ExternalPage::class)
+        );
     }
 }

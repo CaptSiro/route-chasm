@@ -1,0 +1,11 @@
+<?php /** @var External $this */
+
+use components\core\Html\Html;
+use components\pages\External\External;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('external.js'));
+
+?><section class="page-section" x-init="external" data-url="<?= Html::escapeAttribute($this->url) ?>">
+    <h1><?= $this->tr('Redirecting to') ?>: <?= Html::escape($this->url) ?></h1>
+</section>
