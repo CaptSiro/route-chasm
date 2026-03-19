@@ -10,6 +10,8 @@ use components\ai\Schema\ArraySchema;
 use components\ai\Schema\ObjectSchema;
 use components\ai\Schema\Schema;
 use components\ai\Schema\StringSchema;
+use components\core\BreadCrumbs\BreadCrumbs;
+use components\core\Icon;
 use components\core\Search\SearchResult;
 use components\core\Search\SearchResults;
 use core\communication\Request;
@@ -18,10 +20,12 @@ use core\http\HttpCode;
 use core\route\Path;
 use core\route\RouteNode;
 use core\route\Router;
+use core\route\RouteTree;
 use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
 use core\utils\Files;
+use DirectoryIterator;
 use FilesystemIterator;
 use models\core\Language\Language;
 use models\core\Setting\Setting;
@@ -44,32 +48,67 @@ class Docs extends Router {
 
 
 
+    protected string $src;
+    protected int $srcLength;
+
+    public function __construct() {
+        parent::__construct();
+
+        $this->src = realpath(RouteChasmEnvironment::SRC);
+        $this->srcLength = strlen($this->src);
+    }
+
+
+
     /**
      * @param string $query
      * @param int $maxEntries
      * @return array<Path>
      */
     protected function searchFiles(string $query, int $maxEntries = PHP_INT_MAX): array {
-        $src = realpath(RouteChasmEnvironment::SRC);
-        $srcLength = strlen($src);
         $files = [];
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($src, FilesystemIterator::SKIP_DOTS)
+        $iterator = new DirectoryIterator($this->src);
+
+        $this->searchFilesRecursive(
+            $files,
+            $iterator,
+            $query,
+            $maxEntries
         );
 
-        /** @var SplFileInfo $item */
+        return $files;
+    }
+
+    protected function searchFilesRecursive(
+        array &$results,
+        DirectoryIterator $iterator,
+        string $query,
+        int $maxEntries = PHP_INT_MAX
+    ): void {
         foreach ($iterator as $item) {
+            if ($item->isDot()) {
+                continue;
+            }
+
+            if ($item->isDir()) {
+                $sub = new DirectoryIterator($item->getPathname());
+                $this->searchFilesRecursive($results, $sub, $query, $maxEntries);
+
+                if (count($results) >= $maxEntries) {
+                    break;
+                }
+            }
+
             if (!str_contains(strtolower($item->getFilename()), $query)) {
                 continue;
             }
 
-            $files[] = Path::from(substr($item->getRealPath(), $srcLength), separator: DIRECTORY_SEPARATOR);
-            if (count($files) >= $maxEntries) {
+            $results[] = $item->getRealPath();
+
+            if (count($results) >= $maxEntries) {
                 break;
             }
         }
-
-        return $files;
     }
 
     public function createSearchUrl(): Url {
@@ -245,6 +284,32 @@ class Docs extends Router {
         return $ret;
     }
 
+    protected function createBreadCrumbs(Path $path, ?string $delimitor = RouteChasmEnvironment::BREAD_CRUMBS_DELIMITOR): BreadCrumbs {
+        if ($path->isEmpty()) {
+            return BreadCrumbs::from([], $delimitor);
+        }
+
+        $src = realpath(RouteChasmEnvironment::SRC);
+        $breadCrumbs = [
+            $this->createUrl()->toString() => Icon::home()
+        ];
+
+        $segments = $path->getSegments();
+        $last = array_pop($segments);
+
+        for ($i = 0; $i < count($segments); $i++) {
+            $entry = implode(DIRECTORY_SEPARATOR, array_slice($segments, 0, $i + 1));
+            $url = $this->createEntryUrl(
+                Path::joinArray([$src, $entry], DIRECTORY_SEPARATOR)
+            );
+
+            $breadCrumbs[$url->toString()] = $segments[$i];
+        }
+
+        $breadCrumbs[] = $last;
+        return BreadCrumbs::from($breadCrumbs, $delimitor);
+    }
+
     protected function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
 
@@ -266,7 +331,17 @@ class Docs extends Router {
             )->toInt();
 
             $results = array_map(
-                fn(Path $x) => new SearchResult($x->last(), $this->createUrl($x)),
+                fn(string $x) => new SearchResult(
+                    basename($x),
+                    $this->createUrl(
+                        Path::from(substr($x, $this->srcLength),
+                            separator: DIRECTORY_SEPARATOR
+                        )
+                    ),
+                    is_dir($x)
+                        ? 'Namespace'
+                        : 'Source file'
+                ),
                 $this->searchFiles(strtolower($query), $maxEntries),
             );
 
@@ -275,22 +350,23 @@ class Docs extends Router {
 
         $router->use('/**', function (Request $request, Response $response) {
             $src = realpath(RouteChasmEnvironment::SRC);
-            $file = Path::merge($src, $request->getRemainingPath());
-            $filePath = $file->toString(prependSlash: false);
-
-            if (!$request->getUrl()->getQuery()->exists('content')) {
-                if (is_dir($filePath)) {
-                    $response->renderRoot(new DocumentPage($this, $filePath));
-                }
-
-                $response->renderRoot(new DocumentPage($this));
-            }
-
-            $language = $request->getLanguage();
+            $entry = Path::merge($src, $request->getRemainingPath());
+            $filePath = $entry->toString(prependSlash: false);
 
             if (!str_starts_with($filePath, $src) || !file_exists($filePath)) {
                 $response->sendStatus(HttpCode::CE_NOT_FOUND);
             }
+
+            if (!$request->getUrl()->getQuery()->exists('content')) {
+                $breadCrumbs = $this->createBreadCrumbs($request->getRemainingPath());
+                if (is_dir($filePath)) {
+                    $response->renderRoot(new DocumentPage($this, $breadCrumbs, $filePath));
+                }
+
+                $response->renderRoot(new DocumentPage($this, $breadCrumbs));
+            }
+
+            $language = $request->getLanguage();
 
             $doc = Document::fromFile($filePath);
             if (!is_null($doc) && !$doc->needsUpdate()) {

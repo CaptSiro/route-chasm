@@ -139,6 +139,10 @@ class Path implements ArrayIterator, Copy, JsonSerializable {
         return count($this->segments) - $this->offset;
     }
 
+    public function isEmpty(): bool {
+        return $this->getDepth() === 0;
+    }
+
     /**
      * @return array<string>
      */

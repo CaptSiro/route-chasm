@@ -2,6 +2,7 @@
 
 namespace components\docs;
 
+use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\HtmlHead\HtmlHead;
 use components\core\PageMenu\Header;
 use components\core\PageMenu\PageMenu;
@@ -23,6 +24,7 @@ class DocumentPage extends ContainerContent {
 
     public function __construct(
         protected Docs $docs,
+        protected BreadCrumbs $breadCrumbs,
         protected ?string $directory = null
     ) {
         parent::__construct($this->webPage = new WebPage(head: $head = new HtmlHead()));
