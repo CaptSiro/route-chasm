@@ -6,6 +6,8 @@ class MarkDownTokenizer {
     /** @type {string} */
     #text;
 
+    #escapable = ['\\', "-", "#", ">", "<", "*", "_", "`", "!", "[", "]", "(", ")", '"'];
+
 
 
     #appendText(string) {
@@ -97,13 +99,20 @@ class MarkDownTokenizer {
 
                 switch (char) {
                     case "\\": {
-                        this.#position++;
-                        const next = line[this.#position];
+                        const next = line[this.#position + 1];
 
                         if (is(next)) {
+                            if (!this.#escapable.includes(next)) {
+                                this.#appendText(char);
+                            } else {
+                                this.#position++;
+                            }
+
                             this.#appendText(next);
+                            break;
                         }
 
+                        this.#position++;
                         break;
                     }
 
