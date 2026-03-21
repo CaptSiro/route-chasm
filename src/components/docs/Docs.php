@@ -14,27 +14,27 @@ use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Icon;
 use components\core\Search\SearchResult;
 use components\core\Search\SearchResults;
+use core\actions\Block;
+use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\http\Http;
 use core\http\HttpCode;
 use core\route\Path;
 use core\route\RouteNode;
 use core\route\Router;
-use core\route\RouteTree;
 use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
 use core\utils\Files;
 use DirectoryIterator;
-use FilesystemIterator;
 use models\core\Language\Language;
+use models\core\Privilege\Privilege;
 use models\core\Setting\Setting;
+use models\core\UserResource;
 use models\docs\Document;
 use models\docs\Fragment;
 use modules\ai\OpenAi;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use SplFileInfo;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class Docs extends Router {
@@ -50,9 +50,12 @@ class Docs extends Router {
 
     protected string $src;
     protected int $srcLength;
+    protected UserResource $resource;
 
     public function __construct() {
         parent::__construct();
+
+        $this->resource = UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_DOCS);
 
         $this->src = realpath(RouteChasmEnvironment::SRC);
         $this->srcLength = strlen($this->src);
@@ -170,7 +173,9 @@ class Docs extends Router {
 
         if (!isset($fragmentResponse[self::PROPERTY_FRAGMENT_SUMMARY])) {
             var_dump($fragmentResponse);
-            exit;
+            App::getInstance()
+                ->getResponse()
+                ->sendStatus(HttpCode::SE_INTERNAL_SERVER_ERROR);
         }
 
         $fragment = new Fragment();
@@ -222,17 +227,17 @@ class Docs extends Router {
         $client = OpenAi::fromEnv();
 
         $fragments = [];
-        $src = realpath(RouteChasmEnvironment::SRC);
 
         $this->createFragment($client, $file, $fragmentResponse);
 
         foreach ($fragmentResponse['dependencies'] as $dependency) {
-            $path = Path::merge($src, Path::from($dependency .'.php', separator: '\\'));
+            $path = Path::merge($this->src, Path::from($dependency .'.php', separator: '\\'));
             $filePath = $path->toString(DIRECTORY_SEPARATOR, false);
             if (!file_exists($filePath)) {
                 continue;
             }
 
+            $filePath = realpath($filePath);
             if (!is_null($fragment = Fragment::fromName($filePath))) {
                 $fragments[] = $fragment;
                 continue;
@@ -253,10 +258,8 @@ class Docs extends Router {
     }
 
     public function createEntryUrl(string $entryPath): Url {
-        $srcLength = strlen(realpath(RouteChasmEnvironment::SRC));
-
         return $this->createUrl(Path::from(
-            substr($entryPath, $srcLength),
+            substr($entryPath, $this->srcLength),
             separator: DIRECTORY_SEPARATOR
         ));
     }
@@ -267,11 +270,10 @@ class Docs extends Router {
      */
     protected function createRelated(array $fragments): array {
         $ret = [];
-        $src = strlen(realpath(RouteChasmEnvironment::SRC));
 
         foreach ($fragments as $fragment) {
             $name = Path::from(
-                substr($fragment->name, $src),
+                substr($fragment->name, $this->srcLength),
                 separator: DIRECTORY_SEPARATOR
             );
 
@@ -289,7 +291,6 @@ class Docs extends Router {
             return BreadCrumbs::from([], $delimitor);
         }
 
-        $src = realpath(RouteChasmEnvironment::SRC);
         $breadCrumbs = [
             $this->createUrl()->toString() => Icon::home()
         ];
@@ -300,7 +301,7 @@ class Docs extends Router {
         for ($i = 0; $i < count($segments); $i++) {
             $entry = implode(DIRECTORY_SEPARATOR, array_slice($segments, 0, $i + 1));
             $url = $this->createEntryUrl(
-                Path::joinArray([$src, $entry], DIRECTORY_SEPARATOR)
+                Path::joinArray([$this->src, $entry], DIRECTORY_SEPARATOR)
             );
 
             $breadCrumbs[$url->toString()] = $segments[$i];
@@ -314,90 +315,147 @@ class Docs extends Router {
         parent::onBind($bindingPoint);
 
         $router = $bindingPoint->getRouter();
-        $router->use('/search', function (Request $request, Response $response) {
-            $query = $request->getUrl()
-                ->getQuery()
-                ->get(RouteChasmEnvironment::QUERY_SEARCH);
+        $router->use('/search',
+            new Block($this->resource, $read = Privilege::fromName(Privilege::READ)),
+            function (Request $request, Response $response) {
+                $query = $request->getUrl()
+                    ->getQuery()
+                    ->get(RouteChasmEnvironment::QUERY_SEARCH);
 
-            if (empty($query)) {
-                $response->json([]);
-            }
-
-            $maxEntries = Setting::fromName(
-                self::SETTING_NAME_DROPDOWN_MAX_ENTRIES,
-                true,
-                RouteChasmEnvironment::SEARCH_DROPDOWN_MAX_ENTRIES,
-                [PROPERTY_EDITABLE => true]
-            )->toInt();
-
-            $results = array_map(
-                fn(string $x) => new SearchResult(
-                    basename($x),
-                    $this->createUrl(
-                        Path::from(substr($x, $this->srcLength),
-                            separator: DIRECTORY_SEPARATOR
-                        )
-                    ),
-                    is_dir($x)
-                        ? 'Namespace'
-                        : 'Source file'
-                ),
-                $this->searchFiles(strtolower($query), $maxEntries),
-            );
-
-            $response->renderRoot(new SearchResults($results));
-        });
-
-        $router->use('/**', function (Request $request, Response $response) {
-            $src = realpath(RouteChasmEnvironment::SRC);
-            $entry = Path::merge($src, $request->getRemainingPath());
-            $filePath = $entry->toString(prependSlash: false);
-
-            if (!str_starts_with($filePath, $src) || !file_exists($filePath)) {
-                $response->sendStatus(HttpCode::CE_NOT_FOUND);
-            }
-
-            if (!$request->getUrl()->getQuery()->exists('content')) {
-                $breadCrumbs = $this->createBreadCrumbs($request->getRemainingPath());
-                if (is_dir($filePath)) {
-                    $response->renderRoot(new DocumentPage($this, $breadCrumbs, $filePath));
+                if (empty($query)) {
+                    $response->json([]);
                 }
 
-                $response->renderRoot(new DocumentPage($this, $breadCrumbs));
+                $maxEntries = Setting::fromName(
+                    self::SETTING_NAME_DROPDOWN_MAX_ENTRIES,
+                    true,
+                    RouteChasmEnvironment::SEARCH_DROPDOWN_MAX_ENTRIES,
+                    [PROPERTY_EDITABLE => true]
+                )->toInt();
+
+                $results = array_map(
+                    fn(string $x) => new SearchResult(
+                        basename($x),
+                        $this->createUrl(
+                            Path::from(substr($x, $this->srcLength),
+                                separator: DIRECTORY_SEPARATOR
+                            )
+                        ),
+                        is_dir($x)
+                            ? 'Namespace'
+                            : 'Source file'
+                    ),
+                    $this->searchFiles(strtolower($query), $maxEntries),
+                );
+
+                $response->renderRoot(new SearchResults($results));
             }
+        );
 
-            $language = $request->getLanguage();
+        $router->use('/**',
+            Http::get(
+                new Block($this->resource, $read),
+                function (Request $request, Response $response) {
+                    $file = Path::merge($this->src, $request->getRemainingPath())
+                        ->toString(prependSlash: false);
 
-            $doc = Document::fromFile($filePath);
-            if (!is_null($doc) && !$doc->needsUpdate()) {
-                if ($doc->getContent($language)->exists()) {
+                    if (!str_starts_with($file, $this->src) || !file_exists($file)) {
+                        $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                    }
+
+                    if (!$request->getUrl()->getQuery()->exists('content')) {
+                        $breadCrumbs = $this->createBreadCrumbs($request->getRemainingPath());
+                        $page = new DocumentPage($this, $breadCrumbs);
+
+                        if (is_dir($file)) {
+                            $page->setDirectory($file);
+                        }
+
+                        $response->renderRoot($page->setUserResource($this->resource));
+                    }
+
+                    $language = $request->getLanguage();
+                    $file = realpath($file);
+
+                    $doc = Document::fromFile($file);
+                    if (!is_null($doc) && !$doc->needsUpdate()) {
+                        if ($doc->getContent($language)->exists()) {
+                            $response->json([
+                                'content' => $doc->getContent($language)->read(),
+                                'related' => $this->createRelated($doc->getFragments())
+                            ]);
+                        }
+
+                        $this->generateDocumentation(
+                            $doc, OpenAi::fromEnv(), $language, $file, $doc->getFragments()
+                        );
+                        $doc->updateFileInfo(true);
+
+                        $response->json([
+                            'content' => $doc->getContent($language)->read(),
+                            'related' => $this->createRelated($doc->getFragments())
+                        ]);
+                    }
+
+                    if (is_null($doc = $this->document($file, $language))) {
+                        $response->json([
+                            'content' => '# Failed to generate documentation for: '. $request->getRemainingPath(),
+                            'related' => [],
+                        ]);
+                    }
+
                     $response->json([
                         'content' => $doc->getContent($language)->read(),
                         'related' => $this->createRelated($doc->getFragments())
                     ]);
                 }
+            )->setCheckIsLastAction(false),
 
-                $this->generateDocumentation(
-                    $doc, OpenAi::fromEnv(), $language, $filePath, $doc->getFragments()
-                );
+            Http::post(
+                new Block($this->resource, Privilege::fromName(Privilege::UPDATE)),
+                function (Request $request, Response $response) {
+                    $file = Path::merge($this->src, $request->getRemainingPath())
+                        ->toString(prependSlash: false);
 
-                $response->json([
-                    'content' => $doc->getContent($language)->read(),
-                    'related' => $this->createRelated($doc->getFragments())
-                ]);
-            }
+                    if (!str_starts_with($file, $this->src) || !file_exists($file)) {
+                        $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                    }
 
-            if (is_null($doc = $this->document($filePath, $language))) {
-                $response->json([
-                    'content' => '# Failed to generate documentation for: '. $request->getRemainingPath(),
-                    'related' => [],
-                ]);
-            }
+                    $file = realpath($file);
+                    $language = $request->getLanguage();
 
-            $response->json([
-                'content' => $doc->getContent($language)->read(),
-                'related' => $this->createRelated($doc->getFragments())
-            ]);
-        });
+                    if (is_null($doc = Document::fromFile($file))) {
+                        var_dump($doc);
+                        $response->sendStatus(HttpCode::SE_INTERNAL_SERVER_ERROR);
+                    }
+
+                    $doc->getContent($language)
+                        ->write($request->getBody()->getStrict('content'));
+
+                    $response->sendStatus(HttpCode::S_OK);
+                }
+            )->setCheckIsLastAction(false),
+
+            Http::put(
+                new Block($this->resource, Privilege::fromName(Privilege::UPDATE)),
+                function (Request $request, Response $response) {
+                    $file = Path::merge($this->src, $request->getRemainingPath())
+                        ->toString(prependSlash: false);
+
+                    if (!str_starts_with($file, $this->src) || !file_exists($file)) {
+                        $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                    }
+
+                    $file = realpath($file);
+                    $language = $request->getLanguage();
+
+                    if (is_null($doc = $this->document($file, $language))) {
+                        $response->sendStatus(HttpCode::SE_SERVICE_UNAVAILABLE);
+                    }
+
+                    $response->sendStatus(HttpCode::S_OK);
+                }
+            )->setCheckIsLastAction(false),
+        );
     }
 }

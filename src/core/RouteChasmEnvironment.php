@@ -63,6 +63,7 @@ class RouteChasmEnvironment {
     public const USER_RESOURCE_LOCALIZATION = 'Localization';
     public const USER_RESOURCE_DOMAIN = 'Domains';
     public const USER_RESOURCE_SYSTEM = 'System';
+    public const USER_RESOURCE_DOCS = 'Docs';
 
     public const SEARCH_MIN_LENGTH = 3;
     public const SEARCH_DROPDOWN_MAX_ENTRIES = 5;

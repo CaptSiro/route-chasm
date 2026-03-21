@@ -29,6 +29,7 @@ class HttpGate implements Action {
      */
     private array $bodyGuards;
     protected bool $isMiddleware;
+    protected bool $checkIsLastAction;
 
 
 
@@ -38,9 +39,15 @@ class HttpGate implements Action {
         $this->queryGuards = [];
         $this->bodyGuards = [];
         $this->isMiddleware = false;
+        $this->checkIsLastAction = true;
     }
 
 
+
+    public function setCheckIsLastAction(bool $checkIsLastAction): static {
+        $this->checkIsLastAction = $checkIsLastAction;
+        return $this;
+    }
 
     /**
      * @return string
@@ -105,7 +112,7 @@ class HttpGate implements Action {
     }
 
     public function perform(Request $request, Response $response): void {
-        if (!$this->isLastAction($request)) {
+        if ($this->checkIsLastAction && !$this->isLastAction($request)) {
             return;
         }
 

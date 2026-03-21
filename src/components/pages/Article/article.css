@@ -1,3 +1,7 @@
+html {
+    overflow-x: hidden;
+}
+
 body {
     line-height: 1.4;
 }
@@ -11,6 +15,10 @@ body {
     padding: var(--gap);
 }
 
+.page.no-columns {
+    grid-template-columns: 1fr;
+}
+
 .article-wrapper {
     display: flex;
     justify-content: center;
@@ -21,12 +29,14 @@ body {
     max-width: var(--markdown-max-width);
 }
 
+.page.no-columns .article {
+    max-width: var(--page-width);
+}
+
 .article-toc-wrapper {
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
 }
 
 .article-toc-wrapper > * {
@@ -104,6 +114,15 @@ body {
 .article-gallery-content img:hover {
     transform: scale(0.95);
     opacity: 0.8;
+}
+
+.article-editor-wrapper {
+    overflow-y: auto;
+    background-color: var(--container-1);
+}
+
+.article-editor {
+    margin: var(--gap);
 }
 
 @media (max-width: 1000px) {

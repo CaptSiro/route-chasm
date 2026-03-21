@@ -35,6 +35,11 @@ class DocumentPage extends ContainerContent {
 
 
 
+    public function setDirectory(?string $directory): static {
+        $this->directory = $directory;
+        return $this;
+    }
+
     public function createHeader(): Header {
         return new Header(
             PageMenu::fromModelName(Menu::NAME_HEADER_DOCS),

@@ -7,6 +7,7 @@ use components\core\PageMenu\Footer;
 use components\docs\DocumentPage;
 use components\pages\Article\Article;
 use core\sideloader\importers\Javascript\Javascript;
+use models\core\Privilege\Privilege;
 
 Javascript::import($this->getResource('docs.js'));
 Markdown::importAssets();
@@ -35,9 +36,33 @@ Article::importAssets();
                 </div>
             </aside>
 
-            <article class="article">
-                <section class="article-content"></section>
-            </article>
+            <?php if ($this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE))): ?>
+                <article class="article">
+                    <div class="md-editor-tool-bar row">
+                        <button class="md-edit">
+                            <?= Icon::edit() ?>
+                        </button>
+
+                        <button class="md-save">
+                            <?= Icon::nf('nf-fa-save', $this->tr('Save')) ?>
+                        </button>
+
+                        <button class="md-re-generate">
+                            <?= Icon::nf('nf-fa-arrows_rotate', $this->tr('Re-generate')) ?>
+                        </button>
+                    </div>
+
+                    <div class="article-editor-wrapper">
+                        <pre class="article-editor" contenteditable="true"></pre>
+                    </div>
+
+                    <section class="article-content"></section>
+                </article>
+            <?php else: ?>
+                <article class="article">
+                    <section class="article-content"></section>
+                </article>
+            <?php endif; ?>
         </div>
     </div>
 <?php else: ?>
