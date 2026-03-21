@@ -23,11 +23,12 @@ class DocumentPage extends ContainerContent {
     protected WebPage $webPage;
 
     public function __construct(
+        string $title,
         protected Docs $docs,
         protected BreadCrumbs $breadCrumbs,
         protected ?string $directory = null
     ) {
-        parent::__construct($this->webPage = new WebPage(head: $head = new HtmlHead()));
+        parent::__construct($this->webPage = new WebPage(head: $head = new HtmlHead(title: 'Docs - '. $title)));
         $head->addElement(new StringRenderer(Search::createApi()));
 
         $this->setLexiconGroup(self::LEXICON_GROUP);

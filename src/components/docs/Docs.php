@@ -365,7 +365,7 @@ class Docs extends Router {
 
                     if (!$request->getUrl()->getQuery()->exists('content')) {
                         $breadCrumbs = $this->createBreadCrumbs($request->getRemainingPath());
-                        $page = new DocumentPage($this, $breadCrumbs);
+                        $page = new DocumentPage(basename($file), $this, $breadCrumbs);
 
                         if (is_dir($file)) {
                             $page->setDirectory($file);
