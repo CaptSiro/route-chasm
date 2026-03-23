@@ -11,6 +11,8 @@ use core\view\Renderer;
 class Select implements Control, Attribute {
     use Renderer, FormControl, HtmlAttribute;
 
+    public const DATA_ATTRIBUTE_SEARCH_FUNCTION = 'search';
+
 
 
     /**
@@ -56,5 +58,13 @@ class Select implements Control, Attribute {
 
     public function setValues(array $values): void {
         $this->values = $values;
+    }
+
+    public function setAsyncSearch(string $url, string $queryArgument = 'q', int $minLength = 3): static {
+        return $this
+            ->addDataAttribute(self::DATA_ATTRIBUTE_SEARCH_FUNCTION, 'form_select_searchAsync')
+            ->addDataAttribute('search-url', $url)
+            ->addDataAttribute('search-query-argument', $queryArgument)
+            ->addDataAttribute('search-min-length', $minLength);
     }
 }

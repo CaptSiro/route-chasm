@@ -6,7 +6,7 @@ use components\core\Html\Html;
 use core\admin\Admin;
 use core\App;
 use core\locale\LexiconUnit;
-use core\route\Route;
+use core\RouteChasmEnvironment;
 use core\view\Renderer;
 use core\view\View;
 use models\core\Menu;
@@ -40,7 +40,7 @@ class Footer implements View {
 
     public function getAdminLoginLink(): string {
         $setting = Setting::fromName(
-            Setting::NAME_SHOW_ADMIN_LOGIN_IN_FOOTER,
+            RouteChasmEnvironment::SETTING_SHOW_ADMIN_LOGIN_IN_FOOTER,
             true,
             true,
             [PROPERTY_EDITABLE => true]

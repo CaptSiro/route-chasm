@@ -3,6 +3,7 @@
 namespace components\layout\Grid\Proxy;
 
 use components\core\Html\Html;
+use core\utils\Strings;
 
 class TypeProxy implements Proxy {
     protected mixed $item;
@@ -15,17 +16,11 @@ class TypeProxy implements Proxy {
         return $this->item;
     }
 
-    public function getValue(string $name): string {
-        $value = $this->item->$name ?? null;
+    public function getValueUnwrapped(string $name): string {
+        return Strings::toHumanReadable($this->item->$name ?? null);
+    }
 
-        // wrap is a safe-function, no need to Html::safe it
-        return Html::wrap('span', match (gettype($value)) {
-            "string" => $value,
-            "boolean" => $value ? 'Yes' : 'No',
-            "integer", "double" => ''. $value,
-            "array" => implode(', ', $value),
-            "object" => json_encode($value),
-            default => '',
-        });
+    public function getValue(string $name): string {
+        return Html::wrap('span', $this->getValueUnwrapped($name));
     }
 }

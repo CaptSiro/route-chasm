@@ -10,13 +10,14 @@ use components\core\Icon;
 use components\core\Menu\Menu;
 use components\core\Modules\Modules;
 use components\core\RoutedMenu\RoutedMenu;
+use components\docs\Docs;
+use components\docs\DocsDashboard;
 use components\layout\Grid\description\GridDescription;
 use core\App;
 use core\database\sql\ModelDescription;
 use core\forms\description\FormDescription;
 use core\fs\FileSystem;
 use core\mounts\Mount;
-use core\route\compiler\Tokenizer;
 use core\route\Route;
 use core\route\Router;
 use core\RouteChasmEnvironment;
@@ -206,9 +207,33 @@ class Admin {
         }
     }
 
+    protected static function createMenuDocs(Router $router): void {
+        if (!Docs::getInstance()->isBound()) {
+            return;
+        }
+
+        $user = User::fromRequest(App::getInstance()
+            ->getRequest());
+        $read = Privilege::fromName(Privilege::READ);
+
+        $docs = UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_DOCS_ADMIN);
+
+        if (is_null($user) || !$user->hasAccess($docs, $read)) {
+            return;
+        }
+
+        $router->use(
+            Route::menu('/Docs')
+                ->icon('Docs', Icon::nf('nf-md-file_document_multiple')),
+            (new DocsDashboard())
+                ->setUserResource($docs)
+        );
+    }
+
     public static function createMenu(Router $router): Menu {
         self::createMenuWeb($router);
         self::createMenuFileSystem($router);
+        self::createMenuDocs($router);
 
         $domains = new AdminNexus(
             ModelDescription::extract(Domain::class),

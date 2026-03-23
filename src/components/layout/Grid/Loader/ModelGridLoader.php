@@ -54,6 +54,10 @@ class ModelGridLoader implements GridPortionLoader {
         return $factory->count();
     }
 
+    public function count(): int {
+        return $this->getCount(ModelFactory::extract($this->modelClass));
+    }
+
     public function load(GridLayout $context): array {
         $factory = ModelFactory::extract($this->modelClass);
         $query = $this->createSelectQuery($factory);

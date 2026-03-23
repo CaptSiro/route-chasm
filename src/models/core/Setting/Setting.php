@@ -22,8 +22,6 @@ use models\extensions\Editable\EditableExtension;
 #[Table('core_setting')]
 #[Database(App::DATABASE)]
 final class Setting extends Model implements Editable {
-    const NAME_SHOW_ADMIN_LOGIN_IN_FOOTER = "route-chasm-core:show_admin_login_in_footer";
-
     /**
      * Returns setting that saved under given name. Use <code>create: true</code> and <code>default: <value></code> to
      * create default setting if it is not present
@@ -87,7 +85,7 @@ final class Setting extends Model implements Editable {
     }
 
     public function toBoolean(): bool {
-        return Strings::asHumanReadableBoolean($this->value);
+        return Strings::fromHumanReadableBoolean($this->value);
     }
 
     public function toFloat(): float {

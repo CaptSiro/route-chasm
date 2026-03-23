@@ -4,7 +4,7 @@ use components\core\Html\Html;
 use components\core\Icon;
 use core\forms\controls\Select\Select;
 
-?><div class="form-select" x-init="form_select_init">
+?><div class="form-select" x-init="form_select_init" <?= $this->stringifyAttributes() ?>>
     <label for="<?= $this->getId() ?>_search"><?= $this->label ?></label>
 
     <label>

@@ -2,6 +2,8 @@
 
 namespace models\docs;
 
+use components\layout\Grid\description\Grid;
+use components\layout\Grid\description\GridColumn;
 use core\App;
 use core\data\DataItem;
 use core\database\sql\Column;
@@ -14,6 +16,7 @@ use core\database\sql\Sql;
 use core\database\sql\Table;
 use models\core\Language\Language;
 
+#[Grid]
 #[Database(App::DATABASE)]
 #[Table('docs_content')]
 class Document extends Model {
@@ -50,6 +53,7 @@ class Document extends Model {
     #[Column('id_content', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
 
+    #[GridColumn]
     #[Column(type: Column::TYPE_STRING)]
     public string $file;
 

@@ -40,11 +40,16 @@ use const models\extensions\Editable\PROPERTY_EDITABLE;
 class Docs extends Router {
     use Singleton;
 
-    public const SETTING_NAME_DROPDOWN_MAX_ENTRIES = 'route-chasm-docs:search_dropdown_max_entries';
+
+
+    public const LEXICON_GROUP = 'docs';
 
     public const PROPERTY_DOCUMENT_CONTENT = 'content';
     public const PROPERTY_FRAGMENT_SUMMARY = 'summary';
     public const PROPERTY_FRAGMENT_DEPENDENCIES = 'dependencies';
+
+    public const QUERY_SEARCH_NO_LINKS = 'docs-no-links';
+    public const QUERY_SEARCH_SOURCES_ONLY = 'docs-sources-only';
 
 
 
@@ -66,9 +71,10 @@ class Docs extends Router {
     /**
      * @param string $query
      * @param int $maxEntries
+     * @param bool $sourcesOnly
      * @return array<Path>
      */
-    protected function searchFiles(string $query, int $maxEntries = PHP_INT_MAX): array {
+    protected function searchFiles(string $query, int $maxEntries = PHP_INT_MAX, bool $sourcesOnly = false): array {
         $files = [];
         $iterator = new DirectoryIterator($this->src);
 
@@ -76,7 +82,8 @@ class Docs extends Router {
             $files,
             $iterator,
             $query,
-            $maxEntries
+            $maxEntries,
+            $sourcesOnly
         );
 
         return $files;
@@ -86,7 +93,8 @@ class Docs extends Router {
         array &$results,
         DirectoryIterator $iterator,
         string $query,
-        int $maxEntries = PHP_INT_MAX
+        int $maxEntries = PHP_INT_MAX,
+        bool $sourcesOnly = false
     ): void {
         foreach ($iterator as $item) {
             if ($item->isDot()) {
@@ -95,7 +103,13 @@ class Docs extends Router {
 
             if ($item->isDir()) {
                 $sub = new DirectoryIterator($item->getPathname());
-                $this->searchFilesRecursive($results, $sub, $query, $maxEntries);
+                $this->searchFilesRecursive(
+                    $results, $sub, $query, $maxEntries, $sourcesOnly
+                );
+
+                if ($sourcesOnly) {
+                    continue;
+                }
 
                 if (count($results) >= $maxEntries) {
                     break;
@@ -257,9 +271,13 @@ class Docs extends Router {
         return $document;
     }
 
+    public function trimSrc(string $entryPath): string {
+        return substr($entryPath, $this->srcLength);
+    }
+
     public function createEntryUrl(string $entryPath): Url {
         return $this->createUrl(Path::from(
-            substr($entryPath, $this->srcLength),
+            $this->trimSrc($entryPath),
             separator: DIRECTORY_SEPARATOR
         ));
     }
@@ -318,34 +336,46 @@ class Docs extends Router {
         $router->use('/search',
             new Block($this->resource, $read = Privilege::fromName(Privilege::READ)),
             function (Request $request, Response $response) {
-                $query = $request->getUrl()
-                    ->getQuery()
-                    ->get(RouteChasmEnvironment::QUERY_SEARCH);
+                $url = $request->getUrl()
+                    ->getQuery();
+
+                $query = $url->get(RouteChasmEnvironment::QUERY_SEARCH);
 
                 if (empty($query)) {
                     $response->json([]);
                 }
 
+                $isLink = !$url->exists(self::QUERY_SEARCH_NO_LINKS);
+
                 $maxEntries = Setting::fromName(
-                    self::SETTING_NAME_DROPDOWN_MAX_ENTRIES,
+                    RouteChasmEnvironment::SETTING_DROPDOWN_MAX_ENTRIES,
                     true,
                     RouteChasmEnvironment::SEARCH_DROPDOWN_MAX_ENTRIES,
                     [PROPERTY_EDITABLE => true]
                 )->toInt();
 
                 $results = array_map(
-                    fn(string $x) => new SearchResult(
-                        basename($x),
-                        $this->createUrl(
-                            Path::from(substr($x, $this->srcLength),
-                                separator: DIRECTORY_SEPARATOR
-                            )
-                        ),
-                        is_dir($x)
+                    function (string $x) use ($isLink) {
+                        $title = basename($x);
+                        $meta = is_dir($x)
                             ? 'Namespace'
-                            : 'Source file'
-                    ),
-                    $this->searchFiles(strtolower($query), $maxEntries),
+                            : 'Source file';
+
+                        if ($isLink) {
+                            return new SearchResult(
+                                $title,
+                                $this->createUrl(
+                                    Path::from(substr($x, $this->srcLength),
+                                        separator: DIRECTORY_SEPARATOR
+                                    )
+                                ),
+                                $meta
+                            );
+                        }
+
+                        return new SearchResult($title, $x, $meta, false);
+                    },
+                    $this->searchFiles(strtolower($query), $maxEntries, $url->exists(self::QUERY_SEARCH_SOURCES_ONLY)),
                 );
 
                 $response->renderRoot(new SearchResults($results));

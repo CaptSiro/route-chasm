@@ -38,6 +38,10 @@ class Component implements View, Action {
         $this->bindRouteNode($bindingPoint);
     }
 
+    public function performComponentAction(Request $request, Response $response): void {
+        $response->renderRoot($this);
+    }
+
     public function perform(Request $request, Response $response): void {
         if (!$this->isLastAction($request)) {
             return;
@@ -47,6 +51,6 @@ class Component implements View, Action {
             $response->sendStatus(HttpCode::CE_FORBIDDEN);
         }
 
-        $response->renderRoot($this);
+        $this->performComponentAction($request, $response);
     }
 }

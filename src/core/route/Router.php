@@ -145,6 +145,10 @@ class Router {
         return $this->structure->getRoute();
     }
 
+    public function isBound(): bool {
+        return !is_null($this->structure->getRoot()->getParentEdge());
+    }
+
     protected function createUrl(?Path $relative = null): Url {
         $request = App::getInstance()->getRequest();
         $path = $this->getRoute()->toStaticPath();

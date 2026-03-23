@@ -1,0 +1,17 @@
+<?php /** @var DocumentRequestsList $this */
+
+use components\core\Html\Html;
+use components\docs\DocumentRequestsList;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('docs.js'));
+
+?><div class="column" x-init="docs_documentRequestsList">
+    <h3><?= $this->tr('Requests') ?></h3>
+
+    <div class="list column-smaller"></div>
+
+    <input class="requests" type="hidden" name="<?= Html::escapeAttribute($this->name) ?>" value="">
+
+    <?= $this->createSearch() ?>
+</div>

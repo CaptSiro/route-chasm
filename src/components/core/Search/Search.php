@@ -21,7 +21,6 @@ use const models\extensions\Editable\PROPERTY_EDITABLE;
 class Search extends Router {
     use Singleton, LexiconUnit;
 
-    public const SETTING_NAME_DROPDOWN_MAX_ENTRIES = 'route-chasm-core:search_dropdown_max_entries';
     public const LEXICON_GROUP = 'search';
 
 
@@ -69,7 +68,7 @@ class Search extends Router {
                 ->getStrict(RouteChasmEnvironment::QUERY_SEARCH);
 
             $maxEntries = Setting::fromName(
-                self::SETTING_NAME_DROPDOWN_MAX_ENTRIES,
+                RouteChasmEnvironment::SETTING_DROPDOWN_MAX_ENTRIES,
                 true,
                 RouteChasmEnvironment::SEARCH_DROPDOWN_MAX_ENTRIES,
                 [PROPERTY_EDITABLE => true]

@@ -4,10 +4,11 @@ namespace components\core\Search;
 
 use core\view\Renderer;
 use core\view\View;
+use JsonSerializable;
 use models\core\Page\Page;
 use models\core\Page\PageLocalization;
 
-class SearchResult implements View {
+class SearchResult implements View, JsonSerializable {
     use Renderer;
 
     public static function fromPage(Page $page, PageLocalization $localization): static {
@@ -23,6 +24,17 @@ class SearchResult implements View {
     public function __construct(
         protected string $title,
         protected string $url,
-        protected ?string $meta = null
+        protected ?string $meta = null,
+        protected bool $isLink = true,
     ) {}
+
+
+
+    // JsonSerializable
+    public function jsonSerialize(): array {
+        return [
+            "label" => $this->title,
+            "value" => $this->url
+        ];
+    }
 }

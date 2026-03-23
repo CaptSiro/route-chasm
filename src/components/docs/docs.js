@@ -1,3 +1,7 @@
+const DOCS_EVENT_REMOVE_DOCUMENT_REQUEST = 'docsRemoveDocumentRequest';
+
+
+
 async function docs_documentPage(element) {
     const w = window_createNotice('Fetching documentation', { isDialog: true });
     window_open(w);
@@ -114,4 +118,79 @@ async function docs_documentPage(element) {
     }
 
     std_dom_scrollToFragment();
+}
+
+
+
+function docs_DocumentRequest(title, value) {
+    const row = jsml.div('row', [
+        jsml.button({
+            onClick: () => {
+                row.parentElement.dispatchEvent(
+                    new CustomEvent(DOCS_EVENT_REMOVE_DOCUMENT_REQUEST, { detail: value, bubbles: true })
+                );
+
+                row.remove();
+            }
+        }, Icon("nf-fa-close", 'X')),
+        jsml.div(_, [
+            jsml.div(_, title),
+            Optional(title !== value, jsml.div({ style: { color: "var(--text-2)" } }, value)),
+        ])
+    ]);
+
+    return row;
+}
+
+/**
+ * @param {HTMLElement} element
+ */
+function docs_documentRequestsList(element) {
+    const list = $('.list', element);
+    const input = $('.requests', element);
+    const requests = new Set();
+
+    if (!is(list) || !is(input)) {
+        return;
+    }
+
+    const updateInputValue = () => {
+        const array = new Array(requests.size);
+
+        let i = 0;
+        for (const request of requests) {
+            array[i++] = encodeURIComponent(request);
+        }
+
+        input.value = array.join(',');
+    };
+
+    $('.form-select select', element).addEventListener('change', event => {
+        /** @type {HTMLSelectElement} */
+        const target = event.target;
+        const value = target.value;
+        if (requests.has(value)) {
+            return;
+        }
+
+        let label = value;
+
+        for (const option of target.children) {
+            if (option.value !== value) {
+                continue;
+            }
+
+            label = option.textContent;
+            break;
+        }
+
+        requests.add(value);
+        list.append(docs_DocumentRequest(label, value));
+        updateInputValue();
+    });
+
+    element.addEventListener(DOCS_EVENT_REMOVE_DOCUMENT_REQUEST, event => {
+        requests.delete(event.detail);
+        updateInputValue();
+    });
 }

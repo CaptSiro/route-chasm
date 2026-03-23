@@ -13,7 +13,6 @@ class HeaderSearch implements View {
     use Renderer, LexiconUnit;
 
     public const LEXICON_GROUP = Search::LEXICON_GROUP;
-    public const SETTING_NAME_MIN_LENGTH = 'route-chasm-core:search_minimum_query_length';
 
 
 
@@ -25,7 +24,7 @@ class HeaderSearch implements View {
         $this->setLexiconGroup(self::LEXICON_GROUP);
 
         $this->minLength ??= Setting::fromName(
-            self::SETTING_NAME_MIN_LENGTH,
+            RouteChasmEnvironment::SETTING_MIN_SEARCH_QUERY_LENGTH,
             true,
             RouteChasmEnvironment::SEARCH_MIN_LENGTH,
             [PROPERTY_EDITABLE => true]

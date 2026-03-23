@@ -200,8 +200,18 @@ class Strings extends Init {
             : null;
     }
 
-    public static function asHumanReadableBoolean(string $string): bool {
+    public static function fromHumanReadableBoolean(string $string): bool {
         return filter_var($string, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public static function toHumanReadable(mixed $value): string {
+        return match (gettype($value)) {
+            "string", "integer", "double" => (string) $value,
+            "boolean" => $value ? 'Yes' : 'No',
+            "array" => implode(', ', $value),
+            "object" => json_encode($value),
+            default => '',
+        };
     }
 
     public static function fromBuffer(callable $bufferWriter): string {

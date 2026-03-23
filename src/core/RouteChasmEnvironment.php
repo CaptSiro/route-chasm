@@ -64,6 +64,12 @@ class RouteChasmEnvironment {
     public const USER_RESOURCE_DOMAIN = 'Domains';
     public const USER_RESOURCE_SYSTEM = 'System';
     public const USER_RESOURCE_DOCS = 'Docs';
+    public const USER_RESOURCE_DOCS_ADMIN = 'Docs (Administration)';
+
+    public const SETTING_DROPDOWN_MAX_ENTRIES = 'route-chasm-docs:search_dropdown_max_entries';
+    public const SETTING_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
+    public const SETTING_MIN_SEARCH_QUERY_LENGTH = 'route-chasm-core:search_minimum_query_length';
+    public const SETTING_SHOW_ADMIN_LOGIN_IN_FOOTER = "route-chasm-core:show_admin_login_in_footer";
 
     public const SEARCH_MIN_LENGTH = 3;
     public const SEARCH_DROPDOWN_MAX_ENTRIES = 5;

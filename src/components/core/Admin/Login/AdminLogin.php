@@ -27,7 +27,7 @@ use models\core\User\User;
 class AdminLogin extends ContainerContent {
     public const LEXICON_GROUP = 'admin.login';
 
-    public const SETTING_NAME_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
+
 
     private const METHOD_USER = 'user';
     private const METHOD_ENV = 'env';
@@ -59,12 +59,12 @@ class AdminLogin extends ContainerContent {
     }
 
     public function useEnvPasswordMethod(): bool {
-        $setting = Setting::fromName(self::SETTING_NAME_ENV_PASSWORD);
+        $setting = Setting::fromName(RouteChasmEnvironment::SETTING_ENV_PASSWORD);
 
         if (is_null($setting)) {
             $setting = new Setting();
 
-            $setting->name = self::SETTING_NAME_ENV_PASSWORD;
+            $setting->name = RouteChasmEnvironment::SETTING_ENV_PASSWORD;
             $setting->value = 'yes';
             $setting->editable = true;
 

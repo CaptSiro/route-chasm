@@ -1,0 +1,15 @@
+<?php /** @var DocsDashboard $this */
+
+use components\docs\DocsDashboard;
+
+?><section>
+    <h1><?= $this->tr('Docs') ?></h1>
+
+    <?= $this->createForm() ?>
+
+    <div>
+        <h3><?= $this->tr('Total documents generated') ?>: <?= $this->loader->count() ?></h3>
+    </div>
+
+    <?= $this->createGrid() ?>
+</section>

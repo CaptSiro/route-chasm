@@ -438,12 +438,75 @@ function form_select_getOptions(select) {
 
 /**
  * @param {HTMLElement} container
+ */
+function form_select_clearOptions(container) {
+    const select = $('select', container);
+    const items = $('.dropdown-items', container);
+    if (!is(select) || !is(items)) {
+        return;
+    }
+
+    select.textContent = '';
+    items.textContent = '';
+}
+
+
+
+/**
+ * @param {string} label
+ * @param {string} value
+ * @return {HTMLDivElement}
+ */
+function form_select_Option(label, value) {
+    return jsml.div({
+        class: 'dropdown-item',
+        'data-value': value,
+    }, label);
+}
+
+/**
+ * @param {HTMLElement} container
+ * @param {string} label
+ * @param {string} value
+ */
+function form_select_addOption(container, label, value) {
+    const select = $('select', container);
+    const items = $('.dropdown-items', container);
+    if (!is(select) || !is(items)) {
+        return;
+    }
+
+    select.append(new Option(label, value));
+    items.append(form_select_Option(label, value));
+}
+
+function form_select_showOptions(container) {
+    dropdown_expand(container, $('.dropdown', container));
+}
+
+function form_select_hideOptions(container) {
+    dropdown_shrink(container, $('.dropdown', container));
+}
+
+/**
+ * @param {HTMLElement} container
  * @param {string} value
  */
 function form_select_selectOption(container, value) {
-    const option = $(`select option[value="${value}"]`, container);
+    let option = $(`select option[value="${value}"]`, container);
     if (!is(option)) {
-        return;
+        /** @type {HTMLElement} */
+        const select = $("select", container);
+        for (const o of select.children) {
+            if (o instanceof HTMLOptionElement && o.value === value) {
+                option = o;
+                break;
+            }
+        }
+
+        if (!is(option)) {
+            return;
+        }
     }
 
     option.parentElement.value = option.value;
@@ -462,14 +525,14 @@ function form_select_selectOption(container, value) {
 }
 
 /**
- * @param {HTMLElement} select
+ * @param {HTMLElement} container
  * @param {string} query
  */
-function form_select_search(select, query) {
+function form_select_search(container, query) {
     const q = query.toLowerCase();
     let first = undefined;
 
-    for (const option of $$(".dropdown-item", select)) {
+    for (const option of $$(".dropdown-item", container)) {
         const valid = option.textContent.toLowerCase().includes(q);
         option.classList.toggle('hide', !valid);
         option.classList.remove('cursor');
@@ -484,7 +547,45 @@ function form_select_search(select, query) {
 
 /**
  * @param {HTMLElement} container
- * @param {HTMLElement} searchInput
+ * @param {string} query
+ * @return {Promise<void>}
+ */
+async function form_select_searchAsync(container, query) {
+    const minLength = container.dataset.searchMinLength ?? 3;
+    if (query.length < minLength) {
+        form_select_clearOptions(container);
+        return;
+    }
+
+    const href = container.dataset.searchUrl;
+    if (!is(href)) {
+        return;
+    }
+
+    const url = new URL(href);
+    url.searchParams.set(container.dataset.searchQueryArgument ?? 'q', query);
+
+    const response = await fetch(std_jsonEndpoint(url));
+    if (await std_fetch_handleServerError(response)) {
+        return;
+    }
+
+    if (!response.ok) {
+        console.error("Cannot load options: " + response.statusText);
+        return;
+    }
+
+    form_select_clearOptions(container);
+    for (const { label, value } of await response.json()) {
+        form_select_addOption(container, label, value);
+    }
+
+    form_select_showOptions(container);
+}
+
+/**
+ * @param {HTMLElement} container
+ * @param {HTMLInputElement} searchInput
  * @param {HTMLElement} search
  * @param {HTMLElement} selection
  * @param {HTMLElement} dropdown

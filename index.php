@@ -43,6 +43,7 @@ $router->bind('/docs', Docs::getInstance());
 $router->bind('/search', Search::getInstance());
 $router->bind('/fs', FileServer::getInstance());
 $router->bind('/import', SideLoader::getInstance()->initRouter($app));
+
 $router->bind(
     Admin::mount(new StaticMount('admin'), '/admin'),
     AdminRouter::getInstance(new AdminHome())

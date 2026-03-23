@@ -189,6 +189,12 @@ button:disabled:hover {
     gap: var(--gap);
 }
 
+.column-smaller {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-smaller);
+}
+
 .row {
     display: flex;
     flex-direction: row;

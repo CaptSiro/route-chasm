@@ -25,7 +25,7 @@ class EnvConfig implements Config {
             ->setAnyRegex(
                 $this->env->get("ROUTING_ANY") ?? RouteCompilerConfig::REGEX_ANY
             )
-            ->setMergeConsecutiveSlashes(Strings::asHumanReadableBoolean(
+            ->setMergeConsecutiveSlashes(Strings::fromHumanReadableBoolean(
                 $this->env->get("ROUTING_MERGE_SLASHES") ?? true
             ))
             ->setIdentRegex(

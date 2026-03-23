@@ -3,10 +3,24 @@
 use components\core\Html\Html;
 use components\core\Search\SearchResult;
 
-?><a href="<?= $this->url ?>" class="search-result">
-    <div class="search-result-title"><?= Html::escape($this->title) ?></div>
+?><?php if ($this->isLink): ?>
+    <a href="<?= $this->url ?>" class="search-result" data-title="<?= Html::escapeAttribute($this->title) ?>">
+        <div class="search-result-title"><?= Html::escape($this->title) ?></div>
 
-    <?php if (!is_null($this->meta)): ?>
-        <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
-    <?php endif; ?>
-</a>
+        <?php if (!is_null($this->meta)): ?>
+            <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
+        <?php endif; ?>
+    </a>
+<?php else: ?>
+    <div
+        class="search-result"
+        data-value="<?= Html::escapeAttribute($this->url) ?>"
+        data-title="<?= Html::escapeAttribute($this->title) ?>"
+    >
+        <div class="search-result-title"><?= Html::escape($this->title) ?></div>
+
+        <?php if (!is_null($this->meta)): ?>
+            <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
