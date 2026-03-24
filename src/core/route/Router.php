@@ -149,7 +149,7 @@ class Router {
         return !is_null($this->structure->getRoot()->getParentEdge());
     }
 
-    protected function createUrl(?Path $relative = null): Url {
+    public function createUrl(?Path $relative = null): Url {
         $request = App::getInstance()->getRequest();
         $path = $this->getRoute()->toStaticPath();
 

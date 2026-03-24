@@ -27,7 +27,7 @@ class HtmlHead extends Component implements Head {
 
         $env = App::getInstance()->getEnv();
         if (!is_null($env)) {
-            $this->addMeta("author", $env->get(RouteChasmEnvironment::PROJECT_AUTHOR));
+            $this->addMeta("author", $env->get(RouteChasmEnvironment::ENV_PROJECT_AUTHOR));
         }
 
         $this->addElement(new StringRenderer(FileSystem::createApi()));

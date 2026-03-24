@@ -44,10 +44,10 @@ class RouteChasmEnvironment {
         self::QUERY_LANGUAGE_LONG,
     ];
 
-    public const PROJECT = "PROJECT";
-    public const PROJECT_AUTHOR = "PROJECT_AUTHOR";
-    public const PROJECT_AUTHOR_LINK = "PROJECT_AUTHOR_LINK";
-
+    public const ENV_PROJECT = "PROJECT";
+    public const ENV_PROJECT_LINK = "PROJECT_LINK";
+    public const ENV_PROJECT_AUTHOR = "PROJECT_AUTHOR";
+    public const ENV_PROJECT_AUTHOR_LINK = "PROJECT_AUTHOR_LINK";
     public const ENV_LANGUAGE = "LANGUAGE";
     public const ENV_DOMAIN_URL = "DOMAIN_URL";
     public const ENV_DATABASE_HOST = "DATABASE_HOST";

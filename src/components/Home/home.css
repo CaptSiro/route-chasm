@@ -1,0 +1,119 @@
+.home-landing {
+    padding: calc(var(--gap) * 8) var(--gap);
+    background: var(--container-0);
+    color: var(--text-0);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.home-container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--gap) * 8);
+}
+
+.home-hero {
+    text-align: center;
+}
+
+.home-hero h1 {
+    font-size: 2.8rem;
+    line-height: 1.2;
+    color: var(--accent-3);
+}
+
+.home-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-1);
+    max-width: 700px;
+    margin: 0 auto 2rem;
+}
+
+.home-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--gap);
+    margin-bottom: 1.5rem;
+}
+
+.home-bullets {
+    display: flex;
+    justify-content: center;
+    gap: var(--gap);
+    font-size: 0.9rem;
+    color: var(--text-2);
+}
+
+.home-section {
+    text-align: center;
+}
+
+.home-section h2 {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    color: var(--accent-1);
+}
+
+.home-section h3 {
+    color: var(--accent-0);
+}
+
+.home-section p {
+    color: var(--text-2);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--gap);
+}
+
+.home-card {
+    background: var(--container-1);
+    border: 1px solid var(--container-2);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-smaller);
+    transition: transform 0.15s ease, border 0.15s ease;
+}
+
+.home-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-2);
+}
+
+.home-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.home-card p {
+    color: var(--text-2);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.home-card ul {
+    padding-left: 1rem;
+    color: var(--text-1);
+    font-size: 0.9rem;
+}
+
+/* CTA */
+.home-cta {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: var(--container-1);
+    border: 1px solid var(--container-2);
+    border-radius: var(--border-radius);
+}
+
+.home-cta h2 {
+    margin-bottom: 0.5rem;
+}
+
+.home-cta p {
+    color: var(--text-1);
+    margin-bottom: 1.5rem;
+}

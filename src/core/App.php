@@ -202,15 +202,15 @@ class App implements Loader {
     }
 
     public function getProjectName(): ?string {
-        return $this->env->get(RouteChasmEnvironment::PROJECT);
+        return $this->env->get(RouteChasmEnvironment::ENV_PROJECT);
     }
 
     public function getProjectAuthor(): ?string {
-        return $this->env->get(RouteChasmEnvironment::PROJECT_AUTHOR);
+        return $this->env->get(RouteChasmEnvironment::ENV_PROJECT_AUTHOR);
     }
 
     public function getProjectAuthorLink(): ?string {
-        return $this->env->get(RouteChasmEnvironment::PROJECT_AUTHOR_LINK);
+        return $this->env->get(RouteChasmEnvironment::ENV_PROJECT_AUTHOR_LINK);
     }
 
     public function getSource(string $resource): string {
