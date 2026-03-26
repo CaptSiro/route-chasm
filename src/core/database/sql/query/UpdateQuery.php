@@ -12,7 +12,7 @@ class UpdateQuery implements SqlQuery {
     use Where, AddParameter;
 
     /**
-     * @var array<string, Parameter>
+     * @var array<string, string|Query|Parameter>
      */
     protected array $set = [];
 
@@ -26,10 +26,10 @@ class UpdateQuery implements SqlQuery {
 
     /**
      * @param string $column Column is escaped automatically on query string creation
-     * @param Parameter $value
+     * @param string|Query|Parameter $value
      * @return $this
      */
-    public function set(string $column, Parameter $value): static {
+    public function set(string $column, string|Query|Parameter $value): static {
         $this->set[$column] = $value;
         return $this;
     }
@@ -64,8 +64,20 @@ class UpdateQuery implements SqlQuery {
                 $sql .= ', ';
             }
 
-            $sql .= $driver->escapeColumn($column) ." = ". $this->addParameter($column, $parameter, $parameters);
             $first = false;
+            $sql .= $driver->escapeColumn($column) ." = ";
+
+            if ($parameter instanceof Parameter) {
+                $sql .= $this->addParameter($column, $parameter, $parameters);
+                continue;
+            }
+
+            $query = Query::resolve($parameter);
+            $sql .= $query->getSql();
+
+            foreach ($query->getParameters() as $name => $p) {
+                $this->addParameter((string) $name, $p, $parameters);
+            }
         }
 
         $this->addWhere($sql, $parameters);

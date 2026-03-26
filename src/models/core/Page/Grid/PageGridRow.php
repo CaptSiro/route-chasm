@@ -21,6 +21,7 @@ use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
 use models\core\Page\PageTemplateRecord;
+use const models\extensions\Priority\COLUMN_PRIORITY;
 
 #[Grid]
 #[Table]
@@ -64,15 +65,20 @@ class PageGridRow extends Model {
     }
 
     public static function childrenQuery(int $languageId, ?int $parentId = null): SelectQuery {
+        $page = Page::getDescription();
         $localizedPage = PageLocalization::getDescription();
         $pageTemplate = PageTemplateRecord::getDescription();
         $pageStatus = PageStatus::getDescription();
 
+        $priority = $page->getEscapedColumn(COLUMN_PRIORITY);
+
         return self::childrenBaseQuery($languageId, $parentId)
+            ->projection($priority)
             ->projection($localizedPage->getEscapedColumn('id_page'))
             ->projection($localizedPage->getEscapedColumn('title'))
             ->projection($pageTemplate->getEscapedColumn('name') .' AS template')
-            ->projection($pageStatus->getEscapedColumn('name') .' AS status');
+            ->projection($pageStatus->getEscapedColumn('name') .' AS status')
+            ->order($priority);
     }
 
     public static function childrenCountQuery(int $languageId, ?int $parentId = null): SelectQuery {
@@ -99,6 +105,10 @@ class PageGridRow extends Model {
 
     #[Column('id_page', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
+
+    #[GridColumn(template: '92px')]
+    #[Column(type: Column::TYPE_STRING)]
+    public string $priority;
 
     #[GridColumn(template: '128px')]
     #[Column(type: Column::TYPE_STRING)]

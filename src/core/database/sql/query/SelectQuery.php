@@ -90,8 +90,8 @@ class SelectQuery implements Portion, SqlQuery {
      * @param string $column Escaping the column is responsibility of the caller
      * @return $this
      */
-    public function order(string $column): static {
-        Arrays::push($this->orders, $column);
+    public function order(string $column, string $order = 'ASC'): static {
+        Arrays::push($this->orders, $column .' '. $order);
         return $this;
     }
 

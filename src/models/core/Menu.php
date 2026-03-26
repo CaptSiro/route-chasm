@@ -18,6 +18,7 @@ use models\core\Privilege\Privilege;
 use models\core\User\User;
 use models\extensions\Name\CachedNameExtension;
 use models\extensions\Name\Name;
+use const models\extensions\Priority\COLUMN_PRIORITY;
 
 #[Grid]
 #[Database(App::DATABASE)]
@@ -65,7 +66,8 @@ class Menu extends Model implements Name {
         $factory = $description->getFactory();
         return $factory
             ->allQuery(where: Query::infer('id_menu = ?', $this->id))
-            ->naturalJoin(self::TABLE_MENU_X_PAGES);
+            ->naturalJoin(self::TABLE_MENU_X_PAGES)
+            ->order(COLUMN_PRIORITY);
     }
 
     /**

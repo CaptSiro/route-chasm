@@ -7,6 +7,14 @@ readonly class Query {
         return new Query($sql, []);
     }
 
+    public static function resolve(string|Query $sql): Query {
+        if ($sql instanceof Query) {
+            return $sql;
+        }
+
+        return Query::static($sql);
+    }
+
     public static function infer(string $sql, mixed ...$parameters): Query {
         foreach ($parameters as $i => $parameter) {
             $parameters[$i] = Parameter::infer($parameter);

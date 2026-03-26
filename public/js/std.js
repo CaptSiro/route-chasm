@@ -445,6 +445,31 @@ async function std_fetch_handleServerError(response) {
     return true;
 }
 
+/**
+ * @param {Response} response
+ */
+function std_fetch_hasReload(response) {
+    return response.headers.has('X-Reload');
+}
+
+function std_fetch_getNext(response) {
+    return response.headers.get('X-Next');
+}
+
+function std_fetch_follow(response) {
+    if (std_fetch_hasReload(response)) {
+        location.reload();
+        return;
+    }
+
+    const next = std_fetch_getNext();
+    if (!is(next)) {
+        return;
+    }
+
+    location.assign(next);
+}
+
 
 
 function std_dom_scrollToFragment() {

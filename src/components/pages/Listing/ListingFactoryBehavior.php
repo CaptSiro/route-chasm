@@ -9,6 +9,7 @@ use core\database\sql\query\SelectQuery;
 use core\view\View;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
+use const models\extensions\Priority\COLUMN_PRIORITY;
 
 class ListingFactoryBehavior implements PaginationFactoryBehavior {
     use DefaultPaginationFactoryBehavior;
@@ -28,6 +29,7 @@ class ListingFactoryBehavior implements PaginationFactoryBehavior {
             ->allQuery()
             ->where(Page::childrenQuery($this->page->id))
             ->where(Page::isStatusQuery(PageStatus::ID_PUBLIC))
-            ->where(Page::publishedQuery());
+            ->where(Page::publishedQuery())
+            ->order(COLUMN_PRIORITY);
     }
 }

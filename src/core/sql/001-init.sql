@@ -198,9 +198,11 @@ CREATE TABLE IF NOT EXISTS core_page (
     `updated` DATETIME DEFAULT NOW(),
     `publish` DATETIME NULL DEFAULT NOW(),
     `remove` DATETIME NULL DEFAULT NULL,
+    `priority` INT DEFAULT 0,
     PRIMARY KEY (`id_page`),
     FOREIGN KEY (`id_page_template`) REFERENCES `core_page_template` (`id_page_template`),
-    FOREIGN KEY (`id_page_status`) REFERENCES `core_page_status` (`id_page_status`)
+    FOREIGN KEY (`id_page_status`) REFERENCES `core_page_status` (`id_page_status`),
+    INDEX (`priority`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS core_page_localization (

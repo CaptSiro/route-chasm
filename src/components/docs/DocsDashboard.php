@@ -71,8 +71,15 @@ class DocsDashboard extends ContainerContent {
 
             case HttpMethod::POST: {
                 $docs = Docs::getInstance();
-                $filesEncoded = explode(',', $request->getBody()->getStrict(self::NAME_FILES));
-                $files = array_map(fn(string $x) => urldecode($x), $filesEncoded);
+                $filesEncoded = array_filter(
+                    explode(',', $request->getBody()->getStrict(self::NAME_FILES)),
+                    fn(string $x) => trim($x) !== ''
+                );
+                
+                if (empty($filesEncoded)) {
+                    $response->sendStatus(HttpCode::S_OK);
+                }
+
                 $language = $request->getLanguage();
 
                 foreach ($filesEncoded as $encoded) {

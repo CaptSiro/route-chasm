@@ -26,7 +26,7 @@ class DocumentRequestsList implements View {
 
 
     public function createSearch(): View {
-        $select = new Select($this->name .'_async', '');
+        $select = new Select($this->name .'_async', $this->tr('Search source files'));
         $select->setAsyncSearch(
             Docs::getInstance()
                 ->createSearchUrl()

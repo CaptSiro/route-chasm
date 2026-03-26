@@ -13,6 +13,7 @@ use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
+use core\database\sql\query\UpdateQuery;
 use core\database\sql\Sql;
 use core\database\sql\Table;
 use core\forms\description\DateTime;
@@ -38,11 +39,14 @@ use models\core\Privilege\Privilege;
 use models\core\UserResource;
 use models\core\User\User;
 use models\extensions\Name\NameValues;
+use models\extensions\Priority\Priority;
+use models\extensions\Priority\PriorityExtension;
+use models\extensions\Priority\PriorityTrait;
 use RuntimeException;
 
 #[Table('core_page')]
 #[Database(App::DATABASE)]
-class Page extends Model implements Destination {
+class Page extends Model implements Destination, Priority {
     public const DATA_NAMESPACE = 'page';
 
 
@@ -54,7 +58,12 @@ class Page extends Model implements Destination {
             PageGridRow::getGridDescription(),
             title: '&nbsp;'
         ))
-            ->setLinkCreator(new PageLinkCreator());
+            ->setLinkCreator(new PageLinkCreator())
+            ->addExtension(new PriorityExtension(function (UpdateQuery $update, Model $model) {
+                if ($model instanceof Page) {
+                    $update->where(Page::childrenQuery($model->parentId));
+                }
+            }));
     }
 
     public static function publishedQuery(): Query {
@@ -78,6 +87,14 @@ class Page extends Model implements Destination {
 
     public static function childrenRaw(?int $parentId = null): array {
         return self::all(where: self::childrenQuery($parentId));
+    }
+
+    public static function countChildren(?Page $parent = null): int {
+        return self::countChildrenRaw($parent?->id);
+    }
+
+    public static function countChildrenRaw(?int $parentId = null): int {
+        return self::count(where: self::childrenQuery($parentId));
     }
 
     public static function childrenQuery(?int $parentId = null): Query {
@@ -165,6 +182,8 @@ class Page extends Model implements Destination {
     #[Column(type: Column::TYPE_STRING, nullable: true)]
     public ?string $remove;
 
+    use PriorityTrait;
+
 
 
     protected ?Page $parent;
@@ -182,6 +201,10 @@ class Page extends Model implements Destination {
     }
 
     public function save(): DatabaseAction|View {
+        if ($this->isNewRecord()) {
+            $this->priority = self::countChildren($this->getParent());
+        }
+
         $result = parent::save();
         if ($result === DatabaseAction::INSERT) {
             if (!is_null($error = $this->getTemplate()?->create($this))) {
@@ -239,7 +262,7 @@ class Page extends Model implements Destination {
 
     public function setParent(?Page $parent): void {
         if (is_null($parent)) {
-            $this->parentId = 0;
+            $this->parentId = null;
         } else {
             $this->parentId = $parent->id;
         }
@@ -352,6 +375,10 @@ class Page extends Model implements Destination {
         }
 
         return $this->children;
+    }
+
+    public function getChildrenCount(): int {
+        return self::countChildrenRaw($this->id);
     }
 
     public function get(string $item = ''): DataItem {

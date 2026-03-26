@@ -1,0 +1,16 @@
+.grid-row[draggable=true] {
+    cursor: grab;
+}
+
+.grid-row.dragging {
+    opacity: 0.4;
+}
+
+.grid-row.over {
+    outline: 2px dashed var(--accent-3);
+}
+
+.prio-drag-handle {
+    cursor: grab;
+    user-select: none;
+}

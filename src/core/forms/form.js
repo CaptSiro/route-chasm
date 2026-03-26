@@ -135,15 +135,7 @@ async function form_submit(form, event) {
         return;
     }
 
-    if (response.headers.has('X-Reload')) {
-        location.reload();
-        return;
-    }
-
-    if (response.headers.has('X-Next')) {
-        await form_onRedirect(form, response, response.headers.get('X-Next'));
-        return;
-    }
+    std_fetch_follow(response);
 
     const fn = std_getFunction(form.dataset.onSubmitSuccess);
     if (is(fn)) {
