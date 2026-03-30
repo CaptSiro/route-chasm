@@ -160,7 +160,7 @@ class AdminLogin extends ContainerContent {
                     User::fromTag(User::TAG_ROOT)?->login();
 
                     $response->setStatus(HttpCode::S_OK);
-                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->toString());
+                    $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
                     $response->flush();
                 }
 
@@ -183,7 +183,7 @@ class AdminLogin extends ContainerContent {
                     $user->login();
 
                     $response->setStatus(HttpCode::S_OK);
-                    $response->setHeader(HttpHeader::X_NEXT, $request->getUrl()->toString());
+                    $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
                     $response->flush();
                 }
 
