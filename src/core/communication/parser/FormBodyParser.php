@@ -8,49 +8,84 @@ use core\collections\dictionary\StrictMap;
 use core\communication\Format;
 use core\communication\Request;
 use core\communication\UploadedFile;
+use core\data\Data;
 use core\http\HttpCode;
+use core\io\FileReader;
 use core\Singleton;
 use core\utils\Arrays;
+use core\utils\Ini;
+use core\utils\Php;
 use core\utils\Strings;
 
 class FormBodyParser implements RequestBodyParser {
     use Active;
     use Singleton;
 
-    public static function parseMultipart(string $content): RequestBody {
-        $position = strpos($content, "\r");
-        if ($position === false) {
-            App::getInstance()
-                ->getResponse()
-                ->sendMessage(
-                    "Invalid request (boundary not found)",
-                    HttpCode::CE_BAD_REQUEST
-                );
+
+
+    public static function parseMultipart(FileReader $content): RequestBody {
+        App::getInstance()
+            ->getResponse()
+            ->setHeader('X-BodyParser-Function', __FUNCTION__);
+
+        $chunkSize = 8192;
+
+        $buffer = '';
+        while (!$content->isEndOfFile()) {
+            $buffer .= $char = $content->readCharacter();
+            if ($char === "\n") {
+                break;
+            }
         }
 
-        $boundary = substr($content, 0, $position);
+        $pos = strpos($buffer, "\n");
+        if ($pos === false) {
+            return self::parseSuperGlobals();
+        }
+
+        $boundaryLine = substr($buffer, 0, $pos + 1);
+        $buffer = substr($buffer, $pos + 1);
+
+        $isUnixStyle = !str_ends_with($boundaryLine, "\r\n");
+        $boundary = rtrim($boundaryLine);
+
+        $newLine = $isUnixStyle
+            ? "\n"
+            : "\r\n";
+        $boundaryMarker = $newLine . $boundary;
+        $sectionMarker = str_repeat($newLine, 2);
+
         $values = [];
         $files = [];
 
-        foreach (explode($boundary, $content) as $section) {
-            $section = trim($section);
-            if ($section === '' || $section === '--') {
-                continue;
+        $maxSize = Strings::toBytes(Php::get(Ini::UPLOAD_MAX_FILESIZE));
+        $tempDirectory = Data::namespace('temp', create: true);
+
+        while (!$content->isEndOfFile() || $buffer !== '') {
+            while (!str_contains($buffer, $sectionMarker)) {
+                if ($content->isEndOfFile()) {
+                    break;
+                }
+
+                $buffer .= $content->read($chunkSize);
             }
 
-            if (!str_contains($section, "\r\n\r\n")) {
-                continue;
+            $headerEnd = strpos($buffer, $sectionMarker);
+            if ($headerEnd === false) {
+                break;
             }
 
-            [$headerString, $value] = explode("\r\n\r\n", $section, 2);
-            /**
-             * @var array<FormDataHeader> $headers
-             */
+            $headerString = substr($buffer, 0, $headerEnd);
+            $buffer = substr($buffer, $headerEnd + strlen($sectionMarker));
+
             $headers = [];
+            foreach (explode($newLine, $headerString) as $header) {
+                if (!str_contains($header, ': ')) {
+                    continue;
+                }
 
-            foreach (explode("\r\n", $headerString) as $header) {
-                [$name, $h] = explode(': ', $header, 2);
-                $headers[$name] = FormDataHeader::from($h);
+                [$headerName, $headerValue] = explode(': ', $header, 2);
+                $headers[$headerName] = FormDataHeader::from($headerValue);
             }
 
             if (!isset($headers['Content-Disposition'])) {
@@ -63,16 +98,85 @@ class FormBodyParser implements RequestBodyParser {
             }
 
             $name = $disposition->get('name');
-            if (!$disposition->has('filename')) {
-                Arrays::append($values, $name, $value);
+            $isFile = $disposition->has('filename');
+
+            $fileName = $isFile
+                ? $disposition->get('filename')
+                : null;
+            $type = isset($headers['Content-Type'])
+                ? $headers['Content-Type']->getLiteral()
+                : 'application/octet-stream';
+
+            $size = 0;
+            $temporaryPath = null;
+            $temporary = null;
+
+            if ($isFile) {
+                $temporaryPath = tempnam($tempDirectory, 'upload_');
+                $temporary = fopen($temporaryPath, 'wb');
+
+                if ($temporary === false) {
+                    Arrays::append($files, $name, new UploadedFile(
+                        $fileName, $type, $size, UPLOAD_ERR_CANT_WRITE
+                    ));
+                    continue;
+                }
+            }
+
+            while (true) {
+                if (!str_contains($buffer, $boundaryMarker) && !$content->isEndOfFile()) {
+                    $buffer .= $content->read($chunkSize);
+                    continue;
+                }
+
+                $pos = strpos($buffer, $boundaryMarker);
+                if ($pos === false) {
+                    $safeLength = strlen($buffer) - strlen($boundaryMarker) - 4;
+
+                    if ($safeLength <= 0) {
+                        continue;
+                    }
+
+                    $data = substr($buffer, 0, $safeLength);
+                    $buffer = substr($buffer, $safeLength);
+
+                    if (!$isFile) {
+                        var_dump($name);
+                        Arrays::append($values, $name, $data);
+                        continue;
+                    }
+
+                    $size += strlen($data);
+
+                    if ($size <= $maxSize) {
+                        fwrite($temporary, $data);
+                    }
+
+                    continue;
+                }
+
+                $data = substr($buffer, 0, $pos);
+
+                if ($isFile) {
+                    $size += strlen($data);
+                    fwrite($temporary, $data);
+                } else {
+                    Arrays::append($values, $name, $data);
+                }
+
+                $buffer = substr($buffer, $pos + strlen($boundary));
+                break;
+            }
+
+            if (!$isFile) {
                 continue;
             }
 
-            $fileName = $disposition->get('filename');
-            $type = isset($headers['Content-Type']) ? $headers['Content-Type']->getLiteral() : 'application/octet-stream';
-            $size = mb_strlen($value, '8bit');
+            fflush($temporary);
+            fclose($temporary);
 
-            if ($size > Strings::toBytes(ini_get('upload_max_filesize'))) {
+            if ($size > $maxSize) {
+                @unlink($temporaryPath);
                 Arrays::append($files, $name, new UploadedFile(
                     $fileName, $type, $size,
                     UPLOAD_ERR_INI_SIZE
@@ -80,39 +184,25 @@ class FormBodyParser implements RequestBodyParser {
                 continue;
             }
 
-            $temporary = tmpfile();
-            if ($temporary === false) {
-                Arrays::append($files, $name, new UploadedFile(
-                    $fileName, $type, $size,
-                    UPLOAD_ERR_CANT_WRITE
-                ));
-                continue;
-            }
-
-            $metadata = stream_get_meta_data($temporary);
-            if (empty($metadata['uri'])) {
-                @fclose($temporary);
-                Arrays::append($files, $name, new UploadedFile(
-                    $fileName, $type, $size,
-                    UPLOAD_ERR_CANT_WRITE
-                ));
-                continue;
-            }
-
-            fwrite($temporary, $value);
-            @fclose($temporary);
             Arrays::append($files, $name, new UploadedFile(
                 $fileName, $type, $size,
                 UPLOAD_ERR_OK,
-                $metadata['uri']
+                $temporaryPath
             ));
         }
 
-        return new RequestBody(new StrictMap($values), new StrictMap($files));
+        return new RequestBody(
+            new StrictMap($values),
+            new StrictMap($files)
+        );
     }
 
     public static function parseSuperGlobals(): RequestBody {
         $files = new StrictMap();
+
+        App::getInstance()
+            ->getResponse()
+            ->setHeader('X-BodyParser-Function', __FUNCTION__);
 
         foreach ($_FILES as $name => $value) {
             if (is_array($value['name'])) {
@@ -152,24 +242,17 @@ class FormBodyParser implements RequestBodyParser {
 
     public function parse(Request $request): RequestBody {
         $body = new StrictMap();
-        $raw = $request->getBodyRaw();
+        $reader = $request->getBodyReader();
 
-        if ($raw === '') {
-            if (!empty($_POST) || !empty($_FILES)) {
-                return static::parseSuperGlobals();
-            }
-
-            return new RequestBody(
-                new StrictMap(),
-                new StrictMap()
-            );
+        if (!(empty($_POST) && empty($_FILES))) {
+            return static::parseSuperGlobals();
         }
 
         if ($request->isMultipart()) {
-            return static::parseMultipart($raw);
+            return static::parseMultipart($reader);
         }
 
-        $body->load(Strings::parseUrlEncoded($raw));
+        $body->load(Strings::parseUrlEncoded($reader->readAll()));
         return new RequestBody($body, new StrictMap());
     }
 

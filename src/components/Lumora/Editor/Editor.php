@@ -294,7 +294,7 @@ class Editor extends ContainerContent {
             }
 
             case HttpMethod::POST: {
-                $this->storage->write($request->getBodyRaw());
+                $this->storage->write($request->getBodyReader()->readAll());
                 $response->setStatus(HttpCode::S_OK);
                 $response->flush();
             }

@@ -21,7 +21,7 @@ class TextBodyParser implements RequestBodyParser {
         $body = new StrictMap();
 
         $body->getMap()->setFlag(self::FLAG_IS_TEXT);
-        $body->set(self::KEY_TEXT, $request->getBodyRaw());
+        $body->set(self::KEY_TEXT, $request->getBodyReader()->readAll());
 
         return new RequestBody($body, new StrictMap());
     }

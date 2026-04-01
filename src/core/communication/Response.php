@@ -209,7 +209,7 @@ class Response {
     }
 
     public function sendMessage(string $message, int $httpCode): void {
-        $this->renderRoot(
+        $this->render(
             new HttpMessage(
                 $message,
                 $httpCode,

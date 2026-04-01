@@ -3,6 +3,11 @@
 namespace core;
 
 class RouteChasmEnvironment {
+    /**
+     * Use bit-or | to add more items to the list
+     */
+    public const ERROR_SEVERITY_BLACKLIST = E_USER_NOTICE;
+
     public const CHAR_INFINITY = '∞';
 
     public const FILE_SYSTEM_HASH_ALGORITHM = 'sha256';

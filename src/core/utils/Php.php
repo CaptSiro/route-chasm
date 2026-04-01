@@ -11,4 +11,10 @@ class Php {
 
         require $script;
     }
+
+    public static function get(Ini $option): ?string {
+        return ($value = ini_get($option->value)) !== false
+            ? $value
+            : null;
+    }
 }

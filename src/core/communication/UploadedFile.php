@@ -12,13 +12,19 @@ class UploadedFile implements JsonSerializable {
         protected string $type,
         protected int $size,
         protected int $error,
-        protected ?string $temporaryName = null,
+        protected ?string $temporaryPath = null,
     ) {}
+
+    public function __destruct() {
+        if (!is_null($this->temporaryPath) && file_exists($this->temporaryPath)) {
+            unlink($this->temporaryPath);
+        }
+    }
 
 
 
     public function getPath(): ?string {
-        return $this->temporaryName;
+        return $this->temporaryPath;
     }
 
     public function getName(): string {
@@ -42,7 +48,7 @@ class UploadedFile implements JsonSerializable {
             return Result::fail(new Exc("Error occurred when uploading file: '$this->name'. Code: '$this->error'"));
         }
 
-        if (is_null($this->temporaryName)) {
+        if (is_null($this->temporaryPath)) {
             return Result::fail(new Exc("Uploaded file '$this->name' has not been uploaded properly. No temporary file"));
         }
 
@@ -51,7 +57,10 @@ class UploadedFile implements JsonSerializable {
             mkdir($directory, recursive: true);
         }
 
-        move_uploaded_file($this->temporaryName, $destination);
+        if (!rename($this->temporaryPath, $destination)) {
+            return Result::fail(new Exc("Cannot move uploaded file '$this->name'. Unknown reason."));
+        }
+
         return Result::success(true);
     }
 
@@ -61,7 +70,7 @@ class UploadedFile implements JsonSerializable {
             'type' => $this->type,
             'size' => $this->size,
             'error' => $this->error,
-            'temporaryName' => $this->temporaryName,
+            'temporaryName' => $this->temporaryPath,
         ];
     }
 }

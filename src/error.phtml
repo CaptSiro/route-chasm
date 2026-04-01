@@ -8,6 +8,13 @@
 
 use components\core\Html\Html;
 
+$type = match ($severity) {
+    E_USER_ERROR => 'Error',
+    E_USER_WARNING => 'Warning',
+    E_USER_NOTICE => 'Notice',
+    default => 'Unknown Error',
+};
+
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -98,7 +105,7 @@ use components\core\Html\Html;
 </head>
 <body>
     <section>
-        <h1>Error: <?= Html::escape($message) ?></h1>
+        <h1><?= $type ?>: <?= Html::escape($message) ?></h1>
     </section>
 
     <section>

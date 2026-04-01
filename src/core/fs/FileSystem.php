@@ -120,7 +120,8 @@ class FileSystem {
 
 
     public static function storeUploadedFile(Directory $directory, UploadedFile $file): ?File {
-        if (is_null($path = $file->getPath())) {
+        if (empty($path = $file->getPath())) {
+            var_dump('path');
             return null;
         }
 
@@ -144,6 +145,7 @@ class FileSystem {
         $entry->size = $file->getSize();
 
         if ($file->move($entry->getRealPath())->isFailure()) {
+            var_dump('move');
             return null;
         }
 

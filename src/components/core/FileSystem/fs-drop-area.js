@@ -66,25 +66,29 @@ function fs_dropArea_init(element) {
         const w = window_fileUpload(progress);
         window_open(w);
 
-        const response = await fetch(upload, {
+        const response = await fetch(std_jsonEndpoint(upload, 'out'), {
             method: "post",
             body: formData
         });
 
+        hide();
+        window_close(w);
         if (await std_fetch_handleServerError(response)) {
             return;
         }
 
         if (!response.ok) {
-            hide();
-            window_close(w);
-            await window_alert("File upload failed");
+            try {
+                const message = (await response.json()).message;
+                await window_alert(`File upload failed: '${message}'`);
+            } catch (e) {
+                await window_alert(`File upload failed`);
+            }
+
             return;
         }
 
-        hide();
-        window_close(w);
-        element.dispatchEvent(new CustomEvent(FS_RELOAD_CURRENT_DIRECTORY, { bubbles: true }));
+        std_fetch_follow(response);
     };
 
     let timeout = null;

@@ -26,7 +26,7 @@ class JsonBodyParser implements RequestBodyParser {
 
     public function parse(Request $request): RequestBody {
         $body = new StrictMap();
-        $json = json_decode($request->getBodyRaw());
+        $json = json_decode($request->getBodyReader()->readAll());
 
         if ($json == null) {
             return new RequestBody($body, new StrictMap());

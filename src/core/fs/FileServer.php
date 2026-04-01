@@ -3,6 +3,7 @@
 namespace core\fs;
 
 use components\core\fs\FileVariantTransformers;
+use components\core\Message\Message;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -158,9 +159,39 @@ class FileServer extends Router {
                 $directory = Directory::fromRequest($request);
 
                 foreach ($request->getFiles()->toArray() as $file) {
-                    FileSystem::storeUploadedFile($directory, $file);
+                    $f = $file->getName();
+                    switch ($e = $file->getError()) {
+                        case UPLOAD_ERR_OK: {
+                            if (!is_null(FileSystem::storeUploadedFile($directory, $file))) {
+                                break;
+                            }
+
+                            $response->sendMessage(
+                                "File '$f' uploaded successfully but storing failed",
+                                HttpCode::SE_INTERNAL_SERVER_ERROR
+                            );
+                            break;
+                        }
+
+                        case UPLOAD_ERR_INI_SIZE: {
+                            $response->sendMessage(
+                                "File '$f' is too large",
+                                HttpCode::CE_BAD_REQUEST
+                            );
+                            break;
+                        }
+
+                        default: {
+                            $response->sendMessage(
+                                "File '$f' did not uploaded successfully. Error: $e",
+                                HttpCode::CE_BAD_REQUEST
+                            );
+                            break;
+                        }
+                    }
                 }
 
+                $response->setHeader(HttpHeader::X_RELOAD, 'reload');
                 $response->sendStatus(HttpCode::S_OK);
             }),
         );

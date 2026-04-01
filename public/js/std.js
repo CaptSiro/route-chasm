@@ -462,7 +462,7 @@ function std_fetch_follow(response) {
         return;
     }
 
-    const next = std_fetch_getNext();
+    const next = std_fetch_getNext(response);
     if (!is(next)) {
         return;
     }
@@ -844,15 +844,22 @@ function std_arrayEquals(array1, array2, compareFunction = ((a, b) => a === b)) 
 
 /**
  * @param {string|URL} url
+ * @param {'both' | 'in' | 'out'} mode
  * @returns {URL}
  */
-function std_jsonEndpoint(url) {
+function std_jsonEndpoint(url, mode = 'both') {
     if (typeof url === "string") {
         url = new URL(url);
     }
 
-    url.searchParams.set('o', 'json');
-    url.searchParams.set('i', 'json');
+    if (mode === 'both' || mode === 'in') {
+        url.searchParams.set('i', 'json');
+    }
+
+    if (mode === 'both' || mode === 'out') {
+        url.searchParams.set('o', 'json');
+    }
+
     return url;
 }
 

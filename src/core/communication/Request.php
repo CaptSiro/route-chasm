@@ -8,6 +8,7 @@ use core\collections\dictionary\StrictMap;
 use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
 use core\http\HttpHeader;
+use core\io\FileReader;
 use core\locale\LanguageSelector;
 use core\locale\selectors\DefaultSelector;
 use core\route\Path;
@@ -93,8 +94,8 @@ class Request {
         return $this->url;
     }
 
-    public function getBodyRaw(): string {
-        return file_get_contents('php://input');
+    public function getBodyReader(): FileReader {
+        return new FileReader('php://input');
     }
 
     public function getBody(): StrictDictionary {

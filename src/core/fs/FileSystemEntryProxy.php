@@ -11,6 +11,7 @@ use core\fs\variants\ImageVariant;
 use core\ResourceLoader;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\utils\Strings;
 use models\core\fs\Directory;
 use models\core\fs\File;
 
@@ -44,7 +45,7 @@ class FileSystemEntryProxy extends NexusProxy {
     public function getValue(string $name): string {
         if ($name === 'size') {
             if ($this->item instanceof File) {
-                return $this->item->getHumanReadableSize();
+                return Html::wrap('span', $this->item->getHumanReadableSize());
             }
 
             return '';

@@ -28,6 +28,10 @@ function get_response_format(): string {
 }
 
 function error_handler($severity, $message, $file, $line): void {
+    if (RouteChasmEnvironment::ERROR_SEVERITY_BLACKLIST & $severity > 0) {
+        return;
+    }
+
     while (ob_get_level()) {
         ob_get_clean();
     }
