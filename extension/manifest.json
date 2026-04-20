@@ -1,0 +1,11 @@
+{
+    "manifest_version": 3,
+    "name": "Startuh",
+    "version": "0.2.1",
+    "host_permissions": [
+        "http://localhost/*"
+    ],
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    }
+}
