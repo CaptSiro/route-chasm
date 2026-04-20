@@ -56,6 +56,10 @@ main {
             opacity: 1;
             transition: 100ms 400ms linear;
         }
+
+        .widget.focus {
+            outline-color: var(--accent-1);
+        }
     }
 
     &.edit.animate {
@@ -165,10 +169,6 @@ main {
             outline: 2px solid transparent;
 
             transition: outline-color 200ms linear;
-
-            &.focus {
-                outline-color: var(--accent-1);
-            }
         }
     }
 }

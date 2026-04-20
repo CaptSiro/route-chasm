@@ -87,6 +87,8 @@ function startuh_addWidget(widget) {
     startuh_widgets.set(element, widget);
 
     startuh_addContent(element);
+
+    startuh_save();
 }
 
 function startuh_addContent(element) {
@@ -94,28 +96,39 @@ function startuh_addContent(element) {
 }
 
 startuh_content.addEventListener("pointerdown", event => {
-    const widget = event.target.classList.contains('widget')
-        ? event.target
-        : event.target.closest(".widget");
-
-    if (!is(widget)) {
-        startuh_currentWidget?.classList.remove("focus");
-        startuh_currentWidget = null;
+    if (!startuh_editMode.value()) {
         return;
     }
 
-    if (widget.classList.contains("focus")) {
+    const widgetElement = event.target.classList.contains('widget')
+        ? event.target
+        : event.target.closest(".widget");
+
+    if (!is(widgetElement)) {
+        startuh_currentWidget?.classList.remove("focus");
+        startuh_currentWidget = null;
+        startuh_inspect();
+        return;
+    }
+
+    if (widgetElement.classList.contains("focus")) {
         return;
     }
 
     startuh_currentWidget?.classList.remove("focus");
-    widget.classList.add("focus");
-    startuh_currentWidget = widget;
+    widgetElement.classList.add("focus");
+    startuh_currentWidget = widgetElement;
 
+    const widget = startuh_widgets.get(startuh_currentWidget);
+    if (!is(widget)) {
+        return;
+    }
+
+    startuh_inspect(widget.inspect());
 });
 
 window.addEventListener("keydown", event => {
-    if (!is(startuh_currentWidget)) {
+    if (!is(startuh_currentWidget) || !startuh_editMode.value()) {
         return;
     }
 
@@ -140,12 +153,13 @@ function startuh_addPrefab(element) {
 /**
  * @param {Content} content
  */
-function startuh_inspect(content) {
+function startuh_inspect(content = undefined) {
+    startuh_inspector.innerHTML = "";
+
     if (!is(content) || (Array.isArray(content) && content.length === 0)) {
         return;
     }
 
-    startuh_inspector.innerHTML = "";
     jsml_addContent(startuh_inspector, content);
 }
 
@@ -200,7 +214,13 @@ class FunctionalStartuhBuilder {
 
 class StartuhWidget {
     /** @type {Vec2} */
-    position;
+    position = new Vec2(0.5, 0.5);
+
+
+
+    setConfig(config) {
+        this.position = new Vec2(config.x, config.y);
+    }
 
     setPosition(x, y) {
         this.position = new Vec2(x, y);
@@ -248,8 +268,6 @@ function startuh_WidgetElement(context, content, { x, y } = {}) {
     let positionX = x ?? 0.5;
     let positionY = y ?? 0.5;
 
-    context.setPosition(positionX, positionY);
-
     const widget = jsml.div({
         class: "widget glass",
 
@@ -269,8 +287,6 @@ function startuh_WidgetElement(context, content, { x, y } = {}) {
 
             widget.setPointerCapture(event.pointerId);
             moving = true;
-
-            startuh_inspect(context.inspect());
         },
 
         /** @param {PointerEvent} event */

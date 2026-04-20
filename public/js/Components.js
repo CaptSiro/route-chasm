@@ -82,24 +82,24 @@ function CheckBox(checked, label, props = {}) {
 }
 
 /**
- * @param {boolean} predicate
+ * @param {boolean} condition
  * @param {Content} content
  * @return {Content|undefined}
  */
-function Optional(predicate, content) {
-    return predicate
+function Optional(condition, content) {
+    return condition
         ? content
         : undefined;
 }
 
 /**
- * @param {boolean} predicate
+ * @param {boolean} condition
  * @param {Content} content
  * @returns {Content[]}
  */
-function Optionals(predicate, content) {
+function Optionals(condition, content) {
     return (
-        predicate
+        condition
             ? content
             : []
     );
