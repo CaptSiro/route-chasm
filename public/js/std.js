@@ -913,22 +913,15 @@ function std_arrayEquals(array1, array2, compareFunction = ((a, b) => a === b)) 
 
 /**
  * @param {string|URL} url
- * @param {'both' | 'in' | 'out'} mode
  * @returns {URL}
  */
-function std_jsonEndpoint(url, mode = 'both') {
+function std_jsonEndpoint(url) {
     if (typeof url === "string") {
         url = new URL(url);
     }
 
-    if (mode === 'both' || mode === 'in') {
-        url.searchParams.set('i', 'json');
-    }
-
-    if (mode === 'both' || mode === 'out') {
-        url.searchParams.set('o', 'json');
-    }
-
+    url.searchParams.set('o', 'json');
+    url.searchParams.set('i', 'json');
     return url;
 }
 

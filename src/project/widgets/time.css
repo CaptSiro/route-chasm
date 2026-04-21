@@ -1,0 +1,25 @@
+.w-time {
+    font-size: 60px;
+    user-select: none;
+
+    & .time {
+        & .hours::after {
+            content: " : ";
+            color: var(--accent-3);
+        }
+
+        & .minutes::after {
+            content: " ";
+        }
+    }
+
+    & .date {
+        font-size: 20px;
+        font-weight: 600;
+
+        & .day::after {
+            content: " | ";
+            color: var(--accent-3);
+        }
+    }
+}
