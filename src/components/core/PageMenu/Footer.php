@@ -46,14 +46,9 @@ class Footer implements View {
             [PROPERTY_EDITABLE => true]
         );
 
-        if (!$setting->toBoolean() || is_null($mount = Admin::getMount())) {
+        if (!$setting->toBoolean() || is_null($url = Admin::getUrl())) {
             return '';
         }
-
-        $url = App::getInstance()
-            ->getRequest()
-            ->getDomain()
-            ->createUrl($mount->getMountingPoint()->toStaticPath());
 
         return Html::wrap(
             'a',

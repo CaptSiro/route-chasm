@@ -61,6 +61,13 @@ VALUES ('full-hd', 1, 1, 'fit', 1920, 1080),
 
 
 
+DROP TABLE IF EXISTS core_lexicon_translation;
+DROP TABLE IF EXISTS core_external_page;
+DROP TABLE IF EXISTS core_ai_page;
+DROP TABLE IF EXISTS ext_page_meta;
+DROP TABLE IF EXISTS core_page_localization;
+DROP TABLE IF EXISTS core_navigation;
+
 DROP TABLE IF EXISTS core_language;
 CREATE TABLE IF NOT EXISTS core_language (
     `id_language` INT NOT NULL AUTO_INCREMENT,
@@ -73,7 +80,6 @@ CREATE TABLE IF NOT EXISTS core_language (
 
 
 DROP TABLE IF EXISTS core_lexicon_translation_x_rule;
-DROP TABLE IF EXISTS core_lexicon_translation;
 DROP TABLE IF EXISTS core_lexicon;
 
 DROP TABLE IF EXISTS core_lexicon_group;
@@ -122,7 +128,6 @@ CREATE TABLE IF NOT EXISTS core_lexicon_translation (
 
 
 
-DROP TABLE IF EXISTS core_navigation;
 DROP TABLE IF EXISTS core_navigation_context;
 DROP TABLE IF EXISTS core_navigation_factory;
 
@@ -161,10 +166,7 @@ CREATE TABLE IF NOT EXISTS core_navigation (
 
 
 
-DROP TABLE IF EXISTS core_external_page;
-DROP TABLE IF EXISTS core_ai_page;
-DROP TABLE IF EXISTS ext_page_meta;
-DROP TABLE IF EXISTS core_page_localization;
+
 DROP TABLE IF EXISTS core_page;
 DROP TABLE IF EXISTS core_page_status;
 DROP TABLE IF EXISTS core_page_template;
@@ -250,7 +252,7 @@ DROP TABLE IF EXISTS `core_menu_x_pages`;
 DROP TABLE IF EXISTS `core_menu`;
 CREATE TABLE IF NOT EXISTS `core_menu` (
     `id_menu` INT NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(128) NOT NULL,
     PRIMARY KEY (`id_menu`),
     UNIQUE (`name`)
 );
@@ -258,7 +260,7 @@ CREATE TABLE IF NOT EXISTS `core_menu` (
 INSERT INTO `core_menu` (id_menu, name)
 VALUES (1, 'Header'),
        (2, 'Footer'),
-       (2, 'Legal');
+       (3, 'Legal');
 
 CREATE TABLE IF NOT EXISTS `core_menu_x_pages` (
     `id_menu` INT NOT NULL,
@@ -352,8 +354,7 @@ CREATE TABLE IF NOT EXISTS `core_users_x_groups` (
 INSERT INTO `core_users_x_groups` (id_user, id_group)
 VALUES (1, 2), # @root -> Root
        (1, 3), # @root -> Admin
-       (2, 1), # @anonymous -> Default
-       (2, 2); # @anonymous -> Root
+       (2, 1); # @anonymous -> Default
 
 
 

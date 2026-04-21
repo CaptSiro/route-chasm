@@ -12,15 +12,25 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\view\ContainerContent;
 
 class Frame extends ContainerContent {
+    public const LEXICON_GROUP = 'startuh.frame';
+
+    public static function importAssets(): void {
+        Css::import(Editor::getStaticResource("editor.css"));
+        Javascript::import(Editor::getStaticResource("inspector.js"));
+        Form::importAssets();
+    }
+
+
+
     public function __construct() {
         parent::__construct(
             new WebPage(head: new HtmlHead("Frame"))
         );
 
-        Css::import(Editor::getStaticResource("editor.css"));
-        Javascript::import(Editor::getStaticResource("inspector.js"));
-        Form::importAssets();
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
+
+
 
     public function loadWidgets(string $widgetsDirectory): void {
         foreach (glob(Path::join($widgetsDirectory, '*.js')) as $widget) {

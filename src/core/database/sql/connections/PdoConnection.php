@@ -52,6 +52,12 @@ class PdoConnection implements Connection {
                 ? $i + 1
                 : $i;
 
+            if (!isset(self::TYPES[$parameter->getType()])) {
+                var_dump(debug_backtrace());
+                var_dump($query);
+                exit;
+            }
+
             $statement->bindValue($param, $parameter->getValue(), self::TYPES[$parameter->getType()]);
         }
 

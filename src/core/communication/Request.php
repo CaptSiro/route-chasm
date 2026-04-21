@@ -79,8 +79,10 @@ class Request {
         $this->headers = null;
         $this->param = new StrictStack();
         $this->data = new StrictMap();
-        $this->session = new Session();
-        $this->domain = Domain::fromUrl($this->url);
+
+        $this->session = new Session(
+            $this->domain = Domain::fromUrl($this->url)
+        );
     }
 
 

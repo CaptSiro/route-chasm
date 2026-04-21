@@ -6,7 +6,11 @@ require_once __DIR__ ."/exception-handler.php";
 spl_autoload_register(function ($class) {
     $file = __DIR__ ."/$class.php";
     if (!file_exists($file)) {
-        require __DIR__ ."/../lib/$class.php";
+        $lib = __DIR__ ."/../lib/$class.php";
+        if (file_exists($lib)) {
+            require __DIR__ ."/../lib/$class.php";
+        }
+
         return;
     }
 

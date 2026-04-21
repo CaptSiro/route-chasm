@@ -532,7 +532,7 @@ function std_fetch_follow(response) {
         return;
     }
 
-    const next = std_fetch_getNext();
+    const next = std_fetch_getNext(response);
     if (!is(next)) {
         return;
     }

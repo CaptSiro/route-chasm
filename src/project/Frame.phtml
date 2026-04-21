@@ -2,17 +2,24 @@
 /** @var Frame $this */
 
 use components\core\Icon;
+use core\admin\Admin;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use project\Frame;
 
 Css::import($this->getResource('startuh.css'));
 Javascript::import($this->getResource('startuh.js'));
+Frame::importAssets();
 
 $this->loadWidgets($this->getResource('widgets'));
 
 ?><div class="widgets">
     <div class="container">
+        <?php if (!is_null($adminUrl = Admin::getUrl())): ?>
+            <a href="<?= $adminUrl ?>">
+                <?= $this->tr('Admin') ?>
+            </a>
+        <?php endif; ?>
     </div>
 
     <div class="handle">
