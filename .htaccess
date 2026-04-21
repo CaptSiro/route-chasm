@@ -1,5 +1,5 @@
 <IfModule mod_rewrite.c>
   Options -Indexes
   RewriteEngine on
-  RewriteRule (.*) /startuh/index.php [QSA,END]
+  RewriteRule (.*) /route-chasm/index.php [QSA,END]
 </IfModule>
