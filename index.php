@@ -12,6 +12,7 @@ use core\database\sql\connections\MySqlDriver;
 use core\database\sql\Sql;
 use core\fs\FileServer;
 use core\mounts\StaticMount;
+use core\pages\Pages;
 use core\sideloader\SideLoader;
 use project\Frame;
 
@@ -24,6 +25,8 @@ AppConfig::getInstance()->set($config);
 Sql::connect(App::DATABASE, new MySqlDriver(
     $config->getSqlConfig()
 ));
+
+Pages::load();
 
 
 
