@@ -8,7 +8,7 @@ function jsml_addContentItem(element, item) {
     }
 
     if (typeof item === "string") {
-        element.textContent = item;
+        element.append(document.createTextNode(item));
         return;
     }
 
@@ -37,7 +37,10 @@ function jsml_addContentItem(element, item) {
 
     if (item instanceof Node) {
         element.append(item);
+        return;
     }
+
+    element.append(document.createTextNode(String(item)));
 }
 
 /**

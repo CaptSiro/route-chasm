@@ -21,6 +21,7 @@ use core\mounts\Mount;
 use core\route\Route;
 use core\route\Router;
 use core\RouteChasmEnvironment;
+use core\url\Url;
 use models\core\Domain\Domain;
 use models\core\fs\ImageVariantBehavior;
 use models\core\fs\ImageVariantTransformer;
@@ -49,6 +50,17 @@ class Admin {
 
     public static function getMount(): ?Mount {
         return self::$mount;
+    }
+
+    public static function getUrl(): ?Url {
+        if (is_null($mount = self::getMount())) {
+            return null;
+        }
+
+        return App::getInstance()
+            ->getRequest()
+            ->getDomain()
+            ->createUrl($mount->getMountingPoint()->toStaticPath());
     }
 
 

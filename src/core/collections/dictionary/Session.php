@@ -3,12 +3,20 @@
 namespace core\collections\dictionary;
 
 use core\collections\StrictDictionary;
+use core\utils\Strings;
+use models\core\Domain\Domain;
 
 /**
  * @template-implements StrictDictionary<mixed>
  */
 class Session implements StrictDictionary {
     protected bool $isStarted = false;
+
+
+
+    public function __construct(
+        protected Domain $domain
+    ) {}
 
 
 
@@ -21,6 +29,9 @@ class Session implements StrictDictionary {
             return;
         }
 
+        session_set_cookie_params([
+            'path' => Strings::prepend('/', $this->domain->path),
+        ]);
         session_start();
         $this->isStarted = true;
     }
@@ -67,7 +78,7 @@ class Session implements StrictDictionary {
     }
 
     public function copy(): static {
-        return new static();
+        return new static($this->domain);
     }
 
     public function clear(): void {

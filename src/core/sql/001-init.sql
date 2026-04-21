@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS core_fs_image_variant (
 
 INSERT INTO `core_fs_image_variant` (`transformer`, `version`, `quality`, `function`, `width`, `height`)
 VALUES ('full-hd', 1, 1, 'fit', 1920, 1080),
-       ('hd', 1, 1, 'fit', 1280, 720);
+    ('hd', 1, 1, 'fit', 1280, 720);
 
 
 
@@ -94,10 +94,10 @@ CREATE TABLE IF NOT EXISTS core_lexicon_rule (
 
 INSERT INTO core_lexicon_rule(`rule`, `label`)
 VALUES ('/.*/', '*'),
-       ('/^1$/', '1'),
-       ('/^[2-4]$/', '2-4'),
-       ('/^0|[2-9]|\\d{2,}$/', '0, 2+'),
-       ('/^0|[5-9]|\\d{2,}$/', '0, 5+');
+    ('/^1$/', '1'),
+    ('/^[2-4]$/', '2-4'),
+    ('/^0|[2-9]|\\d{2,}$/', '0, 2+'),
+    ('/^0|[5-9]|\\d{2,}$/', '0, 5+');
 
 CREATE TABLE IF NOT EXISTS core_lexicon (
     `id_phrase` INT NOT NULL AUTO_INCREMENT,
@@ -179,8 +179,8 @@ CREATE TABLE IF NOT EXISTS core_page_status (
 
 INSERT INTO core_page_status(id_page_status, name, is_editable)
 VALUES (1, 'Draft', 0),
-       (2, 'Public', 0),
-       (3, 'Archived', 0);
+    (2, 'Public', 0),
+    (3, 'Archived', 0);
 
 CREATE TABLE IF NOT EXISTS core_page_template (
     `id_page_template` INT NOT NULL AUTO_INCREMENT,
@@ -257,8 +257,8 @@ CREATE TABLE IF NOT EXISTS `core_menu` (
 
 INSERT INTO `core_menu` (id_menu, name)
 VALUES (1, 'Header'),
-       (2, 'Footer'),
-       (2, 'Legal');
+    (2, 'Footer'),
+    (2, 'Legal');
 
 CREATE TABLE IF NOT EXISTS `core_menu_x_pages` (
     `id_menu` INT NOT NULL,
@@ -298,9 +298,9 @@ CREATE TABLE IF NOT EXISTS core_setting (
 
 DROP TABLE IF EXISTS `core_sideloader`;
 CREATE TABLE IF NOT EXISTS `core_sideloader` (
-    `id_cache` INT NOT NULL AUTO_INCREMENT ,
-    `hash` VARCHAR(127) NOT NULL ,
-    `path` VARCHAR(255) NOT NULL ,
+    `id_cache` INT NOT NULL AUTO_INCREMENT,
+    `hash` VARCHAR(127) NOT NULL,
+    `path` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id_cache`),
     INDEX (`hash`)
 ) ENGINE = MyISAM;
@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `core_user` (
 
 INSERT INTO `core_user` (id_user, username, password, tag)
 VALUES (1, 'Root', '', 'root'),
-       (2, 'Anonymous', '', 'anonymous');
+    (2, 'Anonymous', '', 'anonymous');
 
 
 
@@ -337,8 +337,8 @@ CREATE TABLE IF NOT EXISTS `core_group` (
 
 INSERT INTO `core_group` (id_group, name, is_editable)
 VALUES (1, 'Default', 0),
-       (2, 'Root', 0),
-       (3, 'Admin', 0);
+    (2, 'Root', 0),
+    (3, 'Admin', 0);
 
 
 
@@ -351,10 +351,9 @@ CREATE TABLE IF NOT EXISTS `core_users_x_groups` (
 
 INSERT INTO `core_users_x_groups` (id_user, id_group)
 VALUES (1, 2), # @root -> Root
-       (1, 3), # @root -> Admin
-       (2, 1), # @anonymous -> Default
-       (2, 2); # @anonymous -> Root
-
+    (1, 3), # @root -> Admin
+    (2, 1), # @anonymous -> Default
+    (2, 2); # @anonymous -> Root
 
 
 DROP TABLE IF EXISTS `core_privilege`;
@@ -368,8 +367,8 @@ CREATE TABLE IF NOT EXISTS `core_privilege` (
 
 INSERT INTO `core_privilege` (id_privilege, name, is_editable)
 VALUES (1, 'Read', 0),
-       (2, 'Create', 0),
-       (3, 'Update', 0);
+    (2, 'Create', 0),
+    (3, 'Update', 0);
 
 
 

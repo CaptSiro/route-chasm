@@ -92,17 +92,17 @@ class Path implements ArrayIterator, Copy, JsonSerializable {
         $count -= 2;
 
         if ($count === 0) {
-            return rtrim($start, '/\\')
-                .$separator. ltrim($end, '/\\');
+            return rtrim($start, $separator)
+                .$separator. ltrim($end, $separator);
         }
 
         for ($i = 0; $i < $count; $i++) {
-            $segments[$i] = trim($segments[$i], '/\\');
+            $segments[$i] = trim($segments[$i], $separator);
         }
 
-        return rtrim($start, '/\\')
+        return rtrim($start, $separator)
             .$separator. implode($separator, $segments)
-            .$separator. ltrim($end, '/\\');
+            .$separator. ltrim($end, $separator);
     }
 
 

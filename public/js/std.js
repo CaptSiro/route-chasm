@@ -151,6 +151,75 @@ function std_lerp(a, b, t) {
     return a + (b - a) * t;
 }
 
+function std_vec2(x, y) {
+    return new Vec2(x, y);
+}
+
+/**
+ * @param {string} literal
+ */
+function std_range(literal) {
+    const parts = literal
+        .split(',')
+        .map(x => x.trim())
+        .filter(x => x.length !== 0);
+
+    if (parts.length < 2) {
+        return new Vec2(0, 0);
+    }
+
+    return new Vec2(Number(parts[0]), Number(parts[1]));
+}
+
+class Vec2 {
+    x;
+    y;
+
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    dist2(to) {
+        return Math.pow(to.x - this.x, 2) + Math.pow(to.y - this.y, 2);
+    }
+
+    clone() {
+        return new Vec2(this.x, this.y);
+    }
+
+    copy(from) {
+        this.x = from.x;
+        this.y = from.y;
+    }
+
+    connect(to) {
+        return new Vec2(to.x - this.x, to.y - this.y);
+    }
+
+    add(v) {
+        this.x += v.x;
+        this.y += v.y;
+        return this;
+    }
+
+    sub(v) {
+        this.x -= v.x;
+        this.y -= v.y;
+        return this;
+    }
+
+    clamp(n) {
+        return std_clamp(Math.min(this.x, this.y), Math.max(this.x, this.y), n);
+    }
+
+    print(round = 100) {
+        console.log(Math.round(this.x * round) / round, Math.round(this.y * round) / round);
+    }
+}
+
+
+
 /**
  * Adds delay to running code synchronously
  * @param {Number} ms

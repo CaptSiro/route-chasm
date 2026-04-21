@@ -50,6 +50,7 @@ class Language extends Model implements IsDefault {
         $code = App::getEnvStatic()->getOrDie(RouteChasmEnvironment::ENV_LANGUAGE);
         $language = new static();
 
+        $language->id = 0;
         $language->code = $code;
 
         $language->notSavable();
