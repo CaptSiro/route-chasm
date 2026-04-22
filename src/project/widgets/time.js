@@ -135,6 +135,8 @@ class TimeWidget extends StartuhWidget {
         return [
             TitleInspector("Time"),
 
+            HRInspector(),
+
             CheckboxInspector(this.#config.showDate ?? false, value => {
                 this.#config.showDate = value;
                 this.updateDisplay();

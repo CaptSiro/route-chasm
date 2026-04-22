@@ -38,3 +38,9 @@ declare type SearchApi = {
     searchFullTextUrl: string,
     searchQuery: string
 }
+
+
+
+declare type StartuhApi = {
+    randomBackground: string,
+}

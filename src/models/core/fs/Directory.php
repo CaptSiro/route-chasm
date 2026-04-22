@@ -221,7 +221,9 @@ class Directory extends Model implements FileSystemEntry {
     }
 
     public function getEntryName(): string {
-        return $this->name;
+        return $this->isRoot()
+            ? "fs"
+            : $this->name;
     }
 
     public function getEntryIcon(): string {

@@ -29,7 +29,12 @@ $this->loadWidgets($this->getResource('widgets'));
 
 <div class="layers">
     <div class="background">
-        <img src="/startuh/public/image.jpg" alt="background">
+        <img
+            id="background-image"
+            src="<?= $this->getImage('transparent.png') ?>"
+            data-default="<?= $this->getImage('image.png') ?>"
+            alt="background"
+        >
     </div>
 
     <div class="content"></div>

@@ -93,13 +93,18 @@ class FileSystem {
     }
 
     public static function getRealPath(File $file): string {
-        $hash = $file->hash;
-
         $offset = RouteChasmEnvironment::FILE_SYSTEM_DIRECTORY_HASH_OFFSET;
         $dir = substr($file->hash, 0, $offset);
         $f = substr($file->hash, $offset);
 
         return Path::join(self::getLocation(), $dir, $f);
+    }
+
+    public static function getRealDirectory(File $file): string {
+        $offset = RouteChasmEnvironment::FILE_SYSTEM_DIRECTORY_HASH_OFFSET;
+        $dir = substr($file->hash, 0, $offset);
+
+        return Path::join(self::getLocation(), $dir);
     }
 
     public static function createDirectoryLinkAttributes(string $url): array {
@@ -121,7 +126,6 @@ class FileSystem {
 
     public static function storeUploadedFile(Directory $directory, UploadedFile $file): ?File {
         if (empty($path = $file->getPath())) {
-            var_dump('path');
             return null;
         }
 
@@ -145,7 +149,47 @@ class FileSystem {
         $entry->size = $file->getSize();
 
         if ($file->move($entry->getRealPath())->isFailure()) {
-            var_dump('move');
+            return null;
+        }
+
+        $entry->setParent($directory);
+        $entry->save();
+        return $entry;
+    }
+
+    public static function storeFile(Directory $directory, string $filePath): ?File {
+        if (!file_exists($filePath)) {
+            return null;
+        }
+
+        $hash = hash_file(RouteChasmEnvironment::FILE_SYSTEM_HASH_ALGORITHM, $filePath);
+        if (!is_null($found = File::fromHash($hash))) {
+            if (!$found->isChildOf($directory)) {
+                $found->setParent($directory);
+                $found->updateMetadata($filePath);
+                $found->save();
+            } else {
+                $found->updateMetadata($filePath, true);
+            }
+
+            return $found;
+        }
+
+        $entry = new File();
+
+        [$name, $extension] = Files::split($filePath);
+        $entry->name = $name;
+        $entry->type = mime_content_type($filePath);
+        $entry->extension = $extension;
+        $entry->hash = $hash;
+        $entry->size = filesize($filePath);
+
+        $location = dirname($entryPath = $entry->getRealPath());
+        if (!file_exists($location)) {
+            mkdir($location, recursive: true);
+        }
+
+        if (!copy($filePath, $entryPath)) {
             return null;
         }
 
@@ -166,6 +210,16 @@ class FileSystem {
         $directory->save();
 
         return $directory;
+    }
+
+    public static function makeDirectoryRecursive(Directory $parent, string|Path $path): Directory {
+        $currentParent = $parent;
+
+        foreach (Path::resolve($path) as $name) {
+            $currentParent = self::makeDirectory($currentParent, $name);
+        }
+
+        return $currentParent;
     }
 
 
@@ -268,7 +322,7 @@ class FileSystem {
             )
         );
 
-        $breadCrumbs = $bc = static::generateBreadCrumbs(
+        $breadCrumbs = static::generateBreadCrumbs(
             $directory,
             fn(Directory $x) => self::getBreadCrumbUrl($x)
         );

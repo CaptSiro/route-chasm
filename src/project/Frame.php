@@ -5,6 +5,7 @@ namespace project;
 use components\core\HtmlHead\HtmlHead;
 use components\core\WebPage\WebPage;
 use components\Lumora\Editor\Editor;
+use core\App;
 use core\forms\Form;
 use core\route\Path;
 use core\sideloader\importers\Css\Css;
@@ -40,5 +41,13 @@ class Frame extends ContainerContent {
         foreach (glob(Path::join($widgetsDirectory, '*.css')) as $widget) {
             Css::import($widget);
         }
+    }
+
+    public function getImage(string $image): string {
+        return App::getInstance()
+            ->getRequest()
+            ->getDomain()
+            ->createUrl(Path::from("/public/images/$image"))
+            ->toString();
     }
 }

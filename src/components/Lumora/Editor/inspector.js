@@ -370,6 +370,12 @@ function TitleInspector(title, className = undefined) {
     );
 }
 
+function NoteInspector(note, className = undefined) {
+    return (
+        jsml.h5("i-note" + (className !== undefined ? " " + className : ""), note)
+    );
+}
+
 function HRInspector(className = undefined) {
     return (
         div("i-hr" + (className !== undefined ? " " + className : ""), "​") //todo does not display without zero-width-character (?)

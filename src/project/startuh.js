@@ -2,6 +2,7 @@ const STARTUH_ANIMATION_DURATION = 500;
 const STARTUH_KEY_LAYOUT = "startuh_layout";
 const STARTUH_KEY_EDIT_MODE = "startuh_edit-mode";
 const STARTUH_KEY_WIDGETS = "startuh_widgets";
+const STARTUH_KEY_RANDOM_BACKGROUNDS = "startuh_random_backgrounds";
 
 const startuh_editMode = new Impulse({ default: false });
 const startuh_content = $(".layers > .content");
@@ -43,7 +44,11 @@ function startuh_load() {
     }
 }
 
-window.addEventListener("load", startuh_load, { once: true });
+window.addEventListener("load", async () => {
+    startuh_load();
+    await startuh_chooseRandomBackground();
+    startuh_inspect(startuh_defaultInspect());
+}, { once: true });
 
 function startuh_save() {
     const configs = [];
@@ -56,6 +61,52 @@ function startuh_save() {
         STARTUH_KEY_WIDGETS,
         JSON.stringify(configs)
     );
+}
+
+
+
+async function startuh_chooseRandomBackground() {
+    const image = $("#background-image");
+    if (!is(image)) {
+        return;
+    }
+
+    const chooseRandomly = JSON.parse(localStorage.getItem(STARTUH_KEY_RANDOM_BACKGROUNDS ?? "false"));
+    if (!chooseRandomly) {
+        image.src = image.dataset.default;
+        return;
+    }
+
+    const api = api_loadStartuh();
+    if (!is(api)) {
+        return;
+    }
+
+    const response = await fetch(api.randomBackground);
+    if (await std_fetch_handleServerError(response)) {
+        return;
+    }
+
+    if (!response.ok) {
+        await alert(await response.text());
+        return;
+    }
+
+    image.src = (await response.json()).file;
+}
+
+function startuh_defaultInspect() {
+    return [
+        TitleInspector('Startuh'),
+
+        HRInspector(),
+
+        CheckboxInspector(Boolean(localStorage.getItem(STARTUH_KEY_RANDOM_BACKGROUNDS) ?? "false"), async value => {
+            localStorage.setItem(STARTUH_KEY_RANDOM_BACKGROUNDS, JSON.stringify(value));
+            await startuh_chooseRandomBackground();
+            return true;
+        }, 'Randomly choose background image')
+    ];
 }
 
 function startuh_editToggle() {
@@ -107,7 +158,7 @@ startuh_content.addEventListener("pointerdown", event => {
     if (!is(widgetElement)) {
         startuh_currentWidget?.classList.remove("focus");
         startuh_currentWidget = null;
-        startuh_inspect();
+        startuh_inspect(startuh_defaultInspect());
         return;
     }
 

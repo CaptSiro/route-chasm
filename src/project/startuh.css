@@ -78,6 +78,11 @@ main {
     opacity: 0;
     display: flex;
     transition: 100ms 0ms linear;
+
+    & .inspector {
+        max-width: unset;
+        width: 100%;
+    }
 }
 
 .container {
