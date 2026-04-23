@@ -438,6 +438,9 @@ function NotInspectorAble() {
 
 class ColorPicker {
     #rootElement;
+    /**
+     * @return {HTMLElement}
+     */
     get rootElement() {
         return this.#rootElement;
     }
@@ -659,6 +662,9 @@ class ColorPicker {
         this.displayCurrentColor();
     }
 
+    /**
+     * @param {Color} color
+     */
     setNewColor(color) {
         this.#red.value = color.red;
         this.setChannel("red", color.red);

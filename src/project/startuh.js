@@ -22,7 +22,7 @@ let startuh_currentWidget = null;
 
 
 startuh_updateLayout();
-if (Boolean(localStorage.getItem(STARTUH_KEY_EDIT_MODE))) {
+if (JSON.parse(localStorage.getItem(STARTUH_KEY_EDIT_MODE))) {
     startuh_editToggle();
 }
 
@@ -112,7 +112,7 @@ function startuh_defaultInspect() {
 function startuh_editToggle() {
     startuh_editMode.pulse(!startuh_editMode.value());
 
-    localStorage.setItem(STARTUH_KEY_EDIT_MODE, String(startuh_editMode.value()));
+    localStorage.setItem(STARTUH_KEY_EDIT_MODE, JSON.stringify(startuh_editMode.value()));
     startuh_main.classList.toggle('edit', startuh_editMode.value());
 
     startuh_main.classList.add("animate");
@@ -180,6 +180,10 @@ startuh_content.addEventListener("pointerdown", event => {
 
 window.addEventListener("keydown", event => {
     if (!is(startuh_currentWidget) || !startuh_editMode.value()) {
+        return;
+    }
+
+    if (event.target.tagName !== "BODY") {
         return;
     }
 
