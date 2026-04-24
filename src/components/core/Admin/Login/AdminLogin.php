@@ -6,6 +6,7 @@ use components\core\Message\Message;
 use components\core\WebPage\WebPage;
 use components\layout\Spotlight\Spotlight;
 use components\layout\Spotlight\Switch\SpotlightSwitchLink;
+use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -25,9 +26,11 @@ use models\core\Setting\Setting;
 use models\core\User\User;
 
 class AdminLogin extends ContainerContent {
+    use UnexpectedHttpMethod;
+
+
+
     public const LEXICON_GROUP = 'admin.login';
-
-
 
     private const METHOD_USER = 'user';
     private const METHOD_ENV = 'env';
@@ -35,6 +38,8 @@ class AdminLogin extends ContainerContent {
     private const FIELD_METHOD = 'method';
     private const FIELD_TAG = 'tag';
     private const FIELD_PASSWORD = 'password';
+
+
 
     public static function createLogoutUrl(Url $url): string {
         return $url
@@ -193,10 +198,8 @@ class AdminLogin extends ContainerContent {
             }
 
             default: {
-                $response->sendMessage(
-                    'Invalid HTTP method ' . $request->getHttpMethod(),
-                    HttpCode::CE_BAD_REQUEST
-                );
+                $this->handleUnexpectedMethod($request, $response);
+                break;
             }
         }
     }

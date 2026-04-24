@@ -4,12 +4,15 @@ namespace core\database\sql;
 
 use components\core\Admin\Nexus\NexusProxyItem;
 use components\core\SaveError\SaveError;
+use core\App;
 use core\data\DataItem;
 use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SqlQuery;
 use core\Identifier;
 use core\RouteChasmEnvironment;
+use core\utils\Arrays;
+use core\utils\Objects;
 use core\utils\Strings;
 use core\view\View;
 use JsonSerializable;
@@ -244,8 +247,18 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
                 continue;
             }
 
+            $propertyName = $column->getAlias();
+            if (!isset($this->{$propertyName})) {
+                if ($column->isNullable()) {
+                    continue;
+                }
+
+                $class = Objects::getClass($this);
+                throw new RuntimeException("Property $class::$propertyName is not set. Cannot insert into database");
+            }
+
             $columns[] = $column->getName();
-            $record[] = new Parameter($this->{$column->getAlias()}, $column->getType());
+            $record[] = new Parameter($this->{$propertyName}, $column->getType());
         }
 
         $sql->columns($columns);
@@ -259,22 +272,25 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
         $sql = Sql::update($description->getTable());
         $idColumnName = $description->getIdColumn()->getName();
 
-        $setClauses = 0;
-
         foreach ($description->getAlias() as $alias => $column) {
             if ($column->getName() === $idColumnName) {
                 continue;
             }
 
+            $propertyName = $column->getAlias();
+            if (!isset($this->{$propertyName})) {
+                if ($column->isNullable()) {
+                    continue;
+                }
+
+                $class = Objects::getClass($this);
+                throw new RuntimeException("Property $class::$propertyName is not set. Cannot insert into database");
+            }
+
             $sql->set($column->getName(), new Parameter(
-                $this->{$column->getAlias()},
+                $this->{$propertyName},
                 $column->getType()
             ));
-            $setClauses++;
-        }
-
-        if ($setClauses === 0) {
-            return null;
         }
 
         $sql->where(new Query(

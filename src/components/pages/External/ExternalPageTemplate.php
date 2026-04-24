@@ -21,6 +21,10 @@ class ExternalPageTemplate implements PageTemplate {
         return "External";
     }
 
+    public function getDescription(): string {
+        return "Used to link external pages or statically bind pages via URL link";
+    }
+
     public function create(Page $page): ?View {
         $external = new ExternalPage();
 

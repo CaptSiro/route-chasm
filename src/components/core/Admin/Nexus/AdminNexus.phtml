@@ -7,8 +7,7 @@ use core\sideloader\importers\Javascript\Javascript;
 Javascript::import($this->getResource('nexus.js'));
 Css::import($this->getResource('nexus.css'));
 
-?>
-<section class="nexus">
+?><section class="nexus">
     <?php if ($this->showHeader): ?>
         <div class="head">
             <h1><?= $this->getTitle() ?></h1>
@@ -17,15 +16,13 @@ Css::import($this->getResource('nexus.css'));
                 <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
             <?php endif; ?>
 
-            <?php if (!is_null($this->headerContent)): ?>
-                <?= $this->headerContent ?>
-            <?php endif; ?>
+            <?= $this->getTemplateSlot(AdminNexus::SLOT_HEADER_ITEM) ?>
         </div>
     <?php endif; ?>
 
-    <?php if (!is_null($this->breadCrumbs)): ?>
-        <?= $this->breadCrumbs ?>
-    <?php endif; ?>
+    <?= $this->getTemplateSlot(AdminNexus::SLOT_BREAD_CRUMBS) ?>
 
     <?= $this->getGrid() ?>
+
+    <?= $this->getTemplateSlot(AdminNexus::SLOT_FOOTER) ?>
 </section>

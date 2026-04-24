@@ -15,9 +15,10 @@ class Pages {
     /** @var $templates array<PageTemplate> */
     private static array $templates = [];
 
-    public static function register(PageTemplate $template): void {
+    public static function register(PageTemplate $template): int {
         $templateRecord = PageTemplateRecord::fromNameCreate($template->getName(), create: true);
         self::$templates[$templateRecord->id] = $template;
+        return $templateRecord->id;
     }
 
     public static function getTemplate(int $templateId): PageTemplate {
@@ -26,6 +27,13 @@ class Pages {
         }
 
         return self::$templates[$templateId];
+    }
+
+    /**
+     * @return array<PageTemplate>
+     */
+    public static function getTemplates(): array {
+        return self::$templates;
     }
 
     public static function load(): void {

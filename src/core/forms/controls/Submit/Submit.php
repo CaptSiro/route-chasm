@@ -4,6 +4,7 @@ namespace core\forms\controls\Submit;
 
 use core\forms\controls\Control;
 use core\forms\controls\FormControl;
+use core\forms\Form;
 use core\view\Renderer;
 
 class Submit implements Control {
@@ -12,8 +13,11 @@ class Submit implements Control {
 
 
     public function __construct(
-        protected string $label = "Submit"
-    ) {}
+        protected ?string $label = null
+    ) {
+        $this->label ??= Form::getLexiconTranslator()
+            ->tr('Submit');
+    }
 
 
 

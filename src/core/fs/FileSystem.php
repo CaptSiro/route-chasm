@@ -121,7 +121,6 @@ class FileSystem {
 
     public static function storeUploadedFile(Directory $directory, UploadedFile $file): ?File {
         if (empty($path = $file->getPath())) {
-            var_dump('path');
             return null;
         }
 
@@ -145,7 +144,39 @@ class FileSystem {
         $entry->size = $file->getSize();
 
         if ($file->move($entry->getRealPath())->isFailure()) {
-            var_dump('move');
+            return null;
+        }
+
+        $entry->setParent($directory);
+        $entry->save();
+        return $entry;
+    }
+
+    public static function storeFile(Directory $directory, string $filePath): ?File {
+        if (!file_exists($filePath)) {
+            return null;
+        }
+
+        $hash = hash_file(RouteChasmEnvironment::FILE_SYSTEM_HASH_ALGORITHM, $filePath);
+        if (!is_null($found = File::fromHash($hash))) {
+            if (!$found->isChildOf($directory)) {
+                $found->setParent($directory);
+                $found->save();
+            }
+
+            return $found;
+        }
+
+        $entry = new File();
+
+        [$name, $extension] = Files::split($filePath);
+        $entry->name = $name;
+        $entry->type = mime_content_type($filePath);
+        $entry->extension = $extension;
+        $entry->hash = $hash;
+        $entry->size = filesize($filePath);
+
+        if (!copy($filePath, $entry->getRealPath())) {
             return null;
         }
 
@@ -166,6 +197,16 @@ class FileSystem {
         $directory->save();
 
         return $directory;
+    }
+
+    public static function makeDirectoryRecursive(Directory $parent, string|Path $path): Directory {
+        $currentParent = $parent;
+
+        foreach (Path::resolve($path) as $name) {
+            $currentParent = self::makeDirectory($currentParent, $name);
+        }
+
+        return $currentParent;
     }
 
 
@@ -206,8 +247,9 @@ class FileSystem {
         $nexus
             ->setUserResource(UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM))
             ->showCreateButton(false)
-            ->setHeaderContent(new AdminFileSystemCreateDirectory($directory))
-            ->setBreadCrumbs(static::generateBreadCrumbs(
+            ->setTitle("&nbsp;")
+            ->setTemplateSlot(AdminNexus::SLOT_HEADER_ITEM, new AdminFileSystemCreateDirectory($directory))
+            ->setTemplateSlot(AdminNexus::SLOT_BREAD_CRUMBS, static::generateBreadCrumbs(
                 $directory,
                 fn(Directory $x) => self::getBreadCrumbUrl($x)
             ));
@@ -279,10 +321,13 @@ class FileSystem {
             ->showCreateButton(false)
             ->doAddGridControls(false)
             ->setTitle($directory->name)
-            ->setBreadCrumbs($breadCrumbs);
+            ->setTemplateSlot(AdminNexus::SLOT_BREAD_CRUMBS, $breadCrumbs);
 
         if (!$readonly) {
-            $nexus->setHeaderContent(new AdminFileSystemCreateDirectory($directory));
+            $nexus->setTemplateSlot(
+                AdminNexus::SLOT_BREAD_CRUMBS,
+                new AdminFileSystemCreateDirectory($directory)
+            );
         }
 
         return $nexus;

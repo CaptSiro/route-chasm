@@ -16,5 +16,7 @@ class TextArea implements Control, Attribute {
         protected string $name = self::class,
         protected string $label = self::class,
         protected ?string $value = null,
-    ) {}
+    ) {
+        $this->addAttribute('rows', '10');
+    }
 }

@@ -20,6 +20,7 @@ use core\forms\description\DateTime;
 use core\forms\description\select\Select;
 use core\navigation\Destination;
 use core\navigation\Navigator;
+use core\pages\PageFactory;
 use core\pages\PageLinkCreator;
 use core\pages\Pages;
 use core\pages\PageTemplate;
@@ -28,11 +29,14 @@ use core\route\RouteSegment;
 use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\utils\Arrays;
+use core\view\StringRenderer;
 use core\view\View;
 use DateTime as DateTimeObject;
 use models\core\fs\Shortcut;
 use models\core\Language\Language;
 use models\core\Menu;
+use models\core\Navigation\NavigationContext;
+use models\core\Navigation\Slug;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
 use models\core\Privilege\Privilege;
@@ -168,11 +172,11 @@ class Page extends Model implements Destination, Priority {
     #[Column('id_page_status', type: Column::TYPE_INTEGER)]
     public int $statusId;
 
-    #[Column(type: Column::TYPE_STRING)]
-    public string $created;
+    #[Column(type: Column::TYPE_STRING, nullable: true)]
+    public ?string $created;
 
-    #[Column(type: Column::TYPE_STRING)]
-    public string $updated;
+    #[Column(type: Column::TYPE_STRING, nullable: true)]
+    public ?string $updated;
 
     #[DateTime]
     #[Column(type: Column::TYPE_STRING, nullable: true)]
@@ -219,6 +223,10 @@ class Page extends Model implements Destination, Priority {
         $template = $this->getTemplate();
         if (!is_null($error = $template->delete($this))) {
             App::getInstance()->getResponse()->renderRoot($error);
+        }
+
+        foreach ($this->getChildren() as $child) {
+            $child->delete();
         }
 
         foreach ($this->getLocalizations() as $localization) {
@@ -268,6 +276,75 @@ class Page extends Model implements Destination, Priority {
         }
 
         $this->parent = $parent;
+    }
+
+    public function getParentSlugId(Language $language): ?int {
+        if (is_null($parent = $this->getParent())) {
+            return null;
+        }
+
+        $localization = $parent->getLocalization($language)
+            ?? $parent->getLocalization(App::getDefaultLanguage());
+
+        if (is_null($localization)) {
+            // different value than null == no parent, not null == no language
+            return null; // todo
+        }
+
+        return $localization->slugId;
+    }
+
+    public function isTitleAvailable(
+        string $title, Language $language, int $navigationContextId
+    ): bool {
+        $localizations = $this->getLocalizations();
+        $hasLocalization = isset($localizations[$language->id]);
+
+        $slugParentId = !$hasLocalization
+            ? $this->getParentSlugId($language)
+            : $localizations[$language->id]->getSlug()->parentId;
+
+        $slug = Slug::fromSlugRaw(
+            $language->id,
+            $navigationContextId,
+            PageLocalization::createSlugLiteral($language, $title),
+            $slugParentId
+        );
+
+        if (is_null($slug)) {
+            return true;
+        }
+
+        // title remains same
+        return $hasLocalization && $localizations[$language->id]->getSlug()->id === $slug->id;
+    }
+
+    public function createLocalization(
+        string $title, Language $language, int $navigationContextId, array $metaProperties = []
+    ): PageLocalization {
+        $localization = new PageLocalization();
+
+        $localization->title = $title;
+        $localization->languageId = $language->id;
+        $localization->setPage($this);
+
+        $slugParentId = $this->getParentSlugId($language);
+        $localization->setSlug(PageFactory::getInstance()->createSlug(
+            $language->id,
+            $navigationContextId,
+            $localization->getSlugLiteral($language),
+            $slugParentId,
+            $this
+        ));
+
+        $localization->save();
+
+        $meta = new PageMeta();
+        $meta->set($metaProperties);
+        $meta->setLocalization($localization);
+        $meta->save();
+
+        return $localization;
     }
 
     public function getLocalization(Language $language): ?PageLocalization {

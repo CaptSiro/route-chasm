@@ -5,6 +5,7 @@ namespace components\core\Admin\Nexus\Editor;
 use components\core\Admin\Nexus\AdminNexus;
 use components\core\Admin\Nexus\Editor;
 use components\core\WebPage\AdminWebPage;
+use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -25,7 +26,7 @@ use core\view\View;
 use models\core\Privilege\Privilege;
 
 class AdminNexusEditor extends ContainerContent implements Editor {
-    use Flags;
+    use Flags, UnexpectedHttpMethod;
 
     public const FLAG_REMOVE_CANCEL_BUTTON = 1;
 
@@ -226,11 +227,10 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                 );
             }
 
-            default:
-                $response->sendMessage(
-                    'Invalid HTTP method '. $request->getHttpMethod(),
-                    HttpCode::CE_BAD_REQUEST
-                );
+            default: {
+                $this->handleUnexpectedMethod($request, $response);
+                break;
+            }
         }
     }
 }

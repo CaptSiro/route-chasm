@@ -30,6 +30,10 @@ class AiRequest extends JsonStructure {
         return $this;
     }
 
+    public function addJsonFormat(): static {
+        return $this->set('text', ["format" => ["type" => "json_object"]]);
+    }
+
     public function setSchema(Schema $schema): static {
         $this->set('text', $schema->toFormat());
         return $this;

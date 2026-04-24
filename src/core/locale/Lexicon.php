@@ -7,6 +7,10 @@ use models\core\Language\Language;
 use models\core\Language\Lexicon\Phrase;
 
 class Lexicon {
+    public static function group(string $group): LexiconTranslator {
+        return new LexiconTranslator($group);
+    }
+
     public static function format(string $pattern, string $value): string {
         return str_replace('{}', $value, $pattern);
     }

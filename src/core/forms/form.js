@@ -117,11 +117,14 @@ async function form_submit(form, event) {
         input.classList.remove('form-invalid');
     }
 
-    const response = await fetch(window.location, {
+    const action = form.getAttribute('action')
+        ?? window.location;
+
+    const response = await fetch(action, std_fetch_json({
         method: form.dataset.method,
         headers,
         body: payload.body
-    });
+    }));
 
     window_close(w);
 

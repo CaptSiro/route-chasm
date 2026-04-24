@@ -16,8 +16,20 @@ use core\forms\description\TextArea;
 #[Database(App::DATABASE)]
 #[Table('core_ai_page')]
 class AiPage extends Model {
-    public static function fromPage(Page $page): ?static {
-        return static::fromPageRaw($page->id);
+    public static function fromPage(Page $page, bool $create = false): ?static {
+        if (!is_null($ret = static::fromPageRaw($page->id))) {
+            return $ret;
+        }
+
+        if (!$create) {
+            return null;
+        }
+
+        $model = new AiPage();
+        $model->pageId = $page->id;
+        $model->save();
+
+        return $model;
     }
 
     public static function fromPageRaw(int $pageId): ?static {
@@ -37,7 +49,7 @@ class AiPage extends Model {
     #[GridColumn]
     #[TextArea(rows: 10)]
     #[Column(type: Column::TYPE_STRING)]
-    public string $prompt;
+    public string $prompt = '';
 
 
 

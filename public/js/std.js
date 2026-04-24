@@ -478,7 +478,7 @@ async function std_fetch_renderJsonError(response) {
     ]);
 
     for (const t of trace) {
-        section.append(jsml.div(_, `at ${t.file}: ${t.line}`));
+        section.append(jsml.div(_, `at ${t.file}:${t.line}`));
     }
 
     return new Promise(resolve => {

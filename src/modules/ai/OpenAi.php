@@ -2,27 +2,39 @@
 
 namespace modules\ai;
 
+use components\ai\AiRequest;
 use core\App;
 use core\view\View;
 
 class OpenAi {
-    public const API_KEY = 'OPENAI_KEY';
+    public const ENV_API_KEY = 'OPENAI_KEY';
+    public const ENV_MODEL = 'OPENAI_MODEL';
 
-    public static function fromEnv(?string $field = null): ?static {
-        if (is_null($code = App::getEnvStatic()->get($field ?? self::API_KEY))) {
+
+    public static function fromEnv(?string $apiKeyField = null, ?string $modelField = null): ?static {
+        if (is_null($code = App::getEnvStatic()->get($apiKeyField ?? self::ENV_API_KEY))) {
             return null;
         }
 
-        return new static($code);
+        if (is_null($model = App::getEnvStatic()->get($modelField ?? self::ENV_MODEL))) {
+            return null;
+        }
+
+        return new static($code, $model);
     }
 
 
 
     public function __construct(
-        protected string $apiKey
+        protected string $apiKey,
+        protected string $model
     ) {}
 
 
+
+    public function createRequest(): AiRequest {
+        return new AiRequest($this->model);
+    }
 
     public function chat(View $body): bool|string {
         $curl = curl_init("https://api.openai.com/v1/responses");

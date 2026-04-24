@@ -161,7 +161,7 @@ class Translation extends Model {
     #[Column(type: Column::TYPE_STRING)]
     public string $translation;
 
-    #[Column('id_rule', type: Column::TYPE_INTEGER)]
+    #[Column('id_rule', type: Column::TYPE_INTEGER, nullable: true)]
     public ?int $ruleId;
 
     protected Phrase $phrase;

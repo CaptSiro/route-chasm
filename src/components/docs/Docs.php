@@ -2,7 +2,6 @@
 
 namespace components\docs;
 
-use components\ai\AiRequest;
 use components\ai\DocumentGeneration\DocumentGeneration;
 use components\ai\FragmentGeneration\FragmentGeneration;
 use components\ai\InputMessage;
@@ -133,7 +132,7 @@ class Docs extends Router {
     }
 
     public function requestFragmentGeneration(OpenAi $client, string $file): array {
-        $request = new AiRequest('gpt-4o-mini');
+        $request = $client->createRequest();
 
         $schema = new Schema(
             'fragment_generation',
@@ -161,7 +160,7 @@ class Docs extends Router {
      * @return array
      */
     public function requestDocumentGeneration(OpenAi $client, Language $language, string $file, array $fragments): array {
-        $request = new AiRequest('gpt-4o-mini');
+        $request = $client->createRequest();
 
         $schema = new Schema(
             'document_generation',

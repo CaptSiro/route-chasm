@@ -8,7 +8,7 @@ trait DynamicLayout {
     /**
      * @var array<View> $children
      */
-    private array $children;
+    private array $children = [];
     private float $widthPercentage;
 
     public function add(View $child): static {

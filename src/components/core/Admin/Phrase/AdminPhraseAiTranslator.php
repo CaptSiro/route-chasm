@@ -15,6 +15,7 @@ use models\core\Language\Language;
 use models\core\Language\Lexicon\Phrase;
 use models\core\Language\Lexicon\Rule;
 use models\core\Language\Lexicon\Translation;
+use modules\ai\OpenAi;
 
 class AdminPhraseAiTranslator implements View {
     use Renderer, ResourceLoader;
@@ -23,16 +24,16 @@ class AdminPhraseAiTranslator implements View {
 
 
 
-    public static function createRequest(Phrase $phrase): View {
+    public static function createRequest(OpenAi $client, Phrase $phrase): View {
         return $phrase->isDynamic
-            ? self::createDynamicRequest($phrase)
-            : self::createStaticRequest($phrase);
+            ? self::createDynamicRequest($client, $phrase)
+            : self::createStaticRequest($client, $phrase);
     }
 
-    public static function createStaticRequest(Phrase $phrase): View {
-        $request = new AiRequest(self::AI_MODEL);
+    public static function createStaticRequest(OpenAi $client, Phrase $phrase): View {
+        $request = $client->createRequest();
 
-        $request->set('text', ["format" => ["type" => "json_object"]]);
+        $request->addJsonFormat();
 
         $request->add(new StaticTranslation(InputMessage::ROLE_SYSTEM, $phrase));
         $request->add(new StaticTranslation(InputMessage::ROLE_USER, $phrase));
@@ -40,10 +41,10 @@ class AdminPhraseAiTranslator implements View {
         return $request;
     }
 
-    public static function createDynamicRequest(Phrase $phrase): View {
-        $request = new AiRequest(self::AI_MODEL);
+    public static function createDynamicRequest(OpenAi $client, Phrase $phrase): View {
+        $request = $client->createRequest();
 
-        $request->set('text', ["format" => ["type" => "json_object"]]);
+        $request->addJsonFormat();
 
         $request->add(new DynamicTranslation(InputMessage::ROLE_SYSTEM, $phrase));
         $request->add(new DynamicTranslation(InputMessage::ROLE_USER, $phrase));

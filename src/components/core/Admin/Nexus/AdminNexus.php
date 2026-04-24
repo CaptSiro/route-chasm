@@ -2,11 +2,11 @@
 
 namespace components\core\Admin\Nexus;
 
-use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Message\Message;
 use components\core\WebPage\AdminWebPage;
 use components\layout\Grid\GridLayout;
 use components\layout\Grid\GridLayoutFactory;
+use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -21,24 +21,31 @@ use core\route\RouteNode;
 use core\route\Router;
 use core\url\Url;
 use core\view\ContainerContent;
+use core\view\TemplateSlots;
 use core\view\View;
 use models\core\Privilege\Privilege;
 
 class AdminNexus extends ContainerContent {
+    use TemplateSlots, UnexpectedHttpMethod;
+
     public const LEXICON_GROUP = 'admin.nexus';
+
     public const COLUMN_EDIT = 'nexus_edit';
     public const COLUMN_DELETE = 'nexus_delete';
+
+    public const SLOT_HEADER_ITEM = 'slot_header_item';
+//    public const SLOT_CREATE_ACTION = 'slot_create_action'; todo
+    public const SLOT_BREAD_CRUMBS = 'slot_before_grid';
+    public const SLOT_FOOTER = 'slot_after_grid';
 
 
 
     protected AdminWebPage $webPage;
     protected ?Path $urlPath = null;
-    protected ?BreadCrumbs $breadCrumbs = null;
     protected NexusLinkCreator $linkCreator;
     protected bool $showCreateButton = true;
     protected bool $showHeader = true;
     protected bool $doAddGridControls = true;
-    protected ?View $headerContent = null;
     /**
      * @var array<NexusExtension>
      */
@@ -104,11 +111,6 @@ class AdminNexus extends ContainerContent {
         return $this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE));
     }
 
-    public function setHeaderContent(View $headerContent): static {
-        $this->headerContent = $headerContent;
-        return $this;
-    }
-
     public function setLinkCreator(NexusLinkCreator $creator): static {
         $this->linkCreator = $creator;
         return $this;
@@ -120,15 +122,6 @@ class AdminNexus extends ContainerContent {
 
     public function getGridFactory(): GridLayoutFactory {
         return $this->gridFactory;
-    }
-
-    public function getBreadCrumbs(): ?BreadCrumbs {
-        return $this->breadCrumbs;
-    }
-
-    public function setBreadCrumbs(?BreadCrumbs $breadCrumbs): static {
-        $this->breadCrumbs = $breadCrumbs;
-        return $this;
     }
 
     public function getEditor(): Editor {
@@ -307,10 +300,8 @@ class AdminNexus extends ContainerContent {
             }
 
             default: {
-                $response->sendMessage(
-                    'Invalid HTTP method ' . $request->getHttpMethod(),
-                    HttpCode::CE_BAD_REQUEST
-                );
+                $this->handleUnexpectedMethod($request, $response);
+                break;
             }
         }
     }

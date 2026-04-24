@@ -32,6 +32,10 @@ class ArticleTemplate implements PageTemplate {
         return "Article";
     }
 
+    public function getDescription(): string {
+        return "Generic text page generated from Markdown code. Includes multilingual Markdown editor";
+    }
+
     public function create(Page $page): ?View {
         return null;
     }

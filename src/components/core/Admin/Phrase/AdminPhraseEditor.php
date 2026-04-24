@@ -59,7 +59,7 @@ class AdminPhraseEditor extends AdminNexusEditor {
 
             $client = OpenAi::fromEnv();
             $result = $client->chat(
-                AdminPhraseAiTranslator::createRequest($phrase)
+                AdminPhraseAiTranslator::createRequest($client, $phrase)
             );
 
             $translations = AdminPhraseAiTranslator::parseTranslations($phrase, $result);

@@ -37,6 +37,7 @@ function error_handler($severity, $message, $file, $line): void {
     }
 
     http_response_code(500);
+    header("X-Internal-Server-Error: $message ($file:$line)");
 
     $responseType = strtolower(get_response_format());
 
@@ -63,6 +64,20 @@ function exception_handler($exception): void {
 
     http_response_code(500);
 
+    $message = $exception->getMessage();
+    $t = $exception->getTrace();
+    if (isset($t[0])) {
+        $t = $t[0];
+
+        if (isset($t['file']) && isset($t['line'])) {
+            header("X-Internal-Server-Error: $message ($t[file]:$t[line])");
+        } else {
+            header("X-Internal-Server-Error: $message");
+        }
+    } else {
+        header("X-Internal-Server-Error: $message");
+    }
+
     $responseType = strtolower(get_response_format());
 
     if ($responseType === 'json' || $responseType === 'application/json' || $responseType === 'j') {
@@ -70,8 +85,11 @@ function exception_handler($exception): void {
 
         $stacktrace = [];
         foreach ($exception->getTrace() as $trace) {
-            if (isset($trace['file'])) {
-                $stacktrace[] = $trace;
+            if (isset($trace['file']) && isset($trace['line'])) {
+                $stacktrace[] = [
+                    'file' => $trace['file'],
+                    'line' => $trace['line'],
+                ];
             }
         }
 

@@ -15,6 +15,9 @@ trait PriorityTrait {
 
 
 
+    /**
+     * @var int Should be set by default in Mode::save() function
+     */
     #[Column(type: Column::TYPE_INTEGER)]
     public int $priority;
 

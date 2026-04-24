@@ -32,7 +32,7 @@ class Directory extends Model implements FileSystemEntry {
 
         $dir->id = 0;
         $dir->parentId = 0;
-        $dir->name = '/';
+        $dir->name = 'Files';
 
         $dir->notSavable();
         return static::$root = $dir;

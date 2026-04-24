@@ -6,6 +6,8 @@ use components\core\Html\Html;
 use components\layout\Layout;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
+use core\locale\Lexicon;
+use core\locale\LexiconTranslator;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
@@ -13,6 +15,10 @@ use core\view\View;
 
 class Form extends Component implements Layout, Attribute {
     use HtmlAttribute;
+
+
+
+    const LEXICON_GROUP = 'forms';
 
 
 
@@ -37,6 +43,10 @@ class Form extends Component implements Layout, Attribute {
     }
 
 
+
+    public static function getLexiconTranslator(): LexiconTranslator {
+        return Lexicon::group(self::LEXICON_GROUP);
+    }
 
     public static function ns(string $class): string {
         return strtr(strtolower($class), "\\", "-");

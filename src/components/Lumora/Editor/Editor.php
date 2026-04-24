@@ -34,6 +34,7 @@ use components\Lumora\widgets\TextEditor\TextEditorWidget;
 use components\Lumora\widgets\Widget;
 use components\Lumora\widgets\WidgetImporter;
 use components\pages\Wireframe\Wireframe;
+use core\actions\UnexpectedHttpMethod;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
@@ -50,6 +51,10 @@ use models\core\Page\PageLocalization;
 use modules\ai\OpenAi;
 
 class Editor extends ContainerContent {
+    use UnexpectedHttpMethod;
+
+
+
     public static function getDefaultWidgets(): array {
         return [
             CodeWidget::getInstance(),
@@ -254,7 +259,7 @@ class Editor extends ContainerContent {
         switch ($request->getHttpMethod()) {
             case "GENERATE": {
                 $client = OpenAi::fromEnv();
-                $aiRequest = new AiRequest('gpt-4o-mini');
+                $aiRequest = $client->createRequest();
 
                 $schema = new Schema(
                     'webpage_component_generation',
@@ -300,10 +305,8 @@ class Editor extends ContainerContent {
             }
 
             default: {
-                $response->sendMessage(
-                    'Invalid HTTP method ' . $request->getHttpMethod(),
-                    HttpCode::CE_BAD_REQUEST
-                );
+                $this->handleUnexpectedMethod($request, $response);
+                break;
             }
         }
     }

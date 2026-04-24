@@ -28,6 +28,10 @@ class TextPageTemplate implements PageTemplate {
         return "Text";
     }
 
+    public function getDescription(): string {
+        return "General content page aimed for text pages with few custom elements such as images or links. Includes component-base content editor";
+    }
+
     protected function createEditor(Page $page, PageLocalization $localization): Editor {
         $editor = new Editor($page->get(self::DATA_ITEM_CONTENT), $localization);
         $editor->setTitle($localization->title .' - Content Editor');

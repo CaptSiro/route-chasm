@@ -1,0 +1,20 @@
+.window .structure {
+    padding: var(--gap);
+}
+
+.window .structure .title {
+    color: var(--text-0);
+}
+
+
+.window .structure .template {
+    color: var(--accent-3);
+}
+
+.window .structure ul {
+    padding-left: var(--gap);
+}
+
+.window .structure ul li {
+    list-style: circle;
+}

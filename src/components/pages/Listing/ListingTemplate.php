@@ -26,6 +26,10 @@ class ListingTemplate implements PageTemplate {
         return "Page Listing";
     }
 
+    public function getDescription(): string {
+        return "Lists all direct children pages that are available for the user to see";
+    }
+
     public function create(Page $page): ?View {
         return null;
     }

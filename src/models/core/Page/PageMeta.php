@@ -37,19 +37,19 @@ class PageMeta extends Model {
 
     #[TextArea]
     #[Column(type: Column::TYPE_STRING)]
-    public string $description;
+    public string $description = "";
 
     #[TextField]
     #[Column(type: Column::TYPE_STRING)]
-    public string $keywords;
+    public string $keywords = "";
 
     #[TextField('Open Graph Title')]
     #[Column('og_title', type: Column::TYPE_STRING)]
-    public string $ogTitle;
+    public string $ogTitle = "";
 
     #[TextArea('Open Graph Description')]
     #[Column('og_description', type: Column::TYPE_STRING)]
-    public string $ogDescription;
+    public string $ogDescription = "";
 
     protected PageLocalization $localization;
 

@@ -1,0 +1,40 @@
+<?php
+/** @var StructureGeneration $this */
+
+use components\ai\StructureGeneration\StructureGeneration;
+
+?>
+
+Generate a website structure based on the following input.
+
+Website description:
+<?= $this->prompt ?>
+
+Language:
+<?= $this->language->getLocale()->getLongIdentifier() ?>
+
+Available templates:
+<?php foreach ($this->pageTemplates as $template): ?>
+    <?= $template->getName() ?> - <?= $template->getDescription() ?>
+<?php endforeach; ?>
+
+Requirements:
+- Use only the provided templates
+- Generate a logical page hierarchy
+- Keep titles short and meaningful
+- Do not invent templates
+
+Output format example:
+[
+    {
+        "title": "Home",
+        "template": "landing",
+        "children": [
+            {
+                "title": "About Us",
+                "template": "content",
+                "children": []
+            }
+        ]
+    }
+]
