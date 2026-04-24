@@ -199,4 +199,17 @@ class ModelFactory {
             $this->allQuery($projection, $where)
         );
     }
+
+
+
+    public function randomQuery(Query|string|null $where = null): SelectQuery {
+        return $this->firstQuery($where)
+            ->order("RAND()");
+    }
+
+    public function random(Query|string|null $where = null): ?Model {
+        return $this->firstExecute(
+            $this->randomQuery($where)
+        );
+    }
 }

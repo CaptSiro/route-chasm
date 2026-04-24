@@ -370,6 +370,12 @@ function TitleInspector(title, className = undefined) {
     );
 }
 
+function NoteInspector(note, className = undefined) {
+    return (
+        jsml.h5("i-note" + (className !== undefined ? " " + className : ""), note)
+    );
+}
+
 function HRInspector(className = undefined) {
     return (
         div("i-hr" + (className !== undefined ? " " + className : ""), "​") //todo does not display without zero-width-character (?)
@@ -432,6 +438,9 @@ function NotInspectorAble() {
 
 class ColorPicker {
     #rootElement;
+    /**
+     * @return {HTMLElement}
+     */
     get rootElement() {
         return this.#rootElement;
     }
@@ -653,6 +662,9 @@ class ColorPicker {
         this.displayCurrentColor();
     }
 
+    /**
+     * @param {Color} color
+     */
     setNewColor(color) {
         this.#red.value = color.red;
         this.setChannel("red", color.red);

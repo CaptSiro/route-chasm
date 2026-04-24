@@ -88,3 +88,12 @@ function api_loadLocalization() {
 function api_loadSearch() {
     return api_getObject("#api-search");
 }
+
+
+
+/**
+ * @return {StartuhApi|null|any}
+ */
+function api_loadStartuh() {
+    return api_getObject("#api-startuh");
+}

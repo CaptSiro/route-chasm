@@ -123,6 +123,11 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
             ->count($where);
     }
 
+    public static function random(Query|string|null $where = null): static {
+        return ModelFactory::extract(static::class)
+            ->random($where);
+    }
+
 
 
     private Origin $_origin;

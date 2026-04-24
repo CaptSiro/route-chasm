@@ -1,0 +1,40 @@
+.i-bookmarks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-smaller);
+
+    & .bookmark {
+        padding: 4px;
+        min-height: 1rem;
+
+        &.selected {
+            background-color: var(--accent-0);
+        }
+    }
+}
+
+.w-bookmarks {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap-smaller);
+
+    min-height: calc(var(--gap) * 2 + 1rem);
+    min-width: calc(var(--gap) * 2 + 1rem);
+
+    & .bookmark {
+        width: calc(4 * var(--gap));
+        height: calc(4 * var(--gap));
+        border-radius: calc(2 * var(--border-radius));
+        color: white;
+        text-decoration: none;
+
+        &.icon {
+            font-size: 2rem;
+            aspect-ratio: 1 / 1;
+        }
+
+        &:hover {
+            color: white;
+        }
+    }
+}

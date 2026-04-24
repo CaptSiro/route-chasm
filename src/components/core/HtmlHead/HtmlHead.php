@@ -10,6 +10,7 @@ use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\StringRenderer;
 use core\view\View;
+use project\Startuh;
 
 class HtmlHead extends Component implements Head {
     protected array $meta;
@@ -32,6 +33,8 @@ class HtmlHead extends Component implements Head {
 
         $this->addElement(new StringRenderer(FileSystem::createApi()));
         $this->addElement(new StringRenderer(Search::createApi()));
+
+        $this->addElement(new StringRenderer(Startuh::createApi()));
     }
 
 

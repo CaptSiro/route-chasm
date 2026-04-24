@@ -1,0 +1,179 @@
+:root {
+    --margin: 16px;
+}
+
+html,
+body,
+.root,
+main {
+    overflow: hidden;
+}
+
+
+
+.glass {
+    background-color: rgba(238, 238, 255, 0.5);
+    color: black;
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    padding: var(--border-radius);
+    box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+
+
+main {
+    --column-0: 300px;
+    --column-1: 300px;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 0 1fr 0;
+    gap: 0;
+
+    &.animate {
+        transition: grid-template-rows ease-in-out 250ms,
+        grid-template-columns ease-in-out 250ms,
+        width linear 250ms 250ms,
+        height linear 250ms 250ms,
+        margin linear 200ms 250ms;
+    }
+
+    &.edit {
+        width: calc(100vw - var(--margin) - var(--margin));
+        height: calc(100vh - var(--margin) - var(--margin));
+
+        grid-template-columns: var(--column-0) 1fr var(--column-1);
+        margin: var(--margin);
+
+        & .widgets,
+        & .inspector-container {
+            opacity: 1;
+            transition: 100ms 400ms linear;
+        }
+
+        .widget.focus {
+            outline-color: var(--accent-1);
+        }
+    }
+
+    &.edit.animate {
+        transition: grid-template-rows ease-in-out 250ms 200ms,
+        grid-template-columns ease-in-out 250ms 200ms,
+        width linear 250ms,
+        height linear 250ms,
+        margin linear 200ms;
+    }
+}
+
+
+
+.widgets,
+.inspector-container {
+    opacity: 0;
+    display: flex;
+    transition: 100ms 0ms linear;
+
+    & .inspector {
+        max-width: unset;
+        width: 100%;
+    }
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-smaller);
+    user-select: none;
+}
+
+.prefab {
+    padding: var(--gap-smaller);
+    gap: var(--gap-smaller);
+
+    &:hover {
+        cursor: pointer;
+        background-color: var(--container-1);
+    }
+}
+
+.handle {
+    position: relative;
+    background: var(--container-2);
+    width: 2px;
+    height: 100%;
+
+    & .fill {
+        position: absolute;
+        top: 0;
+        left: -4px;
+        width: calc(4px + 2px + 4px);
+        height: 100%;
+        z-index: 10;
+
+        &:hover {
+            cursor: ew-resize;
+        }
+    }
+}
+
+
+
+.edit-toggle {
+    opacity: 0.1;
+    transition: opacity 100ms linear;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.background {
+    user-select: none;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.layers {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    & > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    & > .controls {
+        top: var(--margin);
+        right: var(--margin);
+        left: unset;
+        width: fit-content;
+        height: fit-content;
+    }
+
+    & > .content {
+        position: relative;
+
+        & .widget {
+            position: absolute;
+            outline: 2px solid transparent;
+
+            transition: outline-color 200ms linear;
+        }
+    }
+}

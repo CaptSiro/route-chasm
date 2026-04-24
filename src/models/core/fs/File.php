@@ -45,6 +45,16 @@ class File extends Model implements FileSystemEntry, Destination {
         return static::first(where: $where);
     }
 
+    public static function isChildOfQuery(Directory $directory): Query {
+        return $directory->isRoot()
+            ? Query::infer('id_fs_parent IS NULL')
+            : Query::infer('id_fs_parent = ?', $directory->id);
+    }
+
+    public static function isTypeOfQuery(string $prefix): Query {
+        return Query::infer('type LIKE ?', "$prefix/%");
+    }
+
 
 
     #[Column('id_fs_file', Column::TYPE_INTEGER, isPrimaryKey: true)]
@@ -98,6 +108,22 @@ class File extends Model implements FileSystemEntry, Destination {
 
 
 
+    public function updateMetadata(string $filePath, bool $save = false): void {
+        if (!file_exists($filePath)) {
+            return;
+        }
+
+        $updated = false;
+        if ($this->size !== $size = filesize($filePath)) {
+            $this->size = $size;
+            $updated = true;
+        }
+
+        if ($updated && $save) {
+            $this->save();
+        }
+    }
+
     public function getFileName(): string {
         return $this->name .'.'. $this->extension;
     }
@@ -112,6 +138,10 @@ class File extends Model implements FileSystemEntry, Destination {
 
     public function getRealPath(): string {
         return FileSystem::getRealPath($this);
+    }
+
+    public function getRealDirectory(): string {
+        return FileSystem::getRealDirectory($this);
     }
 
     public function isChildOf(Directory $directory): bool {

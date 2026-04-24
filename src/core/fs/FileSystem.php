@@ -93,13 +93,18 @@ class FileSystem {
     }
 
     public static function getRealPath(File $file): string {
-        $hash = $file->hash;
-
         $offset = RouteChasmEnvironment::FILE_SYSTEM_DIRECTORY_HASH_OFFSET;
         $dir = substr($file->hash, 0, $offset);
         $f = substr($file->hash, $offset);
 
         return Path::join(self::getLocation(), $dir, $f);
+    }
+
+    public static function getRealDirectory(File $file): string {
+        $offset = RouteChasmEnvironment::FILE_SYSTEM_DIRECTORY_HASH_OFFSET;
+        $dir = substr($file->hash, 0, $offset);
+
+        return Path::join(self::getLocation(), $dir);
     }
 
     public static function createDirectoryLinkAttributes(string $url): array {
@@ -161,7 +166,10 @@ class FileSystem {
         if (!is_null($found = File::fromHash($hash))) {
             if (!$found->isChildOf($directory)) {
                 $found->setParent($directory);
+                $found->updateMetadata($filePath);
                 $found->save();
+            } else {
+                $found->updateMetadata($filePath, true);
             }
 
             return $found;
@@ -176,7 +184,12 @@ class FileSystem {
         $entry->hash = $hash;
         $entry->size = filesize($filePath);
 
-        if (!copy($filePath, $entry->getRealPath())) {
+        $location = dirname($entryPath = $entry->getRealPath());
+        if (!file_exists($location)) {
+            mkdir($location, recursive: true);
+        }
+
+        if (!copy($filePath, $entryPath)) {
             return null;
         }
 
@@ -310,7 +323,7 @@ class FileSystem {
             )
         );
 
-        $breadCrumbs = $bc = static::generateBreadCrumbs(
+        $breadCrumbs = static::generateBreadCrumbs(
             $directory,
             fn(Directory $x) => self::getBreadCrumbUrl($x)
         );

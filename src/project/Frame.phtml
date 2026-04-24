@@ -1,0 +1,54 @@
+<?php
+/** @var Frame $this */
+
+use components\core\Icon;
+use core\admin\Admin;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+use project\Frame;
+
+Css::import($this->getResource('startuh.css'));
+Javascript::import($this->getResource('startuh.js'));
+Frame::importAssets();
+
+$this->loadWidgets($this->getResource('widgets'));
+
+?><div class="widgets">
+    <div class="container">
+        <?php if (!is_null($adminUrl = Admin::getUrl())): ?>
+            <a href="<?= $adminUrl ?>">
+                <?= $this->tr('Admin') ?>
+            </a>
+        <?php endif; ?>
+    </div>
+
+    <div class="handle">
+        <div class="fill" x-init="startuh_resizeHandle" data-index="0" data-sign="+1" data-range="75,500"></div>
+    </div>
+</div>
+
+<div class="layers">
+    <div class="background">
+        <img
+            id="background-image"
+            src="<?= $this->getImage('transparent.png') ?>"
+            data-default="<?= $this->getImage('image.png') ?>"
+            alt="background"
+        >
+    </div>
+
+    <div class="content"></div>
+
+    <div class="controls">
+        <button class="edit-toggle" onclick="startuh_editToggle()"><?= Icon::nf('nf-fa-cog') ?></button>
+    </div>
+</div>
+
+<div class="inspector-container">
+    <div class="handle">
+        <div class="fill" x-init="startuh_resizeHandle" data-index="1" data-sign="-1" data-range="75,500"></div>
+    </div>
+
+    <div class="inspector">
+    </div>
+</div>
