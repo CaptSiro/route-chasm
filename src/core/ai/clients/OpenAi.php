@@ -1,12 +1,13 @@
 <?php
 
-namespace modules\ai;
+namespace core\ai\clients;
 
-use components\ai\AiRequest;
+use core\ai\AiRequest;
+use core\ai\Client;
 use core\App;
 use core\view\View;
 
-class OpenAi {
+class OpenAi implements Client {
     public const ENV_API_KEY = 'OPENAI_KEY';
     public const ENV_MODEL = 'OPENAI_MODEL';
 
@@ -21,6 +22,10 @@ class OpenAi {
         }
 
         return new static($code, $model);
+    }
+
+    public static function addGenericJsonFormat(AiRequest $request): AiRequest {
+        return $request->set('text', ["format" => ["type" => "json_object"]]);
     }
 
 

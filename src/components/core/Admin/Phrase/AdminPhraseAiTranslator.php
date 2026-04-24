@@ -2,10 +2,11 @@
 
 namespace components\core\Admin\Phrase;
 
-use components\ai\AiRequest;
 use components\ai\DynamicTranslation\DynamicTranslation;
 use components\ai\InputMessage;
 use components\ai\StaticTranslation\StaticTranslation;
+use core\ai\Client;
+use core\ai\clients\OpenAi;
 use core\App;
 use core\ResourceLoader;
 use core\utils\Strings;
@@ -15,7 +16,6 @@ use models\core\Language\Language;
 use models\core\Language\Lexicon\Phrase;
 use models\core\Language\Lexicon\Rule;
 use models\core\Language\Lexicon\Translation;
-use modules\ai\OpenAi;
 
 class AdminPhraseAiTranslator implements View {
     use Renderer, ResourceLoader;
@@ -24,16 +24,16 @@ class AdminPhraseAiTranslator implements View {
 
 
 
-    public static function createRequest(OpenAi $client, Phrase $phrase): View {
+    public static function createRequest(Client $client, Phrase $phrase): View {
         return $phrase->isDynamic
             ? self::createDynamicRequest($client, $phrase)
             : self::createStaticRequest($client, $phrase);
     }
 
-    public static function createStaticRequest(OpenAi $client, Phrase $phrase): View {
+    public static function createStaticRequest(Client $client, Phrase $phrase): View {
         $request = $client->createRequest();
 
-        $request->addJsonFormat();
+        OpenAi::addGenericJsonFormat($request);
 
         $request->add(new StaticTranslation(InputMessage::ROLE_SYSTEM, $phrase));
         $request->add(new StaticTranslation(InputMessage::ROLE_USER, $phrase));
@@ -41,10 +41,10 @@ class AdminPhraseAiTranslator implements View {
         return $request;
     }
 
-    public static function createDynamicRequest(OpenAi $client, Phrase $phrase): View {
+    public static function createDynamicRequest(Client $client, Phrase $phrase): View {
         $request = $client->createRequest();
 
-        $request->addJsonFormat();
+        OpenAi::addGenericJsonFormat($request);
 
         $request->add(new DynamicTranslation(InputMessage::ROLE_SYSTEM, $phrase));
         $request->add(new DynamicTranslation(InputMessage::ROLE_USER, $phrase));

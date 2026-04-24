@@ -1,7 +1,8 @@
 <?php
 
-namespace components\ai;
+namespace core\ai;
 
+use components\ai\InputMessage;
 use components\ai\Schema\Schema;
 use core\ResourceLoader;
 use core\view\JsonStructure;

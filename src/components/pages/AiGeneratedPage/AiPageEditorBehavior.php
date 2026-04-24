@@ -2,7 +2,6 @@
 
 namespace components\pages\AiGeneratedPage;
 
-use components\ai\AiRequest;
 use components\ai\InputMessage;
 use components\ai\PageGeneration\PageGeneration;
 use components\ai\Schema\ObjectSchema;
@@ -14,6 +13,7 @@ use components\core\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\layout\Layout;
+use core\ai\clients\OpenAi;
 use core\App;
 use core\database\sql\Model;
 use core\forms\Form;
@@ -23,7 +23,6 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\view\View;
 use models\core\Page\AiPage;
 use models\core\Page\Page;
-use modules\ai\OpenAi;
 use RuntimeException;
 
 class AiPageEditorBehavior implements EditorBehavior {

@@ -13,6 +13,7 @@ use components\core\Message\Message;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\pages\AiGeneratedPage\AiPageTemplate;
+use core\ai\clients\OpenAi;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -33,7 +34,6 @@ use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
-use modules\ai\OpenAi;
 use RuntimeException;
 
 class AdminPageEditor extends AdminNexusEditor {
@@ -177,7 +177,7 @@ class AdminPageEditor extends AdminNexusEditor {
             $client = OpenAi::fromEnv();
             $ai = $client->createRequest();
 
-            $ai->addJsonFormat();
+            OpenAi::addGenericJsonFormat($ai);
 
             $ai->add(new StructureGeneration(InputMessage::ROLE_SYSTEM, $prompt, $templates, $language));
             $ai->add(new StructureGeneration(InputMessage::ROLE_USER, $prompt, $templates, $language));

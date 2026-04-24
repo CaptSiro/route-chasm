@@ -10,7 +10,7 @@ spl_autoload_register(function ($class) {
         if (file_exists($lib)) {
             require __DIR__ ."/../lib/$class.php";
         } else {
-            http_send_status(500);
+            http_response_code(500);
             echo "Class does not exists";
             var_dump($class);
             exit;

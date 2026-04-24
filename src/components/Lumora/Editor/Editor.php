@@ -2,7 +2,6 @@
 
 namespace components\Lumora\Editor;
 
-use components\ai\AiRequest;
 use components\ai\InputMessage;
 use components\ai\PageGeneration\PageGeneration;
 use components\ai\Schema\ObjectSchema;
@@ -35,6 +34,7 @@ use components\Lumora\widgets\Widget;
 use components\Lumora\widgets\WidgetImporter;
 use components\pages\Wireframe\Wireframe;
 use core\actions\UnexpectedHttpMethod;
+use core\ai\clients\OpenAi;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
@@ -48,7 +48,6 @@ use core\utils\Arrays;
 use core\view\ContainerContent;
 use DateTime;
 use models\core\Page\PageLocalization;
-use modules\ai\OpenAi;
 
 class Editor extends ContainerContent {
     use UnexpectedHttpMethod;
