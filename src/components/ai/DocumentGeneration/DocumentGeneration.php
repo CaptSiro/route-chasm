@@ -3,6 +3,7 @@
 namespace components\ai\DocumentGeneration;
 
 use components\ai\InputMessage;
+use components\ai\MarkdownSpecification\MarkdownSpec;
 use core\route\Path;
 use core\RouteChasmEnvironment;
 use core\utils\Files;
@@ -10,6 +11,10 @@ use models\core\Language\Language;
 use models\docs\Fragment;
 
 class DocumentGeneration extends InputMessage {
+    use MarkdownSpec;
+
+
+
     /**
      * @param string $role
      * @param Language $language

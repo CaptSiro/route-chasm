@@ -1,0 +1,13 @@
+<?php /** @var MarkdownSpecification $this */
+
+use components\ai\MarkdownSpecification\MarkdownSpecification;
+
+?>
+
+Markdown rules:
+- Output Markdown only.
+- Do not include explanations outside the Markdown content.
+- Do not include code fences surrounding the entire output.
+- Use Markdown headings (#, ##, ###) for ONLY for headings. After each heading insert empty line to create new paragraph
+- If you use special character \ you need to double it \\ because it is used as escape character and one instance of \ is not going to be rendered
+- Use simple lists (multi level lists are not supported) and code blocks where appropriate.

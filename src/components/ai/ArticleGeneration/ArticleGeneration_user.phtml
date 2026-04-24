@@ -1,0 +1,13 @@
+<?php /** @var ArticleGeneration $this */
+
+use components\ai\ArticleGeneration\ArticleGeneration;
+
+?>
+
+Write a detailed article based on the following description:
+
+<?= $this->prompt ?>
+
+<?= $this->options ?>
+
+Make sure the article follows a clear structure and is fully written in <?= $this->language->getLocale()->getLongIdentifier() ?>.

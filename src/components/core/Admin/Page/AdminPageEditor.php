@@ -17,6 +17,7 @@ use core\ai\clients\OpenAi;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\forms\controls\CsrfField;
 use core\forms\controls\Submit\Submit;
 use core\forms\controls\TextArea\TextArea;
 use core\forms\Form;
@@ -286,6 +287,7 @@ class AdminPageEditor extends AdminNexusEditor {
         Css::import($this->getResource('page-editor.css'));
         $form->setOnSubmitSuccess('pageEditor_onStructureSubmitSuccess');
 
+        $form->add(new CsrfField(App::getInstance()->getRequest()));
         $form->add(new Accordion($this->tr("Generate Structure"), $accordion = new Column()));
 
         $accordion->add(new TextArea(self::NAME_PROMPT, $this->tr("AI Prompt")));
