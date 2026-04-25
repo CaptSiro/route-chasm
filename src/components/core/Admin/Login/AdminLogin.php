@@ -80,7 +80,8 @@ class AdminLogin extends ContainerContent {
     }
 
     public function createLoginForm(): View {
-        $useEnvPasswordMethod = $this->useEnvPasswordMethod();
+        $useEnvPasswordMethod = $this->useEnvPasswordMethod()
+            && !is_null(App::getInstance()->getEnv()->get(RouteChasmEnvironment::ENV_ADMIN_LOGIN_PASSWORD));
 
         $userLogin = new Form(HttpMethod::POST, namespace: self::METHOD_USER);
 
