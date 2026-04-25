@@ -77,6 +77,9 @@ CREATE TABLE IF NOT EXISTS core_language (
     UNIQUE (`code`)
 ) ENGINE = InnoDB;
 
+INSERT INTO core_language (id_language, code, is_default)
+VALUES (1, 'en-US', 1);
+
 
 
 DROP TABLE IF EXISTS core_lexicon_translation_x_rule;

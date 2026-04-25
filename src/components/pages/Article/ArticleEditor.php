@@ -28,6 +28,7 @@ use core\forms\controls\TextArea\TextArea;
 use core\forms\Form;
 use core\forms\FormAction;
 use core\http\HttpCode;
+use core\http\HttpHeader;
 use core\http\HttpMethod;
 use core\RouteChasmEnvironment;
 use core\utils\Arrays;
@@ -251,6 +252,7 @@ class ArticleEditor extends ContainerContent {
                         ->write($result[self::PROPERTY_CONTENT]);
                 }
 
+                $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
                 $response->sendStatus(HttpCode::S_OK);
             }
 

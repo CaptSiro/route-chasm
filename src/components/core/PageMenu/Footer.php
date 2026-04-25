@@ -56,4 +56,9 @@ class Footer implements View {
             ['href' => $url]
         );
     }
+
+    public function getProjectName(): ?string {
+        return App::getEnvStatic()
+            ->get(RouteChasmEnvironment::ENV_PROJECT);
+    }
 }

@@ -44,7 +44,7 @@ class ColumnDescription {
     }
 
     public function transform(mixed $value): mixed {
-        if (is_null($value) && $this->nullable) {
+        if ($this->nullable && empty($value)) {
             return null;
         }
 

@@ -196,10 +196,10 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
     public function getMachineIdentifier(?string $subtype = null): string {
         $type = $this->getModelType();
         if (is_null($subtype)) {
-            return $type .'#'. $this->id;
+            return $type .'#'. $this->getId();
         }
 
-        return $type .'_'. $subtype .'#'. $this->id;
+        return $type .'_'. $subtype .'#'. $this->getId();
     }
 
     public function getHumanIdentifier(): string {
