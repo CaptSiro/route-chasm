@@ -173,29 +173,26 @@ class PageEditorBehavior implements EditorBehavior {
         return true;
     }
 
-    public function isTitleAvailable(
-        string $title, Language $language, Page $page, ?int $navigationContextId = null
-    ): bool {
-        $navigationContextId ??= $this->getNavigationContextId();
+    protected function testTitleAvailability(Page $page, string $title, string $languageId): ?View {
+        $navigationContextId = $this->getNavigationContextId();
+        /** @var array<int, Language> $languages */
+        $languages = Models::identity(Language::all());
 
-        $localizations = $page->getLocalizations();
-        $hasLocalization = isset($localizations[$language->id]);
+        if (!isset($languages[$languageId])) {
+            $safe = Html::escape($title);
+            return new Message($this->tr("Language for title '$safe' not found"));
+        }
 
-        $slugParentId = !$hasLocalization
-            ? $page->getParentSlugId($language)
-            : $localizations[$language->id]->getSlug()->parentId;
-
-        $slug = Slug::fromSlugRaw(
-            $language->id,
-            $navigationContextId,
-            PageLocalization::createSlugLiteral($language, $title),
-            $slugParentId
+        $isAvailable = $page->isTitleAvailable(
+            $title, $languages[$languageId], $navigationContextId
         );
 
-        $noSlugFound = is_null($slug);
-        $titleRemainsSame = ($hasLocalization && $localizations[$language->id]->getSlug()->id === $slug?->id);
+        if ($isAvailable) {
+            return null;
+        }
 
-        return $noSlugFound || $titleRemainsSame;
+        $safe = Html::escape($title);
+        return new Message($this->tr("Title '$safe' is not unique"));
     }
 
     protected function testTitlesAvailability(Request $request, Page $page): ?View {
@@ -203,7 +200,9 @@ class PageEditorBehavior implements EditorBehavior {
         $titles = $body->getStrict('title');
         $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
 
-        $localizations = $page->getLocalizations();
+        if (!is_array($titles)) {
+            return $this->testTitleAvailability($page, $titles, $languageIds);
+        }
 
         $navigationContextId = $this->getNavigationContextId();
         /** @var array<int, Language> $languages */
@@ -265,30 +264,44 @@ class PageEditorBehavior implements EditorBehavior {
         }
     }
 
-    protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request): ?View {
-        $body = $request->getBody();
-
+    protected function isTitleForDefaultLanguageSubmitted(StrictDictionary $body): ?View {
         $titles = $body->getStrict('title');
+        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
+        $defaultLanguageId = App::getDefaultLanguage()->id;
+
+        if (!is_array($titles)) {
+            if (intval($languageIds) === $defaultLanguageId) {
+                return null;
+            }
+
+            return new Message(
+                $this->tr('Page must have title for default language')
+            );
+        }
+
         if ($this->emptyTitles($titles)) {
             return new Message($this->tr('Page must have at least one title'));
         }
 
-        $defaultLanguageId = App::getDefaultLanguage()->id;
-        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
         foreach ($languageIds as $i => $id) {
-            if ($defaultLanguageId === intval($id)) {
-                if (empty($titles[$i])) {
-                    return new Message(
-                        $this->tr('Page must have title for default language')
-                    );
-                }
+            if ($defaultLanguageId !== intval($id) || !empty($titles[$i])) {
+                continue;
             }
+
+            return new Message(
+                $this->tr('Page must have title for default language')
+            );
         }
 
-        $languages = Arrays::changeKeys(
-            Language::all(),
-            fn(Language $x) => $x->id
-        );
+        return null;
+    }
+
+    protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request): ?View {
+        $body = $request->getBody();
+
+        if (!is_null($error = $this->isTitleForDefaultLanguageSubmitted($body))) {
+            return $error;
+        }
 
         $hasTemplateChanged = isset($page->templateId)
             && $page->templateId !== intval($body->get("templateId"));
@@ -326,8 +339,55 @@ class PageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    protected function onSubmitLocalization(Page $page, Request $request): ?View {
+    protected function onSubmitLocalization(Page $page, Request $request): void {
         $body = $request->getBody();
+        $navigationContextId = $this->getNavigationContextId();
+        /** @var array<int, Language> $languages */
+        $languages = Models::identity(Language::all());
+        $localizations = $page->getLocalizations();
+
+        $object = $body->toArray();
+        $languageId = intval($object[self::NAME_LANGUAGE_ID]);
+        $language = $languages[$languageId];
+
+        if (!isset($localizations[$languageId])) {
+            if (empty($object['title'])) {
+                return;
+            }
+
+            $page->createLocalization(
+                $object['title'],
+                $language,
+                $navigationContextId,
+                $object
+            );
+
+            return;
+        }
+
+        $localization = $localizations[$languageId];
+        if ($localization->title !== $object['title']) {
+            $localization->title = $object['title'];
+            $localization->save();
+
+            $slug = $localization->getSlug();
+            $slug->slug = $localization->getSlugLiteral($language);
+            $slug->save();
+        }
+
+        $meta = PageMeta::fromLocalization($localization, true);
+        $meta->set($object);
+        $meta->save();
+    }
+
+    protected function onSubmitLocalizations(Page $page, Request $request): ?View {
+        $body = $request->getBody();
+        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
+        if (!is_array($languageIds)) {
+            $this->onSubmitLocalization($page, $request);
+            return null;
+        }
+
         $navigationContextId = $this->getNavigationContextId();
         /** @var array<int, Language> $languages */
         $languages = Models::identity(Language::all());
@@ -341,8 +401,8 @@ class PageEditorBehavior implements EditorBehavior {
         $objects = Models::transpose(
             $body->toArray(),
             $columns,
-            count($body->getStrict(self::NAME_LANGUAGE_ID)
-        ));
+            count($languageIds)
+        );
 
         $localizations = $page->getLocalizations();
 
@@ -416,7 +476,7 @@ class PageEditorBehavior implements EditorBehavior {
             return $error;
         }
 
-        if (!is_null($error = $this->onSubmitLocalization($model, $request))) {
+        if (!is_null($error = $this->onSubmitLocalizations($model, $request))) {
             return $error;
         }
 

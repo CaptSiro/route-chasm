@@ -5,6 +5,7 @@ use components\core\PageMenu\Header;
 use components\core\Window\Window;
 use components\windows\LanguageSelect\LanguageSelect;
 use core\sideloader\importers\Css\Css;
+use models\core\Language\Language;
 
 Css::import($this->getResource('header.css'));
 
@@ -17,12 +18,14 @@ Css::import($this->getResource('header.css'));
         <div class="row">
             <?= $this->search ?>
 
-            <?= $languageWindow = LanguageSelect::window(false) ?>
-            <?= Window::createWindowOpener(
-                $languageWindow,
-                Icon::nf('nf-fa-language', 'Languages'),
-                ['style' => 'font-size: 2rem; padding: unset', 'class' => 'link no-decoration']
-            ) ?>
+            <?php if (Language::count() > 1): ?>
+                <?= $languageWindow = LanguageSelect::window(false) ?>
+                <?= Window::createWindowOpener(
+                    $languageWindow,
+                    Icon::nf('nf-fa-language', 'Languages'),
+                    ['style' => 'font-size: 2rem; padding: unset', 'class' => 'link no-decoration']
+                ) ?>
+            <?php endif; ?>
         </div>
     </div>
 </header>
