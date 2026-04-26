@@ -27,6 +27,7 @@ use core\forms\controls\Select\Select;
 use core\forms\description\FormDescription;
 use core\forms\Form;
 use core\locale\LexiconUnit;
+use core\route\Path;
 use core\RouteChasmEnvironment;
 use core\utils\Models;
 use core\view\View;
@@ -115,20 +116,34 @@ class PageEditorBehavior implements EditorBehavior {
         ));
 
         if ($this->editor instanceof AdminPageEditor) {
-//            $select = new Select(self::NAME_RELATED_PAGES, $this->tr('Related Pages'));
-//            $select->setAsyncSearch(
-//                Docs::getInstance()
-//                    ->createSearchUrl()
-//                    ->setQueryArgument(Docs::QUERY_SEARCH_NO_LINKS)
-//                    ->setQueryArgument(Docs::QUERY_SEARCH_SOURCES_ONLY),
-//                RouteChasmEnvironment::QUERY_SEARCH,
-//                Setting::fromName(
-//                    RouteChasmEnvironment::SETTING_MIN_SEARCH_QUERY_LENGTH,
-//                    true,
-//                    RouteChasmEnvironment::SEARCH_MIN_LENGTH,
-//                    [PROPERTY_EDITABLE => true]
-//                )->toInt()
-//            );
+            $options = [];
+            $language = App::getInstance()
+                ->getRequest()
+                ->getLanguage();
+
+            foreach ($model->getRelated() as $p) {
+                $options[$p->id] = $p->createPath($language)->toString(prependSlash: false);
+            }
+
+            $relatedSelect = new MultiSelect(
+                self::NAME_RELATED_PAGES,
+                $this->tr('Related Pages'),
+                $options,
+                array_keys($options)
+            );
+
+            $relatedSelect->setAsyncSearch(
+                $this->editor->createSearchUrl()
+                    ->setQueryArgument(AdminPageEditor::QUERY_EXCLUDE, $model->getId()),
+                Setting::fromName(
+                    RouteChasmEnvironment::SETTING_MIN_SEARCH_QUERY_LENGTH,
+                    true,
+                    RouteChasmEnvironment::SEARCH_MIN_LENGTH,
+                    [PROPERTY_EDITABLE => true]
+                )->toInt()
+            );
+
+            $pageFields->add($relatedSelect);
         }
 
         $row = new Row();
@@ -346,6 +361,21 @@ class PageEditorBehavior implements EditorBehavior {
 
         $page->updated = Sql::datetimeNow();
         $page->save();
+
+        $values = array_map(
+            fn($x) => intval($x),
+            MultiSelect::parse($body->getStrict(self::NAME_RELATED_PAGES))
+        );
+
+        $related = array_map(
+            fn(Page $x) => $x->id,
+            $page->getRelated()
+        );
+
+        if (!empty(array_diff($related, $values)) || !empty(array_diff($values, $related))) {
+            $page->clearRelated();
+            $page->addRelatedRaw($values);
+        }
 
         Shortcut::submitHash($body->getStrict(self::NAME_COVER_IMAGE), $page->getCoverImageName());
 

@@ -14,6 +14,7 @@ class ImageVariant implements FileVariant {
     public const TRANSFORMER_FULL_HD = 'full-hd';
     public const TRANSFORMER_HD = 'hd';
     public const TRANSFORMER_FILE_IMAGE_PREVIEW = 'file-image-preview';
+    public const TRANSFORMER_RELATED = 'related';
     public const TRANSFORMER_LISTING_CARD_SMALL = 'listing-card-small';
     public const TRANSFORMER_LISTING_CARD_MEDIUM = 'listing-card-medium';
     public const TRANSFORMER_LISTING_CARD_LARGE = 'listing-card-large';

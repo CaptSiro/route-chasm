@@ -4,8 +4,8 @@ use components\core\Html\Html;
 use components\core\Search\SearchResult;
 
 ?><?php if ($this->isLink): ?>
-    <a href="<?= $this->url ?>" class="search-result" data-title="<?= Html::escapeAttribute($this->title) ?>">
-        <div class="search-result-title"><?= Html::escape($this->title) ?></div>
+    <a href="<?= $this->value ?>" class="search-result" data-title="<?= Html::escapeAttribute($this->label) ?>">
+        <div class="search-result-title"><?= Html::escape($this->label) ?></div>
 
         <?php if (!is_null($this->meta)): ?>
             <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
@@ -14,10 +14,10 @@ use components\core\Search\SearchResult;
 <?php else: ?>
     <div
         class="search-result"
-        data-value="<?= Html::escapeAttribute($this->url) ?>"
-        data-title="<?= Html::escapeAttribute($this->title) ?>"
+        data-value="<?= Html::escapeAttribute($this->value) ?>"
+        data-title="<?= Html::escapeAttribute($this->label) ?>"
     >
-        <div class="search-result-title"><?= Html::escape($this->title) ?></div>
+        <div class="search-result-title"><?= Html::escape($this->label) ?></div>
 
         <?php if (!is_null($this->meta)): ?>
             <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>

@@ -101,11 +101,12 @@ class Model implements JsonSerializable, Identifier, NexusProxyItem {
     /**
      * @param mixed $id
      * @param ?array $projection Set of columns to select from database. If left null, all columns are selected
+     * @param bool $cache
      * @return static|null
      */
-    public static function fromId(mixed $id, ?array $projection = null): ?static {
+    public static function fromId(mixed $id, ?array $projection = null, bool $cache = false): ?static {
         return ModelFactory::extract(static::class)
-            ->fromId($id, $projection);
+            ->fromId($id, $projection, $cache);
     }
 
     /**

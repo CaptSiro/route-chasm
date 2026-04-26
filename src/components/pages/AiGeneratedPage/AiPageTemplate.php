@@ -4,19 +4,19 @@ namespace components\pages\AiGeneratedPage;
 
 use components\core\Admin\Nexus\Editor\EditorBehavior;
 use components\core\Message\Message;
-use components\core\Search\SearchResult;
-use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\forms\description\FormDescription;
+use core\pages\PagePreview;
 use core\pages\PageTemplate;
 use core\view\Component;
 use core\view\View;
-use models\core\Language\Language;
 use models\core\Page\AiPage;
 use models\core\Page\Page;
 
 class AiPageTemplate implements PageTemplate {
+    use PagePreview;
+
     public const DATA_ITEM_HTML = 'html';
     public const DATA_ITEM_JS = 'js';
     public const DATA_ITEM_CSS = 'css';
@@ -59,18 +59,6 @@ class AiPageTemplate implements PageTemplate {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
-        return AiGeneratedPage::build($wireframe, $page);
-    }
-
-    public function buildListingCard(Page $page, Language $language): View {
-        return new ListingCard($page, $page->getLocalization($language));
-    }
-
-    public function buildSearchResult(Page $page, Language $language): View {
-        return SearchResult::fromPage($page, $page->getLocalization($language));
-    }
-
     public function hasEditor(): bool {
         return false;
     }
@@ -84,5 +72,9 @@ class AiPageTemplate implements PageTemplate {
             FormDescription::extract(AiPage::class),
             $this
         );
+    }
+
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
+        return AiGeneratedPage::build($wireframe, $page);
     }
 }

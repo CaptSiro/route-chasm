@@ -25,6 +25,8 @@ interface PageTemplate {
 
     public function buildSearchResult(Page $page, Language $language): View;
 
+    public function buildRelatedCard(Page $page, Language $language): View;
+
     public function hasEditor(): bool;
 
     public function buildEditor(Page $page): Action;

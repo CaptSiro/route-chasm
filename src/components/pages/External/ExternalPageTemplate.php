@@ -9,6 +9,7 @@ use components\pages\Listing\ListingCard;
 use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\forms\description\FormDescription;
+use core\pages\PagePreview;
 use core\pages\PageTemplate;
 use core\view\Component;
 use core\view\View;
@@ -17,6 +18,10 @@ use models\core\Page\ExternalPage;
 use models\core\Page\Page;
 
 class ExternalPageTemplate implements PageTemplate {
+    use PagePreview;
+
+
+
     public function getName(): string {
         return "External";
     }
@@ -39,18 +44,6 @@ class ExternalPageTemplate implements PageTemplate {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
-        return new External(ExternalPage::fromPage($page)->url);
-    }
-
-    public function buildListingCard(Page $page, Language $language): View {
-        return new ListingCard($page, $page->getLocalization($language));
-    }
-
-    public function buildSearchResult(Page $page, Language $language): View {
-        return SearchResult::fromPage($page, $page->getLocalization($language));
-    }
-
     public function hasEditor(): bool {
         return false;
     }
@@ -63,5 +56,9 @@ class ExternalPageTemplate implements PageTemplate {
         return new ExternalPageEditorBehavior(
             FormDescription::extract(ExternalPage::class)
         );
+    }
+
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
+        return new External(ExternalPage::fromPage($page)->url);
     }
 }

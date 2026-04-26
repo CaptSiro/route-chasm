@@ -36,6 +36,7 @@ class ModelFactory {
 
 
 
+    protected array $cache = [];
 
     public function __construct(
         protected string $modelClass
@@ -158,10 +159,20 @@ class ModelFactory {
         );
     }
 
-    public function fromId(mixed $id, ?array $projection = null): ?Model {
-        return $this->firstExecute(
+    public function fromId(mixed $id, ?array $projection = null, bool $cache = false): ?Model {
+        if (isset($this->cache[$id])) {
+            return $this->cache[$id];
+        }
+
+        $model = $this->firstExecute(
             $this->fromIdQuery($id, $projection)
         );
+
+        if ($cache) {
+            $this->cache[$id] = $model;
+        }
+
+        return $model;
     }
 
     public function allQuery(?array $projection = null, Query|string|null $where = null): SelectQuery {

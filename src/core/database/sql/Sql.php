@@ -51,6 +51,10 @@ class Sql {
         return new InsertQuery($table);
     }
 
+    /**
+     * @param string $table Do not escape the table
+     * @return DeleteQuery
+     */
     public static function delete(string $table): DeleteQuery {
         return new DeleteQuery($table);
     }

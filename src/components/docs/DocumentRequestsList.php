@@ -32,7 +32,6 @@ class DocumentRequestsList implements View {
                 ->createSearchUrl()
                 ->setQueryArgument(Docs::QUERY_SEARCH_NO_LINKS)
                 ->setQueryArgument(Docs::QUERY_SEARCH_SOURCES_ONLY),
-            RouteChasmEnvironment::QUERY_SEARCH,
             Setting::fromName(
                 RouteChasmEnvironment::SETTING_MIN_SEARCH_QUERY_LENGTH,
                 true,

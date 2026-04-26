@@ -1,0 +1,34 @@
+<?php /** @var RelatedCard $this */
+
+use components\core\Html\Html;
+use components\pages\RelatedCard;
+use core\sideloader\importers\Css\Css;
+
+Css::import($this->getResource('related-card.css'));
+
+$url = $this->page->getUrl();
+$image = $this->page->getCoverImage()?->getFile();
+$title = $this->localization->title;
+$description = $this->localization->getMeta()->description;
+
+?><article class="related-card">
+    <?php if (!is_null($image)): ?>
+        <div class="image-wrapper">
+            <img
+                src="<?= $this->getImageUrl($image) ?>"
+                alt="<?= Html::escapeAttribute($title) ?>"
+                class="image"
+            >
+        </div>
+    <?php endif; ?>
+
+    <div class="content">
+        <a href="<?= $url ?>" class="title">
+            <?= Html::escape($title) ?>
+        </a>
+
+        <p class="description">
+            <?= Html::escape($description) ?>
+        </p>
+    </div>
+</article>

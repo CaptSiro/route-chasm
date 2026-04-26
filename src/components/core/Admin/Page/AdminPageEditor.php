@@ -10,6 +10,8 @@ use components\core\BreadCrumbs\BreadCrumb;
 use components\core\BreadCrumbs\BreadCrumbs;
 use components\core\Icon;
 use components\core\Message\Message;
+use components\core\Search\SearchResult;
+use components\core\Search\SearchResults;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\pages\AiGeneratedPage\AiPageTemplate;
@@ -17,6 +19,7 @@ use core\ai\clients\OpenAi;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
+use core\database\sql\query\Query;
 use core\forms\controls\CsrfField;
 use core\forms\controls\Submit\Submit;
 use core\forms\controls\TextArea\TextArea;
@@ -25,6 +28,7 @@ use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\pages\Pages;
 use core\pages\PageTemplate;
+use core\route\Path;
 use core\route\RouteNode;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Css\Css;
@@ -35,10 +39,14 @@ use models\core\Language\Language;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Page;
 use models\core\Page\PageStatus;
+use models\core\Setting\Setting;
 use RuntimeException;
+use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class AdminPageEditor extends AdminNexusEditor {
     public const LEXICON_GROUP = 'admin.page.editor';
+
+    public const QUERY_EXCLUDE = 'exclude';
 
     public const NAME_PROMPT = 'prompt';
 
@@ -132,10 +140,55 @@ class AdminPageEditor extends AdminNexusEditor {
         return $page->getTemplate();
     }
 
+    public function createSearchUrl(): Url {
+        return $this->createUrl(Path::from('search'));
+    }
+
     public function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
 
         $router = $bindingPoint->getRouter();
+
+        $router->use('/search', function (Request $request, Response $response) {
+            $exclude = $request->getUrl()
+                ->getQuery()
+                ->getStrict(RouteChasmEnvironment::QUERY_SEARCH);
+
+            $maxEntries = Setting::fromName(
+                RouteChasmEnvironment::SETTING_DROPDOWN_MAX_ENTRIES,
+                true,
+                RouteChasmEnvironment::SEARCH_DROPDOWN_MAX_ENTRIES,
+                [PROPERTY_EDITABLE => true]
+            )->toInt();
+
+            $language = $request->getLanguage();
+            $sql = Page::searchFullTextQuery($exclude, $language->id)
+                ->limit($maxEntries);
+
+            $exclude = $request->getUrl()
+                ->getQuery()
+                ->get(self::QUERY_EXCLUDE);
+            if (!is_null($exclude)) {
+                $sql->where(Query::infer("id_page != ?", $exclude));
+            }
+
+            /** @var array<Page> $pages */
+            $pages = Page::getDescription()
+                ->getFactory()
+                ->allExecute($sql);
+
+            $results = [];
+            foreach ($pages as $page) {
+                $results[] = new SearchResult(
+                    $page->createPath($language)->toString(prependSlash: false),
+                    $page->id,
+                    isLink: false
+                );
+            }
+
+            $response->renderRoot(new SearchResults($results));
+        });
+
         $router->use('/template', function (Request $request, Response $response) {
             $pageId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE);
             if (is_null($pageId)) {
@@ -217,7 +270,6 @@ class AdminPageEditor extends AdminNexusEditor {
             $this->createGenerateStructureForm()
         );
     }
-
 
     public function createPage(?Page $parent, array $description, Language $language): void {
         $page = new Page();

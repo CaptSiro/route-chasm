@@ -22,8 +22,8 @@ class SearchResult implements View, JsonSerializable {
 
 
     public function __construct(
-        protected string $title,
-        protected string $url,
+        protected string $label,
+        protected string $value,
         protected ?string $meta = null,
         protected bool $isLink = true,
     ) {}
@@ -33,8 +33,8 @@ class SearchResult implements View, JsonSerializable {
     // JsonSerializable
     public function jsonSerialize(): array {
         return [
-            "label" => $this->title,
-            "value" => $this->url
+            "label" => $this->label,
+            "value" => $this->value
         ];
     }
 }

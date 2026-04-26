@@ -6,6 +6,7 @@ use core\forms\controls\Control;
 use core\forms\controls\FormControl;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
+use core\RouteChasmEnvironment;
 use core\view\Renderer;
 
 class Select implements Control, Attribute {
@@ -63,7 +64,7 @@ class Select implements Control, Attribute {
         $this->values = $values;
     }
 
-    public function setAsyncSearch(string $url, string $queryArgument = 'q', int $minLength = 3): static {
+    public function setAsyncSearch(string $url, int $minLength = 3, string $queryArgument = RouteChasmEnvironment::QUERY_SEARCH): static {
         $this->selectedOptionsAreEternal = true;
         return $this
             ->addDataAttribute(self::DATA_ATTRIBUTE_SEARCH_FUNCTION, 'form_asyncSelect_search')

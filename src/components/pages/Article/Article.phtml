@@ -11,6 +11,8 @@ Markdown::importAssets();
 Javascript::import($this->getResource('article.js'));
 Css::import($this->getResource('article.css'));
 
+$language = $this->localization->getLanguage();
+
 ?><div class="page" x-init="article">
     <pre id="data-content" class="display-none"><?= Html::escape($this->content) ?></pre>
 
@@ -20,6 +22,18 @@ Css::import($this->getResource('article.css'));
 
             <div class="article-toc-content"></div>
         </div>
+
+        <?php if (!empty($related = $this->page->getRelated())): ?>
+            <div class="article-related-container column">
+                <h3><?= $this->tr("Related") ?></h3>
+
+                <div class="article-related-content column">
+                    <?php foreach ($related as $page): ?>
+                        <?= $page->getTemplate()->buildRelatedCard($page, $language) ?>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </aside>
 
     <article class="article">

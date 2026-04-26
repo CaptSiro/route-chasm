@@ -11,9 +11,11 @@ use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
+use core\database\sql\query\Parameter;
 use core\database\sql\query\Query;
 use core\database\sql\query\SelectQuery;
 use core\database\sql\query\UpdateQuery;
+use core\database\sql\SideEffect;
 use core\database\sql\Sql;
 use core\database\sql\Table;
 use core\forms\description\DateTime;
@@ -29,13 +31,11 @@ use core\route\RouteSegment;
 use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\utils\Arrays;
-use core\view\StringRenderer;
 use core\view\View;
 use DateTime as DateTimeObject;
 use models\core\fs\Shortcut;
 use models\core\Language\Language;
 use models\core\Menu;
-use models\core\Navigation\NavigationContext;
 use models\core\Navigation\Slug;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
@@ -52,6 +52,8 @@ use RuntimeException;
 #[Database(App::DATABASE)]
 class Page extends Model implements Destination, Priority {
     public const DATA_NAMESPACE = 'page';
+
+    public const TABLE_RELATED_PAGES = 'core_related_pages';
 
 
 
@@ -105,6 +107,30 @@ class Page extends Model implements Destination, Priority {
         return is_null($parentId)
             ? Query::static('id_page_parent IS NULL')
             : Query::infer('id_page_parent = ?', $parentId);
+    }
+
+    /**
+     * @return array<Page>
+     */
+    public static function related(Page $source): array {
+        return self::childrenRaw($source->id);
+    }
+
+    public static function relatedRaw(int $sourceId): array {
+        $description = static::getDescription();
+        $driver = $description->getConnection()->getDriver();
+        $factory = $description->getFactory();
+
+        $id_page = $description->getEscapedColumn('id_page');
+
+        $related = $driver->escapeTable('core_related_pages');
+        $source = $driver->escapeColumn('id_source');
+        $target = $driver->escapeColumn('id_target');
+
+        return $factory->allExecute(
+            $factory->allQuery()
+                ->join($related, Query::infer("$related.$target = $id_page AND $related.$source = ?", $sourceId))
+        );
     }
 
     public static function hasPageAccess(User $user, Privilege $privilege): bool {
@@ -195,7 +221,10 @@ class Page extends Model implements Destination, Priority {
     protected array $localizations;
     protected PageStatus $status;
     protected PageTemplateRecord $template;
+    /** @var array<Page> */
     protected array $children;
+    /** @var array<Page> */
+    protected array $related;
 
 
 
@@ -240,7 +269,7 @@ class Page extends Model implements Destination, Priority {
 
     public function getParent(): ?Page {
         if (!isset($this->parent)) {
-            $this->parent = self::fromId($this->parentId);
+            $this->parent = self::fromId($this->parentId, cache: true);
         }
 
         return $this->parent;
@@ -266,6 +295,16 @@ class Page extends Model implements Destination, Priority {
         }
 
         return array_reverse($ret);
+    }
+
+    public function createPath(Language $language): Path {
+        $segments = [];
+
+        foreach ($this->getParents(true) as $node) {
+            $segments[] = $node->getLocalizationOrDefault($language)?->title ?? '[No title]';
+        }
+
+        return new Path($segments);
     }
 
     public function setParent(?Page $parent): void {
@@ -456,6 +495,50 @@ class Page extends Model implements Destination, Priority {
 
     public function getChildrenCount(): int {
         return self::countChildrenRaw($this->id);
+    }
+
+    /**
+     * @return array<Page>
+     */
+    public function getRelated(): array {
+        if (!isset($this->related)) {
+            $this->related = self::relatedRaw($this->id);
+        }
+
+        return $this->related;
+    }
+
+    public function clearRelated(): SideEffect {
+        $description = static::getDescription();
+        $driver = $description->getConnection()->getDriver();
+
+        $related = $driver->escapeTable(self::TABLE_RELATED_PAGES);
+        $source = $driver->escapeColumn('id_source');
+
+        return Sql::delete(self::TABLE_RELATED_PAGES)
+            ->where(Query::infer("$related.$source = ?", $this->id))
+            ->run($description->getConnection());
+    }
+
+    public function addRelatedRaw(array $targets): SideEffect {
+        $description = static::getDescription();
+        $driver = $description->getConnection()->getDriver();
+
+        $related = $driver->escapeTable(self::TABLE_RELATED_PAGES);
+
+        $sql = Sql::insert(self::TABLE_RELATED_PAGES);
+        $sql->columns(['id_source', 'id_target']);
+
+        $sourceId = Parameter::infer($this->id);
+
+        foreach ($targets as $targetId) {
+            $sql->value([
+                $sourceId,
+                new Parameter($targetId, $sourceId->getType())
+            ]);
+        }
+
+        return $sql->run($description->getConnection());
     }
 
     public function get(string $item = ''): DataItem {

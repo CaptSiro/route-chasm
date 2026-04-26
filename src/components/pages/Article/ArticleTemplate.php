@@ -9,6 +9,7 @@ use components\pages\Wireframe\Wireframe;
 use core\actions\Action;
 use core\fs\variants\FileVariantTransformer;
 use core\fs\variants\ImageVariant;
+use core\pages\PagePreview;
 use core\pages\PageTemplate;
 use core\view\Component;
 use core\view\View;
@@ -16,6 +17,8 @@ use models\core\Language\Language;
 use models\core\Page\Page;
 
 class ArticleTemplate implements PageTemplate {
+    use PagePreview;
+
     public const DATA_CONTENT = 'article.md';
     public const TRANSFORMER_ARTICLE_COVER = 'article-cover';
 
@@ -50,24 +53,6 @@ class ArticleTemplate implements PageTemplate {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
-        return new Article(
-            $page,
-            $wireframe->getLocalization(),
-            $wireframe->getLocalization()
-                ->get(self::DATA_CONTENT)
-                ->read() ?? ''
-        );
-    }
-
-    public function buildListingCard(Page $page, Language $language): View {
-        return new ListingCard($page, $page->getLocalization($language));
-    }
-
-    public function buildSearchResult(Page $page, Language $language): View {
-        return SearchResult::fromPage($page, $page->getLocalization($language));
-    }
-
     public function hasEditor(): bool {
         return true;
     }
@@ -78,5 +63,15 @@ class ArticleTemplate implements PageTemplate {
 
     public function buildEditorBehavior(): ?EditorBehavior {
         return null;
+    }
+
+    public function buildContent(Wireframe $wireframe, Page $page): Component {
+        return new Article(
+            $page,
+            $wireframe->getLocalization(),
+            $wireframe->getLocalization()
+                ->get(self::DATA_CONTENT)
+                ->read() ?? ''
+        );
     }
 }
