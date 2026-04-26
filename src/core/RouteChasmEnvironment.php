@@ -83,4 +83,6 @@ class RouteChasmEnvironment {
     public const ID_DIGITS = 4;
 
     public const BREAD_CRUMBS_DELIMITOR = null;
+
+    public const LIMIT_LAST_UPDATED = 10;
 }

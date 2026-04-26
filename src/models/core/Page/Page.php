@@ -40,8 +40,8 @@ use models\core\Navigation\Slug;
 use models\core\Page\behavior\PageEditorBehavior;
 use models\core\Page\Grid\PageGridRow;
 use models\core\Privilege\Privilege;
-use models\core\UserResource;
 use models\core\User\User;
+use models\core\UserResource;
 use models\extensions\Name\NameValues;
 use models\extensions\Priority\Priority;
 use models\extensions\Priority\PriorityExtension;
@@ -65,11 +65,13 @@ class Page extends Model implements Destination, Priority {
             title: '&nbsp;'
         ))
             ->setLinkCreator(new PageLinkCreator())
-            ->addExtension(new PriorityExtension(function (UpdateQuery $update, Model $model) {
-                if ($model instanceof Page) {
-                    $update->where(Page::childrenQuery($model->parentId));
-                }
-            }));
+            ->addExtension(
+                new PriorityExtension(function (UpdateQuery $update, Model $model) {
+                    if ($model instanceof Page) {
+                        $update->where(Page::childrenQuery($model->parentId));
+                    }
+                })
+            );
     }
 
     public static function publishedQuery(): Query {
@@ -82,6 +84,28 @@ class Page extends Model implements Destination, Priority {
 
     public static function isStatusQuery(int $statusId): Query {
         return Query::infer('id_page_status = ?', $statusId);
+    }
+
+    /**
+     * @param int $statusId
+     * @param int|null $limit
+     * @return array<Page>
+     */
+    public static function lastUpdated(
+        int $statusId = PageStatus::ID_PUBLIC, ?int $limit = RouteChasmEnvironment::LIMIT_LAST_UPDATED
+    ): array {
+        $factory = static::getDescription()->getFactory();
+
+        $sql = $factory->allQuery()
+            ->where(self::publishedQuery())
+            ->where(self::isStatusQuery($statusId))
+            ->order('updated', 'DESC');
+
+        if (!is_null($limit)) {
+            $sql->limit($limit);
+        }
+
+        return $factory->allExecute($sql);
     }
 
     /**
@@ -368,13 +392,15 @@ class Page extends Model implements Destination, Priority {
         $localization->setPage($this);
 
         $slugParentId = $this->getParentSlugId($language);
-        $localization->setSlug(PageFactory::getInstance()->createSlug(
-            $language->id,
-            $navigationContextId,
-            $localization->getSlugLiteral($language),
-            $slugParentId,
-            $this
-        ));
+        $localization->setSlug(
+            PageFactory::getInstance()->createSlug(
+                $language->id,
+                $navigationContextId,
+                $localization->getSlugLiteral($language),
+                $slugParentId,
+                $this
+            )
+        );
 
         $localization->save();
 
@@ -534,7 +560,7 @@ class Page extends Model implements Destination, Priority {
         foreach ($targets as $targetId) {
             $sql->value([
                 $sourceId,
-                new Parameter($targetId, $sourceId->getType())
+                new Parameter($targetId, $sourceId->getType()),
             ]);
         }
 
@@ -571,14 +597,14 @@ class Page extends Model implements Destination, Priority {
 
         foreach ($this->getParents() as $page) {
             if (is_null($localization = $page->getLocalizationOrDefault($language))) {
-                throw new RuntimeException($page->getMachineIdentifier() ." does not have title for current or default language");
+                throw new RuntimeException($page->getMachineIdentifier() . " does not have title for current or default language");
             }
 
             $route->add(RouteSegment::static($localization->getSlug()->slug));
         }
 
         if (is_null($localization = $this->getLocalizationOrDefault($language))) {
-            throw new RuntimeException($this->getMachineIdentifier(). " does not have title for current or default language");
+            throw new RuntimeException($this->getMachineIdentifier() . " does not have title for current or default language");
         }
 
         $route->add(RouteSegment::static($localization->getSlug()->slug));
