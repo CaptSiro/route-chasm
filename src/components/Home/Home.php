@@ -20,7 +20,9 @@ class Home extends ContainerContent {
     public function __construct() {
         parent::__construct(
             new ContextAwareWebPage(
-                head: new HtmlHead("RouteChasm")
+                head: new HtmlHead(
+                    App::getEnvStatic()->get(RouteChasmEnvironment::ENV_PROJECT) ?? 'RouteChasm'
+                )
             )
         );
 

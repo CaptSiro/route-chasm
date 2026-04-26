@@ -5,12 +5,21 @@ namespace core\forms\controls\MultiSelect;
 use core\forms\controls\Control;
 use core\forms\controls\FormControl;
 use core\forms\controls\FormControlInfo;
+use core\forms\controls\Select\Select;
 use core\html\Attribute;
 use core\html\HtmlAttribute;
 use core\view\Renderer;
 
 class MultiSelect implements Control, Attribute {
     use Renderer, FormControl, FormControlInfo, HtmlAttribute;
+
+
+
+    public const DATA_ATTRIBUTE_SEARCH_FUNCTION = Select::DATA_ATTRIBUTE_SEARCH_FUNCTION;
+    public const DATA_ATTRIBUTE_ON_OPTION_SELECTED_FUNCTION = Select::DATA_ATTRIBUTE_ON_OPTION_SELECTED_FUNCTION;
+    public const DATA_ATTRIBUTE_ON_OPTION_DESELECTED_FUNCTION = 'on-option-deselected';
+
+
 
     /**
      * @param string $value
@@ -21,6 +30,8 @@ class MultiSelect implements Control, Attribute {
     }
 
 
+
+    protected bool $selectedOptionsAreEternal = false;
 
     /**
      * @param string $name
@@ -46,5 +57,16 @@ class MultiSelect implements Control, Attribute {
     public function setPlaceholder(string $placeholder): static {
         $this->addAttribute('placeholder', $placeholder);
         return $this;
+    }
+
+    public function setAsyncSearch(string $url, string $queryArgument = 'q', int $minLength = 3): static {
+        $this->selectedOptionsAreEternal = true;
+        return $this
+            ->addDataAttribute(self::DATA_ATTRIBUTE_SEARCH_FUNCTION, 'form_asyncSelect_search')
+            ->addDataAttribute(self::DATA_ATTRIBUTE_ON_OPTION_SELECTED_FUNCTION, 'form_asyncMultiSelect_onOptionSelected')
+            ->addDataAttribute(self::DATA_ATTRIBUTE_ON_OPTION_DESELECTED_FUNCTION, 'form_multiSelect_onOptionDeselected')
+            ->addDataAttribute('search-url', $url)
+            ->addDataAttribute('search-query-argument', $queryArgument)
+            ->addDataAttribute('search-min-length', $minLength);
     }
 }

@@ -3,6 +3,11 @@
 use components\core\Html\Html;
 use components\core\Icon;
 use core\forms\controls\MultiSelect\MultiSelect;
+use core\forms\controls\Select\Select;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import(Select::getStaticResource('select.js'));
+Javascript::import($this->getResource('multiselect.js'));
 
 $valuesEscaped = [];
 foreach ($this->values as $value => $label) {
@@ -11,7 +16,7 @@ foreach ($this->values as $value => $label) {
 
 $selectedEscaped = array_map(fn($x) => Html::escapeAttribute($x), $this->selected);
 
-?><div class="form-select multiple" x-init="form_multiSelect_init">
+?><div class="form-select multiple" x-init="form_multiSelect_init" <?= $this->stringifyAttributes() ?>>
     <label>
         <select name="<?= $this->name ?>" multiple data-extract="form_multiSelect_extract">
             <?php foreach ($valuesEscaped as $value => $label): ?>
@@ -19,6 +24,9 @@ $selectedEscaped = array_map(fn($x) => Html::escapeAttribute($x), $this->selecte
                     value="<?= $value ?>"
                     <?php if (in_array($value, $selectedEscaped)): ?>
                         selected
+                        <?php if ($this->selectedOptionsAreEternal): ?>
+                            data-eternal="true"
+                        <?php endif; ?>
                     <?php endif; ?>
                 >
                     <?= $label ?>

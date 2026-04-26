@@ -9,6 +9,7 @@ use components\core\Admin\Page\AdminPageEditor;
 use components\core\fs\FileControl;
 use components\core\Html\Html;
 use components\core\Message\Message;
+use components\docs\Docs;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\layout\Layout;
@@ -22,22 +23,22 @@ use core\database\sql\ModelDescription;
 use core\database\sql\Sql;
 use core\forms\controls\HiddenField;
 use core\forms\controls\MultiSelect\MultiSelect;
+use core\forms\controls\Select\Select;
 use core\forms\description\FormDescription;
 use core\forms\Form;
 use core\locale\LexiconUnit;
-use core\pages\PageFactory;
 use core\RouteChasmEnvironment;
-use core\utils\Arrays;
 use core\utils\Models;
 use core\view\View;
 use models\core\fs\Shortcut;
 use models\core\Language\Language;
 use models\core\Menu;
 use models\core\Navigation\NavigationContext;
-use models\core\Navigation\Slug;
 use models\core\Page\PageLocalization;
 use models\core\Page\Page;
 use models\core\Page\PageMeta;
+use models\core\Setting\Setting;
+use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class PageEditorBehavior implements EditorBehavior {
     use LexiconUnit, SetEditor;
@@ -45,6 +46,7 @@ class PageEditorBehavior implements EditorBehavior {
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_PARENT_ID = 'parentId';
     public const NAME_MENUS = 'menuIds';
+    public const NAME_RELATED_PAGES = 'relatedPages';
     public const NAME_COVER_IMAGE = 'coverImage';
 
 
@@ -112,6 +114,23 @@ class PageEditorBehavior implements EditorBehavior {
             $selected
         ));
 
+        if ($this->editor instanceof AdminPageEditor) {
+//            $select = new Select(self::NAME_RELATED_PAGES, $this->tr('Related Pages'));
+//            $select->setAsyncSearch(
+//                Docs::getInstance()
+//                    ->createSearchUrl()
+//                    ->setQueryArgument(Docs::QUERY_SEARCH_NO_LINKS)
+//                    ->setQueryArgument(Docs::QUERY_SEARCH_SOURCES_ONLY),
+//                RouteChasmEnvironment::QUERY_SEARCH,
+//                Setting::fromName(
+//                    RouteChasmEnvironment::SETTING_MIN_SEARCH_QUERY_LENGTH,
+//                    true,
+//                    RouteChasmEnvironment::SEARCH_MIN_LENGTH,
+//                    [PROPERTY_EDITABLE => true]
+//                )->toInt()
+//            );
+        }
+
         $row = new Row();
         $row->add($pageFields);
 
@@ -173,11 +192,9 @@ class PageEditorBehavior implements EditorBehavior {
         return true;
     }
 
-    protected function testTitleAvailability(Page $page, string $title, string $languageId): ?View {
-        $navigationContextId = $this->getNavigationContextId();
-        /** @var array<int, Language> $languages */
-        $languages = Models::identity(Language::all());
-
+    protected function testTitleAvailability(
+        string $title, array $languages, int $languageId, Page $page, int $navigationContextId
+    ): ?View {
         if (!isset($languages[$languageId])) {
             $safe = Html::escape($title);
             return new Message($this->tr("Language for title '$safe' not found"));
@@ -197,11 +214,22 @@ class PageEditorBehavior implements EditorBehavior {
 
     protected function testTitlesAvailability(Request $request, Page $page): ?View {
         $body = $request->getBody();
+
         $titles = $body->getStrict('title');
         $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
 
+        /** @var array<int, Language> $languages */
+        $languages = Models::identity(Language::all());
+        $navigationContextId = $this->getNavigationContextId();
+
         if (!is_array($titles)) {
-            return $this->testTitleAvailability($page, $titles, $languageIds);
+            return $this->testTitleAvailability(
+                $titles,
+                $languages,
+                intval($languageIds),
+                $page,
+                $navigationContextId
+            );
         }
 
         $navigationContextId = $this->getNavigationContextId();
@@ -209,22 +237,13 @@ class PageEditorBehavior implements EditorBehavior {
         $languages = Models::identity(Language::all());
 
         foreach ($titles as $i => $title) {
-            $languageId = intval($languageIds[$i]);
-            if (!isset($languages[$languageId])) {
-                $safe = Html::escape($title);
-                return new Message($this->tr("Language for title '$safe' not found"));
-            }
-
-            $isAvailable = $page->isTitleAvailable(
-                $title, $languages[$languageId], $navigationContextId
+            $this->testTitleAvailability(
+                $title,
+                $languages,
+                intval($languageIds[$i]),
+                $page,
+                $navigationContextId
             );
-
-            if ($isAvailable) {
-                continue;
-            }
-
-            $safe = Html::escape($title);
-            return new Message($this->tr("Title '$safe' is not unique"));
         }
 
         return null;
@@ -339,18 +358,10 @@ class PageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    protected function onSubmitLocalization(Page $page, Request $request): void {
-        $body = $request->getBody();
-        $navigationContextId = $this->getNavigationContextId();
-        /** @var array<int, Language> $languages */
-        $languages = Models::identity(Language::all());
+    protected function onSubmitLocalization(array $object, Page $page, Language $language, int $navigationContextId): void {
         $localizations = $page->getLocalizations();
 
-        $object = $body->toArray();
-        $languageId = intval($object[self::NAME_LANGUAGE_ID]);
-        $language = $languages[$languageId];
-
-        if (!isset($localizations[$languageId])) {
+        if (!isset($localizations[$language->id])) {
             if (empty($object['title'])) {
                 return;
             }
@@ -365,7 +376,7 @@ class PageEditorBehavior implements EditorBehavior {
             return;
         }
 
-        $localization = $localizations[$languageId];
+        $localization = $localizations[$language->id];
         if ($localization->title !== $object['title']) {
             $localization->title = $object['title'];
             $localization->save();
@@ -382,15 +393,21 @@ class PageEditorBehavior implements EditorBehavior {
 
     protected function onSubmitLocalizations(Page $page, Request $request): ?View {
         $body = $request->getBody();
-        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
-        if (!is_array($languageIds)) {
-            $this->onSubmitLocalization($page, $request);
-            return null;
-        }
-
         $navigationContextId = $this->getNavigationContextId();
+
         /** @var array<int, Language> $languages */
         $languages = Models::identity(Language::all());
+
+        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
+        if (!is_array($languageIds)) {
+            $this->onSubmitLocalization(
+                $object = $body->toArray(),
+                $page,
+                $languages[intval($object[self::NAME_LANGUAGE_ID])],
+                $navigationContextId
+            );
+            return null;
+        }
 
         $columns = array_merge(
             ModelDescription::extract(PageLocalization::class)->getColumnAlias(),
@@ -407,37 +424,12 @@ class PageEditorBehavior implements EditorBehavior {
         $localizations = $page->getLocalizations();
 
         foreach ($objects as $object) {
-            $languageId = intval($object[self::NAME_LANGUAGE_ID]);
-            $language = $languages[$languageId];
-
-            if (!isset($localizations[$languageId])) {
-                if (empty($object['title'])) {
-                    continue;
-                }
-
-                $page->createLocalization(
-                    $object['title'],
-                    $language,
-                    $navigationContextId,
-                    $object
-                );
-
-                continue;
-            }
-
-            $localization = $localizations[$languageId];
-            if ($localization->title !== $object['title']) {
-                $localization->title = $object['title'];
-                $localization->save();
-
-                $slug = $localization->getSlug();
-                $slug->slug = $localization->getSlugLiteral($language);
-                $slug->save();
-            }
-
-            $meta = PageMeta::fromLocalization($localization, true);
-            $meta->set($object);
-            $meta->save();
+            $this->onSubmitLocalization(
+                $object,
+                $page,
+                $languages[intval($object[self::NAME_LANGUAGE_ID])],
+                $navigationContextId
+            );
         }
 
         return null;

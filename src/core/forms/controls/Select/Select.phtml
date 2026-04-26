@@ -3,6 +3,9 @@
 use components\core\Html\Html;
 use components\core\Icon;
 use core\forms\controls\Select\Select;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('select.js'));
 
 ?><div class="form-select" x-init="form_select_init" <?= $this->stringifyAttributes() ?>>
     <label for="<?= $this->getId() ?>_search"><?= $this->label ?></label>
@@ -14,6 +17,9 @@ use core\forms\controls\Select\Select;
                     value="<?= Html::escapeAttribute($value) ?>"
                     <?php if ($value == $this->selected): ?>
                         selected
+                        <?php if ($this->selectedOptionsAreEternal): ?>
+                            data-eternal="true"
+                        <?php endif; ?>
                     <?php endif; ?>
                 >
                     <?= Html::escape($label) ?>
