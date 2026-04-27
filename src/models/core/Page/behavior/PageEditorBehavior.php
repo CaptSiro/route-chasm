@@ -9,7 +9,6 @@ use components\core\Admin\Page\AdminPageEditor;
 use components\core\fs\FileControl;
 use components\core\Html\Html;
 use components\core\Message\Message;
-use components\docs\Docs;
 use components\layout\Accordion\Accordion;
 use components\layout\Column\Column;
 use components\layout\Layout;
@@ -23,11 +22,9 @@ use core\database\sql\ModelDescription;
 use core\database\sql\Sql;
 use core\forms\controls\HiddenField;
 use core\forms\controls\MultiSelect\MultiSelect;
-use core\forms\controls\Select\Select;
 use core\forms\description\FormDescription;
 use core\forms\Form;
 use core\locale\LexiconUnit;
-use core\route\Path;
 use core\RouteChasmEnvironment;
 use core\utils\Models;
 use core\view\View;
@@ -121,8 +118,14 @@ class PageEditorBehavior implements EditorBehavior {
                 ->getRequest()
                 ->getLanguage();
 
-            foreach ($model->getRelated() as $p) {
-                $options[$p->id] = $p->createPath($language)->toString(prependSlash: false);
+            $searchUrl = $this->editor->createSearchUrl();
+
+            if (!is_null($model)) {
+                $searchUrl->setQueryArgument(AdminPageEditor::QUERY_EXCLUDE, $model->getId());
+
+                foreach ($model->getRelated() as $p) {
+                    $options[$p->id] = $p->createPath($language)->toString(prependSlash: false);
+                }
             }
 
             $relatedSelect = new MultiSelect(
@@ -133,8 +136,7 @@ class PageEditorBehavior implements EditorBehavior {
             );
 
             $relatedSelect->setAsyncSearch(
-                $this->editor->createSearchUrl()
-                    ->setQueryArgument(AdminPageEditor::QUERY_EXCLUDE, $model->getId()),
+                $searchUrl,
                 Setting::fromName(
                     RouteChasmEnvironment::SETTING_MIN_SEARCH_QUERY_LENGTH,
                     true,

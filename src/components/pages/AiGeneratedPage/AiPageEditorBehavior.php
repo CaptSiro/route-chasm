@@ -77,10 +77,11 @@ class AiPageEditorBehavior implements EditorBehavior {
         }
 
         $aiPage = AiPage::fromPage($model, true);
+        $prompt = $body->get(self::NAME_PROMPT);
         $samePrompt = !is_null($aiPage)
-            && $aiPage->prompt === $body->get(self::NAME_PROMPT);
+            && $aiPage->prompt === $prompt;
 
-        if ($action === EditorBehaviorAction::UPDATE && !$samePrompt) {
+        if ($action === EditorBehaviorAction::UPDATE && !$samePrompt && !is_null($prompt)) {
             $client = OpenAi::fromEnv();
             $request = $client->createRequest();
 
@@ -93,12 +94,10 @@ class AiPageEditorBehavior implements EditorBehavior {
                     ->setRequired([self::PROPERTY_WEBPAGE_HTML, self::PROPERTY_WEBPAGE_CSS, self::PROPERTY_WEBPAGE_JS])
             );
 
-            $description = $body->get(self::NAME_PROMPT);
-
             $request
                 ->setSchema($schema)
-                ->add(new PageGeneration(InputMessage::ROLE_SYSTEM, $description))
-                ->add(new PageGeneration(InputMessage::ROLE_USER, $description));
+                ->add(new PageGeneration(InputMessage::ROLE_SYSTEM, $prompt))
+                ->add(new PageGeneration(InputMessage::ROLE_USER, $prompt));
 
             if (!is_null($response = $client->parseResponse($client->chat($request)))) {
                 $model

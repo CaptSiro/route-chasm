@@ -38,7 +38,7 @@ Edit .htaccess file:
 Edit .env file. All `PROJECT_*` entries are optional as well as `ADMIN_LOGIN_PASSWORD`:
 
 ```env
-VERSION=1.0.1
+VERSION=1.0.2
 
 PROJECT=RouteChasm
 PROJECT_LINK=https://github.com/CaptSiro/route-chasm

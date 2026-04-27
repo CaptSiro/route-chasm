@@ -3,7 +3,6 @@
 namespace core\fs;
 
 use components\core\fs\FileVariantTransformers;
-use components\core\Message\Message;
 use core\App;
 use core\communication\Request;
 use core\communication\Response;
@@ -158,8 +157,16 @@ class FileServer extends Router {
             Http::post(function (Request $request, Response $response) {
                 $directory = Directory::fromRequest($request);
 
-                foreach ($request->getFiles()->toArray() as $file) {
+                if (empty($files = $request->getFiles()->toArray())) {
+                    $response->sendMessage(
+                        $this->tr('No files sent. You need to send at least one file'),
+                        HttpCode::CE_BAD_REQUEST
+                    );
+                }
+
+                foreach ($files as $file) {
                     $f = $file->getName();
+                    var_dump($f);
                     switch ($e = $file->getError()) {
                         case UPLOAD_ERR_OK: {
                             if (!is_null(FileSystem::storeUploadedFile($directory, $file))) {
