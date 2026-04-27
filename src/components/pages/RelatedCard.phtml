@@ -11,7 +11,7 @@ $image = $this->page->getCoverImage()?->getFile();
 $title = $this->localization->title;
 $description = $this->localization->getMeta()->description;
 
-?><article class="related-card">
+?><article class="related-card <?= is_null($image) ? 'no-image' : '' ?>">
     <?php if (!is_null($image)): ?>
         <div class="image-wrapper">
             <img

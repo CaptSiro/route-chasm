@@ -5,6 +5,10 @@
     overflow: hidden;
 }
 
+.related-card.no-image {
+    grid-template-columns: 1fr;
+}
+
 .related-card .image-wrapper {
     width: 5rem;
     aspect-ratio: 1 / 1;
