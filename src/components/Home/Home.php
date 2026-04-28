@@ -9,6 +9,8 @@ use components\docs\Docs;
 use core\App;
 use core\RouteChasmEnvironment;
 use core\view\ContainerContent;
+use models\core\Setting\Setting;
+use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class Home extends ContainerContent {
     protected Menu $menu;
@@ -20,13 +22,22 @@ class Home extends ContainerContent {
     public function __construct() {
         parent::__construct(
             new ContextAwareWebPage(
-                head: new HtmlHead(
+                head: $head = new HtmlHead(
                     App::getEnvStatic()->get(RouteChasmEnvironment::ENV_PROJECT) ?? 'RouteChasm'
                 )
             )
         );
 
         $this->setLexiconGroup(self::LEXICON_GROUP);
+
+        $description = Setting::fromName(
+            RouteChasmEnvironment::SETTING_HOME_DESCRIPTION,
+            true,
+            '',
+            [PROPERTY_EDITABLE => true]
+        );
+
+        $head->addMeta('description', $description->toString());
     }
 
 

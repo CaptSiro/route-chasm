@@ -75,6 +75,7 @@ class RouteChasmEnvironment {
     public const SETTING_ENV_PASSWORD = 'route-chasm-core:use_env_password_method';
     public const SETTING_MIN_SEARCH_QUERY_LENGTH = 'route-chasm-core:search_minimum_query_length';
     public const SETTING_SHOW_ADMIN_LOGIN_IN_FOOTER = "route-chasm-core:show_admin_login_in_footer";
+    public const SETTING_HOME_DESCRIPTION = 'route-chasm-core:home-description';
 
     public const SEARCH_MIN_LENGTH = 3;
     public const SEARCH_DROPDOWN_MAX_ENTRIES = 5;
