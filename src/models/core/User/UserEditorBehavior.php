@@ -117,15 +117,19 @@ class UserEditorBehavior implements EditorBehavior {
             ->getRequest()
             ->getBody();
 
+        $password = $body->getStrict(self::NAME_PASSWORD);
         if ($action === EditorBehaviorAction::CREATE) {
             // Implicit unique check for tag in the User::save() function
             $model->tag = $body->getStrict(self::NAME_TAG);
-        }
 
-        $password = $body->get(self::NAME_PASSWORD, '');
-        $len = strlen($password);
-        if ($len !== 0) {
-            if ($len < 8) {
+            if (empty($password)) {
+                return new SaveError(
+                    self::NAME_PASSWORD,
+                    $this->tr('Password must not be empty')
+                );
+            }
+
+            if (strlen($password) < 8) {
                 return new SaveError(
                     self::NAME_PASSWORD,
                     $this->tr('Password must be at least 8 characters long')
@@ -134,7 +138,16 @@ class UserEditorBehavior implements EditorBehavior {
 
             $model->password = password_hash($password, PASSWORD_DEFAULT);
         } else {
-            $model->password = '';
+            if (!empty($password)) {
+                if (strlen($password) < 8) {
+                    return new SaveError(
+                        self::NAME_PASSWORD,
+                        $this->tr('Password must be at least 8 characters long')
+                    );
+                }
+
+                $model->password = password_hash($password, PASSWORD_DEFAULT);
+            }
         }
 
         $model->username = $body->getStrict(self::NAME_USERNAME);

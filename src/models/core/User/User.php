@@ -115,6 +115,8 @@ class User extends Model {
             self::logout();
         }
 
+        $this->leaveAllGroups();
+
         return parent::delete();
     }
 

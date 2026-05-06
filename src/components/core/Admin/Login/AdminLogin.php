@@ -174,6 +174,11 @@ class AdminLogin extends ContainerContent {
                     $tag = $body->getStrict(self::FIELD_TAG);
                     $user = User::fromTag($tag);
 
+                    if (is_null($user)) {
+                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
+                        $response->renderRoot(new Message($this->tr('User not found')));
+                    }
+
                     if (!password_verify($password, $user->password)) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
                         $response->renderRoot(new Message($this->tr('The password is wrong')));
