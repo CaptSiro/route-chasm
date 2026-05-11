@@ -10,7 +10,18 @@ This library is still in heavy development, and all features are subject to chan
 
 # Installation
 
-Prerequisite: MySQL and PHP environments is already installed
+## PHP and MySQL (Windows)
+
+The recommended way to host the application locally is by installing Wampserver https://wampserver.aviatechno.net/.
+Download the full version of Wampserver, this will include PHP server, MySQL server,
+and PHPMyAdmin to manage the MySQL server. While installing the Wampserver you might need
+to install Visual C++ Redistributable Packages for your system which can also be found on
+the Wampserver website.
+
+After installing and running it, download cacert.pem file, and add the absolute location
+to the curl.cainfo field in php.ini file. This will enable the server side AI generation requests.
+
+## Project setup
 
 Either fork the repository or:
 
@@ -59,4 +70,4 @@ OPENAI_KEY=
 OPENAI_MODEL=gpt-4o-mini
 ```
 
-Run the `init.sql` file located in `src/core/sql`
+Run the `001-init.sql` file located in `src/core/sql`.
