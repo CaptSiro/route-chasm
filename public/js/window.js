@@ -54,6 +54,8 @@ function window_open(element) {
     element.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_OPENED));
     windowOverlayActive?.appendChild(element);
+
+    window_spotlight(element);
 }
 
 /**
@@ -241,6 +243,27 @@ function window_addDraggable(element) {
     });
 }
 
+function window_spotlight(element) {
+    if (!is(element.parentElement)) {
+        return;
+    }
+
+    const windows = Array.from(element.parentElement.children);
+    if (element.style.zIndex === String(windows.length + 1)) {
+        return;
+    }
+
+    windows.sort((a, b) => {
+        return Number(a.style.zIndex) - Number(b.style.zIndex);
+    });
+
+    for (let i = 0; i < windows.length; i++) {
+        windows[i].style.zIndex = String(i + 1);
+    }
+
+    element.style.zIndex = String(windows.length + 1);
+}
+
 /**
  * @param {HTMLElement} element
  */
@@ -252,6 +275,8 @@ function window_init(element) {
         });
         return;
     }
+
+    element.id = std_id_html(8);
 
     if (!element.parentElement?.classList.contains("window-overlay-active")) {
         windowOverlay.appendChild(element);
@@ -267,26 +292,7 @@ function window_init(element) {
         window_close(element, destroyOnClose);
     });
 
-    element.addEventListener("pointerdown", () => {
-        if (!is(element.parentElement)) {
-            return;
-        }
-
-        const windows = Array.from(element.parentElement.children);
-        if (element.style.zIndex === String(windows.length + 1)) {
-            return;
-        }
-
-        windows.sort((a, b) => {
-            return Number(a.style.zIndex) - Number(b.style.zIndex);
-        });
-
-        for (let i = 0; i < windows.length; i++) {
-            windows[i].style.zIndex = String(i + 1);
-        }
-
-        element.style.zIndex = String(windows.length + 1);
-    });
+    element.addEventListener("pointerdown", () => window_spotlight(element));
 
     element.addEventListener(EVENT_WINDOW_ISSUE_CLOSE, event => {
         window_close(element);
@@ -312,6 +318,19 @@ function window_init(element) {
     });
 }
 
+/**
+ * @param {HTMLElement} child
+ * @param {string} parentIdentifier
+ */
+function window_setParent(child, parentIdentifier) {
+    const parent = $("#" + parentIdentifier);
+    if (!is(parent)) {
+        return;
+    }
+
+    parent.addEventListener(EVENT_WINDOW_CLOSED, () => window_close(child));
+}
+
 
 
 /**
@@ -322,6 +341,7 @@ function window_init(element) {
      isResizable?: boolean,
      width?: string,
      height?: string,
+     parent?: string,
  }} WindowSettings
  */
 
@@ -362,6 +382,10 @@ function window_create(title, content, settings = {}) {
 
     if (settings.isDialog === true) {
         w.dataset.dialog = "true";
+    }
+
+    if (is(settings.parent)) {
+        window_setParent(w, settings.parent);
     }
 
     window_init(w);

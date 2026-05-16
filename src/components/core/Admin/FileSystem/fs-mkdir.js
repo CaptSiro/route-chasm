@@ -1,10 +1,28 @@
 /**
- * @param {HTMLElement} element
+ * @param {HTMLElement} button
  * @param {string} mkdir
  */
-function fs_mkdirButton_init(element, { mkdir }) {
-    element.addEventListener('click', async () => {
-        const name = await window_prompt('Name for new directory');
+function fs_mkdirButton_init(button, { mkdir }) {
+    let opened = false;
+
+    const parentId = button.closest('.window')?.id;
+
+    button.addEventListener('click', async () => {
+        if (opened) {
+            return;
+        }
+
+        const settings = WINDOW_ALERT_SETTINGS;
+        if (is(parentId) && parentId !== '') {
+            settings.parent = parentId;
+        }
+
+        console.log(settings);
+
+        opened = true;
+        const name = await window_prompt('Name for new directory', settings);
+        opened = false;
+
         if (!is(name)) {
             return;
         }
