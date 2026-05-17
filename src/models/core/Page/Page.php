@@ -262,7 +262,7 @@ class Page extends Model implements Destination, Priority {
             $this->priority = self::countChildren($this->getParent());
         }
 
-        if (is_null($this->publish) && $this->statusId === PageStatus::ID_PUBLIC) {
+        if (!isset($this->publish) && $this->statusId === PageStatus::ID_PUBLIC) {
             $this->publish = Sql::datetimeNow();
         }
 

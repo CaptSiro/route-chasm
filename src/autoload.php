@@ -4,11 +4,14 @@ require_once __DIR__ ."/core/Init.php";
 require_once __DIR__ ."/exception-handler.php";
 
 spl_autoload_register(function ($class) {
-    $file = __DIR__ ."/$class.php";
+    $relativePath = str_replace('\\', '/', $class) .'.php';
+    $file = __DIR__ ."/$relativePath";
+
     if (!file_exists($file)) {
-        $lib = __DIR__ ."/../lib/$class.php";
+        $lib = __DIR__ ."/../lib/$relativePath";
+
         if (file_exists($lib)) {
-            require __DIR__ ."/../lib/$class.php";
+            require $lib;
         } else {
             http_response_code(500);
             echo "Class does not exists";

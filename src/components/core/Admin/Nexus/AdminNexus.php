@@ -34,7 +34,7 @@ class AdminNexus extends ContainerContent {
     public const COLUMN_DELETE = 'nexus_delete';
 
     public const SLOT_HEADER_ITEM = 'slot_header_item';
-//    public const SLOT_CREATE_ACTION = 'slot_create_action'; todo
+    //    public const SLOT_CREATE_ACTION = 'slot_create_action'; todo
     public const SLOT_BREAD_CRUMBS = 'slot_before_grid';
     public const SLOT_FOOTER = 'slot_after_grid';
 
@@ -166,7 +166,7 @@ class AdminNexus extends ContainerContent {
         if ($this->canAddGridControls()) {
             $grid
                 ->addAsFirst(self::COLUMN_EDIT, $this->tr('Edit'), '64px')
-                ->add(self::COLUMN_DELETE, $this->tr('Delete'), '64px');
+                ->add(self::COLUMN_DELETE, $this->tr('Delete'), '80px');
         }
 
         return $grid
@@ -211,9 +211,14 @@ class AdminNexus extends ContainerContent {
                 }
 
                 $id = $request->getParam()->get('id');
+                $model = $factory->fromId($id);
+
+                if (is_null($model)) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
 
                 return $this->editor
-                    ->setModel($factory->fromId($id));
+                    ->setModel($model);
             }
         );
 
@@ -228,8 +233,11 @@ class AdminNexus extends ContainerContent {
                     $request->getParam()->get('id')
                 );
 
-                $model->delete();
+                if (is_null($model)) {
+                    $response->sendStatus(HttpCode::CE_NOT_FOUND);
+                }
 
+                $model->delete();
                 $response->sendStatus(HttpCode::S_OK);
             })
         );

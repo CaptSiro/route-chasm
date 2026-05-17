@@ -3,11 +3,15 @@
 namespace core\utils;
 
 class Objects {
+    public static function normalizeClass(string $class): string {
+        return str_replace('\\', '/', $class);
+    }
+
     public static function getClass(mixed $object): string {
-        return basename(get_class($object));
+        return basename(self::normalizeClass(get_class($object)));
     }
 
     public static function getClassStatic(string $class): string {
-        return basename($class);
+        return basename(self::normalizeClass($class));
     }
 }

@@ -1,0 +1,35 @@
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: routechasm
+      MYSQL_USER: routechasm
+      MYSQL_PASSWORD: routechasm
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./src/core/sql:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  mysql_data:

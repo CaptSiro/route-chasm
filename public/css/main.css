@@ -71,7 +71,7 @@ h1 {
 html {
     background-color: var(--container-0);
     color: var(--text-0);
-    font-family: Calibri, serif;
+    font-family: Calibri, sans-serif;
 }
 
 body {

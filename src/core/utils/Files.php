@@ -15,6 +15,10 @@ class Files {
         return -1;
     }
 
+    public static function normalize(string $path): string {
+        return str_replace('\\', '/', $path);
+    }
+
     public static function extension(string $path): ?string {
         $base = basename($path);
         $len = strlen($base);

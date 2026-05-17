@@ -27,7 +27,10 @@ class MultiSelect implements Control, Attribute {
      * @return array<string>
      */
     public static function parse(string $value): array {
-        return explode(';', $value);
+        return array_values(array_filter(
+            explode(';', $value),
+            fn(string $item) => $item !== ''
+        ));
     }
 
 

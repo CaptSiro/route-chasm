@@ -364,10 +364,13 @@ class PageEditorBehavior implements EditorBehavior {
         $page->updated = Sql::datetimeNow();
         $page->save();
 
-        $values = array_map(
-            fn($x) => intval($x),
-            MultiSelect::parse($body->getStrict(self::NAME_RELATED_PAGES))
-        );
+        $values = array_values(array_filter(
+            array_map(
+                fn($x) => intval($x),
+                MultiSelect::parse($body->getStrict(self::NAME_RELATED_PAGES))
+            ),
+            fn(int $id) => $id > 0 && !is_null(Page::fromId($id))
+        ));
 
         $related = array_map(
             fn(Page $x) => $x->id,

@@ -7,7 +7,7 @@ use core\utils\Objects;
 trait ResourceLoader {
     private static function getClassResource(string $class, string $path = ''): string {
         return App::getInstance()
-            ->getSource(dirname($class) ."/$path");
+            ->getSource(dirname(Objects::normalizeClass($class)) ."/$path");
     }
 
     public static function getStaticResource(string $path = ''): string {
@@ -15,7 +15,10 @@ trait ResourceLoader {
     }
 
     public static function getTemplateResourceStatic(): string {
-        return self::getClassResource(static::class, basename(static::class) . '.phtml');
+        return self::getClassResource(
+            static::class,
+            basename(Objects::normalizeClass(static::class)) . '.phtml'
+        );
     }
 
 
@@ -24,14 +27,17 @@ trait ResourceLoader {
     }
 
     public static function getTemplateResourceSelf(): string {
-        return self::getClassResource(self::class, basename(self::class) . '.phtml');
+        return self::getClassResource(
+            self::class,
+            basename(Objects::normalizeClass(self::class)) . '.phtml'
+        );
     }
 
 
 
     public function getResource(string $path = ''): string {
         return App::getInstance()
-            ->getSource(dirname(get_class($this)) ."/$path");
+            ->getSource(dirname(Objects::normalizeClass(get_class($this))) ."/$path");
     }
 
     public function getResources(string $directory = ''): array {
