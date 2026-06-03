@@ -17,8 +17,6 @@ function fs_mkdirButton_init(button, { mkdir }) {
             settings.parent = parentId;
         }
 
-        console.log(settings);
-
         opened = true;
         const name = await window_prompt('Name for new directory', settings);
         opened = false;
