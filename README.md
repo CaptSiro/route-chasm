@@ -33,8 +33,8 @@ The .env file might need manual editing.
 1. Create local files:
 
 ```bash
-cp .env.docker .env
-cp .htaccess.docker .htaccess
+cp bin/.env.docker .env
+cp bin/.htaccess.docker .htaccess
 ```
 
 2. Start the containers:
@@ -103,8 +103,8 @@ to the curl.cainfo field in php.ini file. This will enable the server side AI ge
 1. Create local files:
 
 ```bash
-cp .env.default .env
-cp .htaccess.default .htaccess
+cp bin/.env.native .env
+cp bin/.htaccess.native .htaccess
 ```
 
 2. Edit the .htaccess.default file depending on your installation location:

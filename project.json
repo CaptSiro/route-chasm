@@ -1,0 +1,10 @@
+{
+    "mount": {
+        "assets": "./public",
+        "framework": "./",
+        "storage": "./data",
+        "project": "./example",
+        "project-bootstrap": "./bin/bootstrap-project.php",
+        "www": "./../"
+    }
+}

@@ -1,6 +1,8 @@
 <?php
 
-/** only files containing constants are allowed to be imported to this critical part of the code */
+// Location locked file
+
+// Only files containing constants are allowed to be imported to this critical part of the code
 use core\http\HttpHeader;
 use core\RouteChasmEnvironment;
 
