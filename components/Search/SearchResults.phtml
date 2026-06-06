@@ -1,0 +1,21 @@
+<?php /** @var SearchResults $this */
+
+use components\Search\SearchResults;
+
+?><?php if (empty($this->results)): ?>
+    <div class="search-empty">
+        <?= $this->tr('No results found') ?>
+    </div>
+<?php else: ?>
+    <div class="search-results">
+        <?php foreach ($this->results as $result): ?>
+            <?= $result ?>
+        <?php endforeach; ?>
+    </div>
+
+    <?php if (!is_null($this->searchFooter)): ?>
+        <div class="search-footer">
+            <?= $this->searchFooter ?>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>

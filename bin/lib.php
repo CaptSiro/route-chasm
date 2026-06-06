@@ -3,7 +3,7 @@
 // Location locked file
 
 const FILE_PROJECT_JSON = __DIR__ . '/../project.json';
-const DIRECTORY_PROJECT = __DIR__ . '/..';
+const DIRECTORY_REPOSITORY = __DIR__ . '/..';
 
 
 

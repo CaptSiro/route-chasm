@@ -1,0 +1,19 @@
+<?php /** @var RoutedMenuItem $this */
+
+use components\layout\RoutedMenu\RoutedMenuItem;
+
+?><div class="item-label">
+    <?php if (!is_null($this->icon)): ?>
+        <span class="icon">
+            <?= $this->icon ?>
+        </span>
+    <?php endif; ?>
+
+    <?php if ($this->hasItem()): ?>
+        <a href="<?= $this->createUrl() ?>">
+            <?= $this->tr($this->label) ?>
+        </a>
+    <?php else: ?>
+        <span><?= $this->tr($this->label) ?></span>
+    <?php endif; ?>
+</div>

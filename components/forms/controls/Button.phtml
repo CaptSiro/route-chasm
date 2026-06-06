@@ -1,0 +1,9 @@
+<?php /** @var Button $this */
+
+use components\forms\controls\Button;
+
+?><button
+    type="<?= $this->type ?>"
+    class="<?= $this->getCssClass() ?>"
+    <?= $this->stringifyAttributes() ?>
+><?= $this->label ?></button>

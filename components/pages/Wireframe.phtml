@@ -1,0 +1,41 @@
+<?php /** @var Wireframe $this */
+
+use components\pages\Wireframe;
+use components\layout\PageMenu\Footer;
+use components\layout\PageMenu\Header;
+
+?><!DOCTYPE html>
+<html lang="<?= $this->language ?>">
+<?= $this->head ?>
+<body>
+    <?php if ($this->doAddHeader): ?>
+        <?= Header::default() ?>
+    <?php endif; ?>
+
+    <?php if (!$this->page->isReleased()): ?>
+        <div class="release-notice center" style="background-color: var(--error)">
+            <strong class="pad-gap"><?= $this->tr('This is page is not released') ?></strong>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($this->doAddBreadCrumbs): ?>
+        <div class="wireframe page-section bc-no-margin">
+            <?= $this->getBreadCrumbs() ?>
+        </div>
+    <?php endif; ?>
+
+    <main class="wireframe page-container">
+        <?php if ($this->hasContentAccess()): ?>
+            <?= $this->content ?>
+        <?php else: ?>
+            <div class="center">
+                <h1><?= $this->tr('Page is not accessible') ?></h1>
+            </div>
+        <?php endif; ?>
+    </main>
+
+    <?php if ($this->doAddFooter): ?>
+        <?= Footer::default() ?>
+    <?php endif; ?>
+</body>
+</html>

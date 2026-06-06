@@ -1,0 +1,31 @@
+<?php /** @var Header $this */
+
+use components\Icon;
+use components\layout\PageMenu\Header;
+use components\windows\LanguageSelect\LanguageSelect;
+use components\windows\Window;
+use core\sideloader\importers\Css\Css;
+use models\Language\Language;
+
+Css::import($this->getResource('header.css'));
+
+?><header>
+    <div class="header-items">
+        <div class="header-menu-wrapper">
+            <?= $this->menu ?>
+        </div>
+
+        <div class="row">
+            <?= $this->search ?>
+
+            <?php if (Language::count() > 1): ?>
+                <?= $languageWindow = LanguageSelect::window(false) ?>
+                <?= Window::createWindowOpener(
+                    $languageWindow,
+                    Icon::nf('nf-fa-language', 'Languages'),
+                    ['style' => 'font-size: 2rem; padding: unset', 'class' => 'link no-decoration']
+                ) ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</header>

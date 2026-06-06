@@ -1,0 +1,41 @@
+<?php /** @var Editor $this */
+
+use components\html\Html;
+use components\forms\Form;
+use components\Lumora\Editor\Editor;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Css::import($this->getResource('editor.css'));
+Javascript::import($this->getResource('../lumora.js'));
+Javascript::import($this->getResource('editor.js'));
+Javascript::import($this->getResource('inspector.js'));
+Javascript::import($this->getResource('widget-core.js'));
+
+Form::importAssets();
+
+?><section>
+    <div id="editor-data" style="display: none">
+        <?= Html::escape($this->storage->read()) ?>
+    </div>
+
+    <div id="widgets" style="display: none">
+        <?php foreach ($this->explodeWidgets() as $widget): ?>
+            <?= $this->importWidget($widget) ?>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+<section class="editor">
+    <?= $this->toolBar ?>
+
+    <div class="table">
+        <div class="viewport-mount">
+            <div id="viewport">
+                <div id="widget-select-mount" style="visibility: hidden"></div>
+            </div>
+        </div>
+
+        <div class="inspector">INSPECTOR</div>
+    </div>
+</section>

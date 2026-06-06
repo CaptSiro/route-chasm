@@ -5,12 +5,14 @@
 require_once __DIR__ . '/autoload.php';
 require_once __DIR__ . '/hazard/exception-handler.php';
 
+use components\pages\Pages;
 use core\App;
 use core\configs\AppConfig;
 use core\configs\EnvConfig;
 use core\database\sql\connections\MySqlDriver;
 use core\database\sql\Sql;
-use core\pages\Pages;
+
+define("DIRECTORY_FRAMEWORK", realpath(__DIR__ . '/..'));
 
 
 

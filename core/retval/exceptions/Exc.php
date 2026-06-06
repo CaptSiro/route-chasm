@@ -1,0 +1,50 @@
+<?php
+
+namespace core\retval\exceptions;
+
+use core\retval\Trace;
+use JsonSerializable;
+
+class Exc implements JsonSerializable {
+    protected string $message;
+    protected array $trace;
+
+
+
+    public function __construct(string $msg) {
+        $this->message = $msg;
+
+        $this->bubbleUp();
+    }
+
+
+
+    public function getMessage(): string {
+        return $this->message;
+    }
+
+
+
+    public function getTrace(): array {
+        return $this->trace;
+    }
+
+
+
+    public function bubbleUp(): void {
+        $this->trace = [];
+
+        foreach (debug_backtrace() as $trace) {
+            $this->trace[] = new Trace($trace["file"], $trace["line"]);
+        }
+    }
+
+
+
+    function jsonSerialize(): object {
+        return (object)[
+            "error" => $this->message,
+            "trace" => $this->trace,
+        ];
+    }
+}

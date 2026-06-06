@@ -1,0 +1,14 @@
+<?php /** @var Jsml $this */
+
+use components\jsml\Jsml;
+use core\sideloader\importers\Javascript\Javascript;
+use core\sideloader\SideLoader;
+
+$files = $this->getSourceFiles();
+
+?><?php if (!empty($files)): ?>
+    <script
+        <?= SideLoader::getInstance()->createSourceAttribute(Javascript::FILE_EXTENSION, $files) ?>
+        defer
+    ></script>
+<?php endif; ?>

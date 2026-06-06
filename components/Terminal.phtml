@@ -1,0 +1,13 @@
+<?php /** @var Terminal $this */
+
+use components\Terminal;
+
+?><?php if ($this->shouldDisplay()): ?>
+    <div class="terminal">
+        <div class="logs">
+            <?php foreach ($this->messages as $var): ?>
+                <?= $var ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>

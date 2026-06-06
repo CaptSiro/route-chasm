@@ -2,10 +2,11 @@
 
 // Location locked file
 
-use components\core\Admin\Home\AdminHome;
-use components\core\Search\Search;
+use components\Admin\Home\AdminHome;
 use components\docs\Docs;
-use components\Home\Home;
+use example\components\Home;
+use components\pages\PageFactory;
+use components\Search\Search;
 use core\actions\Assets\Assets;
 use core\actions\Assets\policy\ShowExplorerPolicy;
 use core\admin\Admin;
@@ -13,7 +14,6 @@ use core\admin\AdminRouter;
 use core\fs\FileServer;
 use core\mounts\StaticMount;
 use core\navigation\Navigator;
-use core\pages\PageFactory;
 use core\RouteChasmEnvironment;
 use core\sideloader\SideLoader;
 

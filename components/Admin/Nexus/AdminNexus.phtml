@@ -1,0 +1,28 @@
+<?php /** @var \components\Admin\Nexus\AdminNexus $this */
+
+use components\Admin\Nexus\AdminNexus;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('nexus.js'));
+Css::import($this->getResource('nexus.css'));
+
+?><section class="nexus">
+    <?php if ($this->showHeader): ?>
+        <div class="head">
+            <h1><?= $this->getTitle() ?></h1>
+
+            <?php if ($this->canShowCreateButton()): ?>
+                <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
+            <?php endif; ?>
+
+            <?= $this->getTemplateSlot(AdminNexus::SLOT_HEADER_ITEM) ?>
+        </div>
+    <?php endif; ?>
+
+    <?= $this->getTemplateSlot(AdminNexus::SLOT_BREAD_CRUMBS) ?>
+
+    <?= $this->getGrid() ?>
+
+    <?= $this->getTemplateSlot(AdminNexus::SLOT_FOOTER) ?>
+</section>

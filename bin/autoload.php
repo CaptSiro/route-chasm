@@ -42,12 +42,12 @@ spl_autoload_register(function ($class) {
         import("$dir/$relativePath", $class);
     }
 
-    foreach (scandir(DIRECTORY_PROJECT) as $entry) {
+    foreach (scandir(DIRECTORY_REPOSITORY) as $entry) {
         if ($entry === '.' || $entry === '..') {
             continue;
         }
 
-        $entryFile = DIRECTORY_PROJECT ."/$entry/$relativePath";
+        $entryFile = DIRECTORY_REPOSITORY ."/$entry/$relativePath";
         if (!file_exists($entryFile)) {
             continue;
         }

@@ -1,0 +1,13 @@
+<?php /** @var \components\layout\Row $this */
+
+use components\layout\Row;
+
+?><div
+    class="form-row <?= $this->getCssClass() ?>"
+    <?= $this->stringifyAttributes() ?>
+    <?= $this->getStyle() ?>
+>
+    <?php foreach ($this->children as $child): ?>
+        <?= $child->render() ?>
+    <?php endforeach; ?>
+</div>
