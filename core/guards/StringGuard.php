@@ -22,10 +22,7 @@ class StringGuard {
                 : ucfirst($property) ." must not be empty";
         }
 
-        return new SaveError(
-            $property,
-            $message
-        );
+        return new SaveError($property, $message);
     }
 
     public static function satisfiesPattern(
@@ -40,14 +37,11 @@ class StringGuard {
 
         if (is_null($message)) {
             $message = is_null($property)
-                ? "'$x' does not satisfy pattern " // todo add Pattern::__toString()
+                ? "'$x' does not satisfy pattern: '$pattern'"
                 : ucfirst($property) ." does not satisfy pattern";
         }
 
-        return new SaveError(
-            $property,
-            $message
-        );
+        return new SaveError($property, $message);
     }
 
     public static function satisfiesRegex(

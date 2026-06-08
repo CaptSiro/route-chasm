@@ -4,6 +4,7 @@
 
 use components\Admin\Home\AdminHome;
 use components\docs\Docs;
+use core\route\Path;
 use example\components\Home;
 use components\pages\PageFactory;
 use components\Search\Search;
@@ -34,7 +35,13 @@ $router->bind(
 
 
 
-$router->expose('public', (new Assets(project_mounted("<framework>/public")))
+// Order dependent
+$assetDirectories = [
+    project_mounted("<assets>"),
+    Path::join(DIRECTORY_FRAMEWORK, 'public')
+];
+
+$router->expose('public', (new Assets($assetDirectories))
     ->setDirectoryPolicy(new ShowExplorerPolicy()));
 
 

@@ -6,6 +6,7 @@ use core\Pipeline;
 
 class Stream implements Seek, Pipeline {
     protected int $pointer;
+
     protected int $resourceLength;
 
 

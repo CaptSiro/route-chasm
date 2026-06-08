@@ -9,6 +9,11 @@ class Regex {
     public const LOCALE_RULE_TWO_AND_UP = '/^0|[2-9]|\d{2,}$/';
     public const LOCALE_RULE_FIVE_AND_UP = '/^0|[5-9]|\d{2,}$/';
 
+    public const PATTERN_IDENT = '/^[a-zA-Z][a-zA-Z0-9\-]*$/';
+    public const PATTERN_ANY = "/^.*$/";
+    public const PATTERN_BASE64 = "/^[a-zA-Z0-9_\-]*$/";
+    public const PATTERN_NUMBER = "/^[0-9]*$/";
+
 
 
     public static function create(string $pattern): string {

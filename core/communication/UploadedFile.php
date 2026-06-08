@@ -2,8 +2,6 @@
 
 namespace core\communication;
 
-use core\retval\exceptions\Exc;
-use core\retval\Result;
 use JsonSerializable;
 
 class UploadedFile implements JsonSerializable {
@@ -43,13 +41,13 @@ class UploadedFile implements JsonSerializable {
         return $this->error;
     }
 
-    public function move(string $destination): Result {
+    public function move(string $destination): ?string {
         if ($this->error !== UPLOAD_ERR_OK) {
-            return Result::fail(new Exc("Error occurred when uploading file: '$this->name'. Code: '$this->error'"));
+            return "Error occurred when uploading file: '$this->name'. Code: '$this->error'";
         }
 
         if (is_null($this->temporaryPath)) {
-            return Result::fail(new Exc("Uploaded file '$this->name' has not been uploaded properly. No temporary file"));
+            return "Uploaded file '$this->name' has not been uploaded properly. No temporary file";
         }
 
         $directory = dirname($destination);
@@ -58,10 +56,10 @@ class UploadedFile implements JsonSerializable {
         }
 
         if (!rename($this->temporaryPath, $destination)) {
-            return Result::fail(new Exc("Cannot move uploaded file '$this->name'. Unknown reason."));
+            return "Cannot move uploaded file '$this->name'. Unknown reason.";
         }
 
-        return Result::success(true);
+        return null;
     }
 
     public function jsonSerialize(): array {

@@ -10,7 +10,6 @@ use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\module\Loader;
-use core\patterns\Ident;
 use core\route\Path;
 use core\route\Router;
 use core\sideloader\api\SideLoaderApi;
@@ -18,6 +17,7 @@ use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\Singleton;
 use core\utils\Files;
+use core\utils\Regex;
 use core\view\BufferTransform;
 use core\view\Renderer;
 use core\view\View;
@@ -222,7 +222,7 @@ class SideLoader implements View {
                 $response->send($importer->end(), false);
                 $response->flush();
             })
-                ->query('type', Ident::getInstance())
+                ->query('type', Regex::PATTERN_IDENT)
                 ->query('files')
         );
 

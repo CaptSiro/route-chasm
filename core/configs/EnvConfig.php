@@ -4,7 +4,7 @@ namespace core\configs;
 
 use core\App;
 use core\database\sql\Config as SqlConfig;
-use core\dotenv\Env;
+use core\Env;
 use core\http\HttpCode;
 use core\route\compiler\RouteCompiler;
 use core\route\compiler\RouteCompilerConfig;

@@ -2,7 +2,16 @@
 
 // Location locked file
 
-function import(string $file, string $class): void {
+$_imported = 0;
+function autoload_imported(): int {
+    global $_imported;
+    return $_imported;
+}
+
+function autoload_import(string $file, string $class): void {
+    global $_imported;
+    $_imported++;
+
     require_once $file;
 
     if (method_exists($class, "init")) {
@@ -30,7 +39,7 @@ spl_autoload_register(function ($class) {
     $file = __DIR__ . "/../$relativePath";
 
     if (file_exists($file)) {
-        import($file, $class);
+        autoload_import($file, $class);
         return;
     }
 
@@ -39,7 +48,7 @@ spl_autoload_register(function ($class) {
             continue;
         }
 
-        import("$dir/$relativePath", $class);
+        autoload_import("$dir/$relativePath", $class);
     }
 
     foreach (scandir(DIRECTORY_REPOSITORY) as $entry) {
@@ -52,7 +61,7 @@ spl_autoload_register(function ($class) {
             continue;
         }
 
-        import($entryFile, $class);
+        autoload_import($entryFile, $class);
         return;
     }
 

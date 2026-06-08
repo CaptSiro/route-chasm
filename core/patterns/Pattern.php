@@ -5,7 +5,9 @@ namespace core\patterns;
 use core\Pipeline;
 
 interface Pattern {
-    function match(?string $value): bool;
+    public function __toString(): string;
 
-    function matchPipeline(Pipeline $pipeline, ?string &$match): bool;
+    public function match(?string $value): bool;
+
+    public function matchPipeline(Pipeline $pipeline, ?string &$match): bool;
 }

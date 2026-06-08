@@ -15,6 +15,19 @@ class Charset implements Pattern {
         $this->set = [];
     }
 
+    public function __toString(): string {
+        $ret = '';
+
+        foreach ($this->ranges as [$from, $to]) {
+            $charFrom = chr($from);
+            $charTo = chr($to);
+
+            $ret .= "('$charFrom' - '$charTo')";
+        }
+
+        return $ret;
+    }
+
 
 
     public function addRange(string $from, string $to): self {

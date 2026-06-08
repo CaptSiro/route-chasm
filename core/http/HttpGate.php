@@ -7,9 +7,8 @@ use core\actions\ActionBindRouteNode;
 use core\actions\IsLastAction;
 use core\communication\Request;
 use core\communication\Response;
-use core\patterns\AnyString;
-use core\patterns\Pattern;
 use core\route\RouteNode;
+use core\utils\Regex;
 
 class HttpGate implements Action {
     use ActionBindRouteNode, IsLastAction;
@@ -21,11 +20,11 @@ class HttpGate implements Action {
      */
     private array $actions;
     /**
-     * @var array<Pattern> $queryGuards
+     * @var array<string> $queryGuards
      */
     private array $queryGuards;
     /**
-     * @var array<Pattern> $bodyGuards
+     * @var array<string> $bodyGuards
      */
     private array $bodyGuards;
     protected bool $isMiddleware;
@@ -70,28 +69,31 @@ class HttpGate implements Action {
         return $this;
     }
 
-    public function query(string $name, ?Pattern $pattern = null): self {
-        $this->queryGuards[$name] = $pattern ?? AnyString::getInstance();
+    public function query(string $name, ?string $pattern = null): self {
+        $this->queryGuards[$name] = $pattern ?? Regex::PATTERN_ANY;
         return $this;
     }
 
-    public function body(string $name, Pattern $pattern): self {
+    public function body(string $name, string $pattern): self {
         $this->bodyGuards[$name] = $pattern;
         return $this;
     }
 
     protected function checkGuards(Request $request): bool {
-        foreach ($this->bodyGuards as $guard => $pattern) {
-            if (!$pattern->match($request->getBody()->get($guard))) {
+        $body = $request->getBody();
+
+        foreach ($this->bodyGuards as $property => $pattern) {
+            if (!preg_match($pattern, $body->get($property))) {
                 return false;
             }
         }
 
-        foreach ($this->queryGuards as $guard => $pattern) {
-            if (!$pattern->match($request->getUrl()->getQuery()->get($guard))) {
+        $query = $request->getUrl()->getQuery();
+
+        foreach ($this->queryGuards as $property => $pattern) {
+            if (!preg_match($pattern, $query->get($property))) {
                 return false;
-            }
-        }
+            }}
 
         return true;
     }

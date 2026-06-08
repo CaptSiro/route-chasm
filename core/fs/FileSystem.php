@@ -148,7 +148,7 @@ class FileSystem {
         $entry->hash = $hash;
         $entry->size = $file->getSize();
 
-        if ($file->move($entry->getRealPath())->isFailure()) {
+        if (!is_null($error = $file->move($entry->getRealPath()))) {
             return null;
         }
 

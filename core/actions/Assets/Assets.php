@@ -14,6 +14,7 @@ use core\http\Cors;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\route\Path;
 
 class Assets extends Controller {
     use Flags;
@@ -23,18 +24,28 @@ class Assets extends Controller {
     protected DirectoryPolicy $directoryPolicy;
     protected Server $server;
 
+    /**
+     * @param array<string> $directory
+     */
     public function __construct(
-        protected string $directory
+        protected array $directory
     ) {
         parent::__construct();
-        $this->directory = realpath($this->directory);
+        $this->directory = array_filter(
+            array_map(fn($x) => realpath($x), $this->directory),
+            fn($x) => is_string($x)
+        );
+
         $this->directoryPolicy = new NotAccessiblePolicy();
         $this->server = new FileServer();
     }
 
 
 
-    public function getDirectory(): string {
+    /**
+     * @return array<string>
+     */
+    public function getDirectories(): array {
         return $this->directory;
     }
 
@@ -67,30 +78,30 @@ class Assets extends Controller {
 
             case HttpMethod::GET: {
                 $remaining = $request->getRemainingPath()->toString();
-                $path = realpath($this->directory .'/'. $remaining);
 
-                if ($path === false) {
-                    $response->sendMessage(
-                        "File not found",
-                        HttpCode::CE_NOT_FOUND
-                    );
-                    break;
+                foreach ($this->directory as $directory) {
+                    if (!is_string($entry = realpath(Path::join($directory, $remaining)))) {
+                        continue;
+                    }
+
+                    if (!str_starts_with($entry, $directory)) {
+                        continue;
+                    }
+
+                    if (is_dir($entry)) {
+                        $this->directoryPolicy->handle($this, $entry);
+                        return;
+                    }
+
+                    $this->server->serve($entry, $request, $response);
                 }
 
-                if (!str_starts_with($path, $this->directory)) {
-                    $response->sendMessage(
-                        "Request references outside of given scope",
-                        HttpCode::CE_BAD_REQUEST
-                    );
-                    break;
-                }
+                $response->sendMessage(
+                    "File not found",
+                    HttpCode::CE_NOT_FOUND
+                );
 
-                if (is_dir($path)) {
-                    $this->directoryPolicy->handle($this, $path);
-                    break;
-                }
-
-                $this->server->serve($path, $request, $response);
+                return;
             }
 
             default: {

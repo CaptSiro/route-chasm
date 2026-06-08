@@ -17,7 +17,6 @@ use core\communication\Response;
 use core\communication\ResponseFormat;
 use core\configs\AppConfig;
 use core\configs\Config;
-use core\dotenv\Env;
 use core\http\HttpCode;
 use core\locale\Locale;
 use core\module\Loader;

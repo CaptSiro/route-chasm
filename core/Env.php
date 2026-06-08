@@ -1,6 +1,6 @@
 <?php
 
-namespace core\dotenv;
+namespace core;
 
 
 use RuntimeException;

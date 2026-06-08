@@ -15,9 +15,9 @@ class ShowExplorerPolicy implements DirectoryPolicy {
         $app->getResponse()
             ->renderRoot(new Explorer(
                 $path,
-                basename($assets->getDirectory()) .'/'. $remaining,
+                basename($assets->getDirectories()) .'/'. $remaining,
                 $app->getRequest()->getUrl()->getPath()->toString(),
-                $assets->getDirectory() !== $path
+                $assets->getDirectories() !== $path
             ));
     }
 }

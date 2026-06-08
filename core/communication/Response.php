@@ -83,6 +83,8 @@ class Response {
             return;
         }
 
+        $this->setHeader("X-Imported", autoload_imported());
+
         $this->headersSent = true;
         App::getInstance()->dispatch(self::EVENT_HEADERS_GENERATION, $this);
 
