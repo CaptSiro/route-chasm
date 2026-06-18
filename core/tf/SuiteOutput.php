@@ -1,6 +1,6 @@
 <?php
 
-namespace core\sptf\structs;
+namespace core\tf;
 
 class SuiteOutput {
     public function __construct(
@@ -13,6 +13,16 @@ class SuiteOutput {
             return '';
         }
 
+        return $this->output;
+    }
+
+
+
+    public function isWasPrintingAllowed(): bool {
+        return $this->wasPrintingAllowed;
+    }
+
+    public function getOutput(): string {
         return $this->output;
     }
 }

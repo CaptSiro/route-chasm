@@ -1,0 +1,18 @@
+<?php /** @var TestCaseHeader $this */
+
+use components\html\Html;
+use components\tf\TestCaseHeader;
+
+?><div>
+    <span class='outcome'>
+        <?= Html::escape($this->outcome->value) ?>
+    </span>
+
+    <span class='time'>
+        <?= $this->getTimeFormatted() ?>
+    </span>
+
+    <span class='name'>
+        <?= Html::escape($this->name) ?>
+    </span>
+</div>

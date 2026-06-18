@@ -2,7 +2,7 @@
 
 namespace components\Admin\SptfTests;
 
-use core\sptf\Sptf;
+use core\tf\Test;
 use core\view\ContainerContent;
 
 class SptfTests extends ContainerContent {
@@ -18,7 +18,7 @@ class SptfTests extends ContainerContent {
     public function getTestFiles(): array {
         return array_map(
             fn($x) => new SptfTestFile($x),
-            Sptf::evaluateDirectory($this->directory)
+            Test::evaluate($this->directory)
         );
     }
 }

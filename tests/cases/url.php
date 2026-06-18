@@ -2,14 +2,15 @@
 
 use core\collections\dictionary\StrictMap;
 use core\collections\StrictDictionary;
-use core\sptf\Sptf;
+use core\tf\Test;
+use core\tf\Unit;
 use core\url\Url;
 use core\utils\Arrays;
 
 
 
-Sptf::test('creates URL from server vars', function () {
-    Sptf::allowPrinting();
+Test::case('creates URL from server vars', function () {
+    Test::allowPrinting();
 
     $server_reset = Arrays::set($_SERVER, [
         "REQUEST_URI" => "http://subdomain.localhost.com/route-chasm/foo/bar/fizz?q=1234&buzz",
@@ -25,18 +26,18 @@ Sptf::test('creates URL from server vars', function () {
 
     $url = Url::fromRequest();
 
-    Sptf::expect($url->getHost())->toBe("subdomain.localhost.com");
-    Sptf::expect($url->getPath()->toString())->toBe("/route-chasm/foo/bar/fizz");
-    Sptf::expect($url->getQuery())
+    Unit::expect($url->getHost())->toBe("subdomain.localhost.com");
+    Unit::expect($url->getPath()->toString())->toBe("/route-chasm/foo/bar/fizz");
+    Unit::expect($url->getQuery())
         ->toBe(new StrictMap([
             "q" => "1234",
             "buzz" => ""
         ]))
         ->compare(fn(StrictDictionary $a, StrictDictionary $b) => Arrays::equal($a->toArray(), $b->toArray()));
-    Sptf::expect($url->getProtocol())->toBe("http");
+    Unit::expect($url->getProtocol())->toBe("http");
 
-    Sptf::expect($url->getQuery()->get("q"))->toBe("1234");
-    Sptf::expect($url->getQuery()->get("buzz"))->toBe("");
+    Unit::expect($url->getQuery()->get("q"))->toBe("1234");
+    Unit::expect($url->getQuery()->get("buzz"))->toBe("");
 
     $server_reset();
     $get_reset();
@@ -44,21 +45,21 @@ Sptf::test('creates URL from server vars', function () {
 
 
 
-Sptf::test('parse fully qualified URL', function () {
-    Sptf::allowPrinting();
+Test::case('parse fully qualified URL', function () {
+    Test::allowPrinting();
 
     $url = Url::from('http://localhost/route-chasm/fizz/buzz?ping=pong&foo=bar&fizz');
 
-    Sptf::expect($url->getProtocol())
+    Unit::expect($url->getProtocol())
         ->toBe('http');
 
-    Sptf::expect($url->getHost())
+    Unit::expect($url->getHost())
         ->toBe('localhost');
 
-    Sptf::expect($url->getPath()->toString())
+    Unit::expect($url->getPath()->toString())
         ->toBe('/route-chasm/fizz/buzz');
 
-    Sptf::expect($url->getQuery())
+    Unit::expect($url->getQuery())
         ->toBe(new StrictMap(["ping" => "pong", "foo" => "bar", "fizz" => ""]))
         ->compare(fn(StrictDictionary $a, StrictDictionary $b) => Arrays::equal($a->toArray(), $b->toArray()));
 });

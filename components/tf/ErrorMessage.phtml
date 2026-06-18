@@ -1,0 +1,14 @@
+<?php /** @var ErrorMessage $this */
+
+use components\html\Html;
+use components\tf\ErrorMessage;
+
+?><div>
+    <div class='index'>
+        <?= Html::escape($this->hint) ?>
+    </div>
+
+    <div class='assertion-failed'>
+        <?= Html::escape($this->message) ?>
+    </div>
+</div>

@@ -2,7 +2,7 @@
 
 namespace components\Admin\SptfTests;
 
-use core\sptf\structs\TestFile;
+use core\tf\TestFile;
 use core\view\Renderer;
 use core\view\View;
 

@@ -2,6 +2,8 @@
 
 namespace components\forms;
 
+use components\forms\controls\MultiSelect\MultiSelect;
+use components\forms\controls\Select\Select;
 use components\html\Attribute;
 use components\html\Html;
 use components\html\HtmlAttribute;
@@ -38,6 +40,9 @@ class Form extends Component implements Layout, Attribute {
         self::$imported = true;
         Css::import(Form::getStaticResource('form.css'));
         Javascript::import(Form::getStaticResource('form.js'));
+
+        Select::importAssets();
+        MultiSelect::importAssets();
 
         return true;
     }

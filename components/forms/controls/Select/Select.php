@@ -7,6 +7,7 @@ use components\forms\controls\FormControl;
 use components\html\Attribute;
 use components\html\HtmlAttribute;
 use core\RouteChasmEnvironment;
+use core\sideloader\importers\Javascript\Javascript;
 use core\view\Renderer;
 
 class Select implements Control, Attribute {
@@ -14,6 +15,12 @@ class Select implements Control, Attribute {
 
     public const DATA_ATTRIBUTE_SEARCH_FUNCTION = 'search';
     public const DATA_ATTRIBUTE_ON_OPTION_SELECTED_FUNCTION = 'on-option-selected';
+
+
+
+    public static function importAssets(): void {
+        Javascript::import(Select::getStaticResource('select.js'));
+    }
 
 
 

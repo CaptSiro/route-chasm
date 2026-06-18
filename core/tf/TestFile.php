@@ -1,6 +1,6 @@
 <?php
 
-namespace core\sptf\structs;
+namespace core\tf;
 
 class TestFile {
     protected int $failed;

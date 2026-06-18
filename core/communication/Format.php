@@ -15,5 +15,6 @@ interface Format extends LimitedFormat {
 
 
     public function setFormatMatcher(FormatMatcher $matcher): self;
+
     public function getTypeFromQuery(Dictionary $dictionary): ?string;
 }

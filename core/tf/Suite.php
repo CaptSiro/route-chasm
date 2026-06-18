@@ -1,9 +1,6 @@
 <?php
 
-namespace core\sptf\structs;
-
-use core\sptf\interfaces\Assertion;
-use core\sptf\TestOutcome;
+namespace core\tf;
 
 class Suite {
     protected int $passed;

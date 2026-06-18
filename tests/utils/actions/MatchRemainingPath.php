@@ -8,7 +8,8 @@ use core\actions\ActorClassName;
 use core\communication\Request;
 use core\communication\Response;
 use core\route\RouteNode;
-use core\sptf\Sptf;
+use core\tf\Test;
+use core\tf\Unit;
 
 class MatchRemainingPath implements Action {
     use ActionBindRouteNode, ActorClassName;
@@ -42,7 +43,7 @@ class MatchRemainingPath implements Action {
 
     public function perform(Request $request, Response $response): void {
         $this->performed = true;
-        Sptf::expect($request->getRemainingPath()->toString())
+        Unit::expect($request->getRemainingPath()->toString())
             ->toBe($this->expected);
     }
 }

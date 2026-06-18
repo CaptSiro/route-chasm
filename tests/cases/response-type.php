@@ -7,7 +7,8 @@ use core\communication\Response;
 use core\communication\ResponseFormat;
 use core\http\HttpHeader;
 use core\RouteChasmEnvironment;
-use core\sptf\Sptf;
+use core\tf\Test;
+use core\tf\Unit;
 
 function q(Request $request, string $name, string $value): Request {
     $request->getUrl()->getQuery()->set($name, $value);
@@ -19,7 +20,7 @@ function h(Request $request, string $header, string $value): Request {
     return $request;
 }
 
-Sptf::test("should detect response type from request", function () {
+Test::case("should detect response type from request", function () {
     $requests = [
         Format::IDENT_TEXT => [
             q(Request::test(), RouteChasmEnvironment::QUERY_RESPONSE_FORMAT, ''),
@@ -54,7 +55,7 @@ Sptf::test("should detect response type from request", function () {
     foreach ($requests as $type => $arr) {
         foreach ($arr as $request) {
             /** @var Request $request */
-            Sptf::expect($response->getFormat($request))
+            Unit::expect($response->getFormat($request))
                 ->toBe($type);
         }
     }

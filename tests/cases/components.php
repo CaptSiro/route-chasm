@@ -1,24 +1,25 @@
 <?php
 
-use core\sptf\Sptf;
+use core\tf\Test;
+use core\tf\Unit;
 use core\view\Json;
 use tests\utils\TestComponent\TestComponent;
 
-Sptf::test("component should render correct template", function () {
+Test::case("component should render correct template", function () {
     $str = "foo";
     $c = new TestComponent($str);
 
-    Sptf::expect(trim((string) $c))
+    Unit::expect(trim((string) $c))
         ->toBe($str);
 
-    Sptf::expect($c->renderTemplated($c->getResource("./TestComponentUpperCase")))
+    Unit::expect($c->renderTemplated($c->getResource("./TestComponentUpperCase")))
         ->toBe(strtoupper($str));
 });
 
-Sptf::test("serialize JsonComponent", function () {
+Test::case("serialize JsonComponent", function () {
     $data = ["error" => 418, "message" => "I'm a teapot"];
     $json = new Json($data);
 
-    Sptf::expect((string) $json)
+    Unit::expect((string) $json)
         ->toBe(json_encode($data));
 });

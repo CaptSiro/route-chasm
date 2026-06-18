@@ -1,22 +1,18 @@
 <?php
 
-namespace core\sptf\structs;
+namespace core\tf;
 
 use Closure;
 use Exception;
 
 class Func {
-    public int $invokeCount = 0;
-    public bool $hasThrown = false;
-
-
+    protected int $invokeCount = 0;
+    protected bool $hasThrown = false;
 
     public function __construct(
-        private readonly Closure $fn,
+        protected readonly Closure $fn,
         public bool $propagateExceptions = false
     ) {}
-
-
 
     /**
      * @throws Exception
@@ -37,13 +33,15 @@ class Func {
 
 
 
-    function hasBeenInvoked(): bool {
+    public function hasBeenInvoked(): bool {
         return $this->invokeCount !== 0;
     }
 
+    public function getInvokeCount(): int {
+        return $this->invokeCount;
+    }
 
-
-    function reset(): void {
+    public function reset(): void {
         $this->invokeCount = 0;
         $this->hasThrown = false;
     }

@@ -1,11 +1,12 @@
 <?php
 
 use core\route\Path;
-use core\sptf\Sptf;
+use core\tf\Test;
+use core\tf\Unit;
 
 
 
-Sptf::test("should return correct depth", function () {
+Test::case("should return correct depth", function () {
     $paths = [
         "" => 0,
         "/" => 0,
@@ -17,7 +18,7 @@ Sptf::test("should return correct depth", function () {
     ];
 
     foreach ($paths as $path => $depth) {
-        Sptf::expect(Path::depth($path))
+        Unit::expect(Path::depth($path))
             ->toBe($depth);
     }
 });

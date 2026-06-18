@@ -2,19 +2,20 @@
 
 
 
-namespace core\sptf\structs;
+namespace core\tf;
 
 use Closure;
-use core\sptf\interfaces\Assertion;
-use core\sptf\interfaces\Expect;
-use core\sptf\interfaces\Html;
+use components\tf\ExpectationMessage;
+use core\view\View;
 
 
 
 class Expectation implements Assertion, Expect {
-    private mixed $expected;
-    private Closure $compare;
-    private readonly int $line;
+    protected mixed $expected;
+
+    protected Closure $compare;
+
+    protected readonly int $line;
 
 
 
@@ -27,19 +28,27 @@ class Expectation implements Assertion, Expect {
 
 
 
+    public function getLine(): int {
+        return $this->line;
+    }
+
+    public function getActual(): mixed {
+        return $this->actual;
+    }
+
+    public function getExpected(): mixed {
+        return $this->expected;
+    }
+
     function toBe(mixed $value): self {
         $this->expected = $value;
         return $this;
     }
 
-
-
     function compare(Closure $compare): self {
         $this->compare = $compare;
         return $this;
     }
-
-
 
     function result(): bool {
         $compare = $this->compare ?? fn($a, $b) => $a === $b;
@@ -47,8 +56,7 @@ class Expectation implements Assertion, Expect {
     }
 
 
-
-    function error(): Html {
+    function error(): View {
         return new ExpectationMessage(
             "[$this->line]",
             $this->expected,

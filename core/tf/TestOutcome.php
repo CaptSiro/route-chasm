@@ -1,11 +1,17 @@
 <?php
 
-namespace core\sptf;
+namespace core\tf;
 
-enum TestOutcome: string {
+use JsonSerializable;
+
+enum TestOutcome: string implements JsonSerializable {
     case FAILED = "FAIL";
+
     case NONE = "NONE";
+
     case PASSED = "PASS";
+
+
 
     public static function fromStats(int $passed, int $failed): self {
         if ($failed !== 0) {
@@ -17,5 +23,11 @@ enum TestOutcome: string {
         }
 
         return self::PASSED;
+    }
+
+
+
+    public function jsonSerialize(): string {
+        return $this->value;
     }
 }

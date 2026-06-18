@@ -15,13 +15,14 @@ use core\route\Router;
 use core\route\RouteSegment;
 use core\route\RouteTree;
 use core\route\Trace;
-use core\sptf\Sptf;
+use core\tf\Test;
+use core\tf\Unit;
 use core\url\Url;
 use core\utils\Regex;
 use tests\utils\actions\ActCounter;
 use tests\utils\actions\MatchRemainingPath;
 
-Sptf::test("should tokenize routes correctly", function () {
+Test::case("should tokenize routes correctly", function () {
     $routes = [
         "" => [
             Token::eof(),
@@ -105,7 +106,7 @@ Sptf::test("should tokenize routes correctly", function () {
         $tokenized = [...(new Tokenizer($route))->tokenize()];
 
         foreach ($expected as $i => $token) {
-            Sptf::expect($tokenized[$i])
+            Unit::expect($tokenized[$i])
                 ->compare(
                     fn(Token $a, Token $b) => $a->getType() === $b->getType()
                         && $a->getLiteral() === $b->getLiteral()
@@ -115,7 +116,7 @@ Sptf::test("should tokenize routes correctly", function () {
     }
 });
 
-Sptf::test("should parse routes", function () {
+Test::case("should parse routes", function () {
     $any = ".+";
     $anyGroup = "$any";
 
@@ -152,11 +153,11 @@ Sptf::test("should parse routes", function () {
     foreach ($routes as $tuple) {
         [$pattern, $parameters, $expected] = $tuple;
         $route = $compiler->parse($pattern, $parameters);
-        Sptf::expect("$route")->toBe($expected);
+        Unit::expect("$route")->toBe($expected);
     }
 });
 
-Sptf::test("should reconstruct source", function () {
+Test::case("should reconstruct source", function () {
     $routes = [
         "/",
         "/foo",
@@ -177,11 +178,11 @@ Sptf::test("should reconstruct source", function () {
         $route = $compiler->parse($pattern);
 
         $v = '/'. implode('/', array_map(fn(RouteSegment $x) => $x->getSource(), $route->getSegments()));
-        Sptf::expect($pattern)->toBe($v);
+        Unit::expect($pattern)->toBe($v);
     }
 });
 
-Sptf::test("refuse to parse consecutive slashes in route", function () {
+Test::case("refuse to parse consecutive slashes in route", function () {
     $routes = [
         "//",
         "foo//bar",
@@ -199,14 +200,14 @@ Sptf::test("refuse to parse consecutive slashes in route", function () {
     foreach ($routes as $route) {
         try {
             $parser->parse($route);
-            Sptf::fail();
+            Unit::fail();
         } catch (RouteCompilerException $ignored) {
-            Sptf::pass();
+            Unit::pass();
         }
     }
 });
 
-Sptf::test("fail parsing routes", function () {
+Test::case("fail parsing routes", function () {
     $routes = [
         "[a", "b]",
         "[a[b]]",
@@ -223,14 +224,14 @@ Sptf::test("fail parsing routes", function () {
     foreach ($routes as $route) {
         try {
             $parser->parse($route);
-            Sptf::fail("Should have failed parsing path: '$route'");
+            Unit::fail("Should have failed parsing path: '$route'");
         } catch (RouteCompilerException) {
-            Sptf::pass();
+            Unit::pass();
         }
     }
 });
 
-Sptf::test("should return correct depth of route", function () {
+Test::case("should return correct depth of route", function () {
     $routes = [
         "" => 0,
         "/" => 0,
@@ -244,12 +245,12 @@ Sptf::test("should return correct depth of route", function () {
     $parser = new RouteCompiler();
 
     foreach ($routes as $route => $depth) {
-        Sptf::expect($parser->parse($route)->getDepth())
+        Unit::expect($parser->parse($route)->getDepth())
             ->toBe($depth);
     }
 });
 
-Sptf::test("should create vertex", function () {
+Test::case("should create vertex", function () {
     $foo = "foo+";
     $fooSegment = Regex::create(Regex::createNamedGroup("foo", $foo));
     $barSegment = Regex::create("bar");
@@ -263,14 +264,14 @@ Sptf::test("should create vertex", function () {
 
     $root = $tree->getRoot();
 
-    Sptf::expect(count($root->getEdges()))->toBe(1);
+    Unit::expect(count($root->getEdges()))->toBe(1);
 
     $fooEdge = $root->getEdges()[0];
-    Sptf::expect($fooEdge->get()->getRegex())->toBe($fooSegment);
-    Sptf::expect(count($fooEdge->getVertex()->getEdges()))->toBe(1);
+    Unit::expect($fooEdge->get()->getRegex())->toBe($fooSegment);
+    Unit::expect(count($fooEdge->getVertex()->getEdges()))->toBe(1);
 
     $barEdge = $fooEdge->getVertex()->getEdges()[0];
-    Sptf::expect($barEdge->get()->getRegex())->toBe($barSegment);
+    Unit::expect($barEdge->get()->getRegex())->toBe($barSegment);
 });
 
 /**
@@ -303,7 +304,7 @@ function assert_counts(array $counters, bool $reset = false): void {
     foreach ($counters as $tuple) {
         /** @var ActCounter $counter */
         [$counter, $count] = $tuple;
-        Sptf::expect($counter->getN())->toBe($count);
+        Unit::expect($counter->getN())->toBe($count);
 
         if ($counter->getN() !== $count) {
             var_dump($counter->getActorName() ." assertion failed (n != $count)");
@@ -315,7 +316,7 @@ function assert_counts(array $counters, bool $reset = false): void {
     }
 }
 
-Sptf::test("should find correct vertexes", function () {
+Test::case("should find correct vertexes", function () {
     $tree = new RouteTree();
 
     $root = new ActCounter("root");
@@ -417,7 +418,7 @@ function perform_first_non_middleware_action(array $traces): void {
     $q = Request::test();
     $p = Response::test();
 
-    Sptf::expect(count($traces) > 0)->toBe(true);
+    Unit::expect(count($traces) > 0)->toBe(true);
     if (count($traces) === 0) {
         return;
     }
@@ -432,7 +433,7 @@ function perform_first_non_middleware_action(array $traces): void {
     }
 }
 
-Sptf::test("should find RouteNodes in correct order", function () {
+Test::case("should find RouteNodes in correct order", function () {
     $tree0 = new RouteTree();
     $tree1 = new RouteTree();
 
@@ -468,7 +469,7 @@ Sptf::test("should find RouteNodes in correct order", function () {
     ], true);
 });
 
-Sptf::test("should bind Action objects correctly", function () {
+Test::case("should bind Action objects correctly", function () {
     $router = new Router();
 
     $foo = new ActCounter("foo");
@@ -483,7 +484,7 @@ Sptf::test("should bind Action objects correctly", function () {
     ]);
 });
 
-Sptf::test("should bind Router correctly", function () {
+Test::case("should bind Router correctly", function () {
     $any = new ActCounter("any");
     $foo = new ActCounter("foo");
     $bar = new ActCounter("bar");
@@ -512,11 +513,11 @@ Sptf::test("should bind Router correctly", function () {
         [$foo, 0],
     ], true);
 
-    Sptf::expect($router0->getRoute()->toPath()->toString())->toBe("/");
-    Sptf::expect($router1->getRoute()->toPath()->toString())->toBe("/bar");
+    Unit::expect($router0->getRoute()->toPath()->toString())->toBe("/");
+    Unit::expect($router1->getRoute()->toPath()->toString())->toBe("/bar");
 });
 
-Sptf::test("should return expected remaining paths", function () {
+Test::case("should return expected remaining paths", function () {
     $url = Url::from("http://localhost/request/path/to/file.txt");
 
     $request = Request::test(url: $url);
@@ -539,6 +540,6 @@ Sptf::test("should return expected remaining paths", function () {
     perform_actions($router->find($path), $request);
 
     foreach ($actions as $action) {
-        Sptf::expect($action->isPerformed())->toBe(true);
+        Unit::expect($action->isPerformed())->toBe(true);
     }
 });

@@ -1,11 +1,11 @@
 <?php
 
-namespace core\sptf\structs;
+namespace core\tf;
 
-use core\sptf\interfaces\Assertion;
-use core\sptf\interfaces\Html;
+use components\tf\ErrorMessage;
+use core\view\View;
 
-readonly class Result implements Assertion {
+readonly class TestResult implements Assertion {
     private int $line;
     private string $message;
 
@@ -27,11 +27,19 @@ readonly class Result implements Assertion {
         $this->message = $message;
     }
 
-    function result(): bool {
+    public function getLine(): int {
+        return $this->line;
+    }
+
+    public function getMessage(): string {
+        return $this->message;
+    }
+
+    public function result(): bool {
         return $this->hasPassed;
     }
 
-    function error(): Html {
+    public function error(): View {
         return new ErrorMessage(
             "[$this->line]",
             $this->message ?? "Assertion has not been passed"

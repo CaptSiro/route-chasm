@@ -1,9 +1,9 @@
 <?php
 
-namespace core\sptf\structs;
+namespace components\tf;
 
-use core\sptf\interfaces\Assertion;
-use core\sptf\interfaces\Html;
+use core\tf\Assertion;
+use core\view\View;
 use Exception;
 
 class CaughtException extends Interrupt implements Assertion {
@@ -23,7 +23,7 @@ class CaughtException extends Interrupt implements Assertion {
         return false;
     }
 
-    function error(): Html {
+    function error(): View {
         return $this;
     }
 }
