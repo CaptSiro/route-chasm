@@ -2,13 +2,11 @@
 
 namespace components\Search;
 
-use core\communication\Format;
 use core\view\Component;
 use core\view\FormatAble;
 use core\view\FormatAbleTrait;
 use core\view\Formatter;
 use core\view\View;
-use JsonSerializable;
 
 class SearchResults extends Component implements FormatAble {
     use FormatAbleTrait;

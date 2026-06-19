@@ -4,7 +4,7 @@ namespace models\Language\Lexicon;
 
 use components\forms\controls\Button;
 use components\forms\controls\HiddenField;
-use components\forms\controls\Select\Select;
+use components\forms\controls\Select;
 use components\forms\controls\TextField;
 use components\Icon;
 use components\layout\Grid\description\Grid;

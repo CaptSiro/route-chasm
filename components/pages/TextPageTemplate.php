@@ -4,7 +4,7 @@ namespace components\pages;
 
 use components\Admin\Nexus\Editor\EditorBehavior;
 use components\layout\ToolBar\ToolBarItem;
-use components\Lumora\Display\Display;
+use components\Lumora\Display;
 use components\Lumora\Editor\Editor;
 use core\actions\Action;
 use core\route\Route;

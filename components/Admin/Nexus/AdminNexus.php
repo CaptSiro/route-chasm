@@ -23,7 +23,6 @@ use core\route\Router;
 use core\url\Url;
 use core\view\ContainerContent;
 use core\view\TemplateSlots;
-use core\view\View;
 use models\Privilege\Privilege;
 
 class AdminNexus extends ContainerContent {

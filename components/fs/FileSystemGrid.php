@@ -2,7 +2,6 @@
 
 namespace components\fs;
 
-use components\fs\FileSystemDropArea\FileSystemDropArea;
 use components\layout\Grid\GridLayout;
 use core\view\Renderer;
 use core\view\View;

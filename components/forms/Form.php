@@ -2,8 +2,8 @@
 
 namespace components\forms;
 
-use components\forms\controls\MultiSelect\MultiSelect;
-use components\forms\controls\Select\Select;
+use components\forms\controls\MultiSelect;
+use components\forms\controls\Select;
 use components\html\Attribute;
 use components\html\HtmlAttribute;
 use components\layout\Layout;

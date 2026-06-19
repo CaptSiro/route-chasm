@@ -5,7 +5,7 @@ namespace core\admin;
 use components\Admin\Nexus\AdminNexus;
 use components\Admin\PhpInfo;
 use components\Admin\SptfTests\SptfTests;
-use components\Admin\User\AdminUserEditor;
+use components\Admin\AdminUserEditor;
 use components\docs\Docs;
 use components\docs\DocsDashboard;
 use components\forms\description\FormDescription;

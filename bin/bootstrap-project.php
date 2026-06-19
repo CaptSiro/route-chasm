@@ -2,7 +2,7 @@
 
 // Location locked file
 
-use components\Admin\Home\AdminHome;
+use components\Admin\AdminHome;
 use components\docs\Docs;
 use core\route\Path;
 use example\components\Home;

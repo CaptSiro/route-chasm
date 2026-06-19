@@ -2,7 +2,7 @@
 
 namespace core\actions\Assets\policy;
 
-use components\Explorer\Explorer;
+use components\Explorer;
 use core\actions\Assets\Assets;
 use core\App;
 
@@ -15,9 +15,9 @@ class ShowExplorerPolicy implements DirectoryPolicy {
         $app->getResponse()
             ->renderRoot(new Explorer(
                 $path,
-                basename($assets->getDirectories()) .'/'. $remaining,
+                basename($assets->getDirectories()[0]) .'/'. $remaining, // todo fix for multiple asset directories
                 $app->getRequest()->getUrl()->getPath()->toString(),
-                $assets->getDirectories() !== $path
+                $assets->getDirectories()[0] !== $path
             ));
     }
 }

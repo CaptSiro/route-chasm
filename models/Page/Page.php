@@ -3,7 +3,7 @@
 namespace models\Page;
 
 use components\Admin\Nexus\AdminNexus;
-use components\Admin\Page\AdminPageEditor;
+use components\Admin\AdminPageEditor;
 use components\forms\description\DateTime;
 use components\forms\description\Select;
 use components\pages\PageFactory;

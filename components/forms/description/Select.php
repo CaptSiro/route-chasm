@@ -4,9 +4,6 @@ namespace components\forms\description;
 
 use Attribute;
 use components\forms\controls\Control;
-use components\forms\description\BindProperty;
-use components\forms\description\ControlAttribute;
-use components\forms\description\IsFirst;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Select implements ControlAttribute {
@@ -34,7 +31,7 @@ class Select implements ControlAttribute {
     }
 
     public function getControl(): Control {
-        return new \components\forms\controls\Select\Select(
+        return new \components\forms\controls\Select(
             $this->name,
             $this->label,
             $this->getValues(),

@@ -11,7 +11,7 @@ use components\forms\controls\TextField;
 use components\forms\Form;
 use components\layout\Column;
 use components\layout\Layout;
-use components\layout\Tabs\Tabs;
+use components\layout\Tabs;
 use components\Message\Message;
 use core\App;
 use core\database\sql\Model;
