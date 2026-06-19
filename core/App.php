@@ -239,7 +239,7 @@ class App implements Loader {
     }
 
     public static function getEnvStatic(): ?Env {
-        $env = App::getSource('.env');
+        $env = Path::join(DIRECTORY_REPOSITORY, '.env');
         return file_exists($env)
             ? Env::fromFile($env)
             : null;
