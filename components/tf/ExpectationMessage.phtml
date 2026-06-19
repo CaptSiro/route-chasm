@@ -1,0 +1,18 @@
+<?php /** @var ExpectationMessage $this */
+
+use components\tf\ExpectationMessage;
+use core\view\Html;
+
+?><div>
+    <div class='index'>
+        <?= Html::escape($this->hint) ?>
+    </div>
+
+    <div class='expected'>
+        Expected: <?= Html::escape(json_encode($this->expected)) ?>
+    </div>
+
+    <div class='actual'>
+        Got: <?= Html::escape(json_encode($this->actual)) ?>
+    </div>
+</div>

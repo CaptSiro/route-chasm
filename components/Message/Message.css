@@ -1,0 +1,76 @@
+:root {
+    --message-error-background: #2a1616;
+    --message-error-border: #dc2626;
+    --message-error-color: #fca5a5;
+
+    --message-warning-background: #2b2412;
+    --message-warning-border: #f59e0b;
+    --message-warning-color: #fcd34d;
+
+    --message-notice-background: #14261a;
+    --message-notice-border: #22c55e;
+    --message-notice-color: #86efac;
+
+    --message-info-background: #142033;
+    --message-info-border: #3b82f6;
+    --message-info-color: #93c5fd;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --message-error-background: #fef2f2;
+        --message-error-border: #dc2626;
+        --message-error-color: #991b1b;
+
+        --message-warning-background: #fffbeb;
+        --message-warning-border: #f59e0b;
+        --message-warning-color: #92400e;
+
+        --message-notice-background: #f0fdf4;
+        --message-notice-border: #22c55e;
+        --message-notice-color: #166534;
+
+        --message-info-background: #eff6ff;
+        --message-info-border: #3b82f6;
+        --message-info-color: #1e40af;
+    }
+}
+
+
+
+.message {
+    display: flex;
+    gap: var(--gap);
+    padding: var(--gap);
+    border-left: 4px solid;
+    border-radius: var(--border-radius);
+}
+
+.message-title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.message[data-type="error"] {
+    background-color: var(--message-error-background);
+    border-color: var(--message-error-border);
+    color: var(--message-error-color);
+}
+
+.message[data-type="warning"] {
+    background-color: var(--message-warning-background);
+    border-color: var(--message-warning-border);
+    color: var(--message-warning-color);
+}
+
+.message[data-type="notice"] {
+    background-color: var(--message-notice-background);
+    border-color: var(--message-notice-border);
+    color: var(--message-notice-color);
+}
+
+.message[data-type="info"] {
+    background-color: var(--message-info-background);
+    border-color: var(--message-info-border);
+    color: var(--message-info-color);
+}

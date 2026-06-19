@@ -1,0 +1,14 @@
+<?php /** @var Message $this */
+
+use components\Message\Message;
+use core\sideloader\importers\Css\Css;
+use core\view\Html;
+
+Css::importResource($this);
+
+?><div
+    class="message"
+    data-type="<?= Html::escapeAttribute(strtolower($this->type->value)) ?>"
+>
+    <?= $this->content ?>
+</div>

@@ -1,0 +1,16 @@
+<?php /** @var MultiSubmit $this */
+
+use components\forms\controls\MultiSubmit;
+
+?><div class="form-actions">
+    <?php foreach ($this->actions as $action): ?>
+        <button
+            type="<?= $action->getType() ?>"
+            <?php if (!is_null($action->getName())): ?>
+                name="<?= $action->getName() ?>"
+                value="<?= $action->getValue() ?>"
+            <?php endif; ?>
+            <?= $action->stringifyAttributes() ?>
+        ><?= $action->getLabel() ?></button>
+    <?php endforeach; ?>
+</div>

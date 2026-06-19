@@ -1,0 +1,12 @@
+<?php /** @var FileContent $this */
+
+use components\fs\FileContent\FileContent;
+use core\view\Html;
+
+?><div class="file-content" <?= $this->stringifyAttributes() ?>>
+    <pre
+        <?php if (!$this->readonly): ?>
+            contenteditable="true"
+        <?php endif; ?>
+    ><?= Html::escape(file_get_contents($this->filePath)) ?></pre>
+</div>

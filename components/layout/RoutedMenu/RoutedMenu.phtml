@@ -1,0 +1,41 @@
+<?php /** @var Menu $this */
+
+use components\Icon;
+use components\layout\Menu\Menu;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::import($this->getResource('menu.js'));
+Css::import($this->getResource('menu.css'));
+
+?>
+<?php if ($this->item->hasChildren()): ?>
+    <div
+        class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isRoot() ? '' : 'hide' ?>"
+        x-init="menu_init"
+        style="--menu-level: <?= $this->level ?>"
+    >
+        <?php foreach ($this->item->getChildren() as $child): ?>
+            <?php $subMenu = $this->createSubMenu($child) ?>
+            <div
+                class="menu-item <?= $subMenu->getStateClasses() ?>"
+            >
+                <div class="head">
+                    <?= $subMenu->createItem() ?>
+                    <?php if ($subMenu->createItem()->hasChildren()): ?>
+                        <div class="dropdown-control">
+                            <div class="<?= $subMenu->isExpanded ? 'hide' : '' ?>" data-action="show">
+                                <?= Icon::nf('nf-fa-angle_right', '>') ?>
+                            </div>
+                            <div class="<?= $subMenu->isExpanded ? '' : 'hide' ?>" data-action="hide">
+                                <?= Icon::nf('nf-fa-angle_down', 'v') ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <?= $subMenu ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

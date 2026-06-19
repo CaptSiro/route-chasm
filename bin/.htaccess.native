@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+  Options -Indexes
+  RewriteEngine on
+  RewriteRule (.*) $$PROJECT$$/index.php [QSA,END]
+</IfModule>

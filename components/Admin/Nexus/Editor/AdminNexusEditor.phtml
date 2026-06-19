@@ -1,0 +1,17 @@
+<?php /** @var AdminNexusEditor $this */
+
+use components\Admin\Nexus\Editor\AdminNexusEditor;
+
+?><section>
+    <div class="header">
+        <h1><?= $this->getTitle() ?></h1>
+
+        <?php if (!is_null($this->headerContent)): ?>
+            <div class="header-content row">
+                <?= $this->headerContent ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <?= $this->getForm() ?>
+</section>

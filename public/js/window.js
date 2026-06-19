@@ -276,7 +276,9 @@ function window_init(element) {
         return;
     }
 
-    element.id = std_id_html(8);
+    if (element.id === '') {
+        element.id = std_id_html(8);
+    }
 
     if (!element.parentElement?.classList.contains("window-overlay-active")) {
         windowOverlay.appendChild(element);

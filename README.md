@@ -1,40 +1,41 @@
-# RouteChasm v1.1.0
+# RouteChasm v2.0.0
 
 Successor of RoutePass, a PHP Framework
 
 Documentation coming soon. 
 
-In the meantime, check out `index.php` for routing examples, `src/models` for database abstraction, and `src/components` for rendering views.
+In the meantime, check out `./bin/bootstrap-project.php` for routing examples, `./models/` for database abstraction, and `./components/` for rendering views.
 
-This library is still in heavy development, and all features are subject to change.
+This framework is still in heavy development, and all features are subject to change.
 
-# Installation
+# Project instantiation
 
-## Project setup
+Prerequisite: PHP is installed on the machine and php scripts are able to be run in the console
+
+Follow the steps outlined in https://github.com/CaptSiro/route-chasm-template to instantiate a new RouteChasm project.
+
+# Framework development
+
+## Framework setup
 
 Either fork the repository or:
 
 ```bash
-git clone https://github.com/CaptSiro/route-chasm.git <project>
-cd <project>
-remove-.git-directory
-git init
-git remote add origin <project-git>
-git add .
-git commit -m "Initial commit from RouteChasm"
-git push -u origin main
+git clone https://github.com/CaptSiro/route-chasm.git
+cd route-chasm
 ```
 
 ## Docker
 
 The repo includes a minimal Docker setup for Apache PHP and MySQL.
 The .env file might need manual editing.
+The docker setup may be outdated because it is not the main way the framework is developed.
 
 1. Create local files:
 
 ```bash
-cp .env.docker .env
-cp .htaccess.docker .htaccess
+cp bin/.env.docker .env
+cp bin/.htaccess.docker .htaccess
 ```
 
 2. Start the containers:
@@ -52,7 +53,7 @@ http://localhost:8000
 Notes:
 
 - MySQL is exposed on `localhost:3306`
-- The database schema is initialized automatically from `src/core/sql/001-init.sql`
+- The database schema is initialized automatically from `./sql/001-init.sql`
 - The PHP container enables `curl` and configures `curl.cainfo` and `openssl.cafile` to use the system CA bundle for AI HTTPS requests
 - The Docker env defaults expect the app to run at the domain in `.env`:
 
@@ -103,17 +104,17 @@ to the curl.cainfo field in php.ini file. This will enable the server side AI ge
 1. Create local files:
 
 ```bash
-cp .env.default .env
-cp .htaccess.default .htaccess
+cp bin/.env.native .env
+cp bin/.htaccess.native .htaccess
 ```
 
 2. Edit the .htaccess.default file depending on your installation location:
 
 ```
     ...
-    RewriteRule (.*) /<project-or-nothing>/index.php [QSA,END]
+    RewriteRule (.*) /<rc-directory-or-nothing>/index.php [QSA,END]
     ...
 ```
 
 3. Copy or rename the .env.default file to .env and edit it. All `PROJECT_*` entries are optional as well as `ADMIN_LOGIN_PASSWORD`:
-4. Run the `001-init.sql` file located in `src/core/sql`.
+4. Run the `001-init.sql` file located in `./sql/`.

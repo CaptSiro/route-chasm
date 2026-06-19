@@ -1,0 +1,18 @@
+<?php /** @var Input $this */
+
+use components\forms\controls\Input;
+
+$id = $this->getId();
+
+?><div class="form-control <?= $this->cssClass ?>">
+    <?php if (!empty($this->label)): ?>
+        <label for="<?= $id ?>"><?= $this->label ?></label>
+    <?php endif; ?>
+    <input
+        type="<?= $this->type ?>"
+        value="<?= $this->value ?>"
+        name="<?= $this->name ?>"
+        id="<?= $id ?>"
+        <?= $this->stringifyAttributes() ?>
+    >
+</div>

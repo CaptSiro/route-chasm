@@ -1,9 +1,0 @@
-<?php /** @var SaveErrorGroup $this */
-
-use components\core\SaveError\Group\SaveErrorGroup;
-
-?><group>
-    <?php foreach ($this->errors as $error): ?>
-        <?= $error->render() ?>
-    <?php endforeach; ?>
-</group>

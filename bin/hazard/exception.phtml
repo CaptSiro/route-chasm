@@ -1,0 +1,153 @@
+<?php /** @var Exception $exception */
+
+use core\view\Html;
+
+?><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><?= Html::escape($exception->getMessage()) ?></title>
+
+    <style>
+        @import "https://www.nerdfonts.com/assets/css/webfont.css";
+
+        :root {
+            --container-0: #171717;
+            --container-1: #2e2e2e;
+            --container-2: #454545;
+            --container-3: #5d5d5d;
+            --container-4: #747474;
+            --text-0: #ffffff;
+            --text-1: #e8e8e8;
+            --text-2: #d1d1d1;
+            --accent-0: #9b3427;
+            --accent-1: #b34a32;
+            --accent-2: #c75c38;
+            --accent-3: #d17147;
+
+            --border-radius: 8px;
+            --border-radius-smaller: 4px;
+            --gap: 16px;
+            --gap-smaller: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 16px 0;
+        }
+
+        html {
+            font-family: Calibri, serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--gap);
+        }
+
+        body section {
+            width: min(650px, 90vw);
+        }
+        
+        .array h3:hover {
+            cursor: pointer;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1,
+        .key {
+            color: crimson;
+        }
+
+        .key::before,
+        .key::after {
+            content: '"';
+            color: crimson;
+        }
+
+        .file,
+        .separator {
+            color: #737373;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <h1><?= Html::escape(get_class($exception)) ?>: <?= Html::escape($exception->getMessage()) ?></h1>
+    </section>
+
+    <section>
+        <div class="file">
+            at <?= Html::escape($exception->getFile()) ?>:<?= Html::escape($exception->getLine()) ?>
+        </div>
+
+        <?php foreach ($exception->getTrace() as $trace): ?>
+            <?php if (isset($trace['file'])): ?>
+                <div class="file">
+                    at <?= $trace['file'] ?>:<?= $trace['line'] ?>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </section>
+
+    <section>
+        <div class="array">
+            <h3>$_SERVER</h3>
+            <div class="content hide">
+                <?php exc_dump_array($_SERVER); ?>
+            </div>
+        </div>
+
+        <div class="array">
+            <h3>$_GET</h3>
+            <div class="content hide">
+                <?php exc_dump_array($_GET); ?>
+            </div>
+        </div>
+
+        <div class="array">
+            <h3>$_POST</h3>
+            <div class="content hide">
+                <?php exc_dump_array($_POST); ?>
+            </div>
+        </div>
+
+        <div class="array">
+            <h3>$_FILES</h3>
+            <div class="content hide">
+                <?php exc_dump_array($_FILES); ?>
+            </div>
+        </div>
+    </section>
+</body>
+<script>
+    window.addEventListener("load", () => {
+        for (const h3 of document.querySelectorAll(".array h3")) {
+            h3.addEventListener('click', () => {
+                const array = h3.closest('.array');
+                const content = array.querySelector('.content');
+                content?.classList.toggle('hide');
+            });
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,86 @@
+<?php /** @var DocumentPage $this */
+
+use components\docs\DocumentPage;
+use components\Icon;
+use components\layout\PageMenu\Footer;
+use components\Markdown\Markdown;
+use components\pages\Article\Article;
+use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
+use models\Privilege\Privilege;
+
+Javascript::import($this->getResource('docs.js'));
+Markdown::importAssets();
+Article::importAssets();
+
+?><?= $this->createHeader() ?>
+
+<div class="page-section bc-no-margin">
+    <?= $this->breadCrumbs ?>
+</div>
+
+<?php if (is_null($this->directory)): ?>
+    <div class="page-container">
+        <div class="page" x-init="docs_documentPage">
+            <aside class="article-toc-wrapper">
+                <div class="article-toc-container">
+                    <h3><?= $this->tr("Table of Contents") ?></h3>
+
+                    <div class="article-toc-content"></div>
+                </div>
+
+                <div class="article-related-container column">
+                    <h3><?= $this->tr("Related") ?></h3>
+
+                    <div class="article-related-content column"></div>
+                </div>
+            </aside>
+
+            <?php if ($this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE))): ?>
+                <article class="article">
+                    <div class="md-editor-tool-bar row">
+                        <button class="md-edit">
+                            <?= Icon::edit() ?>
+                        </button>
+
+                        <button class="md-save">
+                            <?= Icon::nf('nf-fa-save', $this->tr('Save')) ?>
+                        </button>
+
+                        <button class="md-re-generate">
+                            <?= Icon::nf('nf-fa-arrows_rotate', $this->tr('Re-generate')) ?>
+                        </button>
+                    </div>
+
+                    <div class="article-editor-wrapper">
+                        <pre class="article-editor" contenteditable="true"></pre>
+                    </div>
+
+                    <section class="article-content"></section>
+                </article>
+            <?php else: ?>
+                <article class="article">
+                    <section class="article-content"></section>
+                </article>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php else: ?>
+    <div class="page-container">
+        <ul class="page-section column">
+            <?php foreach ($this->getEntries() as $entry => $path): ?>
+                <?php if (is_dir($path)): ?>
+                    <a href="<?= $this->docs->createEntryUrl($path) ?>">
+                        <?= Icon::nf('nf-fa-folder') ?> <?= Html::escape($entry) ?>
+                    </a>
+                <?php else: ?>
+                    <a href="<?= $this->docs->createEntryUrl($path) ?>">
+                        <?= Html::escape($entry) ?>
+                    </a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<?= Footer::default() ?>

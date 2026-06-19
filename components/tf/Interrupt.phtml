@@ -1,0 +1,17 @@
+<?php /** @var Interrupt $this */
+
+use components\tf\Interrupt;
+use core\view\Html;
+
+?><div class='assertion-failed'>
+    <?= Html::escape($this->type) ?>: <?= Html::escape($this->message) ?>
+</div>
+
+<?php foreach ($this->trace as $t): ?>
+    <?php if (isset($t["file"]) && isset($t["line"])): ?>
+        <div class='index'>
+            <span style='width: 1em'></span>
+            at <?= Html::escape($t['file']) ?>:<?= Html::escape($t['line']) ?>
+        </div>
+    <?php endif; ?>
+<?php endforeach; ?>
