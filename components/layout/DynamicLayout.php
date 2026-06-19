@@ -6,12 +6,12 @@ use core\view\View;
 
 trait DynamicLayout {
     /**
-     * @var array<View> $children
+     * @var array<View|string> $children
      */
     private array $children = [];
     private float $widthPercentage;
 
-    public function add(View $child): static {
+    public function add(View|string $child): static {
         $this->children[] = $child;
         return $this;
     }

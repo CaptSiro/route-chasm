@@ -1,4 +1,4 @@
-<?php /** @var \components\layout\Row $this */
+<?php /** @var Row $this */
 
 use components\layout\Row;
 
@@ -8,6 +8,6 @@ use components\layout\Row;
     <?= $this->getStyle() ?>
 >
     <?php foreach ($this->children as $child): ?>
-        <?= $child->render() ?>
+        <?= $child ?>
     <?php endforeach; ?>
 </div>
