@@ -4,8 +4,9 @@ namespace components\layout\Spotlight;
 
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 
-class Spotlight implements View {
+class Spotlight implements ViewTemplate {
     use Renderer;
 
 

@@ -3,9 +3,9 @@
 namespace components\ai\ArticleGeneration;
 
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class ArticleGenerationOptions implements View {
+class ArticleGenerationOptions implements ViewTemplate {
     use Renderer;
 
     public function __construct(

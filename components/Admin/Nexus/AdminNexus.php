@@ -4,8 +4,9 @@ namespace components\Admin\Nexus;
 
 use components\layout\Grid\GridLayout;
 use components\layout\Grid\GridLayoutFactory;
-use components\Message;
 use components\layout\WebPage\AdminWebPage;
+use components\Message\Message;
+use components\Message\MessageType;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\Request;
@@ -160,7 +161,10 @@ class AdminNexus extends ContainerContent {
         $grid = $this->createGrid();
 
         if (is_null($grid)) {
-            return new Message($this->tr("Could not create table, because the description is empty"));
+            return new Message(
+                $this->tr("Could not create table, because the description is empty"),
+                MessageType::ERROR
+            );
         }
 
         if ($this->canAddGridControls()) {

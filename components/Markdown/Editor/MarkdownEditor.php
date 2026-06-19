@@ -5,9 +5,9 @@ namespace components\Markdown\Editor;
 use components\html\Html;
 use components\forms\Form;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class MarkdownEditor implements View {
+class MarkdownEditor implements ViewTemplate {
     use Renderer;
 
 

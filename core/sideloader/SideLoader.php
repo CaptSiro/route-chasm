@@ -21,10 +21,11 @@ use core\utils\Regex;
 use core\view\BufferTransform;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 use models\Setting\Setting;
 use models\SideLoaderRecord;
 
-class SideLoader implements View {
+class SideLoader implements ViewTemplate {
     use Renderer, Singleton;
 
 

@@ -4,10 +4,10 @@ namespace components\ai;
 
 use core\ResourceLoader;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 use JsonSerializable;
 
-class InputMessage implements View, JsonSerializable {
+class InputMessage implements ViewTemplate, JsonSerializable {
     use Renderer, ResourceLoader;
 
     const ROLE_SYSTEM = 'system';

@@ -3,9 +3,9 @@
 namespace components\layout\Spotlight;
 
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class SpotlightSwitchLink implements View {
+class SpotlightSwitchLink implements ViewTemplate {
     use Renderer;
 
     public static function createAttributes(string $label): string {

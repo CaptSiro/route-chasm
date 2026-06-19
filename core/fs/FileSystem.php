@@ -12,7 +12,7 @@ use components\html\Html;
 use components\layout\BreadCrumbs\BreadCrumbs;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\GridLayoutFactory;
-use components\Message;
+use components\Message\Message;
 use core\actions\Action;
 use core\App;
 use core\communication\UploadedFile;

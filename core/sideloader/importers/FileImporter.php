@@ -3,9 +3,9 @@
 namespace core\sideloader\importers;
 
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class FileImporter implements View {
+class FileImporter implements ViewTemplate {
     use Renderer;
 
     protected array $files;

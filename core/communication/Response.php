@@ -2,7 +2,8 @@
 
 namespace core\communication;
 
-use components\HttpMessage;
+use components\Message\Message;
+use components\Message\MessageType;
 use core\App;
 use core\http\HttpCode;
 use core\http\HttpHeader;
@@ -210,11 +211,13 @@ class Response {
         $this->render($view->getRoot(), $doFlushResponse);
     }
 
-    public function sendMessage(string $message, int $httpCode): void {
+    public function sendMessage(string $message, int $httpCode, MessageType $type = MessageType::ERROR): void {
+        $this->setStatus($httpCode);
+
         $this->render(
-            new HttpMessage(
+            new Message(
                 $message,
-                $httpCode,
+                $type,
                 1
             ),
         );

@@ -13,12 +13,15 @@ use core\communication\Response;
 use core\fs\FileSystem;
 use core\fs\variants\FileVariantTransformer;
 use core\route\RouteNode;
+use core\view\FormatAble;
+use core\view\FormatAbleTrait;
 use core\view\Formatter;
 use core\view\View;
+use core\view\ViewTemplate;
 use JsonSerializable;
 
-class FileVariantTransformers implements View, Action, JsonSerializable {
-    use ActionBindRouteNode, ActorClassName;
+class FileVariantTransformers implements ViewTemplate, Action, FormatAble {
+    use ActionBindRouteNode, ActorClassName, FormatAbleTrait;
 
 
 
@@ -32,35 +35,7 @@ class FileVariantTransformers implements View, Action, JsonSerializable {
         protected string $selectName = self::class,
         protected string $selectLabel = 'Transformers'
     ) {
-        $this->formatter = new Formatter(fn($type) => match ($type) {
-            Format::IDENT_HTML => $this->renderSelect(),
-            default => json_encode($this)
-        });
-    }
-
-
-
-    // View
-    public function render(): string {
-        return $this->formatter->render();
-    }
-
-    protected function renderSelect(): View {
-        $values = [];
-        foreach ($this->transformers as $transformer) {
-            $values[FileSystem::createVariantIdentifier($transformer)] = $transformer->getTransformerLabel();
-        }
-
-        Form::importAssets();
-        return new Select($this->selectName, $this->selectLabel, $values);
-    }
-
-    public function getRoot(): View {
-        return $this;
-    }
-
-    public function __toString(): string {
-        return $this->render();
+        $this->setFormatter(Formatter::default($this));
     }
 
 
@@ -80,7 +55,17 @@ class FileVariantTransformers implements View, Action, JsonSerializable {
 
 
 
-    // JsonSerializable
+    // FormatAble
+    public function toHtml(): string {
+        $values = [];
+        foreach ($this->transformers as $transformer) {
+            $values[FileSystem::createVariantIdentifier($transformer)] = $transformer->getTransformerLabel();
+        }
+
+        Form::importAssets();
+        return new Select($this->selectName, $this->selectLabel, $values);
+    }
+
     public function jsonSerialize(): array {
         $json = [];
 

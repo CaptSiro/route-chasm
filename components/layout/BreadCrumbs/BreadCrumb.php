@@ -3,9 +3,9 @@
 namespace components\layout\BreadCrumbs;
 
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class BreadCrumb implements View {
+class BreadCrumb implements ViewTemplate {
     use Renderer;
 
 

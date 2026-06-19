@@ -5,9 +5,10 @@ namespace components\layout\PageMenu;
 use components\Search\HeaderSearch\HeaderSearch;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 use models\Menu;
 
-class Header implements View {
+class Header implements ViewTemplate {
     use Renderer;
 
 

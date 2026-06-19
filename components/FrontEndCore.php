@@ -5,10 +5,10 @@ namespace components;
 use core\configs\AppConfig;
 use core\route\Path;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 use function glob;
 
-class FrontEndCore implements View {
+class FrontEndCore implements ViewTemplate {
     use Renderer;
 
     protected function getPublicSources(string $path, string $pattern): array {

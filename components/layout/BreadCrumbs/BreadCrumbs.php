@@ -5,8 +5,9 @@ namespace components\layout\BreadCrumbs;
 use core\RouteChasmEnvironment;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 
-class BreadCrumbs implements View {
+class BreadCrumbs implements ViewTemplate {
     use Renderer;
 
     /**

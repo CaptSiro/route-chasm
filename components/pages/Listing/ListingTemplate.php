@@ -3,7 +3,7 @@
 namespace components\pages\Listing;
 
 use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Message;
+use components\Message\Message;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use components\pages\Wireframe;

@@ -12,12 +12,13 @@ use core\ResourceLoader;
 use core\utils\Strings;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 use models\Language\Language;
 use models\Language\Lexicon\Phrase;
 use models\Language\Lexicon\Rule;
 use models\Language\Lexicon\Translation;
 
-class AdminPhraseAiTranslator implements View {
+class AdminPhraseAiTranslator implements ViewTemplate {
     use Renderer, ResourceLoader;
 
     public const AI_MODEL = 'gpt-4o-mini';

@@ -10,9 +10,9 @@ use core\collections\graph\Vertex;
 use core\route\Route;
 use core\route\RouteExtend;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class ToolBar implements Graph, View {
+class ToolBar implements Graph, ViewTemplate {
     use Renderer;
 
 

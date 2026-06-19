@@ -8,9 +8,10 @@ use components\forms\controls\Submit;
 use components\forms\controls\TextField;
 use components\forms\Form;
 use components\layout\Spotlight\Spotlight;
-use components\Message;
 use components\layout\Spotlight\SpotlightSwitchLink;
 use components\layout\WebPage\WebPage;
+use components\Message\Message;
+use components\Message\MessageType;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\Request;
@@ -154,13 +155,17 @@ class AdminLogin extends ContainerContent {
                     if (!$this->useEnvPasswordMethod()) {
                         $response->setStatus(HttpCode::CE_METHOD_NOT_ALLOWED);
                         $response->renderRoot(new Message(
-                            $this->tr('.env password method is not allowed')
+                            $this->tr('.env password method is not allowed'),
+                            MessageType::ERROR
                         ));
                     }
 
                     if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ENV_ADMIN_LOGIN_PASSWORD) !== $password) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message($this->tr('The password is wrong')));
+                        $response->renderRoot(new Message(
+                            $this->tr('The password is wrong'),
+                            MessageType::ERROR
+                        ));
                     }
 
                     User::fromTag(User::TAG_ROOT)?->login();
@@ -176,18 +181,25 @@ class AdminLogin extends ContainerContent {
 
                     if (is_null($user)) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message($this->tr('User not found')));
+                        $response->renderRoot(new Message(
+                            $this->tr('User not found'),
+                            MessageType::ERROR
+                        ));
                     }
 
                     if (!password_verify($password, $user->password)) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message($this->tr('The password is wrong')));
+                        $response->renderRoot(new Message(
+                            $this->tr('The password is wrong'),
+                            MessageType::ERROR
+                        ));
                     }
 
                     if (!$user->isAdmin()) {
                         $response->setStatus(HttpCode::CE_BAD_REQUEST);
                         $response->renderRoot(new Message(
-                            $this->tr('The user does not have adequate privilege to login as Admin')
+                            $this->tr('The user does not have adequate privilege to login as Admin'),
+                            MessageType::ERROR
                         ));
                     }
 

@@ -4,17 +4,19 @@ namespace components\Search;
 
 use core\communication\Format;
 use core\view\Component;
+use core\view\FormatAble;
+use core\view\FormatAbleTrait;
 use core\view\Formatter;
 use core\view\View;
 use JsonSerializable;
 
-class SearchResults extends Component implements JsonSerializable {
-    protected Formatter $formatter;
+class SearchResults extends Component implements FormatAble {
+    use FormatAbleTrait;
 
 
 
     /**
-     * @param array<View> $results
+     * @param array<FormatAble> $results
      */
     public function __construct(
         protected array $results,
@@ -23,17 +25,10 @@ class SearchResults extends Component implements JsonSerializable {
         parent::__construct();
         $this->setLexiconGroup(Search::LEXICON_GROUP);
 
-        $this->formatter = new Formatter(fn(string $format) => match ($format) {
-            Format::IDENT_HTML => parent::render(),
-            default => json_encode($this)
-        });
+        $this->setFormatter(Formatter::default($this));
     }
 
 
-
-    public function render(): string {
-        return $this->formatter->render();
-    }
 
     public function jsonSerialize(): array {
         return $this->results;

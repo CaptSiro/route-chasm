@@ -3,9 +3,9 @@
 namespace core\sideloader\api;
 
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class SideLoaderApi implements View {
+class SideLoaderApi implements ViewTemplate {
     use Renderer;
 
     public function __construct(

@@ -7,6 +7,7 @@ use core\sideloader\Importer;
 use core\sideloader\SideLoader;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 
 class Css implements Importer, View {
     use FileImporter, Renderer;
@@ -19,6 +20,10 @@ class Css implements Importer, View {
     public static function import(string $file): void {
         SideLoader::getInstance()
             ->import(self::FILE_EXTENSION, $file);
+    }
+
+    public static function importResource(ViewTemplate $view): void {
+        self::import($view->getResource($view->getClass() . '.css'));
     }
 
 

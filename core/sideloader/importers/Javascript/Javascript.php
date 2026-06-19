@@ -6,9 +6,9 @@ use core\sideloader\FileImporter;
 use core\sideloader\Importer;
 use core\sideloader\SideLoader;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class Javascript implements Importer, View {
+class Javascript implements Importer, ViewTemplate {
     use Renderer, FileImporter;
 
     public const FILE_EXTENSION = 'js';

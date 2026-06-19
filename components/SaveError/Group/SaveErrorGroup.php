@@ -2,16 +2,17 @@
 
 namespace components\SaveError\Group;
 
+use components\Message\MessageType;
 use components\SaveError\SaveError;
 use core\App;
-use core\communication\Format;
 use core\http\HttpCode;
+use core\view\FormatAble;
+use core\view\FormatAbleTrait;
 use core\view\Formatter;
-use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class SaveErrorGroup implements View {
-    use Renderer;
+class SaveErrorGroup implements ViewTemplate, FormatAble {
+    use FormatAbleTrait;
 
     /**
      * @param string $separator
@@ -27,28 +28,38 @@ class SaveErrorGroup implements View {
 
 
 
-    protected Formatter $formatter;
-
     public function __construct(
         protected array $errors,
         protected int $code = HttpCode::CE_BAD_REQUEST
     ) {
-        $this->formatter = new Formatter(fn($type) => match ($type) {
-            Format::IDENT_HTML => $this->renderTemplated(),
-            Format::IDENT_XML => $this->renderTemplated($this->getResource("SaveErrorGroup.xml.phtml")),
-            Format::IDENT_JSON => json_encode([
-                "isError" => true,
-                "group" => $this->errors,
-            ]),
-            default => self::joinMessages("\n", $this->errors)
-        });
+        $this->setFormatter(Formatter::default($this));
     }
 
+
+
+    public function getErrors(): array {
+        return $this->errors;
+    }
+
+
+
+    // FormatAble
     public function render(): string {
         App::getInstance()
             ->getResponse()
             ->setStatus($this->code);
 
-        return $this->formatter->render();
+        return $this->renderFormatter();
+    }
+
+    public function toText(): string {
+        return self::joinMessages("\n", $this->errors);
+    }
+
+    public function jsonSerialize(): array {
+        return [
+            'type' => MessageType::ERROR,
+            "group" => $this->errors,
+        ];
     }
 }

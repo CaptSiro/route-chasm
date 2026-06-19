@@ -3,11 +3,11 @@
 namespace components\Admin\PrivilegeResourceMap;
 
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 use models\Privilege\Privilege;
 use models\UserResource;
 
-class PrivilegeResourceMap implements View {
+class PrivilegeResourceMap implements ViewTemplate {
     use Renderer;
 
 

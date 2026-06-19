@@ -4,9 +4,9 @@ namespace components\forms\controls;
 
 use components\forms\FormAction;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 
-class MultiSubmit implements View {
+class MultiSubmit implements ViewTemplate {
     use Renderer, FormControl;
 
     /**

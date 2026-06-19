@@ -4,8 +4,9 @@ namespace components\layout\Accordion;
 
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 
-class Accordion implements View {
+class Accordion implements ViewTemplate {
     use Renderer;
 
     public function __construct(

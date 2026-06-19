@@ -6,7 +6,6 @@ use components\Admin\Nexus\AdminNexus;
 use components\Admin\Nexus\Editor\AdminNexusEditor;
 use components\ai\InputMessage;
 use components\ai\StructureGeneration\StructureGeneration;
-use components\layout\Column;
 use components\forms\controls\CsrfField;
 use components\forms\controls\Submit;
 use components\forms\controls\TextArea;
@@ -15,7 +14,9 @@ use components\Icon;
 use components\layout\Accordion\Accordion;
 use components\layout\BreadCrumbs\BreadCrumb;
 use components\layout\BreadCrumbs\BreadCrumbs;
-use components\Message;
+use components\layout\Column;
+use components\Message\Message;
+use components\Message\MessageType;
 use components\pages\AiGeneratedPage\AiPageTemplate;
 use components\pages\Pages;
 use components\pages\PageTemplate;
@@ -195,13 +196,17 @@ class AdminPageEditor extends AdminNexusEditor {
             if (is_null($pageId)) {
                 $queryParameter = RouteChasmEnvironment::QUERY_PAGE;
                 $response->renderRoot(new Message(
-                    $this->tr("URL Query parameter '$queryParameter' is missing")
+                    $this->tr("URL Query parameter '$queryParameter' is missing"),
+                    MessageType::ERROR
                 ));
             }
 
             $page = Page::fromId(intval($pageId));
             if (is_null($template = $page->getTemplate())) {
-                $response->renderRoot(new Message($this->tr("Template is not set for this page")));
+                $response->renderRoot(new Message(
+                    $this->tr("Template is not set for this page"),
+                    MessageType::ERROR
+                ));
             }
 
             return $template->buildEditor($page);

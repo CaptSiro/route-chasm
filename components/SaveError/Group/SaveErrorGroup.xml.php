@@ -2,8 +2,8 @@
 
 use components\SaveError\Group\SaveErrorGroup;
 
-?><group>
+?><error-group>
     <?php foreach ($this->errors as $error): ?>
         <?= $error->render() ?>
     <?php endforeach; ?>
-</group>
+</error-group>

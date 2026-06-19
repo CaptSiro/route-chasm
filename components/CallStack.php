@@ -2,11 +2,12 @@
 
 namespace components;
 
-use core\view\Renderer;
-use core\view\View;
+use core\view\FormatAble;
+use core\view\FormatAbleTrait;
+use core\view\ViewTemplate;
 
-class CallStack implements View {
-    use Renderer;
+class CallStack implements ViewTemplate, FormatAble {
+    use FormatAbleTrait;
 
     protected array $stack;
 
@@ -27,5 +28,12 @@ class CallStack implements View {
         }
 
         return $entry['class'] . $entry['type'];
+    }
+
+
+
+    // FormatAble
+    public function jsonSerialize(): array {
+        return $this->stack;
     }
 }

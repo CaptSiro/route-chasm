@@ -6,12 +6,12 @@ use core\fs\variants\ImageVariant;
 use core\locale\LexiconUnit;
 use core\url\Url;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 use models\fs\File;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
-class ListingCard implements View {
+class ListingCard implements ViewTemplate {
     use Renderer, LexiconUnit;
 
 

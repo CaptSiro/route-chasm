@@ -23,6 +23,7 @@ class Formatter implements View {
             Format::IDENT_HTML => $item->toHtml(),
             Format::IDENT_TEXT => $item->toText(),
             Format::IDENT_JSON => $item->toJson(),
+            Format::IDENT_XML => $item->toXml(),
         });
     }
 
@@ -38,6 +39,7 @@ class Formatter implements View {
 
 
 
+    // View
     public function render(): string {
         $response = App::getInstance()
             ->getResponse();

@@ -4,7 +4,7 @@ namespace core\admin;
 
 use components\Admin\Login\AdminLogin;
 use components\layout\Menu\Menu;
-use components\Message;
+use components\Message\Message;
 use core\actions\Action;
 use core\actions\Procedure;
 use core\actions\When;

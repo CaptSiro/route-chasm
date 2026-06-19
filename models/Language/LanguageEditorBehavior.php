@@ -9,7 +9,7 @@ use components\Admin\Nexus\Editor\SetEditor;
 use components\forms\controls\Select\Select;
 use components\forms\Form;
 use components\layout\Layout;
-use components\Message;
+use components\Message\Message;
 use core\App;
 use core\database\sql\Model;
 use core\locale\Locale;

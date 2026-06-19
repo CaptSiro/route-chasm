@@ -6,12 +6,12 @@ use core\fs\variants\ImageVariant;
 use core\locale\LexiconUnit;
 use core\url\Url;
 use core\view\Renderer;
-use core\view\View;
+use core\view\ViewTemplate;
 use models\fs\File;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
-class RelatedCard implements View {
+class RelatedCard implements ViewTemplate {
     use Renderer, LexiconUnit;
 
     public const LEXICON_GROUP = 'related.card';

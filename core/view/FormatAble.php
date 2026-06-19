@@ -10,4 +10,6 @@ interface FormatAble extends View, JsonSerializable {
     public function toHtml(): string;
 
     public function toJson(): string;
+
+    public function toXml(): string;
 }

@@ -25,13 +25,17 @@ trait FormatAbleTrait {
 
 
     // View
-    public function render(): string {
+    public function renderFormatter(): string {
         if (!isset($this->formatter)) {
             // todo dev warning
-            return $this->renderTemplated();
+            return $this->toHtml();
         }
 
         return $this->formatter->render();
+    }
+
+    public function render(): string {
+        return $this->renderFormatter();
     }
 
 
@@ -47,5 +51,15 @@ trait FormatAbleTrait {
 
     public function toJson(): string {
         return json_encode($this);
+    }
+
+    public function toXml(): string {
+        $xml = $this->getTemplate(".xml.php");
+        if (!file_exists($xml)) {
+            // todo dev warning
+            return '';
+        }
+
+        return $this->renderTemplated($xml);
     }
 }

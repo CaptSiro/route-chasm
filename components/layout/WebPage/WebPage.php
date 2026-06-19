@@ -18,10 +18,7 @@ class WebPage extends Component implements Container {
         protected ?Head $head = null,
     ) {
         parent::__construct();
-        $env = App::getInstance()->getEnv();
 
-        // todo
-        // get from request... (preference, domain, ...)
         $this->language ??= App::getInstance()->getRequest()->getLanguage()->code;
         $this->head ??= new HtmlHead();
 

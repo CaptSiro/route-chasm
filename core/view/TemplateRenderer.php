@@ -13,16 +13,16 @@ trait TemplateRenderer {
 
 
 
-    public function getTemplate(): string {
-        return $this->getResource($this->getClass() .".phtml");
+    public function getTemplate(string $extension = '.phtml'): string {
+        return $this->getResource($this->getClass() . $extension);
     }
 
-    public function getTemplateVariant(?string $variant): string {
+    public function getTemplateVariant(?string $variant = null, string $extension = '.phtml'): string {
         if (is_null($variant)) {
-            return $this->getTemplate();
+            return $this->getTemplate($extension);
         }
 
-        return $this->getResource($this->getClass() ."_$variant.phtml");
+        return $this->getResource($this->getClass() ."_$variant$extension");
     }
 
     public function renderTemplated(?string $template = null): string {

@@ -2,14 +2,15 @@
 
 namespace components\Search;
 
-use core\view\Renderer;
-use core\view\View;
-use JsonSerializable;
+use core\view\FormatAble;
+use core\view\FormatAbleTrait;
+use core\view\Formatter;
+use core\view\ViewTemplate;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
-class SearchResult implements View, JsonSerializable {
-    use Renderer;
+class SearchResult implements ViewTemplate, FormatAble {
+    use FormatAbleTrait;
 
     public static function fromPage(Page $page, PageLocalization $localization): static {
         return new static(
@@ -26,11 +27,13 @@ class SearchResult implements View, JsonSerializable {
         protected string $value,
         protected ?string $meta = null,
         protected bool $isLink = true,
-    ) {}
+    ) {
+        $this->setFormatter(Formatter::default($this));
+    }
 
 
 
-    // JsonSerializable
+    // FormatAble
     public function jsonSerialize(): array {
         return [
             "label" => $this->label,

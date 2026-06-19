@@ -4,8 +4,9 @@ namespace components\layout\Tabs;
 
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 
-class Tabs implements View {
+class Tabs implements ViewTemplate {
     use Renderer;
 
     protected ?string $selected = null;
