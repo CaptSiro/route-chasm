@@ -2,8 +2,8 @@
 
 namespace components\Markdown\Editor;
 
-use components\html\Html;
 use components\forms\Form;
+use core\view\Html;
 use core\view\Renderer;
 use core\view\ViewTemplate;
 

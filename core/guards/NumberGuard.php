@@ -2,8 +2,8 @@
 
 namespace core\guards;
 
-use components\html\Html;
 use components\SaveError\SaveError;
+use core\view\Html;
 
 class NumberGuard {
     public static function inRange(

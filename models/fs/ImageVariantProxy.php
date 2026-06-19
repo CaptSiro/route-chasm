@@ -3,7 +3,7 @@
 namespace models\fs;
 
 use components\Admin\Nexus\NexusProxy;
-use components\html\Html;
+use core\view\Html;
 
 class ImageVariantProxy extends NexusProxy {
     public const COLUMN_SIZE = 'size';

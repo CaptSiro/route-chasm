@@ -1,10 +1,10 @@
 <?php /** @var Editor $this */
 
-use components\html\Html;
 use components\forms\Form;
 use components\Lumora\Editor\Editor;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Css::import($this->getResource('editor.css'));
 Javascript::import($this->getResource('../lumora.js'));

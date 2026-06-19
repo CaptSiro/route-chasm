@@ -4,13 +4,13 @@ namespace core\fs;
 
 use Closure;
 use components\Admin\Nexus\NexusProxy;
-use components\html\Html;
 use components\Icon;
 use core\fs\variants\FileVariantTransformer;
 use core\fs\variants\ImageVariant;
 use core\ResourceLoader;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 use models\fs\Directory;
 use models\fs\File;
 

@@ -2,7 +2,6 @@
 
 namespace components\pages;
 
-use components\html\Html;
 use components\html\HtmlHead;
 use components\Icon;
 use components\layout\BreadCrumbs\BreadCrumbs;
@@ -12,6 +11,7 @@ use core\communication\Request;
 use core\communication\Response;
 use core\view\Component;
 use core\view\Container;
+use core\view\Html;
 use core\view\StringRenderer;
 use core\view\View;
 use DateTime;

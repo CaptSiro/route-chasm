@@ -3,7 +3,7 @@
 namespace models\User;
 
 use components\Admin\Nexus\NexusProxy;
-use components\html\Html;
+use core\view\Html;
 
 class UserProxy extends NexusProxy {
     public const COLUMN_USER = 'tag';

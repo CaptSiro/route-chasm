@@ -2,13 +2,13 @@
 
 namespace components\Search;
 
-use components\html\Html;
 use components\layout\Pagination\Pagination;
 use components\layout\Pagination\PaginationControl;
 use components\layout\Pagination\PaginationFactory;
 use components\layout\WebPage\WebPage;
 use core\RouteChasmEnvironment;
 use core\view\ContainerContent;
+use core\view\Html;
 use core\view\View;
 use models\Page\Page;
 

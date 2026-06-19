@@ -2,10 +2,10 @@
 
 namespace components\layout\PageMenu;
 
-use components\html\Html;
 use components\layout\Menu\Menu;
 use core\App;
 use core\route\Path;
+use core\view\Html;
 use models\Language\Language;
 use RuntimeException;
 

@@ -3,9 +3,9 @@
 namespace models\Page\behavior;
 
 use components\Admin\Nexus\NexusProxy;
-use components\html\Html;
 use core\App;
 use core\RouteChasmEnvironment;
+use core\view\Html;
 use models\extensions\Priority\PriorityProxy;
 use const models\extensions\Priority\PROPERTY_PRIORITY;
 

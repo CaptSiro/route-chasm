@@ -1,16 +1,10 @@
 <?php
 
-namespace components\html;
+namespace core\view;
 
 use core\utils\Arrays;
-use core\view\Renderer;
-use core\view\View;
 
-class Html implements View {
-    // todo
-    //  remove Renderer dependency
-    use Renderer;
-
+class Html {
     public static function escape(?string $content): string {
         if (is_null($content)) {
             return '';
@@ -38,13 +32,4 @@ class Html implements View {
     public static function createLinkUnsafe(string $url, string $content, string $target = '_self'): string {
         return "<a href='$url' target='$target'>$content</a>";
     }
-
-
-
-    public function __construct(
-        protected readonly string $tag,
-        protected array $attributes = [],
-        protected null|string|View $content = null,
-        protected readonly bool $doCloseTag = true
-    ) {}
 }

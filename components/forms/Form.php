@@ -5,7 +5,6 @@ namespace components\forms;
 use components\forms\controls\MultiSelect\MultiSelect;
 use components\forms\controls\Select\Select;
 use components\html\Attribute;
-use components\html\Html;
 use components\html\HtmlAttribute;
 use components\layout\Layout;
 use core\locale\Lexicon;
@@ -13,6 +12,7 @@ use core\locale\LexiconTranslator;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
+use core\view\Html;
 use core\view\View;
 
 class Form extends Component implements Layout, Attribute {
@@ -57,29 +57,16 @@ class Form extends Component implements Layout, Attribute {
         return strtr(strtolower($class), "\\", "-");
     }
 
-    public static function note(string $content): Html {
-        return new Html(
-            'p',
-            ['class' => 'form-note'],
-            $content
-        );
+    public static function note(string $content): string {
+        return Html::wrap("p", $content, ['class' => 'form-note']);
     }
 
-    public static function title(string $content): Html {
-        return new Html(
-            'h2',
-            ['class' => 'form-title'],
-            $content
-        );
+    public static function title(string $content): string {
+        return Html::wrap("h2", $content, ['class' => 'form-title']);
     }
 
-    private static Html $hr;
-    public static function hr(): Html {
-        if (!isset(self::$hr)) {
-            self::$hr = new Html('hr');
-        }
-
-        return self::$hr;
+    public static function hr(): string {
+        return '<hr>';
     }
 
 
@@ -132,7 +119,7 @@ class Form extends Component implements Layout, Attribute {
         return $this;
     }
 
-    public function add(View $child): static {
+    public function add(View|string $child): static {
         $this->elements[] = $child;
         return $this;
     }

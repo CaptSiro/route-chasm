@@ -3,7 +3,7 @@
 namespace models\Domain;
 
 use components\Admin\Nexus\NexusProxy;
-use components\html\Html;
+use core\view\Html;
 
 class DomainProxy extends NexusProxy {
     public const COLUMN_DOMAIN = 'domain';

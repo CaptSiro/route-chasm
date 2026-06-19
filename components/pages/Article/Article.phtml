@@ -1,11 +1,11 @@
 <?php /** @var Article $this */
 
-use components\html\Html;
 use components\Markdown\Markdown;
 use components\pages\Article\Article;
 use components\pages\Article\ArticleTemplate;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Markdown::importAssets();
 Javascript::import($this->getResource('article.js'));

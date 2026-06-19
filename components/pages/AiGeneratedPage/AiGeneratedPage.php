@@ -3,7 +3,6 @@
 namespace components\pages\AiGeneratedPage;
 
 use components\fs\FileContent\FileContent;
-use components\html\Html;
 use components\pages\Wireframe;
 use core\App;
 use core\communication\Request;
@@ -15,6 +14,7 @@ use core\locale\LexiconUnit;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
+use core\view\Html;
 use core\view\Renderer;
 use core\view\StringRenderer;
 use models\Page\Page;
@@ -115,22 +115,22 @@ class AiGeneratedPage extends Component {
 
         if ($this->css->exists()) {
             $this->sources['styles.css'] = $this->createFileContent($this->css, '#'. self::TARGET_CSS);
-            $head->addElement(new Html(
+            $head->addElement(Html::wrapUnsafe(
                 'style',
-                attributes: ['id' => self::TARGET_CSS],
-                content: $this->css->read()
+                $this->css->read(),
+                ['id' => self::TARGET_CSS]
             ));
         }
 
         if ($this->js->exists()) {
             $this->sources['script.js'] = $this->createFileContent($this->js, '#'. self::TARGET_JS);
-            $head->addElement(new Html(
+            $head->addElement(Html::wrapUnsafe(
                 'script',
-                attributes: [
+                $this->js->read(),
+                [
                     'defer' => '',
                     'id' => self::TARGET_JS
-                ],
-                content: $this->js->read()
+                ]
             ));
         }
 

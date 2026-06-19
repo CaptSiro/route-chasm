@@ -2,8 +2,8 @@
 
 namespace components\layout\Grid\Proxy;
 
-use components\html\Html;
 use core\utils\Strings;
+use core\view\Html;
 
 class TypeProxy implements Proxy {
     protected mixed $item;

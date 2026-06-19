@@ -1,10 +1,10 @@
 <?php /** @var MultiSelect $this */
 
 use components\forms\controls\MultiSelect\MultiSelect;
-use components\html\Html;
-use components\Icon;
 use components\forms\controls\Select\Select;
+use components\Icon;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Javascript::import(Select::getStaticResource('select.js'));
 Javascript::import($this->getResource('multiselect.js'));

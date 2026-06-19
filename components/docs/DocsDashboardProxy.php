@@ -2,9 +2,9 @@
 
 namespace components\docs;
 
-use components\html\Html;
 use components\layout\Grid\Proxy\TypeProxy;
 use core\utils\Strings;
+use core\view\Html;
 use models\docs\Document;
 
 class DocsDashboardProxy extends TypeProxy {

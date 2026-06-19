@@ -2,7 +2,6 @@
 
 namespace components\Search;
 
-use components\html\Html;
 use components\pages\Listing\ListingTemplate;
 use core\communication\Request;
 use core\communication\Response;
@@ -13,6 +12,7 @@ use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
+use core\view\Html;
 use core\view\StringRenderer;
 use models\Page\Page;
 use models\Setting\Setting;

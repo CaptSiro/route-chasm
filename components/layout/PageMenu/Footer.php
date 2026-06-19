@@ -2,11 +2,11 @@
 
 namespace components\layout\PageMenu;
 
-use components\html\Html;
 use core\admin\Admin;
 use core\App;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
+use core\view\Html;
 use core\view\Renderer;
 use core\view\ViewTemplate;
 use models\Menu;

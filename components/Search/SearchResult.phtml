@@ -1,7 +1,7 @@
 <?php /** @var SearchResult $this */
 
-use components\html\Html;
 use components\Search\SearchResult;
+use core\view\Html;
 
 ?><?php if ($this->isLink): ?>
     <a href="<?= $this->value ?>" class="search-result" data-title="<?= Html::escapeAttribute($this->label) ?>">

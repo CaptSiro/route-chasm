@@ -2,10 +2,10 @@
 
 namespace components\Modules;
 
-use components\html\Html;
 use components\layout\Grid\Proxy\Proxy;
 use core\module\Module;
 use core\module\ModuleInfo;
+use core\view\Html;
 
 class ModulesProxy implements Proxy {
     public const COLUMN_NAME = 'name';

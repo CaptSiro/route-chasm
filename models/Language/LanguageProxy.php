@@ -3,7 +3,7 @@
 namespace models\Language;
 
 use components\Admin\Nexus\NexusProxy;
-use components\html\Html;
+use core\view\Html;
 use models\extensions\IsDefault\IsDefaultProxy;
 use const models\extensions\IsDefault\PROPERTY_IS_DEFAULT;
 

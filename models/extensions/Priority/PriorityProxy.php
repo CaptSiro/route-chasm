@@ -4,10 +4,10 @@ namespace models\extensions\Priority;
 
 use components\Admin\Nexus\AdminNexus;
 use components\forms\Form;
-use components\html\Html;
 use components\Icon;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 trait PriorityProxy {
     protected ?PriorityExtension $priorityExtension = null;

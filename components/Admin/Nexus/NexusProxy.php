@@ -2,10 +2,10 @@
 
 namespace components\Admin\Nexus;
 
-use components\html\Html;
 use components\Icon;
 use components\layout\Grid\Proxy\TypeProxy;
 use core\Identifier;
+use core\view\Html;
 
 class NexusProxy extends TypeProxy {
     protected AdminNexus $context;

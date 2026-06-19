@@ -3,10 +3,10 @@
 namespace components\windows;
 
 use components\html\Attribute;
-use components\html\Html;
 use components\html\HtmlAttribute;
 use core\Flags;
 use core\utils\Strings;
+use core\view\Html;
 use core\view\Renderer;
 use core\view\View;
 

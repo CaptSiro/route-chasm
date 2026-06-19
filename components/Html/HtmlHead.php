@@ -64,7 +64,7 @@ class HtmlHead extends Component implements Head {
         return $this->title;
     }
 
-    public function addElement(View $view): static {
+    public function addElement(View|string $view): static {
         $this->elements[] = $view;
         return $this;
     }
