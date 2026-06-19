@@ -6,7 +6,7 @@ use Closure;
 use components\Admin\FileSystem\AdminFileSystemCreateDirectory;
 use components\Admin\Nexus\AdminNexus;
 use components\Admin\Nexus\Editor\AdminNexusEditor;
-use components\fs\FileSystemDropArea;
+use components\fs\FileSystemDropArea\FileSystemDropArea;
 use components\fs\FileSystemGridFactory;
 use components\layout\BreadCrumbs\BreadCrumbs;
 use components\layout\Grid\description\GridColumn;

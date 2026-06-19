@@ -5,7 +5,7 @@ use components\Icon;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 
-Javascript::import($this->getResource('select.js'));
+Select::importAssets();
 
 ?><div class="form-select" x-init="form_select_init" <?= $this->stringifyAttributes() ?>>
     <label for="<?= $this->getId() ?>_search"><?= $this->label ?></label>

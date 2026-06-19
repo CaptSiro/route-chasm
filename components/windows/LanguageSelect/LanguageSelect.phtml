@@ -5,7 +5,7 @@ use core\App;
 use core\sideloader\importers\Javascript\Javascript;
 use models\Language\Language;
 
-Javascript::import($this->getResource("language-select.js"));
+Javascript::importDefault($this);
 $appLocale = App::getInstance()
     ->getRequest()
     ->getLanguage()

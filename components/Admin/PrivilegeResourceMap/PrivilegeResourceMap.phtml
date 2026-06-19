@@ -4,7 +4,7 @@ use components\Admin\PrivilegeResourceMap\PrivilegeResourceMap;
 use components\forms\controls\Checkbox;
 use core\sideloader\importers\Css\Css;
 
-Css::import($this->getResource('privilege-resource-map.css'));
+Css::importDefault($this);
 
 ?><div class="privilege-resource-map" style="grid-template-columns: <?= $this->createColumnTemplate() ?>">
     <div class="map-header">

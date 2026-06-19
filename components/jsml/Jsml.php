@@ -13,7 +13,7 @@ class Jsml implements ViewTemplate {
         $jsml = $this->getResource();
 
         return [
-            "$jsml/jsml.js",
+            "$jsml/Jsml.js",
         ];
     }
 }

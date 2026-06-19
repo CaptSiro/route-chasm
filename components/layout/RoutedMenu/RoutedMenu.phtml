@@ -5,11 +5,10 @@ use components\layout\Menu\Menu;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('menu.js'));
-Css::import($this->getResource('menu.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
-?>
-<?php if ($this->item->hasChildren()): ?>
+?><?php if ($this->item->hasChildren()): ?>
     <div
         class="menu <?= $this->getCssClass() ?> <?= !$this->isInset ? 'no-inset' : '' ?> <?= $this->isRoot() ? '' : 'hide' ?>"
         x-init="menu_init"

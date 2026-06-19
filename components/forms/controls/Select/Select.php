@@ -19,7 +19,7 @@ class Select implements Control, Attribute {
 
 
     public static function importAssets(): void {
-        Javascript::import(Select::getStaticResource('select.js'));
+        Javascript::import(Select::getStaticResource('Select.js'));
     }
 
 

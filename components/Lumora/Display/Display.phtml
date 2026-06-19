@@ -7,12 +7,12 @@ use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 
-Css::import(Form::getStaticResource('form.css'));
-Css::import($this->getResource('display.css'));
+Form::importAssets();
+Css::importDefault($this);
 Javascript::import($this->getResource('../lumora.js'));
 Javascript::import(Editor::getStaticResource('inspector.js'));
 Javascript::import(Editor::getStaticResource('widget-core.js'));
-Javascript::import($this->getResource('display.js'));
+Javascript::importDefault($this);
 Javascript::import(Form::getStaticResource('form.js'));
 
 foreach ($this->editor->explodeWidgets() as $widget) {

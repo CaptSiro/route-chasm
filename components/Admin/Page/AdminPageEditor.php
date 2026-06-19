@@ -192,27 +192,26 @@ class AdminPageEditor extends AdminNexusEditor {
         });
 
         $router->use('/template', function (Request $request, Response $response) {
+            $messageMissingQuery = $this->tr("URL Query parameter '" . RouteChasmEnvironment::QUERY_PAGE . "' is missing");
+            $messageMissingTemplate = $this->tr("Template is not set for this page");
+
             $pageId = $request->getUrl()->getQuery()->get(RouteChasmEnvironment::QUERY_PAGE);
             if (is_null($pageId)) {
-                $queryParameter = RouteChasmEnvironment::QUERY_PAGE;
-                $response->renderRoot(new Message(
-                    $this->tr("URL Query parameter '$queryParameter' is missing"),
-                    MessageType::ERROR
-                ));
+                $response->sendMessage($messageMissingQuery, HttpCode::CE_BAD_REQUEST);
             }
 
             $page = Page::fromId(intval($pageId));
             if (is_null($template = $page->getTemplate())) {
-                $response->renderRoot(new Message(
-                    $this->tr("Template is not set for this page"),
-                    MessageType::ERROR
-                ));
+                $response->sendMessage($messageMissingTemplate, HttpCode::SE_INTERNAL_SERVER_ERROR);
             }
 
             return $template->buildEditor($page);
         });
 
         $router->use('/generate-structure', function (Request $request, Response $response) {
+            $messagePromptIsEmpty = $this->tr('Prompt must not be empty');
+            $messageNothingGenerated = $this->tr('AI refused to generate structure');
+
             $parentId = $request->getUrl()
                 ->getQuery()
                 ->get('parent');
@@ -225,10 +224,7 @@ class AdminPageEditor extends AdminNexusEditor {
                 ->getStrict(self::NAME_PROMPT);
 
             if (empty($prompt)) {
-                $response->sendMessage(
-                    $this->tr('Prompt must not be empty'),
-                    HttpCode::CE_BAD_REQUEST
-                );
+                $response->sendMessage($messagePromptIsEmpty, HttpCode::CE_BAD_REQUEST);
             }
 
             $templates = Pages::getTemplates();
@@ -243,14 +239,12 @@ class AdminPageEditor extends AdminNexusEditor {
             $ai->add(new StructureGeneration(InputMessage::ROLE_USER, $prompt, $templates, $language));
 
             if (is_null($structure = $client->parseResponse($client->chat($ai)))) {
-                $response->sendMessage(
-                    $this->tr('AI refused to generate structure'),
-                    HttpCode::SE_INTERNAL_SERVER_ERROR
-                );
+                $response->sendMessage($messageNothingGenerated, HttpCode::SE_INTERNAL_SERVER_ERROR);
             }
 
             if (empty($structure)) {
                 $response->sendMessage(
+                    // todo move to start -> create template -> populate template with provided param
                     $this->trt('Could not connect to AI client. (Using: {})', Objects::getClass($client)),
                     HttpCode::SE_INTERNAL_SERVER_ERROR
                 );
@@ -348,8 +342,9 @@ class AdminPageEditor extends AdminNexusEditor {
     public function createGenerateStructureForm(): Form {
         $form = new Form(HttpMethod::POST, $action = $this->getGenerateStructureLink());
 
-        Javascript::import($this->getResource('page-editor.js'));
-        Css::import($this->getResource('page-editor.css'));
+        Javascript::importDefault($this);
+        Css::importDefault($this);
+
         $form->setOnSubmitSuccess('pageEditor_onStructureSubmitSuccess');
 
         $form->add(new CsrfField(App::getInstance()->getRequest()));

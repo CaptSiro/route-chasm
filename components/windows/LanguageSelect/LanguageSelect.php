@@ -5,6 +5,7 @@ namespace components\windows\LanguageSelect;
 use components\windows\Window;
 use core\locale\Lexicon;
 use core\view\Component;
+use models\Language\Language;
 
 class LanguageSelect extends Component {
     public const LEXICON_GROUP = 'language.select';
@@ -20,6 +21,7 @@ class LanguageSelect extends Component {
 
         $window = new Window(new self(), $title, $openButton);
         $window->setFlag(Window::FLAG_DRAGGABLE);
+
         return $window;
     }
 }

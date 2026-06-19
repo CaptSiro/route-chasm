@@ -7,8 +7,8 @@ use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
 Markdown::importAssets();
-Javascript::import($this->getResource('md-editor.js'));
-Css::import($this->getResource('md-editor.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 ?><div class="markdown-editor" x-init="md_editor">
     <div class="tool-bar">

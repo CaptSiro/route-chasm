@@ -5,14 +5,14 @@ namespace models\fs;
 use components\Admin\Nexus\Editor;
 use components\Admin\Nexus\Editor\EditorBehavior;
 use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\layout\Column;
 use components\forms\description\FormDescription;
 use components\forms\Form;
-use components\fs\ImageVariantPreview;
+use components\layout\Column;
 use components\layout\Layout;
 use components\layout\Row;
 use core\database\sql\Model;
 use core\view\View;
+use ImageVariantPreview;
 
 class ImageVariantBehavior implements EditorBehavior {
     use Editor\SetEditor;

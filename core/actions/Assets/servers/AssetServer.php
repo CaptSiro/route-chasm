@@ -8,7 +8,7 @@ use core\http\Cors;
 use core\http\HttpHeader;
 use core\utils\Files;
 
-class FileServer implements Server {
+class AssetServer implements Server {
     public function serve(string $path, Request $request, Response $response): void {
         $response->setHeaders([
             Cors::ORIGIN => "*",

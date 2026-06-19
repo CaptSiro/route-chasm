@@ -85,7 +85,7 @@ class Test {
                 continue;
             }
 
-            $files = self::evaluateFile($file->getRealPath());
+            $files[] = self::evaluateFile($file->getRealPath());
         }
 
         return $files;

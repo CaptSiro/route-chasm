@@ -21,6 +21,10 @@ class Javascript implements Importer, ViewTemplate {
             ->import(self::FILE_EXTENSION, $file);
     }
 
+    public static function importDefault(ViewTemplate $view): void {
+        self::import($view->getResource($view->getClass() . '.js'));
+    }
+
 
 
     public function getFileExtension(): string {

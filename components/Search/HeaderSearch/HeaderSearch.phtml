@@ -5,8 +5,8 @@ use components\Search\HeaderSearch\HeaderSearch;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Css::import($this->getResource('header-search.css'));
-Javascript::import($this->getResource('search.js'));
+Css::importDefault($this);
+Javascript::importDefault($this);
 
 ?><div
     class="header-search"

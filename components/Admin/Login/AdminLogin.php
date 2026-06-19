@@ -124,6 +124,11 @@ class AdminLogin extends ContainerContent {
     }
 
     public function perform(Request $request, Response $response): void {
+        $messageEnvMethodNotAllowed = $this->tr('.env password method is not allowed');
+        $messageWrongPassword = $this->tr('The password is wrong');
+        $messageUserNotFound = $this->tr('User not found');
+        $messageForbidden = $this->tr('The user does not have adequate privilege to login as Admin');
+
         $url = $request->getUrl();
         $logout = $url->getQuery()->exists(RouteChasmEnvironment::QUERY_LOGOUT);
         if ($logout) {
@@ -153,26 +158,19 @@ class AdminLogin extends ContainerContent {
 
                 if ($method === self::METHOD_ENV) {
                     if (!$this->useEnvPasswordMethod()) {
-                        $response->setStatus(HttpCode::CE_METHOD_NOT_ALLOWED);
-                        $response->renderRoot(new Message(
-                            $this->tr('.env password method is not allowed'),
-                            MessageType::ERROR
-                        ));
+                        $response->sendMessage($messageEnvMethodNotAllowed, HttpCode::CE_METHOD_NOT_ALLOWED);
                     }
 
                     if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ENV_ADMIN_LOGIN_PASSWORD) !== $password) {
-                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message(
-                            $this->tr('The password is wrong'),
-                            MessageType::ERROR
-                        ));
+                        $response->sendMessage($messageWrongPassword, HttpCode::CE_BAD_REQUEST);
                     }
 
                     User::fromTag(User::TAG_ROOT)?->login();
 
-                    $response->setStatus(HttpCode::S_OK);
-                    $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
-                    $response->flush();
+                    $response
+                        ->setStatus(HttpCode::S_OK)
+                        ->addReloadHeader()
+                        ->flush();
                 }
 
                 if ($method === self::METHOD_USER) {
@@ -180,38 +178,29 @@ class AdminLogin extends ContainerContent {
                     $user = User::fromTag($tag);
 
                     if (is_null($user)) {
-                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message(
-                            $this->tr('User not found'),
-                            MessageType::ERROR
-                        ));
+                        $response->sendMessage($messageUserNotFound, HttpCode::CE_BAD_REQUEST);
                     }
 
                     if (!password_verify($password, $user->password)) {
-                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message(
-                            $this->tr('The password is wrong'),
-                            MessageType::ERROR
-                        ));
+                        $response->sendMessage($messageWrongPassword, HttpCode::CE_BAD_REQUEST);
                     }
 
                     if (!$user->isAdmin()) {
-                        $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                        $response->renderRoot(new Message(
-                            $this->tr('The user does not have adequate privilege to login as Admin'),
-                            MessageType::ERROR
-                        ));
+                        $response->sendMessage($messageForbidden, HttpCode::CE_FORBIDDEN);
                     }
 
                     $user->login();
 
-                    $response->setStatus(HttpCode::S_OK);
-                    $response->setHeader(HttpHeader::X_RELOAD, 'Reload');
-                    $response->flush();
+                    $response
+                        ->setStatus(HttpCode::S_OK)
+                        ->addReloadHeader()
+                        ->flush();
                 }
 
-                $response->setStatus(HttpCode::CE_BAD_REQUEST);
-                $response->flush();
+                $response
+                    ->setStatus(HttpCode::CE_BAD_REQUEST)
+                    ->flush();
+
                 break;
             }
 

@@ -6,8 +6,8 @@ use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 
-Css::import($this->getResource('listing-card.css'));
-Javascript::import($this->getResource('listing-card.js'));
+Css::importDefault($this);
+Javascript::importDefault($this);
 
 $url = $this->page->getUrl();
 $image = $this->page->getCoverImage()?->getFile();

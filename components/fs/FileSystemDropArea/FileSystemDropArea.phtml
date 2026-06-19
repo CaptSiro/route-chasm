@@ -1,12 +1,12 @@
 <?php /** @var FileSystemDropArea $this */
 
-use components\fs\FileSystemDropArea;
+use components\fs\FileSystemDropArea\FileSystemDropArea;
 use core\fs\FileServer;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('fs-drop-area.js'));
-Css::import($this->getResource('fs-drop-area.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 ?><div
     class="fs-drop-area"

@@ -25,7 +25,7 @@ class MultiSelect implements Control, Attribute {
 
     public static function importAssets(): void {
         Select::importAssets();
-        Javascript::import(MultiSelect::getStaticResource('multiselect.js'));
+        Javascript::import(MultiSelect::getStaticResource('MultiSelect.js'));
     }
 
 

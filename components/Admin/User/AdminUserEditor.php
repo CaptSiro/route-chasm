@@ -21,7 +21,7 @@ class AdminUserEditor extends AdminNexusEditor {
     public function __construct(EditorBehavior $behaviour) {
         parent::__construct($behaviour);
         $this->setTemplate(AdminNexusEditor::getTemplateResourceStatic());
-        Javascript::import($this->getResource('admin-user.js'));
+        Javascript::importDefault($this);
     }
 
 

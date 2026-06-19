@@ -6,9 +6,9 @@ use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 
-Css::import($this->getResource('editor.css'));
+Css::importDefault($this);
 Javascript::import($this->getResource('../lumora.js'));
-Javascript::import($this->getResource('editor.js'));
+Javascript::importDefault($this);
 Javascript::import($this->getResource('inspector.js'));
 Javascript::import($this->getResource('widget-core.js'));
 

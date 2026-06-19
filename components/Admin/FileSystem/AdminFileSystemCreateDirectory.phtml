@@ -5,7 +5,7 @@ use components\forms\Form;
 use core\fs\FileServer;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('fs-mkdir.js'));
+Javascript::importDefault($this);
 
 Form::importAssets();
 

@@ -7,8 +7,8 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 use models\fs\File;
 
-Javascript::import($this->getResource('file-control.js'));
-Css::import($this->getResource('file-control.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 $id = $this->getId();
 

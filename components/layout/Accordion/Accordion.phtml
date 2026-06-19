@@ -4,11 +4,10 @@ use components\layout\Accordion\Accordion;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Css::import($this->getResource('accordion.css'));
-Javascript::import($this->getResource('accordion.js'));
+Css::importDefault($this);
+Javascript::importDefault($this);
 
-?>
-<div
+?><div
     class="accordion"
     x-init="accordion_init"
     data-is-expanded="<?= $this->isExpanded ?>"

@@ -14,7 +14,7 @@ use models\Page\PageLocalization;
 
 class Listing extends Component {
     public static function importAssets(): void {
-        Css::import(static::getstaticResource('listing.css'));
+        Css::import(static::getstaticResource('Listing.css'));
     }
 
 

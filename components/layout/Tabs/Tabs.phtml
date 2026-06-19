@@ -4,11 +4,12 @@ use components\layout\Tabs\Tabs;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-?>
-<?php Css::import($this->getResource("tabs.css")); ?>
-<?php Javascript::import($this->getResource('tabs.js')); ?>
-<?php $this->updateSelected(); ?>
-<div class="tabs" x-init="tabs">
+Css::importDefault($this);
+Javascript::importDefault($this);
+
+$this->updateSelected();
+
+?><div class="tabs" x-init="tabs">
     <div class="labels">
         <?php $i = 0; foreach (array_keys($this->tabs) as $label): ?>
             <div

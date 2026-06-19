@@ -8,8 +8,8 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 
 Markdown::importAssets();
-Javascript::import($this->getResource('article.js'));
-Css::import($this->getResource('article.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 $language = $this->localization->getLanguage();
 

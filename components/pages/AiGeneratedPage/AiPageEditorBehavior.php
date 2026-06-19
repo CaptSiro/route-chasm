@@ -51,7 +51,7 @@ class AiPageEditorBehavior implements EditorBehavior {
     }
 
     public function initForm(Form $form, ?Model $model): ?View {
-        Javascript::import($this->getResource('ai-page-generator.js'));
+        Javascript::import($this->getResource($this->getClass() . '.js'));
         return $this->behavior->initForm($form, $model);
     }
 

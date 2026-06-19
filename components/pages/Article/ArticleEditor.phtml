@@ -4,7 +4,7 @@ use components\pages\Article\ArticleEditor;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('article-editor.js'));
+Javascript::importDefault($this);
 
 ?><div class="article-editor">
     <div class="row pad-gap">

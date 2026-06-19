@@ -46,7 +46,7 @@ class DocumentPage extends ContainerContent {
             PageMenu::fromModelName(Menu::NAME_HEADER_DOCS),
             new HeaderSearch(
                 url: Docs::getInstance()->createSearchUrl(),
-                placeholder: "Search documents..."
+                placeholder: $this->tr("Search documents...")
             )
         );
     }

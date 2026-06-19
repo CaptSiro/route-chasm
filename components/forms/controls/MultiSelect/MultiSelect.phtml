@@ -6,8 +6,7 @@ use components\Icon;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
 
-Javascript::import(Select::getStaticResource('select.js'));
-Javascript::import($this->getResource('multiselect.js'));
+MultiSelect::importAssets();
 
 $valuesEscaped = [];
 foreach ($this->values as $value => $label) {

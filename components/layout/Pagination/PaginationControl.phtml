@@ -3,7 +3,7 @@
 use components\layout\Pagination\PaginationControl;
 use core\sideloader\importers\Css\Css;
 
-Css::import($this->getResource('pagination-control.css'));
+Css::importDefault($this);
 
 ?><div class="pagination-control row">
     <?php if ($this->max > 1): ?>

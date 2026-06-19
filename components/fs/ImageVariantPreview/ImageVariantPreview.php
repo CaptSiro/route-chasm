@@ -1,6 +1,5 @@
 <?php
 
-namespace components\fs;
 
 use core\ResourceLoader;
 use core\view\Renderer;
