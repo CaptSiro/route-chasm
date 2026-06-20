@@ -22,6 +22,7 @@ use core\http\HttpHeader;
 use core\http\HttpMethod;
 use core\route\RouteNode;
 use core\sideloader\importers\Javascript\Javascript;
+use core\utils\Objects;
 use core\view\ContainerContent;
 use core\view\View;
 use models\Privilege\Privilege;
@@ -55,7 +56,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
     public function setContext(AdminNexus $context): static {
         $this->context = $context;
-        Javascript::import($this->context->getResource('nexus.js'));
+        Javascript::import(AdminNexus::getStaticResource(AdminNexus::getBaseClass() . '.js'));
         return $this;
     }
 

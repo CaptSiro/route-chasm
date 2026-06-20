@@ -25,6 +25,12 @@ class DictionaryBody implements RequestBody {
     public const FLAG_IS_ARRAY = 1;
     public const KEY_ITEMS = "items";
 
+    private static bool $isTextSupported = true;
+
+    public static function setIsTextSupported(bool $isTextSupported): void {
+        self::$isTextSupported = $isTextSupported;
+    }
+
 
 
     protected StrictDictionary $fields;
@@ -36,6 +42,9 @@ class DictionaryBody implements RequestBody {
         return match ($format) {
             Format::IDENT_JSON,
             Format::IDENT_FORM_URLENCODED => true,
+
+            Format::IDENT_TEXT => self::$isTextSupported,
+
             default => false,
         };
     }
@@ -64,6 +73,14 @@ class DictionaryBody implements RequestBody {
 
                 $this->files = new StrictMap();
                 break;
+            }
+
+            case Format::IDENT_TEXT: {
+                if (!self::$isTextSupported) {
+                    throw new RuntimeException("Format: '$format' is not supported");
+                }
+
+                // Cascade to Format::IDENT_JSON
             }
 
             case Format::IDENT_JSON: {

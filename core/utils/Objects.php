@@ -11,7 +11,7 @@ class Objects {
         return basename(self::normalizeClass(get_class($object)));
     }
 
-    public static function getClassStatic(string $class): string {
+    public static function getBaseClass(string $class): string {
         return basename(self::normalizeClass($class));
     }
 }

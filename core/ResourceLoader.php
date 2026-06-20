@@ -20,8 +20,6 @@ trait ResourceLoader {
         );
     }
 
-
-
     public static function getSelfResource(string $path = ''): string {
         return static::getClassResource(self::class, $path);
     }
@@ -31,6 +29,10 @@ trait ResourceLoader {
             self::class,
             basename(Objects::normalizeClass(self::class)) . '.phtml'
         );
+    }
+
+    public static function getBaseClass(): string {
+        return Objects::getBaseClass(static::class);
     }
 
 
