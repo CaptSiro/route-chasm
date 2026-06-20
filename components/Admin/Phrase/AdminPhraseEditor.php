@@ -46,15 +46,15 @@ class AdminPhraseEditor extends AdminNexusEditor {
         }));
 
         $router->use('/ai-translate', Http::get(function (Request $request, Response $response) {
+            $messagePhraseNotFound = $this->tr('Phrase not found');
+            $messageUnableToTranslate = $this->tr('Unable to translate');
+
             $id = $request->getUrl()->getQuery()->get(self::QUERY_ID);
             /** @var Phrase|null $phrase */
             $phrase = $this->context->createModel($id);
 
             if (is_null($phrase)) {
-                $response->sendMessage(
-                    $this->tr('Phrase not found'),
-                    HttpCode::CE_NOT_FOUND
-                );
+                $response->sendMessage($messagePhraseNotFound, HttpCode::CE_NOT_FOUND);
             }
 
             $client = OpenAi::fromEnv();
@@ -64,10 +64,7 @@ class AdminPhraseEditor extends AdminNexusEditor {
 
             $translations = AdminPhraseAiTranslator::parseTranslations($phrase, $result);
             if (empty($translations)) {
-                $response->sendMessage(
-                    $this->tr('Unable to translate'),
-                    HttpCode::SE_SERVICE_UNAVAILABLE
-                );
+                $response->sendMessage($messageUnableToTranslate, HttpCode::SE_SERVICE_UNAVAILABLE);
             }
 
             $phrase->deleteTranslations();

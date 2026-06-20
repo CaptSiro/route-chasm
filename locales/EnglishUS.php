@@ -3,9 +3,12 @@
 namespace locales;
 
 use core\locale\Locale;
+use core\Singleton;
 use core\utils\Regex;
 
 class EnglishUS extends Locale {
+    use Singleton;
+
     public const RULE_SINGULAR = Regex::LOCALE_RULE_ONE;
     public const RULE_PLURAL = Regex::LOCALE_RULE_TWO_AND_UP;
 

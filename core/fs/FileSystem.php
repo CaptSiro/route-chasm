@@ -30,9 +30,11 @@ use core\utils\Files;
 use core\utils\Php;
 use core\view\Html;
 use core\view\View;
+use locales\EnglishUS;
 use models\fs\Directory;
 use models\fs\File;
 use models\fs\Shortcut;
+use models\Language\Language;
 use models\UserResource;
 
 class FileSystem {
@@ -224,7 +226,17 @@ class FileSystem {
 
 
 
+    protected static function getMessageDirectoryNotFound(): string {
+        return Lexicon::translate(
+            self::LEXICON_GROUP,
+            'Could not find directory',
+            Language::fromLocale(EnglishUS::getInstance())
+        );
+    }
+
     public static function getNexus(): Action {
+        $messageDirectoryNotFound = self::getMessageDirectoryNotFound();
+
         $directoryId = App::getInstance()
             ->getRequest()
             ->getUrl()
@@ -236,9 +248,7 @@ class FileSystem {
             : Directory::fromId($directoryId);
 
         if (is_null($directory)) {
-            return new Message(
-                Lexicon::translate(self::LEXICON_GROUP, 'Could not find directory')
-            );
+            return new Message($messageDirectoryNotFound);
         }
 
         $directoryLinkProvider = function (Directory $directory) {
@@ -286,6 +296,8 @@ class FileSystem {
         ?string $fileType = null,
         bool $readonly = false
     ): View {
+        $messageDirectoryNotFound = self::getMessageDirectoryNotFound();
+
         if (is_null($directory)) {
             $directoryId = App::getInstance()
                 ->getRequest()
@@ -299,9 +311,7 @@ class FileSystem {
         }
 
         if (is_null($directory)) {
-            return new Message(
-                Lexicon::translate(self::LEXICON_GROUP, 'Could not find directory')
-            );
+            return new Message($messageDirectoryNotFound);
         }
 
         $directoryLinkProvider = fn(Directory $directory) => Html::wrapUnsafe(

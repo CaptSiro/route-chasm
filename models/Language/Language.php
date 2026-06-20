@@ -64,6 +64,10 @@ class Language extends Model implements IsDefault {
             ?? static::first(where: Query::infer("code = ?", $code));
     }
 
+    public static function fromLocale(Locale $locale): ?static {
+        return static::fromCode($locale->getIdentifier());
+    }
+
 
 
     use IsDefaultTrait;

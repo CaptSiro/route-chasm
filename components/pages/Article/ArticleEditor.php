@@ -35,6 +35,7 @@ use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\view\ContainerContent;
 use core\view\View;
+use locales\EnglishUS;
 use models\Language\Language;
 use models\Page\Page;
 use models\Page\PageLocalization;
@@ -158,15 +159,14 @@ class ArticleEditor extends ContainerContent {
     }
 
     protected function checkRequest(Request $request, Response $response): void {
+        $messageCrossSiteForgery = $this->tr('Cross-Site request forgery detected');
+
         if (!$this->hasRequestAccess(Privilege::fromName(Privilege::UPDATE))) {
             $response->sendStatus(HttpCode::CE_FORBIDDEN);
         }
 
         if (!CsrfField::check($request)) {
-            $response->sendMessage(
-                'Cross-Site request forgery detected',
-                HttpCode::CE_NOT_ACCEPTABLE
-            );
+            $response->sendMessage($messageCrossSiteForgery, HttpCode::CE_NOT_ACCEPTABLE);
         }
     }
 
@@ -199,6 +199,11 @@ class ArticleEditor extends ContainerContent {
             }
 
             case HttpMethod::PUT: {
+                $messageAiRefusal = $this->tr('AI refused to generate article');
+                $messagePageIsNotLocalized = $this->crt("Page is not localized for this language: {}");
+                $messageEmptyPrompt = $this->tr('Prompt must not be empty');
+                $messageLanguageNotDefined = $this->tr('Language must be defined');
+
                 $this->checkRequest($request, $response);
 
                 $fields = $request
@@ -206,17 +211,11 @@ class ArticleEditor extends ContainerContent {
                     ->getFields();
 
                 if (empty($prompt = $fields->getStrict(self::NAME_PROMPT))) {
-                    $response->sendMessage(
-                        $this->tr('Prompt must not be empty'),
-                        HttpCode::CE_BAD_REQUEST
-                    );
+                    $response->sendMessage($messageEmptyPrompt, HttpCode::CE_BAD_REQUEST);
                 }
 
                 if (is_null($language = Language::fromId($fields->getStrict(self::NAME_LANGUAGE)))) {
-                    $response->sendMessage(
-                        $this->tr('Language must be defined'),
-                        HttpCode::CE_BAD_REQUEST
-                    );
+                    $response->sendMessage($messageLanguageNotDefined, HttpCode::CE_BAD_REQUEST);
                 }
 
                 $options = new ArticleGenerationOptions(
@@ -239,16 +238,13 @@ class ArticleEditor extends ContainerContent {
                 );
 
                 if (is_null($result = $client->parseResponse($client->chat($ai)))) {
-                    $response->sendMessage(
-                        $this->tr('AI refused to generate article'),
-                        HttpCode::CE_BAD_REQUEST
-                    );
+                    $response->sendMessage($messageAiRefusal, HttpCode::CE_BAD_REQUEST);
                 }
 
                 if (!empty($result[self::PROPERTY_CONTENT])) {
                     if (is_null($localization = $this->page->getLocalization($language))) {
                         $response->sendMessage(
-                            $this->trt("Page is not localized for this language: {}", $language->code),
+                            $messagePageIsNotLocalized->format($language->code),
                             HttpCode::CE_BAD_REQUEST
                         );
                     }

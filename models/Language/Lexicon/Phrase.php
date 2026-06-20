@@ -15,6 +15,7 @@ use core\database\sql\Model;
 use core\database\sql\ModelDescription;
 use core\database\sql\Table;
 use core\locale\Lexicon;
+use core\locale\LexiconTemplate;
 use core\utils\Arrays;
 use models\Language\Language;
 use models\Language\Lexicon\Grid\LexiconGridRow;
@@ -22,7 +23,7 @@ use models\Language\Lexicon\Grid\LexiconGridRow;
 #[Grid]
 #[Table('core_lexicon')]
 #[Database(App::DATABASE)]
-class Phrase extends Model {
+class Phrase extends Model implements LexiconTemplate {
     public static function getNexus(): AdminNexus {
         return (new AdminNexus(
             ModelDescription::extract(Phrase::class),
@@ -50,14 +51,17 @@ class Phrase extends Model {
         return static::$groups[$group] = $ret;
     }
 
-    public static function createPhrase(string $group, string $default, bool $isDynamic = false): static {
+    public static function createPhrase(string $group, string $default, Language $language, bool $isDynamic = false): static {
         $lexiconGroup = LexiconGroup::fromName($group, create: true);
 
-        return static::create([
+        $phrase = static::create([
             "groupId" => $lexiconGroup->id,
             "default" => $default,
             "isDynamic" => $isDynamic,
         ]);
+
+        $phrase->addTranslation($language, $default);
+        return $phrase;
     }
 
 
@@ -69,7 +73,7 @@ class Phrase extends Model {
      * @return static
      */
     public static function createTemplate(string $group, string $default, Language $language, array $templates = []): static {
-        $instance = static::createPhrase($group, $default, true);
+        $instance = static::createPhrase($group, $default, $language, true);
 
         foreach ($templates as $rule => $translation) {
             $instance->addTranslation(
@@ -82,11 +86,11 @@ class Phrase extends Model {
         return $instance;
     }
 
-    public static function fromPair(string $group, string $default, bool $create = false): ?static {
+    public static function fromPair(string $group, string $default, Language $language, bool $create = false): ?static {
         $g = static::getGroup($group);
         if (!isset($g[$default])) {
             if ($create) {
-                return static::$groups[$group][$default] = self::createPhrase($group, $default);
+                return static::$groups[$group][$default] = self::createPhrase($group, $default, $language);
             }
 
             return null;
@@ -217,6 +221,7 @@ class Phrase extends Model {
     public function translateRaw(int $languageId): ?string {
         $this->getTranslations();
         $translations = $this->staticTranslations;
+
         if (!isset($translations[$languageId])) {
             return null;
         }
@@ -247,5 +252,17 @@ class Phrase extends Model {
 
     public function formatDefault(string $value): string {
         return Lexicon::format($this->default, $value);
+    }
+
+
+
+    // LexiconTemplate
+    public function format(string $value, ?Language $targetLanguage = null): string {
+        $targetLanguage ??= App::getInstance()
+            ->getRequest()
+            ->getLanguage();
+
+        return $this->translateTemplate($value, $targetLanguage)
+            ?? $this->formatDefault($value);
     }
 }

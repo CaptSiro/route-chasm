@@ -9,6 +9,7 @@ use core\http\Cors;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpHeader;
+use core\locale\LexiconUnit;
 use core\module\Loader;
 use core\route\Path;
 use core\route\Router;
@@ -26,10 +27,11 @@ use models\Setting\Setting;
 use models\SideLoaderRecord;
 
 class SideLoader implements ViewTemplate {
-    use Renderer, Singleton;
+    use Renderer, Singleton, LexiconUnit;
 
 
 
+    public const LEXICON_UNIT = 'sideloader';
     public const IDENTIFIER = 'route-chasm-core:side-loader';
 
     public const SETTING_HASH_LENGTH = self::IDENTIFIER . '_hash-length';
@@ -74,6 +76,8 @@ class SideLoader implements ViewTemplate {
 
 
     public function __construct() {
+        $this->setLexiconGroup(self::LEXICON_UNIT);
+
         $this->files = [];
 
         $this->addImporter(new Javascript());
@@ -179,10 +183,13 @@ class SideLoader implements ViewTemplate {
         $this->router->use(
             '/',
             Http::get(function (Request $request, Response $response) {
+                $messageUnknownImporter = $this->crt("There is not known file importer for type '{}'");
+                $messageFileNotFound = $this->crt("File not found (file hash: '{}')");
+
                 $type = $request->getUrl()->getQuery()->getStrict('type');
                 if (!isset($this->importers[$type])) {
                     $response->sendMessage(
-                        "There is not known file importer for type '$type'",
+                        $messageUnknownImporter->format($type),
                         HttpCode::CE_BAD_REQUEST
                     );
                     return;
@@ -201,7 +208,7 @@ class SideLoader implements ViewTemplate {
                     $entry = SideLoaderRecord::fromHash($files);
                     if (is_null($entry)) {
                         $response->sendMessage(
-                            "File not found (file hash: '$files')",
+                            $messageFileNotFound->format($files),
                             HttpCode::CE_NOT_FOUND
                         );
                     }

@@ -11,6 +11,7 @@ use core\actions\When;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
+use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\RouteNode;
 use core\route\Router;
@@ -20,7 +21,7 @@ use core\Singleton;
  * You may pass <code>Action</code> to <code>AdminRouter::getInstance</code> set as admin home page
  */
 class AdminRouter extends Router {
-    use Singleton;
+    use Singleton, LexiconUnit;
 
     public const LEXICON_GROUP = 'admin';
 
@@ -39,12 +40,14 @@ class AdminRouter extends Router {
         protected ?Action $home = null
     ) {
         parent::__construct();
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
 
 
     protected function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
+        $messageNotFound = $this->tr('Not found');
 
         $this->menu = \core\admin\Admin::createMenu($this);
 
@@ -62,10 +65,8 @@ class AdminRouter extends Router {
         );
 
         $this->use('/**',
-            fn(Request $request, Response $response) => $response->sendMessage(
-                'Not found',
-                HttpCode::CE_NOT_FOUND
-            )
+            fn(Request $request, Response $response)
+                => $response->sendMessage($messageNotFound, HttpCode::CE_NOT_FOUND)
         );
     }
 

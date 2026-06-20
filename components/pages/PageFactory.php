@@ -4,6 +4,7 @@ namespace components\pages;
 
 use core\App;
 use core\http\HttpCode;
+use core\locale\LexiconUnit;
 use core\navigation\NavigationFactory;
 use core\Singleton;
 use core\view\Component;
@@ -12,7 +13,15 @@ use models\Navigation\Slug;
 use models\Page\Page;
 
 class PageFactory implements NavigationFactory {
-    use Singleton;
+    use Singleton, LexiconUnit;
+
+    public const LEXICON_GROUP = 'page';
+
+
+
+    public function __construct() {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+    }
 
 
 
@@ -21,20 +30,17 @@ class PageFactory implements NavigationFactory {
     }
 
     public function createDestination(string $data): Component {
+        $messagePageNotFound = $this->tr('Page not found');
+        $messageTemplateNotSet = $this->tr('Template is not set for the page');
+
         $response = App::getInstance()->getResponse();
 
         if (is_null($page = Page::fromId(intval($data)))) {
-            $response->sendMessage(
-                'Page not found',
-                HttpCode::CE_NOT_FOUND
-            );
+            $response->sendMessage($messagePageNotFound, HttpCode::CE_NOT_FOUND);
         }
 
         if (is_null($template = $page->getTemplate())) {
-            $response->sendMessage(
-                'Template is not set for the page',
-                HttpCode::CE_CONFLICT
-            );
+            $response->sendMessage($messageTemplateNotSet, HttpCode::CE_CONFLICT);
         }
 
         $wireframe = new Wireframe($page);

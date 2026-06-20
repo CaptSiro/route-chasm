@@ -29,6 +29,7 @@ class Home extends ContainerContent {
         );
 
         $this->setLexiconGroup(self::LEXICON_GROUP);
+        $this->tr('Testing phrase');
 
         $description = Setting::fromName(
             RouteChasmEnvironment::SETTING_HOME_DESCRIPTION,
