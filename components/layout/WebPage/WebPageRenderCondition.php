@@ -4,7 +4,7 @@ namespace components\layout\WebPage;
 
 use Closure;
 use core\App;
-use core\communication\Format;
+use core\communication\format\Format;
 use core\communication\Request;
 use core\communication\Response;
 

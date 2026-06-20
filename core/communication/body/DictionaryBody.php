@@ -1,32 +1,122 @@
 <?php
 
-namespace core\communication\parser;
+namespace core\communication\body;
 
-use core\Active;
-use core\App;
+use core\collections\Dictionary;
 use core\collections\dictionary\StrictMap;
-use core\communication\Format;
+use core\collections\StrictDictionary;
+use core\communication\format\Format;
 use core\communication\Request;
 use core\communication\UploadedFile;
 use core\data\Data;
 use core\io\FileReader;
-use core\Singleton;
 use core\utils\Arrays;
 use core\utils\Ini;
 use core\utils\Php;
 use core\utils\Strings;
+use RuntimeException;
 
-class FormBodyParser implements RequestBodyParser {
-    use Active;
-    use Singleton;
+/**
+ * @template-implements Dictionary
+ */
+class DictionaryBody implements RequestBody {
+    use RequestBodyCache;
+
+    public const FLAG_IS_ARRAY = 1;
+    public const KEY_ITEMS = "items";
+
+    private static bool $isTextSupported = true;
+
+    public static function setIsTextSupported(bool $isTextSupported): void {
+        self::$isTextSupported = $isTextSupported;
+    }
 
 
 
-    public static function parseMultipart(FileReader $content): RequestBody {
-        App::getInstance()
-            ->getResponse()
-            ->setHeader('X-BodyParser-Function', __FUNCTION__);
+    protected StrictDictionary $fields;
+    protected StrictDictionary $files;
 
+
+
+    public function supports(string $format): bool {
+        return match ($format) {
+            Format::IDENT_JSON,
+            Format::IDENT_FORM_URLENCODED => true,
+
+            Format::IDENT_TEXT => self::$isTextSupported,
+
+            default => false,
+        };
+    }
+
+    public function parse(Request $request): static {
+        if ($instance = $this->bodyCache_get($request)) {
+            return $instance;
+        }
+
+        switch ($format = $request->getFormat()) {
+            case Format::IDENT_FORM_URLENCODED: {
+                $reader = $request->getBodyReader();
+
+                if (!(empty($_POST) && empty($_FILES))) {
+                    $this->parseSuperGlobals();
+                    break;
+                }
+
+                if ($request->isMultipart()) {
+                    $this->parseMultipart($reader);
+                    break;
+                }
+
+                $this->fields = new StrictMap();
+                $this->fields->load(Strings::parseUrlEncoded($reader->readAll()));
+
+                $this->files = new StrictMap();
+                break;
+            }
+
+            case Format::IDENT_TEXT: {
+                if (!self::$isTextSupported) {
+                    throw new RuntimeException("Format: '$format' is not supported");
+                }
+
+                // Cascade to Format::IDENT_JSON
+            }
+
+            case Format::IDENT_JSON: {
+                $this->files = new StrictMap();
+                $this->fields = new StrictMap();
+
+                $json = json_decode($request->getBodyReader()->readAll());
+
+                if ($json == null) {
+                    break;
+                }
+
+                if (is_array($json)) {
+                    $this->fields
+                        ->getMap()
+                        ->setFlag(self::FLAG_IS_ARRAY);
+
+                    $this->fields->set(self::KEY_ITEMS, $json);
+                }
+
+                foreach ($json as $key => $value) {
+                    $this->fields->set($key, $value);
+                }
+
+                break;
+            }
+
+            default: {
+                throw new RuntimeException("Format: '$format' is not supported");
+            }
+        }
+
+        return $this->bodyCache_set($request, $this);
+    }
+
+    public function parseMultipart(FileReader $content): void {
         $chunkSize = 8192;
 
         $buffer = '';
@@ -39,7 +129,8 @@ class FormBodyParser implements RequestBodyParser {
 
         $pos = strpos($buffer, "\n");
         if ($pos === false) {
-            return self::parseSuperGlobals();
+            $this->parseSuperGlobals();
+            return;
         }
 
         $boundaryLine = substr($buffer, 0, $pos + 1);
@@ -54,7 +145,7 @@ class FormBodyParser implements RequestBodyParser {
         $boundaryMarker = $newLine . $boundary;
         $sectionMarker = str_repeat($newLine, 2);
 
-        $values = [];
+        $fields = [];
         $files = [];
 
         $maxSize = Strings::toBytes(Php::get(Ini::UPLOAD_MAX_FILESIZE));
@@ -141,7 +232,7 @@ class FormBodyParser implements RequestBodyParser {
 
                     if (!$isFile) {
                         var_dump($name);
-                        Arrays::append($values, $name, $data);
+                        Arrays::append($fields, $name, $data);
                         continue;
                     }
 
@@ -160,7 +251,7 @@ class FormBodyParser implements RequestBodyParser {
                     $size += strlen($data);
                     fwrite($temporary, $data);
                 } else {
-                    Arrays::append($values, $name, $data);
+                    Arrays::append($fields, $name, $data);
                 }
 
                 $buffer = substr($buffer, $pos + strlen($boundary));
@@ -190,18 +281,13 @@ class FormBodyParser implements RequestBodyParser {
             ));
         }
 
-        return new RequestBody(
-            new StrictMap($values),
-            new StrictMap($files)
-        );
+        $this->fields = new StrictMap($fields);
+        $this->files = new StrictMap($files);
     }
 
-    public static function parseSuperGlobals(): RequestBody {
-        $files = new StrictMap();
-
-        App::getInstance()
-            ->getResponse()
-            ->setHeader('X-BodyParser-Function', __FUNCTION__);
+    public function parseSuperGlobals(): void {
+        $this->files = new StrictMap();
+        $this->fields = new StrictMap($_POST);
 
         foreach ($_FILES as $name => $value) {
             if (is_array($value['name'])) {
@@ -218,11 +304,11 @@ class FormBodyParser implements RequestBodyParser {
                     );
                 }
 
-                $files->set($name, $array);
+                $this->files->set($name, $array);
                 continue;
             }
 
-            $files->set($name, new UploadedFile(
+            $this->files->set($name, new UploadedFile(
                 $value['name'],
                 $value['type'],
                 $value['size'],
@@ -230,33 +316,24 @@ class FormBodyParser implements RequestBodyParser {
                 $value['tmp_name']
             ));
         }
-
-        return new RequestBody(
-            new StrictMap($_POST),
-            $files
-        );
     }
 
-
-
-    public function parse(Request $request): RequestBody {
-        $body = new StrictMap();
-        $reader = $request->getBodyReader();
-
-        if (!(empty($_POST) && empty($_FILES))) {
-            return static::parseSuperGlobals();
+    public function getFields(): StrictDictionary {
+        if (!isset($this->fields)) {
+            throw new RuntimeException("Error: Using fields before parsing request");
         }
 
-        if ($request->isMultipart()) {
-            return static::parseMultipart($reader);
-        }
-
-        $body->load(Strings::parseUrlEncoded($reader->readAll()));
-        return new RequestBody($body, new StrictMap());
+        return $this->fields;
     }
 
-    public function supports(string $format): bool {
-        return $this->isActive
-            && $format === Format::IDENT_FORM_URLENCODED;
+    /**
+     * @return StrictDictionary<UploadedFile>
+     */
+    public function getFiles(): StrictDictionary {
+        if (!isset($this->files)) {
+            throw new RuntimeException("Error: Using files before parsing request");
+        }
+
+        return $this->files;
     }
 }

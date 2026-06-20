@@ -12,6 +12,7 @@ use components\forms\FormAction;
 use components\layout\WebPage\AdminWebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\Model;
@@ -21,6 +22,7 @@ use core\http\HttpHeader;
 use core\http\HttpMethod;
 use core\route\RouteNode;
 use core\sideloader\importers\Javascript\Javascript;
+use core\utils\Objects;
 use core\view\ContainerContent;
 use core\view\View;
 use models\Privilege\Privilege;
@@ -54,7 +56,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
     public function setContext(AdminNexus $context): static {
         $this->context = $context;
-        Javascript::import($this->context->getResource('nexus.js'));
+        Javascript::import(AdminNexus::getStaticResource(AdminNexus::getBaseClass() . '.js'));
         return $this;
     }
 
@@ -148,7 +150,9 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             $response->setStatus(HttpCode::S_OK);
         }
 
-        $submitAction = $request->getBody()
+        $submitAction = $request
+            ->body(DictionaryBody::class)
+            ->getFields()
             ->get(self::NAME_SUBMIT_ACTION);
 
         if ($submitAction === 'stay') {

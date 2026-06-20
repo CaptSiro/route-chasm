@@ -10,6 +10,7 @@ use components\layout\Accordion;
 use components\layout\Grid\Grid;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -71,8 +72,12 @@ class DocsDashboard extends ContainerContent {
 
             case HttpMethod::POST: {
                 $docs = Docs::getInstance();
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
+
                 $filesEncoded = array_filter(
-                    explode(',', $request->getBody()->getStrict(self::NAME_FILES)),
+                    explode(',', $fields->getStrict(self::NAME_FILES)),
                     fn(string $x) => trim($x) !== ''
                 );
                 

@@ -1,6 +1,6 @@
 <?php
 
-namespace core\communication;
+namespace core\communication\format;
 
 class FormatMatcher {
     public function matchQuery(string $type): string {

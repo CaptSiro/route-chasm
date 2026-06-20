@@ -4,6 +4,7 @@ namespace models\fs;
 
 use components\Icon;
 use core\App;
+use core\communication\Request;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
@@ -32,6 +33,10 @@ class File extends Model implements FileSystemEntry, Destination {
     public const TYPE_IMAGE_WEBP = 'image/webp';
 
 
+
+    public static function fromRequest(Request $request, string $param = 'hash'): ?File {
+        return self::fromHash($request->getParam()->getStrict($param));
+    }
 
     public static function fromHash(string $hash): ?File {
         return static::first(where: Query::infer('hash = ?', $hash));

@@ -18,6 +18,7 @@ use components\layout\Row;
 use components\Message\Message;
 use components\SaveError\SaveError;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Components;
@@ -113,14 +114,15 @@ class UserEditorBehavior implements EditorBehavior {
             return new Message('Provided model for UserEditor is not instance of User');
         }
 
-        $body = App::getInstance()
+        $fields = App::getInstance()
             ->getRequest()
-            ->getBody();
+            ->body(DictionaryBody::class)
+            ->getFields();
 
-        $password = $body->getStrict(self::NAME_PASSWORD);
+        $password = $fields->getStrict(self::NAME_PASSWORD);
         if ($action === EditorBehaviorAction::CREATE) {
             // Implicit unique check for tag in the User::save() function
-            $model->tag = $body->getStrict(self::NAME_TAG);
+            $model->tag = $fields->getStrict(self::NAME_TAG);
 
             if (empty($password)) {
                 return new SaveError(
@@ -150,13 +152,13 @@ class UserEditorBehavior implements EditorBehavior {
             }
         }
 
-        $model->username = $body->getStrict(self::NAME_USERNAME);
+        $model->username = $fields->getStrict(self::NAME_USERNAME);
 
         $error = $model->save();
 
         $groups = array_map(
             fn($x) => intval($x),
-            MultiSelect::parse($body->get(self::NAME_GROUPS, ''))
+            MultiSelect::parse($fields->get(self::NAME_GROUPS, ''))
         );
 
         $model->assignIds($groups);

@@ -11,6 +11,7 @@ use components\forms\Form;
 use components\layout\Layout;
 use components\Message\Message;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\Locale;
 use core\utils\Components;
@@ -56,12 +57,13 @@ class LanguageEditorBehavior implements EditorBehavior {
             return new Message('Provided model for UserEditor is not instance of User');
         }
 
-        $body = App::getInstance()
+        $fields = App::getInstance()
             ->getRequest()
-            ->getBody();
+            ->body(DictionaryBody::class)
+            ->getFields();
 
         /** @var Language $model */
-        $model->code = $body->getStrict(self::NAME_CODE);
+        $model->code = $fields->getStrict(self::NAME_CODE);
 
         return Components::nullifyDatabaseAction($model->save());
     }

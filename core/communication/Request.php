@@ -7,7 +7,13 @@ use core\collections\dictionary\Session;
 use core\collections\dictionary\StrictMap;
 use core\collections\dictionary\StrictStack;
 use core\collections\StrictDictionary;
+use core\communication\body\RequestBody;
+use core\communication\format\FormatMatcher;
+use core\communication\format\LimitedFormat;
+use core\communication\format\RequestFormat;
+use core\http\HttpCode;
 use core\http\HttpHeader;
+use core\InstanceCounter;
 use core\io\FileReader;
 use core\locale\LanguageSelector;
 use core\locale\selectors\DefaultSelector;
@@ -17,6 +23,10 @@ use models\Domain\Domain;
 use models\Language\Language;
 
 class Request {
+    use InstanceCounter;
+
+
+
     public const PATH_INDEX = '__path_index';
 
     public const PARAM_ANY = "*";
@@ -53,20 +63,12 @@ class Request {
     protected StrictStack $param;
 
     readonly protected StrictMap $data;
-    readonly protected StrictDictionary $body;
     readonly protected Domain $domain;
-
-    /**
-     * @var StrictDictionary<UploadedFile>
-     */
-    readonly protected StrictDictionary $files;
 
 
 
     protected LanguageSelector $languageSelector;
     protected ?Language $language;
-    private bool $isBodyParsed = false;
-
 
 
     public function __construct(
@@ -75,6 +77,7 @@ class Request {
         readonly protected Url $url,
         readonly protected StrictDictionary $cookies,
     ) {
+        $this->setInstanceId();
         $this->languageSelector = new DefaultSelector();
         $this->httpMethod = $_SERVER["REQUEST_METHOD"];
         $this->headers = null;
@@ -100,29 +103,24 @@ class Request {
         return new FileReader('php://input');
     }
 
-    public function getBody(): StrictDictionary {
-        if (!$this->isBodyParsed) {
-            $parsed = App::getInstance()->parseBody($this);
-            $this->body = $parsed->body;
-            $this->files = $parsed->files;
-            $this->isBodyParsed = true;
-        }
-
-        return $this->body;
-    }
-
     /**
-     * @return StrictDictionary<UploadedFile>
+     * @template T of RequestBody
+     * @param class-string<T> $bodyClass
+     * @return T|null
      */
-    public function getFiles(): StrictDictionary {
-        if (!$this->isBodyParsed) {
-            $parsed = App::getInstance()->parseBody($this);
-            $this->body = $parsed->body;
-            $this->files = $parsed->files;
-            $this->isBodyParsed = true;
+    public function body(string $bodyClass, bool $terminateIfNotSupported = true): mixed {
+        $body = new $bodyClass;
+        if (!$body->supports($this->getFormat())) {
+            if ($terminateIfNotSupported) {
+                App::getInstance()
+                    ->getResponse()
+                    ->sendStatus(HttpCode::CE_UNSUPPORTED_MEDIA_TYPE);
+            }
+
+            return null;
         }
 
-        return $this->files;
+        return $body->parse($this);
     }
 
     public function getRemainingPath(): Path {
@@ -225,24 +223,10 @@ class Request {
     }
 
     public function __debugInfo(): ?array {
-        if (!$this->isBodyParsed) {
-            return [
-                'httpMethod' => $this->httpMethod,
-                'headers' => $this->headers,
-                'url' => $this->url->toString(),
-                'body' => '*not-parsed*',
-                'files' => '*not-parsed*',
-                'cookies' => $this->cookies,
-                'domain' => $this->domain
-            ];
-        }
-
         return [
             'httpMethod' => $this->httpMethod,
             'headers' => $this->headers,
             'url' => $this->url->toString(),
-            'body' => $this->body,
-            'files' => $this->files,
             'cookies' => $this->cookies,
             'domain' => $this->domain
         ];

@@ -1,10 +1,10 @@
 <?php
 
-use core\communication\Format;
-use core\communication\FormatMatcher;
+use core\communication\format\Format;
+use core\communication\format\FormatMatcher;
+use core\communication\format\ResponseFormat;
 use core\communication\Request;
 use core\communication\Response;
-use core\communication\ResponseFormat;
 use core\http\HttpHeader;
 use core\RouteChasmEnvironment;
 use core\tf\Test;

@@ -2,6 +2,7 @@
 
 namespace components\forms\controls;
 
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\utils\Strings;
 
@@ -25,7 +26,11 @@ class CsrfField extends HiddenField {
             return $isValid;
         }
 
-        $isValid = $request->getBody()->remove(self::FIELD_NAME) === self::getCsrf($request);
+        $isValid = $request
+                ->body(DictionaryBody::class)
+                ->getFields()
+                ->remove(self::FIELD_NAME) === self::getCsrf($request);
+
         $request->set(self::FIELD_VALID_NAME, $isValid);
         return $isValid;
     }

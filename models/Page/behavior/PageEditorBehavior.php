@@ -19,6 +19,7 @@ use components\layout\Tabs;
 use components\Message\Message;
 use core\App;
 use core\collections\StrictDictionary;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
@@ -230,10 +231,12 @@ class PageEditorBehavior implements EditorBehavior {
     }
 
     protected function testTitlesAvailability(Request $request, Page $page): ?View {
-        $body = $request->getBody();
+        $fields = $request
+            ->body(DictionaryBody::class)
+            ->getFields();
 
-        $titles = $body->getStrict('title');
-        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
+        $titles = $fields->getStrict('title');
+        $languageIds = $fields->getStrict(self::NAME_LANGUAGE_ID);
 
         /** @var array<int, Language> $languages */
         $languages = Models::identity(Language::all());
@@ -333,27 +336,29 @@ class PageEditorBehavior implements EditorBehavior {
     }
 
     protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request): ?View {
-        $body = $request->getBody();
+        $fields = $request
+            ->body(DictionaryBody::class)
+            ->getFields();
 
-        if (!is_null($error = $this->isTitleForDefaultLanguageSubmitted($body))) {
+        if (!is_null($error = $this->isTitleForDefaultLanguageSubmitted($fields))) {
             return $error;
         }
 
         $hasTemplateChanged = isset($page->templateId)
-            && $page->templateId !== intval($body->get("templateId"));
+            && $page->templateId !== intval($fields->get("templateId"));
 
         if ($hasTemplateChanged) {
             $page->getTemplate()
                 ?->delete($page);
         }
 
-        $page->set($body->toArray());
+        $page->set($fields->toArray());
 
-        if (empty($body->get('publish'))) {
+        if (empty($fields->get('publish'))) {
             $page->publish = null;
         }
 
-        if (empty($body->get('remove'))) {
+        if (empty($fields->get('remove'))) {
             $page->remove = null;
         }
 
@@ -367,7 +372,7 @@ class PageEditorBehavior implements EditorBehavior {
         $values = array_values(array_filter(
             array_map(
                 fn($x) => intval($x),
-                MultiSelect::parse($body->getStrict(self::NAME_RELATED_PAGES))
+                MultiSelect::parse($fields->getStrict(self::NAME_RELATED_PAGES))
             ),
             fn(int $id) => $id > 0 && !is_null(Page::fromId($id))
         ));
@@ -382,14 +387,14 @@ class PageEditorBehavior implements EditorBehavior {
             $page->addRelatedRaw($values);
         }
 
-        Shortcut::submitHash($body->getStrict(self::NAME_COVER_IMAGE), $page->getCoverImageName());
+        Shortcut::submitHash($fields->getStrict(self::NAME_COVER_IMAGE), $page->getCoverImageName());
 
         if ($hasTemplateChanged) {
             $page->getTemplate(true)
                 ?->create($page);
         }
 
-        $this->onSubmitPlaceInMenus($page, $body);
+        $this->onSubmitPlaceInMenus($page, $fields);
         return null;
     }
 
@@ -427,16 +432,19 @@ class PageEditorBehavior implements EditorBehavior {
     }
 
     protected function onSubmitLocalizations(Page $page, Request $request): ?View {
-        $body = $request->getBody();
+        $fields = $request
+            ->body(DictionaryBody::class)
+            ->getFields();
+
         $navigationContextId = $this->getNavigationContextId();
 
         /** @var array<int, Language> $languages */
         $languages = Models::identity(Language::all());
 
-        $languageIds = $body->getStrict(self::NAME_LANGUAGE_ID);
+        $languageIds = $fields->getStrict(self::NAME_LANGUAGE_ID);
         if (!is_array($languageIds)) {
             $this->onSubmitLocalization(
-                $object = $body->toArray(),
+                $object = $fields->toArray(),
                 $page,
                 $languages[intval($object[self::NAME_LANGUAGE_ID])],
                 $navigationContextId
@@ -451,7 +459,7 @@ class PageEditorBehavior implements EditorBehavior {
         $columns[] = self::NAME_LANGUAGE_ID;
 
         $objects = Models::transpose(
-            $body->toArray(),
+            $fields->toArray(),
             $columns,
             count($languageIds)
         );
@@ -474,7 +482,9 @@ class PageEditorBehavior implements EditorBehavior {
         /** @var Page $model */
 
         $request = App::getInstance()->getRequest();
-        $body = $request->getBody();
+        $fields = $request
+            ->body(DictionaryBody::class)
+            ->getFields();
 
         if (!($model instanceof Page)) {
             return new Message(
@@ -482,7 +492,7 @@ class PageEditorBehavior implements EditorBehavior {
             );
         }
 
-        $parentId = $body->get(self::NAME_PARENT_ID);
+        $parentId = $fields->get(self::NAME_PARENT_ID);
         $parent = empty($parentId)
             ? null
             : Page::fromId($parentId);

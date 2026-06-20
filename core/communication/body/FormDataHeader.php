@@ -1,6 +1,6 @@
 <?php
 
-namespace core\communication\parser;
+namespace core\communication\body;
 
 use JsonSerializable;
 

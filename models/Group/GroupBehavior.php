@@ -12,6 +12,7 @@ use components\forms\Form;
 use components\layout\Layout;
 use components\SaveError\SaveError;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Models;
@@ -83,17 +84,18 @@ class GroupBehavior implements EditorBehavior {
             return new SaveError('', $this->tr('Provided model is not type of '. Group::class));
         }
 
-        $request = App::getInstance()
-            ->getRequest();
-        $body = $request->getBody();
+        $fields = App::getInstance()
+            ->getRequest()
+            ->body(DictionaryBody::class)
+            ->getFields();
 
         if ($action === EditorBehaviorAction::CREATE || $model->isEditable()) {
-            $model->set($body->toArray());
+            $model->set($fields->toArray());
         }
 
         $model->save();
 
-        $map = PrivilegeResourceMap::extractMap($body->toArray(), self::NAME_MAPPINGS);
+        $map = PrivilegeResourceMap::extractMap($fields->toArray(), self::NAME_MAPPINGS);
         $mappings = [];
 
         foreach ($map as $position => $isset) {

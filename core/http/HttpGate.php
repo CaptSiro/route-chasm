@@ -5,6 +5,7 @@ namespace core\http;
 use core\actions\Action;
 use core\actions\ActionBindRouteNode;
 use core\actions\IsLastAction;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\route\RouteNode;
@@ -80,11 +81,17 @@ class HttpGate implements Action {
     }
 
     protected function checkGuards(Request $request): bool {
-        $body = $request->getBody();
-
-        foreach ($this->bodyGuards as $property => $pattern) {
-            if (!preg_match($pattern, $body->get($property))) {
+        if (!empty($this->bodyGuards)) {
+            if (is_null($body = $request->body(DictionaryBody::class, false))) {
                 return false;
+            }
+
+            $fields = $body->getFields();
+
+            foreach ($this->bodyGuards as $property => $pattern) {
+                if (!preg_match($pattern, $body->get($property))) {
+                    return false;
+                }
             }
         }
 
@@ -93,7 +100,8 @@ class HttpGate implements Action {
         foreach ($this->queryGuards as $property => $pattern) {
             if (!preg_match($pattern, $query->get($property))) {
                 return false;
-            }}
+            }
+        }
 
         return true;
     }

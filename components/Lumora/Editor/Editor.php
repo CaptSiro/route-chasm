@@ -34,6 +34,7 @@ use components\Lumora\widgets\WidgetImporter;
 use components\pages\Wireframe;
 use core\actions\UnexpectedHttpMethod;
 use core\ai\clients\OpenAi;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
@@ -269,7 +270,10 @@ class Editor extends ContainerContent {
                         ->setRequired(['html', 'css', 'js'])
                 );
 
-                $prompt = $request->getBody()->get("prompt");
+                $prompt = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields()
+                    ->get("prompt");
 
                 $aiRequest
                     ->setSchema($schema)

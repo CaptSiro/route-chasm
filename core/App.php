@@ -5,19 +5,13 @@ namespace core;
 use Closure;
 use core\collections\dictionary\Map;
 use core\collections\dictionary\StrictMap;
-use core\communication\FormatMatcher;
-use core\communication\parser\FormBodyParser;
-use core\communication\parser\JsonBodyParser;
-use core\communication\parser\RequestBody;
-use core\communication\parser\RequestBodyParser;
-use core\communication\parser\TextBodyParser;
+use core\communication\format\FormatMatcher;
+use core\communication\format\RequestFormat;
+use core\communication\format\ResponseFormat;
 use core\communication\Request;
-use core\communication\RequestFormat;
 use core\communication\Response;
-use core\communication\ResponseFormat;
 use core\configs\AppConfig;
 use core\configs\Config;
-use core\http\HttpCode;
 use core\locale\Locale;
 use core\module\Loader;
 use core\module\Module;
@@ -87,10 +81,6 @@ class App implements Loader {
     private Response $response;
     private FormatMatcher $matcher;
     private readonly Map $options;
-    /**
-     * @var RequestBodyParser[]
-     */
-    private array $bodyParsers;
     protected ?Env $env;
     protected array $listeners;
     protected bool $defaultModulesLoaded;
@@ -115,12 +105,6 @@ class App implements Loader {
         $this->env = self::getEnvStatic();
 
         $this->home = null;
-
-        $this->bodyParsers = [
-            JsonBodyParser::getInstance(),
-            FormBodyParser::getInstance(),
-            TextBodyParser::getInstance()
-        ];
     }
 
 
@@ -141,25 +125,6 @@ class App implements Loader {
     public function setMatcher(FormatMatcher $matcher): void {
         $this->matcher = $matcher;
         $this->initCommunication();
-    }
-
-    public function addBodyParser(RequestBodyParser $parser): void {
-        $this->bodyParsers[] = $parser;
-    }
-
-    public function parseBody(Request $request): RequestBody {
-        foreach ($this->bodyParsers as $parser) {
-            if ($parser->supports($request->getFormat())) {
-                return $parser->parse($request);
-            }
-        }
-
-        $this->response->sendMessage(
-            "Request body could not be parsed. Format '" .$request->getFormat(). "' is not supported.",
-            HttpCode::SE_INTERNAL_SERVER_ERROR
-        );
-
-        exit;
     }
 
     /**

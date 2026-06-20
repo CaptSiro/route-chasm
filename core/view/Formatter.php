@@ -4,7 +4,7 @@ namespace core\view;
 
 use Closure;
 use core\App;
-use core\communication\Format;
+use core\communication\format\Format;
 use core\http\HttpHeader;
 
 class Formatter implements View {

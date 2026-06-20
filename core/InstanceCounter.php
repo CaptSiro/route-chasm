@@ -16,4 +16,8 @@ trait InstanceCounter {
     public function getInstanceId(): int {
         return $this->instanceId;
     }
+
+    protected function setInstanceId(): void {
+        $this->instanceId = self::createInstanceId();
+    }
 }

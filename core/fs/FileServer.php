@@ -4,6 +4,7 @@ namespace core\fs;
 
 use components\fs\FileVariantTransformers;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\fs\variants\FileVariant;
@@ -24,7 +25,9 @@ use models\User\User;
 class FileServer extends Router {
     use Singleton, LexiconUnit;
 
-    const LEXICON_GROUP = FileSystem::LEXICON_GROUP;
+    public const LEXICON_GROUP = FileSystem::LEXICON_GROUP;
+    public const QUERY_HASH = 'hash';
+    public const FIELD_NAME = 'name';
 
 
 
@@ -157,7 +160,12 @@ class FileServer extends Router {
             Http::post(function (Request $request, Response $response) {
                 $directory = Directory::fromRequest($request);
 
-                if (empty($files = $request->getFiles()->toArray())) {
+                $files = $request
+                    ->body(DictionaryBody::class)
+                    ->getFiles()
+                    ->toArray();
+
+                if (empty($files)) {
                     $response->sendMessage(
                         $this->tr('No files sent. You need to send at least one file'),
                         HttpCode::CE_BAD_REQUEST
@@ -206,7 +214,7 @@ class FileServer extends Router {
         $router->use(
             '/file/[hash]',
             Http::get(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
@@ -220,15 +228,18 @@ class FileServer extends Router {
             }),
 
             Http::patch(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
-                $file->renameEntry($request->getBody()->getStrict('name'));
+                $file->renameEntry($request
+                    ->body(DictionaryBody::class)
+                    ->getFiles()
+                    ->getStrict('name'));
             }),
 
             Http::delete(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
@@ -239,7 +250,7 @@ class FileServer extends Router {
         $router->use(
             '/download/[hash]',
             Http::get(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
@@ -259,7 +270,7 @@ class FileServer extends Router {
         $router->use(
             '/info/[hash]',
             Http::get(function (Request $request, Response $response) {
-                if (is_null($file = File::fromHash($request->getParam()->getStrict('hash')))) {
+                if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
@@ -294,7 +305,10 @@ class FileServer extends Router {
 
             Http::post(function (Request $request, Response $response) {
                 $parent = Directory::fromRequest($request);
-                $name = $request->getBody()->getStrict('name');
+                $name = $request
+                    ->body(DictionaryBody::class)
+                    ->getFiles()
+                    ->getStrict('name');
 
                 FileSystem::makeDirectory($parent, $name);
 
@@ -302,9 +316,12 @@ class FileServer extends Router {
             }),
 
             Http::patch(function (Request $request, Response $response) {
-                $body = $request->getBody();
-                $id = $body->getStrict('id');
-                $name = $body->getStrict('name');
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
+
+                $id = $fields->getStrict('id');
+                $name = $fields->getStrict('name');
 
                 if (is_null($directory = Directory::fromId(intval($id)))) {
                     $response->sendMessage(
@@ -318,9 +335,12 @@ class FileServer extends Router {
             }),
 
             Http::delete(function (Request $request, Response $response) {
-                $body = $request->getBody();
-                $id = $body->getStrict('id');
-                $name = $body->getStrict('name');
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
+
+                $id = $fields->getStrict('id');
+                $name = $fields->getStrict('name');
 
                 if (is_null($directory = Directory::fromId(intval($id)))) {
                     $response->sendMessage(

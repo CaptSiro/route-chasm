@@ -25,6 +25,7 @@ use components\layout\WebPage\ContextAwareWebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\ai\clients\OpenAi;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -179,10 +180,13 @@ class ArticleEditor extends ContainerContent {
             case HttpMethod::POST: {
                 $this->checkRequest($request, $response);
 
-                $body = $request->getBody();
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
+
                 foreach ($this->page->getLocalizations() as $localization) {
                     $name = $this->createName($localization, self::NAME_CONTENT);
-                    if (is_null($content = $body->get($name))) {
+                    if (is_null($content = $fields->get($name))) {
                         continue;
                     }
 
@@ -197,16 +201,18 @@ class ArticleEditor extends ContainerContent {
             case HttpMethod::PUT: {
                 $this->checkRequest($request, $response);
 
-                $body = $request->getBody();
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
 
-                if (empty($prompt = $body->getStrict(self::NAME_PROMPT))) {
+                if (empty($prompt = $fields->getStrict(self::NAME_PROMPT))) {
                     $response->sendMessage(
                         $this->tr('Prompt must not be empty'),
                         HttpCode::CE_BAD_REQUEST
                     );
                 }
 
-                if (is_null($language = Language::fromId($body->getStrict(self::NAME_LANGUAGE)))) {
+                if (is_null($language = Language::fromId($fields->getStrict(self::NAME_LANGUAGE)))) {
                     $response->sendMessage(
                         $this->tr('Language must be defined'),
                         HttpCode::CE_BAD_REQUEST
@@ -214,11 +220,11 @@ class ArticleEditor extends ContainerContent {
                 }
 
                 $options = new ArticleGenerationOptions(
-                    ArticleGenerationLength::fromOption($body->getStrict(self::NAME_LENGTH)),
-                    ArticleGenerationTone::fromOption($body->getStrict(self::NAME_TONE))
+                    ArticleGenerationLength::fromOption($fields->getStrict(self::NAME_LENGTH)),
+                    ArticleGenerationTone::fromOption($fields->getStrict(self::NAME_TONE))
                 );
 
-                $tone = $body->getStrict(self::NAME_TONE);
+                $tone = $fields->getStrict(self::NAME_TONE);
 
                 $client = OpenAi::fromEnv();
                 $ai = $client->createRequest();

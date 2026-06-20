@@ -16,6 +16,7 @@ use components\layout\Accordion;
 use components\layout\Layout;
 use core\ai\clients\OpenAi;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
@@ -68,16 +69,17 @@ class AiPageEditorBehavior implements EditorBehavior {
     }
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
-        $body = App::getInstance()
+        $fields = App::getInstance()
             ->getRequest()
-            ->getBody();
+            ->body(DictionaryBody::class)
+            ->getFields();
 
         if (!($model instanceof Page)) {
             throw new RuntimeException($this->tr("Provided model must be type of Page"));
         }
 
         $aiPage = AiPage::fromPage($model, true);
-        $prompt = $body->get(self::NAME_PROMPT);
+        $prompt = $fields->get(self::NAME_PROMPT);
         $samePrompt = !is_null($aiPage)
             && $aiPage->prompt === $prompt;
 

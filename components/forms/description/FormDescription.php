@@ -8,6 +8,7 @@ use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\Form;
 use components\layout\Layout;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\view\View;
 use ReflectionClass;
@@ -95,7 +96,11 @@ class FormDescription implements EditorBehavior {
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
         $request = App::getInstance()->getRequest();
-        $model->set($request->getBody()->toArray());
+        $model->set($request
+            ->body(DictionaryBody::class)
+            ->getFields()
+            ->toArray());
+
         $error = $model->save();
 
         if ($error instanceof View) {
