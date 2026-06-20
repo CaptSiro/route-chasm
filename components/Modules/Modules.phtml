@@ -3,10 +3,9 @@
 use components\Modules\Modules;
 use core\sideloader\importers\Css\Css;
 
-Css::import($this->getResource('modules.css'));
+Css::importDefault($this);
 
-?>
-<section>
+?><section>
     <h1>Loaded modules</h1>
     <?= $this->getModules() ?>
 </section>

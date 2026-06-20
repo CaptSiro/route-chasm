@@ -4,8 +4,8 @@ use components\layout\Spotlight\Spotlight;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Css::import($this->getResource('spotlight.css'));
-Javascript::import($this->getResource('spotlight.js'));
+Css::importDefault($this);
+Javascript::importDefault($this);
 
 ?><div class="spotlight">
     <?php foreach ($this->views as $label => $view): ?>

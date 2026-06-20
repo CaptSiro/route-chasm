@@ -2,7 +2,7 @@
 
 namespace components\docs;
 
-use components\forms\controls\Select\Select;
+use components\forms\controls\Select;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\view\Renderer;

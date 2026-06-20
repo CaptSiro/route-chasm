@@ -6,7 +6,7 @@ use components\Admin\Nexus\Editor;
 use components\Admin\Nexus\Editor\EditorBehavior;
 use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\Form;
-use components\layout\Accordion\Accordion;
+use components\layout\Accordion;
 use components\layout\Column;
 use components\layout\Layout;
 use components\Message\Message;

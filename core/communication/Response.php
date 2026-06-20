@@ -52,36 +52,52 @@ class Response {
         return isset($this->headers[$header]);
     }
 
-    public function setHeader(string $header, string $value): void {
+    public function setHeader(string $header, string $value): static {
         $this->headers[$header] = $value;
+        return $this;
     }
 
     /**
      * @param array ...$headers Single header is tuple of two strings, name and value. Example: <code>"Location: /"</code> would be
      * <code>["Location" => "/"]</code>
-     * @return void
      */
-    public function setHeaders(array $headers): void {
+    public function setHeaders(array $headers): static {
         foreach ($headers as $header => $value) {
             $this->headers[$header] = $value;
         }
+
+        return $this;
     }
 
-    public function removeHeader(string $header): void {
+    public function addReloadHeader(): static {
+        $this->setHeader(HttpHeader::X_RELOAD, 'Reload');
+        return $this;
+    }
+
+    public function removeHeader(string $header): ?string {
+        $ret = null;
+
+        if (isset($this->headers[$header])) {
+            $ret = $this->headers[$header];
+        }
+
         unset($this->headers[$header]);
+        return $ret;
     }
 
-    public function removeAllHeaders(): void {
+    public function removeAllHeaders(): static {
         $this->headers = [];
+        return $this;
     }
 
-    public function setStatus(int $code): void {
+    public function setStatus(int $code): static {
         http_response_code($code);
+        return $this;
     }
 
-    public function generateHeaders(): void {
+    public function generateHeaders(): static {
         if ($this->headersSent) {
-            return;
+            return $this;
         }
 
         $this->setHeader("X-Imported", autoload_imported());
@@ -92,6 +108,8 @@ class Response {
         foreach ($this->headers as $header => $value) {
             header("$header: $value");
         }
+
+        return $this;
     }
 
     protected function exit(): void {

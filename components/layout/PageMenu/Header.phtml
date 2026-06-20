@@ -2,12 +2,12 @@
 
 use components\Icon;
 use components\layout\PageMenu\Header;
-use components\windows\LanguageSelect\LanguageSelect;
+use components\windows\LanguageSelect;
 use components\windows\Window;
 use core\sideloader\importers\Css\Css;
 use models\Language\Language;
 
-Css::import($this->getResource('header.css'));
+Css::importDefault($this);
 
 ?><header>
     <div class="header-items">

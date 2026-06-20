@@ -7,7 +7,7 @@ use components\layout\BreadCrumbs\BreadCrumbs;
 use components\layout\PageMenu\Header;
 use components\layout\PageMenu\PageMenu;
 use components\pages\Article\Article;
-use components\Search\HeaderSearch\HeaderSearch;
+use components\Search\HeaderSearch;
 use components\Search\Search;
 use components\layout\WebPage\WebPage;
 use core\route\Path;
@@ -46,7 +46,7 @@ class DocumentPage extends ContainerContent {
             PageMenu::fromModelName(Menu::NAME_HEADER_DOCS),
             new HeaderSearch(
                 url: Docs::getInstance()->createSearchUrl(),
-                placeholder: "Search documents..."
+                placeholder: $this->tr("Search documents...")
             )
         );
     }

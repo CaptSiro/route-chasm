@@ -4,11 +4,10 @@ use components\Admin\SptfTests\SptfTests;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Css::import($this->getResource('sptf.css'));
-Javascript::import($this->getResource('sptf.js'));
+Css::importDefault($this);
+Javascript::importDefault($this);
 
-?>
-<section>
+?><section>
     <button x-init="sptf_hideButton">Hide passed tests</button>
 </section>
 

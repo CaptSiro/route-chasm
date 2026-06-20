@@ -1,11 +1,10 @@
 <?php /** @var ImageVariantPreview $this */
 
-use components\fs\ImageVariantPreview;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource("image-variant-preview.js"));
-Css::import($this->getResource("image-variant-preview.css"));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 ?><div class="image-variant-preview">
     <div

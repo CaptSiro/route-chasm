@@ -2,7 +2,7 @@
 
 namespace core\guards;
 
-use components\SaveError\Group\SaveErrorGroup;
+use components\SaveError\SaveErrorGroup;
 use components\SaveError\SaveError;
 
 class Guard {

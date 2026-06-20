@@ -23,7 +23,7 @@ class ContextAwareWebPage extends WebPage {
             if (isset($this->templateOverride)) {
                 $this->setTemplate($this->templateOverride);
             } else {
-                $this->setTemplate($this->getResource('WebPage.admin.phtml'));
+                $this->setTemplate($this->getResource('WebPage_admin.phtml'));
             }
         }
 

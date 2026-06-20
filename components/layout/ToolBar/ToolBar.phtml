@@ -4,8 +4,8 @@ use components\layout\ToolBar\ToolBar;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('tool-bar.js'));
-Css::import($this->getResource('tool-bar.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 ?><nav class="tool-bar" x-init="toolBar_init">
     <?= $this->menu ?>

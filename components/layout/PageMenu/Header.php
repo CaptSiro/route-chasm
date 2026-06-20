@@ -2,7 +2,7 @@
 
 namespace components\layout\PageMenu;
 
-use components\Search\HeaderSearch\HeaderSearch;
+use components\Search\HeaderSearch;
 use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;

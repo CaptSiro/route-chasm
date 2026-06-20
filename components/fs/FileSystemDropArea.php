@@ -6,9 +6,10 @@ use core\locale\LexiconUnit;
 use core\view\Container;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 use models\fs\Directory;
 
-class FileSystemDropArea implements Container {
+class FileSystemDropArea implements Container, ViewTemplate {
     use Renderer, LexiconUnit;
 
     public const LEXICON_GROUP = 'file-system.drop-area';

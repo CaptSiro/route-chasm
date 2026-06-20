@@ -2,7 +2,7 @@
 
 namespace core\admin;
 
-use components\Admin\Login\AdminLogin;
+use components\Admin\AdminLogin;
 use components\layout\Menu\Menu;
 use components\Message\Message;
 use core\actions\Action;

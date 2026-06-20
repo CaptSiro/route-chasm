@@ -14,7 +14,7 @@ use core\locale\LexiconUnit;
 use core\route\RouteNode;
 use models\Privilege\Privilege;
 
-class Component implements View, Action {
+class Component implements ViewTemplate, Action {
     use Renderer, ActionBindRouteNode, ActorClassName, IsLastAction, LexiconUnit, Barrier;
 
 

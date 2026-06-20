@@ -6,7 +6,7 @@ use components\Admin\Nexus\Editor\EditorBehavior;
 use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\Admin\Nexus\Editor\GetEditor;
 use components\Admin\Nexus\Editor\SetEditor;
-use components\Admin\PrivilegeResourceMap\PrivilegeResourceMap;
+use components\Admin\PrivilegeResourceMap;
 use components\forms\controls\TextField;
 use components\forms\Form;
 use components\layout\Layout;

@@ -4,8 +4,8 @@ use components\Admin\Nexus\AdminNexus;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('nexus.js'));
-Css::import($this->getResource('nexus.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 ?><section class="nexus">
     <?php if ($this->showHeader): ?>

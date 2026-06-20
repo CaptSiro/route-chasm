@@ -3,7 +3,7 @@
 use components\Admin\Phrase\AdminPhraseAiTranslator;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('phrase-translator.js'));
+Javascript::importDefault($this);
 
 ?><button
     x-init="phraseTranslator_init"

@@ -6,8 +6,8 @@ use components\pages\AiGeneratedPage\AiGeneratedPage;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 
-Javascript::import($this->getResource('ai-generated-page.js'));
-Css::import($this->getResource('ai-generated-page.css'));
+Javascript::importDefault($this);
+Css::importDefault($this);
 
 ?><div class="ai-generated-page">
     <div id="<?= AiGeneratedPage::TARGET_HTML ?>">

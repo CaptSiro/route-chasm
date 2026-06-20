@@ -1,0 +1,33 @@
+<?php /** @var Tabs $this */
+
+use components\layout\Tabs;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Css::importDefault($this);
+Javascript::importDefault($this);
+
+$this->updateSelected();
+
+?><div class="tabs" x-init="tabs">
+    <div class="labels">
+        <?php $i = 0; foreach (array_keys($this->tabs) as $label): ?>
+            <div
+                class="label <?= $this->isSelected($label, $i) ? 'selected' : ''?>"
+                data-label="<?= $label // todo escape ?>"
+            >
+                <?= $label ?>
+            </div>
+            <?php $i++; ?>
+        <?php endforeach; ?>
+    </div>
+
+    <?php $i = 0; foreach ($this->tabs as $label => $view): ?>
+        <div
+            class="tabs__wrapper <?= $this->isSelected($label, $i) ? 'selected' : '' ?>"
+            data-label="<?= $label // todo escape ?>"
+        >
+            <?= $view->render() ?>
+        </div>
+    <?php $i++; endforeach; ?>
+</div>

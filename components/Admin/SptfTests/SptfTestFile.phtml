@@ -39,7 +39,7 @@ use components\Admin\SptfTests\SptfTestFile;
                     <?php foreach ($suite->getAssertions() as $assertion): ?>
                         <?php if (!$assertion->result()): ?>
                             <div class="assertion failed">
-                                <?= $assertion->error()->html() ?>
+                                <?= $assertion->error() ?>
                             </div>
                         <?php endif; ?>
                     <?php endforeach; ?>

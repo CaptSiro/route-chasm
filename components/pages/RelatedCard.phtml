@@ -4,7 +4,7 @@ use components\pages\RelatedCard;
 use core\sideloader\importers\Css\Css;
 use core\view\Html;
 
-Css::import($this->getResource('related-card.css'));
+Css::importDefault($this);
 
 $url = $this->page->getUrl();
 $image = $this->page->getCoverImage()?->getFile();

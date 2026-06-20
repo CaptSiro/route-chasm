@@ -4,7 +4,7 @@ namespace core\actions\Assets;
 
 use core\actions\Assets\policy\DirectoryPolicy;
 use core\actions\Assets\policy\NotAccessiblePolicy;
-use core\actions\Assets\servers\FileServer;
+use core\actions\Assets\servers\AssetServer;
 use core\actions\Assets\servers\Server;
 use core\actions\Controller;
 use core\communication\Request;
@@ -37,7 +37,7 @@ class Assets extends Controller {
         );
 
         $this->directoryPolicy = new NotAccessiblePolicy();
-        $this->server = new FileServer();
+        $this->server = new AssetServer();
     }
 
 

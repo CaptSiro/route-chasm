@@ -6,7 +6,7 @@ use components\layout\Column;
 use components\forms\controls\CsrfField;
 use components\forms\controls\Submit;
 use components\forms\Form;
-use components\layout\Accordion\Accordion;
+use components\layout\Accordion;
 use components\layout\Grid\Grid;
 use components\layout\Grid\Loader\ModelGridLoader;
 use core\App;

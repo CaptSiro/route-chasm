@@ -22,7 +22,7 @@ class Css implements Importer, View {
             ->import(self::FILE_EXTENSION, $file);
     }
 
-    public static function importResource(ViewTemplate $view): void {
+    public static function importDefault(ViewTemplate $view): void {
         self::import($view->getResource($view->getClass() . '.css'));
     }
 

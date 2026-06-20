@@ -23,7 +23,6 @@ use core\route\Router;
 use core\url\Url;
 use core\view\ContainerContent;
 use core\view\TemplateSlots;
-use core\view\View;
 use models\Privilege\Privilege;
 
 class AdminNexus extends ContainerContent {
@@ -157,14 +156,13 @@ class AdminNexus extends ContainerContent {
         return $this->gridFactory->createGrid($proxy);
     }
 
-    public function getGrid(): View {
+    public function getGrid(): Message|GridLayout {
+        $messageCouldNotCreateTable = $this->tr("Could not create table, because the description is empty");
+
         $grid = $this->createGrid();
 
         if (is_null($grid)) {
-            return new Message(
-                $this->tr("Could not create table, because the description is empty"),
-                MessageType::ERROR
-            );
+            return new Message($messageCouldNotCreateTable, MessageType::ERROR);
         }
 
         if ($this->canAddGridControls()) {

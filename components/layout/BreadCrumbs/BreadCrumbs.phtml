@@ -3,14 +3,9 @@
 use components\layout\BreadCrumbs\BreadCrumbs;
 use core\sideloader\importers\Css\Css;
 
-$count = count($this->items);
+Css::importDefault($this);
 
-if ($count > 0) {
-    Css::import($this->getResource('bread-crumbs.css'));
-}
-
-?>
-<?php if ($count > 0): ?>
+?><?php if (count($this->items) > 0): ?>
     <ul class="bread-crumbs">
         <?php $first = true; foreach ($this->items as $item): ?>
             <?php if (!$first && !is_null($this->delimitor)): ?>

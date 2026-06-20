@@ -3,10 +3,9 @@
 use components\layout\Grid\Grid;
 use core\sideloader\importers\Css\Css;
 
-Css::import($this->getResource('grid.css'));
+Css::importDefault($this);
 
-?>
-<?php if (!empty($this->columns)): ?>
+?><?php if (!empty($this->columns)): ?>
     <div
         class="grid"
         style="grid-template-columns: <?= $this->getColumnTemplate() ?>;"

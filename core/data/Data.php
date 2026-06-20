@@ -3,7 +3,6 @@
 namespace core\data;
 
 use core\route\Path;
-use core\RouteChasmEnvironment;
 
 class Data {
     private static string $storageDirectory;

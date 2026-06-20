@@ -12,7 +12,7 @@ use components\ai\Schema\Schema;
 use components\ai\Schema\StringSchema;
 use components\layout\Column;
 use components\forms\Form;
-use components\layout\Accordion\Accordion;
+use components\layout\Accordion;
 use components\layout\Layout;
 use core\ai\clients\OpenAi;
 use core\App;
@@ -51,7 +51,7 @@ class AiPageEditorBehavior implements EditorBehavior {
     }
 
     public function initForm(Form $form, ?Model $model): ?View {
-        Javascript::import($this->getResource('ai-page-generator.js'));
+        Javascript::import($this->getResource($this->getClass() . '.js'));
         return $this->behavior->initForm($form, $model);
     }
 

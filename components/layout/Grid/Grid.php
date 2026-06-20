@@ -8,8 +8,9 @@ use components\layout\Grid\Proxy\TypeProxy;
 use core\Flags;
 use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplate;
 
-class Grid implements View, GridLayout {
+class Grid implements ViewTemplate, GridLayout {
     use Renderer, Flags;
 
     public const FLAG_SHOW_HEADER = 1;

@@ -2,12 +2,11 @@
 
 namespace components\fs;
 
-use components\forms\controls\Select\Select;
+use components\forms\controls\Select;
 use components\forms\Form;
 use core\actions\Action;
 use core\actions\ActionBindRouteNode;
 use core\actions\ActorClassName;
-use core\communication\Format;
 use core\communication\Request;
 use core\communication\Response;
 use core\fs\FileSystem;
@@ -16,9 +15,7 @@ use core\route\RouteNode;
 use core\view\FormatAble;
 use core\view\FormatAbleTrait;
 use core\view\Formatter;
-use core\view\View;
 use core\view\ViewTemplate;
-use JsonSerializable;
 
 class FileVariantTransformers implements ViewTemplate, Action, FormatAble {
     use ActionBindRouteNode, ActorClassName, FormatAbleTrait;
