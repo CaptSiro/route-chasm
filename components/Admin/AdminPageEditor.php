@@ -36,6 +36,7 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\url\Url;
 use core\utils\Arrays;
 use core\utils\Objects;
+use locales\EnglishUS;
 use models\Language\Language;
 use models\Page\behavior\PageEditorBehavior;
 use models\Page\Page;
@@ -210,6 +211,7 @@ class AdminPageEditor extends AdminNexusEditor {
         $router->use('/generate-structure', function (Request $request, Response $response) {
             $messagePromptIsEmpty = $this->tr('Prompt must not be empty');
             $messageNothingGenerated = $this->tr('AI refused to generate structure');
+            $messageClientNotConnected = $this->crt('Could not connect to AI client. (Using: {})');
 
             $parentId = $request->getUrl()
                 ->getQuery()
@@ -244,8 +246,7 @@ class AdminPageEditor extends AdminNexusEditor {
 
             if (empty($structure)) {
                 $response->sendMessage(
-                    // todo move to start -> create template -> populate template with provided param
-                    $this->trt('Could not connect to AI client. (Using: {})', Objects::getClass($client)),
+                    $messageClientNotConnected->format(Objects::getClass($client)),
                     HttpCode::SE_INTERNAL_SERVER_ERROR
                 );
             }

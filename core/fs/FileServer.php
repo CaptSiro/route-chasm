@@ -18,8 +18,10 @@ use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
+use locales\EnglishUS;
 use models\fs\Directory;
 use models\fs\File;
+use models\Language\Language;
 use models\User\User;
 
 class FileServer extends Router {
@@ -158,6 +160,11 @@ class FileServer extends Router {
         $router->use(
             '/file/',
             Http::post(function (Request $request, Response $response) {
+                $messageNoFilesSent = $this->tr('No files sent. You need to send at least one file');
+                $messageFileStoringFailed = $this->crt("File '{}' uploaded successfully but storing failed");
+                $messageFileTooLarge = $this->crt("File '{}' is too large");
+                $messageFileDidNotUpload = $this->crt("File '{}' did not uploaded successfully.");
+
                 $directory = Directory::fromRequest($request);
 
                 $files = $request
@@ -166,10 +173,7 @@ class FileServer extends Router {
                     ->toArray();
 
                 if (empty($files)) {
-                    $response->sendMessage(
-                        $this->tr('No files sent. You need to send at least one file'),
-                        HttpCode::CE_BAD_REQUEST
-                    );
+                    $response->sendMessage($messageNoFilesSent, HttpCode::CE_BAD_REQUEST);
                 }
 
                 foreach ($files as $file) {
@@ -182,7 +186,7 @@ class FileServer extends Router {
                             }
 
                             $response->sendMessage(
-                                "File '$f' uploaded successfully but storing failed",
+                                $messageFileStoringFailed->format($f),
                                 HttpCode::SE_INTERNAL_SERVER_ERROR
                             );
                             break;
@@ -190,7 +194,7 @@ class FileServer extends Router {
 
                         case UPLOAD_ERR_INI_SIZE: {
                             $response->sendMessage(
-                                "File '$f' is too large",
+                                $messageFileTooLarge->format($f),
                                 HttpCode::CE_BAD_REQUEST
                             );
                             break;
@@ -198,7 +202,7 @@ class FileServer extends Router {
 
                         default: {
                             $response->sendMessage(
-                                "File '$f' did not uploaded successfully. Error: $e",
+                                $messageFileDidNotUpload->format($f) . ' Error: ' . $e,
                                 HttpCode::CE_BAD_REQUEST
                             );
                             break;
@@ -316,6 +320,8 @@ class FileServer extends Router {
             }),
 
             Http::patch(function (Request $request, Response $response) {
+                $messageDirectoryNotFound = $this->tr('Could not find directory');
+
                 $fields = $request
                     ->body(DictionaryBody::class)
                     ->getFields();
@@ -324,10 +330,7 @@ class FileServer extends Router {
                 $name = $fields->getStrict('name');
 
                 if (is_null($directory = Directory::fromId(intval($id)))) {
-                    $response->sendMessage(
-                        $this->tr('Could not find directory'),
-                        HttpCode::CE_NOT_FOUND
-                    );
+                    $response->sendMessage($messageDirectoryNotFound, HttpCode::CE_NOT_FOUND);
                 }
 
                 $directory->renameEntry($name);
@@ -335,6 +338,8 @@ class FileServer extends Router {
             }),
 
             Http::delete(function (Request $request, Response $response) {
+                $messageDirectoryNotFound = $this->tr('Could not find directory');
+
                 $fields = $request
                     ->body(DictionaryBody::class)
                     ->getFields();
@@ -343,10 +348,7 @@ class FileServer extends Router {
                 $name = $fields->getStrict('name');
 
                 if (is_null($directory = Directory::fromId(intval($id)))) {
-                    $response->sendMessage(
-                        $this->tr('Could not find directory'),
-                        HttpCode::CE_NOT_FOUND
-                    );
+                    $response->sendMessage($messageDirectoryNotFound, HttpCode::CE_NOT_FOUND);
                 }
 
                 $directory->deleteEntry();

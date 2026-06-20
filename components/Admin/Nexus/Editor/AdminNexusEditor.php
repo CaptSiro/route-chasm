@@ -22,7 +22,6 @@ use core\http\HttpHeader;
 use core\http\HttpMethod;
 use core\route\RouteNode;
 use core\sideloader\importers\Javascript\Javascript;
-use core\utils\Objects;
 use core\view\ContainerContent;
 use core\view\View;
 use models\Privilege\Privilege;
@@ -171,6 +170,8 @@ class AdminNexusEditor extends ContainerContent implements Editor {
     }
 
     public function perform(Request $request, Response $response): void {
+        $messageCrossSiteForgery = $this->tr('Cross-Site request forgery detected');
+
         $this->page
             ->getHead()
             ->setTitle($this->getTitle());
@@ -187,10 +188,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                 }
 
                 if (!CsrfField::check($request)) {
-                    $response->sendMessage(
-                        'Cross-Site request forgery detected',
-                        HttpCode::CE_NOT_ACCEPTABLE
-                    );
+                    $response->sendMessage($messageCrossSiteForgery, HttpCode::CE_NOT_ACCEPTABLE);
                 }
 
                 $model = $this->context
@@ -212,10 +210,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
                 }
 
                 if (!CsrfField::check($request)) {
-                    $response->sendMessage(
-                        'Cross-Site request forgery detected',
-                        HttpCode::CE_NOT_ACCEPTABLE
-                    );
+                    $response->sendMessage($messageCrossSiteForgery, HttpCode::CE_NOT_ACCEPTABLE);
                 }
 
                 $model = $this->context

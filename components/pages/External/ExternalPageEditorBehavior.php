@@ -10,8 +10,6 @@ use components\layout\Accordion;
 use components\layout\Column;
 use components\layout\Layout;
 use components\Message\Message;
-use core\App;
-use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;

@@ -3,6 +3,7 @@
 use components\layout\Tabs;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Css::importDefault($this);
 Javascript::importDefault($this);
@@ -14,9 +15,9 @@ $this->updateSelected();
         <?php $i = 0; foreach (array_keys($this->tabs) as $label): ?>
             <div
                 class="label <?= $this->isSelected($label, $i) ? 'selected' : ''?>"
-                data-label="<?= $label // todo escape ?>"
+                data-label="<?= Html::escapeAttribute($label) ?>"
             >
-                <?= $label ?>
+                <?= Html::escape($label) ?>
             </div>
             <?php $i++; ?>
         <?php endforeach; ?>
@@ -25,7 +26,7 @@ $this->updateSelected();
     <?php $i = 0; foreach ($this->tabs as $label => $view): ?>
         <div
             class="tabs__wrapper <?= $this->isSelected($label, $i) ? 'selected' : '' ?>"
-            data-label="<?= $label // todo escape ?>"
+            data-label="<?= Html::escapeAttribute($label) ?>"
         >
             <?= $view->render() ?>
         </div>

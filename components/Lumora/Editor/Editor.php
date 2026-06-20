@@ -258,6 +258,8 @@ class Editor extends ContainerContent {
     public function perform(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case "GENERATE": {
+                $messageUnableToGenerateWidget = $this->tr("Unable to generate widget based on the prompt.");
+
                 $client = OpenAi::fromEnv();
                 $aiRequest = $client->createRequest();
 
@@ -281,11 +283,7 @@ class Editor extends ContainerContent {
                     ->add(new PageGeneration(InputMessage::ROLE_USER, $prompt));
 
                 if (is_null($aiResponse = $client->parseResponse($client->chat($aiRequest)))) {
-                    $response->sendMessage(
-                        $this->tr("Unable to generate widget based on the prompt."),
-                        HttpCode::CE_BAD_REQUEST
-                    );
-
+                    $response->sendMessage($messageUnableToGenerateWidget, HttpCode::CE_BAD_REQUEST);
                     return;
                 }
 

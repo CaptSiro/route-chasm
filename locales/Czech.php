@@ -3,9 +3,12 @@
 namespace locales;
 
 use core\locale\Locale;
+use core\Singleton;
 use core\utils\Regex;
 
 class Czech extends Locale {
+    use Singleton;
+
     public const RULE_SINGULAR = Regex::LOCALE_RULE_ONE;
     public const RULE_FEW = Regex::LOCALE_RULE_TWO_TO_FOUR;
     public const RULE_PLURAL = Regex::LOCALE_RULE_FIVE_AND_UP;

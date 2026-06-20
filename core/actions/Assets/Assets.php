@@ -14,10 +14,15 @@ use core\http\Cors;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\locale\LexiconUnit;
 use core\route\Path;
+use locales\EnglishUS;
+use models\Language\Language;
 
 class Assets extends Controller {
-    use Flags;
+    use Flags, LexiconUnit;
+
+    public const LEXICON_GROUP = 'assets';
 
 
 
@@ -31,6 +36,8 @@ class Assets extends Controller {
         protected array $directory
     ) {
         parent::__construct();
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+
         $this->directory = array_filter(
             array_map(fn($x) => realpath($x), $this->directory),
             fn($x) => is_string($x)
@@ -63,6 +70,9 @@ class Assets extends Controller {
     }
 
     public function perform(Request $request, Response $response): void {
+        $messageFileNotFound = $this->tr("File not found");
+        $messageHttpMethodNotAllowed = $this->crt("HTTP method {} is not allowed");
+
         switch ($request->getHttpMethod()) {
             case HttpMethod::OPTIONS: {
                 $response->setHeaders([
@@ -96,18 +106,13 @@ class Assets extends Controller {
                     $this->server->serve($entry, $request, $response);
                 }
 
-                $response->sendMessage(
-                    "File not found",
-                    HttpCode::CE_NOT_FOUND
-                );
-
+                $response->sendMessage($messageFileNotFound, HttpCode::CE_NOT_FOUND);
                 return;
             }
 
             default: {
-                $httpMethod = $request->getHttpMethod();
                 $response->sendMessage(
-                    "HTTP method $httpMethod is not allowed",
+                    $messageHttpMethodNotAllowed->format($request->getHttpMethod()),
                     HttpCode::CE_METHOD_NOT_ALLOWED
                 );
                 break;
