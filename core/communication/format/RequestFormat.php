@@ -1,9 +1,10 @@
 <?php
 
-namespace core\communication;
+namespace core\communication\format;
 
 
 use core\collections\Dictionary;
+use core\communication\Request;
 use core\http\HttpHeader;
 use core\RouteChasmEnvironment;
 

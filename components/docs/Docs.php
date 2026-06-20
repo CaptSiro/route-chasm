@@ -17,6 +17,7 @@ use core\actions\Block;
 use core\ai\Client;
 use core\ai\clients\OpenAi;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\Http;
@@ -460,7 +461,10 @@ class Docs extends Router {
                     }
 
                     $doc->getContent($language)
-                        ->write($request->getBody()->getStrict('content'));
+                        ->write($request
+                            ->body(DictionaryBody::class)
+                            ->getFields()
+                            ->getStrict('content'));
 
                     $response->sendStatus(HttpCode::S_OK);
                 }

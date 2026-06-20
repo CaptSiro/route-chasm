@@ -5,6 +5,7 @@ namespace components\pages\AiGeneratedPage;
 use components\fs\FileContent\FileContent;
 use components\pages\Wireframe;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\data\DataItem;
@@ -150,17 +151,19 @@ class AiGeneratedPage extends Component {
                     $response->sendStatus(HttpCode::CE_FORBIDDEN);
                 }
 
-                $body = $request->getBody();
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
 
-                if (!is_null($html = $body->get('html')) && $this->html->exists()) {
+                if (!is_null($html = $fields->get('html')) && $this->html->exists()) {
                     $this->html->write($html);
                 }
 
-                if (!is_null($css = $body->get('css')) && $this->css->exists()) {
+                if (!is_null($css = $fields->get('css')) && $this->css->exists()) {
                     $this->css->write($css);
                 }
 
-                if (!is_null($js = $body->get('js')) && $this->js->exists()) {
+                if (!is_null($js = $fields->get('js')) && $this->js->exists()) {
                     $this->js->write($js);
                 }
 

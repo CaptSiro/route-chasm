@@ -12,6 +12,7 @@ use components\layout\Spotlight\SpotlightSwitchLink;
 use components\layout\WebPage\WebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -149,9 +150,12 @@ class AdminLogin extends ContainerContent {
             }
 
             case HttpMethod::POST: {
-                $body = $request->getBody();
-                $method = $body->getStrict(self::FIELD_METHOD);
-                $password = $body->getStrict(self::FIELD_PASSWORD);
+                $fields = $request
+                    ->body(DictionaryBody::class)
+                    ->getFields();
+
+                $method = $fields->getStrict(self::FIELD_METHOD);
+                $password = $fields->getStrict(self::FIELD_PASSWORD);
 
                 if ($method === self::METHOD_ENV) {
                     if (!$this->useEnvPasswordMethod()) {
@@ -171,7 +175,7 @@ class AdminLogin extends ContainerContent {
                 }
 
                 if ($method === self::METHOD_USER) {
-                    $tag = $body->getStrict(self::FIELD_TAG);
+                    $tag = $fields->getStrict(self::FIELD_TAG);
                     $user = User::fromTag($tag);
 
                     if (is_null($user)) {

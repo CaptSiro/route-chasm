@@ -14,6 +14,7 @@ use components\layout\Layout;
 use components\layout\Tabs;
 use components\Message\Message;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Models;
@@ -178,19 +179,21 @@ class PhraseEditorBehavior implements EditorBehavior {
             );
         }
 
-        $request = App::getInstance()->getRequest();
-        $body = $request->getBody();
+        $fields = App::getInstance()
+            ->getRequest()
+            ->body(DictionaryBody::class)
+            ->getFields();
 
-        if (!empty($deleted = $body->get(self::NAME_DELETED_TRANSLATIONS))) {
+        if (!empty($deleted = $fields->get(self::NAME_DELETED_TRANSLATIONS))) {
             foreach (explode(',', $deleted) as $id) {
                 Translation::fromId($id)?->delete();
             }
         }
 
         $objects = Models::transpose(
-            $body->toArray(),
+            $fields->toArray(),
             Translation::getControlNames(),
-            count($body->getStrict(Translation::NAME_TRANSLATION_ID))
+            count($fields->getStrict(Translation::NAME_TRANSLATION_ID))
         );
 
         return $this->submitTranslations($model, $objects);

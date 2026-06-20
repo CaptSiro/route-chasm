@@ -12,6 +12,7 @@ use components\forms\FormAction;
 use components\layout\WebPage\AdminWebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\Model;
@@ -148,7 +149,9 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             $response->setStatus(HttpCode::S_OK);
         }
 
-        $submitAction = $request->getBody()
+        $submitAction = $request
+            ->body(DictionaryBody::class)
+            ->getFields()
             ->get(self::NAME_SUBMIT_ACTION);
 
         if ($submitAction === 'stay') {

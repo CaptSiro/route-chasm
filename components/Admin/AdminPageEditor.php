@@ -22,6 +22,7 @@ use components\Search\SearchResult;
 use components\Search\SearchResults;
 use core\ai\clients\OpenAi;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\query\Query;
@@ -218,7 +219,8 @@ class AdminPageEditor extends AdminNexusEditor {
                 ? null
                 : Page::fromId($parentId);
 
-            $prompt = $request->getBody()
+            $prompt = $request->body(DictionaryBody::class)
+                ->getFields()
                 ->getStrict(self::NAME_PROMPT);
 
             if (empty($prompt)) {

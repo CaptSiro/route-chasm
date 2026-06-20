@@ -1,6 +1,6 @@
 <?php
 
-namespace core\communication;
+namespace core\communication\format;
 
 trait BaseFormat {
     private FormatMatcher $matcher;

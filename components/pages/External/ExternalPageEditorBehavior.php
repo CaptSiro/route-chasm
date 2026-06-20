@@ -11,6 +11,7 @@ use components\layout\Column;
 use components\layout\Layout;
 use components\Message\Message;
 use core\App;
+use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
@@ -59,10 +60,6 @@ class ExternalPageEditorBehavior implements EditorBehavior {
     }
 
     public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
-        $body = App::getInstance()
-            ->getRequest()
-            ->getBody();
-
         if (!($model instanceof Page)) {
             return new Message($this->tr('Provided model must be type of Page'));
         }
