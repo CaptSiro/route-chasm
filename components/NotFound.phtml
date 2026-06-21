@@ -1,0 +1,15 @@
+<?php /** @var NotFound $this */
+
+use components\Message\Message;
+use components\NotFound;
+use core\view\Html;
+
+?><div class="page-container">
+    <div class="page-section column">
+        <?= new Message($this->tr('Page not found') . ': ' . Html::escape($this->title)) ?>
+
+        <div>
+            <button onclick="history.back()">Go back</button>
+        </div>
+    </div>
+</div>

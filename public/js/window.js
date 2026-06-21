@@ -289,7 +289,7 @@ function window_init(element) {
         window_addDraggable(element);
     }
 
-    const destroyOnClose = Boolean(element.dataset.destroyOnClose ?? false);
+    const destroyOnClose = Boolean(element.dataset.destroyOnClose ?? true);
     $('.close', element)?.addEventListener('click', () => {
         window_close(element, destroyOnClose);
     });
@@ -562,7 +562,7 @@ async function window_fileSelect(url, fileType = null) {
                 jsml.div("controls", [
                     jsml.button({
                         onClick: () => {
-                            window_close(w);
+                            window_close(w, true);
                         }
                     }, 'Ok'),
 

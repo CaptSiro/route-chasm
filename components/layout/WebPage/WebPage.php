@@ -7,9 +7,16 @@ use core\App;
 use core\view\ArrayContainer;
 use core\view\Component;
 use core\view\Container;
+use core\view\View;
 
 class WebPage extends Component implements Container {
     use ArrayContainer;
+
+    public static function wrap(View|string ...$content): static {
+        $instance = new static();
+
+        return $instance->addAllContent($content);
+    }
 
 
 

@@ -40,7 +40,7 @@
 
 .message {
     display: flex;
-    gap: var(--gap);
+    flex-direction: column;
     padding: var(--gap);
     border-left: 4px solid;
     border-radius: var(--border-radius);

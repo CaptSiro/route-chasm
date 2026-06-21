@@ -2,6 +2,7 @@
 
 namespace core\navigation;
 
+use components\NotFound;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -115,7 +116,7 @@ class Navigator extends Router {
         $destination = self::getDestination($language, $path, $this->context);
         if (is_null($destination)) {
             $response->setStatus(HttpCode::CE_NOT_FOUND);
-            $response->send('Resource not found');
+            $response->renderRoot(new NotFound($path));
         }
 
         return $destination;
