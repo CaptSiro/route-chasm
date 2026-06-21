@@ -2,6 +2,8 @@
 
 namespace core\communication;
 
+use components\layout\WebPage\ContextAwareWebPage;
+use components\layout\WebPage\WebPage;
 use components\Message\Message;
 use components\Message\MessageType;
 use core\App;
@@ -242,6 +244,15 @@ class Response {
                 1
             ),
         );
+    }
+
+    public function sendWebPage(View|string $view, bool $doFlushResponse = true): void {
+        if (($root = $view->getRoot()) instanceof WebPage) {
+            $this->render($root, $doFlushResponse);
+            return;
+        }
+
+        $this->render(ContextAwareWebPage::wrap($view), $doFlushResponse);
     }
 
     public function sendStatus(int $httpCode): void {

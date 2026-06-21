@@ -68,16 +68,8 @@ $request = App::getInstance()->getRequest();
         </nav>
 
         <main>
-            <!--    todo    -->
-            <!--        --><?php //$crumbs = AdminHome::changeHomeLabel(AdminMenu::getInstance()->getBreadCrumbs()) ?>
-            <!--        --><?php //if (count($crumbs->getItems()) > 1): ?>
-            <!--            <section>-->
-            <!--                --><?php //= $crumbs->render() ?>
-            <!--            </section>-->
-            <!--        --><?php //endif; ?>
-
             <?php foreach ($this->children as $child): ?>
-                <?= $child->render() ?>
+                <?= $child ?>
             <?php endforeach; ?>
         </main>
 

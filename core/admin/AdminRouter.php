@@ -4,7 +4,10 @@ namespace core\admin;
 
 use components\Admin\AdminLogin;
 use components\layout\Menu\Menu;
+use components\layout\WebPage\ContextAwareWebPage;
 use components\Message\Message;
+use components\Message\MessageType;
+use components\NotFound;
 use core\actions\Action;
 use core\actions\Procedure;
 use core\actions\When;
@@ -47,7 +50,6 @@ class AdminRouter extends Router {
 
     protected function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
-        $messageNotFound = $this->tr('Not found');
 
         $this->menu = \core\admin\Admin::createMenu($this);
 
@@ -60,13 +62,13 @@ class AdminRouter extends Router {
             // if it is just / render message 'Admin Home'
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
-                $this->home ?? new Procedure(fn() => new Message('Admin Home'))
+                $this->home ?? ContextAwareWebPage::wrap(new Message('Admin Home', MessageType::NOTICE))
             ),
         );
 
         $this->use('/**',
             fn(Request $request, Response $response)
-                => $response->sendMessage($messageNotFound, HttpCode::CE_NOT_FOUND)
+                => $response->renderRoot(new NotFound($request->getRemainingPath()))
         );
     }
 

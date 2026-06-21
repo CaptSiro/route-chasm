@@ -10,5 +10,10 @@ Css::importDefault($this);
     class="message"
     data-type="<?= Html::escapeAttribute(strtolower($this->type->value)) ?>"
 >
+    <h2 class="message-title">
+        <?= $this->getIcon() ?>
+        <span><?= $this->getTypeLabel() ?></span>
+    </h2>
+
     <?= $this->content ?>
 </div>
