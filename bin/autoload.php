@@ -24,31 +24,73 @@ function autoload_import(string $file, string $class): void {
 }
 
 
-
 $_dirs = [
     project_mounted("<framework>"),
     project_mounted("<project>"),
 ];
 
+$_classMapPath = project_mounted("<storage>") . '/class-map.json';
+$_classMap = [];
+$_classMapWrites = 0;
+$_classMapHits = 0;
+
+if (file_exists($_classMapPath)) {
+    $_classMap = json_decode(file_get_contents($_classMapPath), associative: true);
+}
+
+function autoload_addCacheRecord(string $file, string $class): void {
+    global $_classMap, $_classMapWrites;
+
+    $_classMap[$class] = $file;
+    $_classMapWrites++;
+}
+
+function autoload_saveCache(): void {
+    global $_classMapPath, $_classMap, $_classMapWrites;
+
+    if ($_classMapWrites === 0) {
+        return;
+    }
+
+    file_put_contents(
+        $_classMapPath,
+        json_encode($_classMap, JSON_PRETTY_PRINT),
+    );
+}
+
+function autoload_cacheHits(): int {
+    global $_classMapHits;
+    return $_classMapHits;
+}
+
 
 
 spl_autoload_register(function ($class) {
-    global $_dirs;
+    global $_dirs, $_classMap, $_classMapHits;
 
     $relativePath = str_replace('\\', '/', $class) . '.php';
+    if (isset($_classMap[$class])) {
+        $_classMapHits++;
+        autoload_import($_classMap[$class], $class);
+        return;
+    }
+
     $file = __DIR__ . "/../$relativePath";
 
     if (file_exists($file)) {
+        autoload_addCacheRecord($file, $class);
         autoload_import($file, $class);
         return;
     }
 
     foreach ($_dirs as $dir) {
-        if (is_null($dir) || !file_exists("$dir/$relativePath")) {
+        $path = "$dir/$relativePath";
+        if (is_null($dir) || !file_exists($path)) {
             continue;
         }
 
-        autoload_import("$dir/$relativePath", $class);
+        autoload_addCacheRecord($path, $class);
+        autoload_import($path, $class);
     }
 
     foreach (scandir(DIRECTORY_REPOSITORY) as $entry) {
@@ -61,6 +103,7 @@ spl_autoload_register(function ($class) {
             continue;
         }
 
+        autoload_addCacheRecord($entryFile, $class);
         autoload_import($entryFile, $class);
         return;
     }

@@ -106,6 +106,7 @@ class Response {
         }
 
         $this->setHeader("X-Imported", autoload_imported());
+        $this->setHeader("X-Class-Map-Hits", autoload_cacheHits());
 
         $this->headersSent = true;
         App::getInstance()->dispatch(self::EVENT_HEADERS_GENERATION, $this);
@@ -119,6 +120,7 @@ class Response {
 
     protected function exit(): void {
         App::getInstance()->dispatch(App::EVENT_SHUTDOWN, $this);
+        autoload_saveCache();
         exit;
     }
 
