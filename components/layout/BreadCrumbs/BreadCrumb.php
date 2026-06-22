@@ -10,6 +10,10 @@ class BreadCrumb implements ViewTemplate {
 
 
 
+    /**
+     * @param string $label (UNSAFE)
+     * @param string|null $url
+     */
     public function __construct(
         protected string $label,
         protected ?string $url = null

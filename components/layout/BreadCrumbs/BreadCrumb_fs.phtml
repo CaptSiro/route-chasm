@@ -3,9 +3,8 @@
 use components\layout\BreadCrumbs\BreadCrumb;
 use core\fs\FileSystem;
 use core\utils\Arrays;
-use core\view\Html;
 
-$label = Html::escape($this->getLabel());
+$label = $this->getLabel();
 
 ?><li class="bread-crumb">
     <?php if (is_null($this->getUrl())): ?>
