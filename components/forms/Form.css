@@ -33,6 +33,13 @@
     gap: var(--form-gap);
 }
 
+.form.form-no-styles .form-barrier {
+    padding: unset;
+    background-color: unset;
+    color: unset;
+    border-radius: unset;
+}
+
 .form-control {
     width: 100%;
     display: flex;
@@ -429,4 +436,50 @@ input.form-invalid {
 
 .form-select.multiple .options-selected .option button:hover {
     cursor: pointer;
+}
+
+
+
+.form-file-control {
+    display: block;
+    cursor: pointer;
+    margin-bottom: var(--gap);
+}
+
+.form-file-control input {
+    display: none;
+}
+
+.form-file-control .file-control-content {
+    border: 2px dashed var(--container-4);
+    border-radius: var(--border-radius);
+    padding: var(--gap);
+    text-align: center;
+    transition: 0.2s ease;
+    background: var(--container-2);
+}
+
+.form-file-control:hover .file-control-content {
+    border-color: var(--accent-2);
+}
+
+.form-file-control .file-control-icon {
+    font-size: 2rem;
+    margin-bottom: var(--gap);
+}
+
+.form-file-control .file-control-content strong {
+    display: block;
+    margin-bottom: var(--gap-smaller);
+}
+
+.form-file-control .file-control-content span {
+    display: block;
+    color: var(--text-2, #9ca3af);
+}
+
+.form-file-control .file-control-content small {
+    display: block;
+    margin-top: var(--gap);
+    color: var(--text-2, #9ca3af);
 }

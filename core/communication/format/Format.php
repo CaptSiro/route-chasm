@@ -3,14 +3,15 @@
 namespace core\communication\format;
 
 use core\collections\Dictionary;
+use core\io\ContentType;
 
 interface Format extends LimitedFormat {
-    public const IDENT_TEXT = "text/plain";
-    public const IDENT_XML = "application/xml";
-    public const IDENT_JSON = "application/json";
-    public const IDENT_HTML = "text/html";
-    public const IDENT_FORM_URLENCODED = "application/x-www-form-urlencoded";
-    public const IDENT_DEFAULT = self::IDENT_TEXT;
+    public const IDENT_TEXT = ContentType::TEXT;
+    public const IDENT_XML = ContentType::XML;
+    public const IDENT_JSON = ContentType::JSON;
+    public const IDENT_HTML = ContentType::HTML;
+    public const IDENT_FORM_URLENCODED = ContentType::FORM_URLENCODED;
+    public const IDENT_DEFAULT = ContentType::TEXT;
 
 
 

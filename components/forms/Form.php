@@ -95,11 +95,23 @@ class Form extends Component implements Layout, Attribute {
 
 
 
+    public function noStyles(): static {
+        return $this->addCssClass('form-no-styles');
+    }
+
+    /**
+     * @param string $javascriptFunction (HTMLFormElement, Response) => void
+     * @return $this
+     */
     public function setOnSubmitSuccess(string $javascriptFunction): static {
         $this->addAttribute('data-on-submit-success', $javascriptFunction);
         return $this;
     }
 
+    /**
+     * @param string $javascriptFunction (HTMLFormElement, Response) => void
+     * @return $this
+     */
     public function setOnSubmitFailure(string $javascriptFunction): static {
         $this->addAttribute('data-on-submit-failure', $javascriptFunction);
         return $this;

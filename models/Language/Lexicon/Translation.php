@@ -162,7 +162,7 @@ class Translation extends Model {
     public string $translation;
 
     #[Column('id_rule', type: Column::TYPE_INTEGER, nullable: true)]
-    public ?int $ruleId;
+    public ?int $ruleId = null;
 
     protected Phrase $phrase;
     protected ?Rule $rule;

@@ -4,6 +4,7 @@ namespace core\admin;
 
 use components\Admin\Nexus\AdminNexus;
 use components\Admin\PhpInfo;
+use components\Admin\Phrase\AdminPhrasePacks;
 use components\Admin\SptfTests\SptfTests;
 use components\Admin\AdminUserEditor;
 use components\docs\Docs;
@@ -135,6 +136,15 @@ class Admin {
             ->setRouter(
                 Route::menu("/Localization/Vocabulary")
                     ->icon("Vocabulary", Icon::nf("nf-cod-book")),
+                $router
+            );
+
+        $packs = new AdminPhrasePacks();
+        $packs
+            ->setUserResource($localization)
+            ->setRouter(
+                Route::menu('/Localization/Translation Packs')
+                    ->icon('Translation Packs', Icon::nf('nf-md-package_variant')),
                 $router
             );
     }

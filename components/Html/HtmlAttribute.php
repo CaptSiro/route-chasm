@@ -10,6 +10,14 @@ trait HtmlAttribute {
 
 
 
+    public function hasAttribute(string $name): bool {
+        return isset($this->attributes[$name]);
+    }
+
+    public function hasDataAttribute(string $name): bool {
+        return $this->hasAttribute('data-'. $name);
+    }
+
     public function addAttribute(string $name, mixed $value = null): static {
         $this->attributes[$name] = $value ?? $name;
         return $this;
@@ -21,6 +29,15 @@ trait HtmlAttribute {
 
     public function getAttributes(): array {
         return $this->attributes;
+    }
+
+    public function removeAttribute(string $name): static {
+        unset($this->attributes[$name]);
+        return $this;
+    }
+
+    public function removeDataAttribute(string $name): static {
+        return $this->removeAttribute('data-'. $name);
     }
 
     public function stringifyAttributes(): string {

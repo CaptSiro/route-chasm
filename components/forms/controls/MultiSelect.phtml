@@ -1,10 +1,11 @@
 <?php /** @var MultiSelect $this */
 
 use components\forms\controls\MultiSelect;
+use components\forms\Form;
 use components\Icon;
 use core\view\Html;
 
-MultiSelect::importAssets();
+Form::importAssets();
 
 $valuesEscaped = [];
 foreach ($this->values as $value => $label) {

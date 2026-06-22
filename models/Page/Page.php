@@ -11,7 +11,7 @@ use components\pages\PageLinkCreator;
 use components\pages\Pages;
 use components\pages\PageTemplate;
 use core\App;
-use core\data\DataItem;
+use core\storage\DataItem;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;

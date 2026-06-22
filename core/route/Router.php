@@ -17,6 +17,24 @@ use core\url\Url;
 class Router {
     protected RouteTree $structure;
 
+    public static function createUrlFromNode(RouteNode $node, Path|string|null $relative = null): Url {
+        $request = App::getInstance()->getRequest();
+        $path = $node->getRoute()->toStaticPath();
+
+        if (!is_null($relative)) {
+            foreach (Path::resolve($relative) as $segment) {
+                $path->append($segment);
+            }
+        }
+
+        $ret = $request
+            ->getDomain()
+            ->createUrl($path);
+
+        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
+        return $ret;
+    }
+
 
 
     public function __construct(
@@ -150,21 +168,7 @@ class Router {
         return !is_null($this->structure->getRoot()->getParentEdge());
     }
 
-    public function createUrl(?Path $relative = null): Url {
-        $request = App::getInstance()->getRequest();
-        $path = $this->getRoute()->toStaticPath();
-
-        if (!is_null($relative)) {
-            foreach ($relative as $segment) {
-                $path->append($segment);
-            }
-        }
-
-        $ret = $request
-            ->getDomain()
-            ->createUrl($path);
-
-        $ret->loadTransitiveQueries($request->getUrl()->getQuery());
-        return $ret;
+    public function createUrl(Path|string|null $relative = null): Url {
+        return self::createUrlFromNode($this->structure->getRoot()->get(), $relative);
     }
 }

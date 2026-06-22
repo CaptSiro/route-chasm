@@ -8,6 +8,34 @@ function is(variable) {
 }
 
 /**
+ * @param {Object} object
+ * @return {boolean}
+ */
+function isObjectValues(object) {
+    for (const key in object) {
+        if (is(object[key])) {
+            continue;
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+function isArrayValues(array) {
+    for (const value of array) {
+        if (is(value)) {
+            continue;
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * @param {string} selector
  * @param {Element | Document} element
  * @returns {HTMLAnchorElement | HTMLElement | HTMLAreaElement | HTMLAudioElement | HTMLBaseElement | HTMLQuoteElement | HTMLBodyElement | HTMLBRElement | HTMLButtonElement | HTMLCanvasElement | HTMLTableCaptionElement | HTMLTableColElement | HTMLDataElement | HTMLDataListElement | HTMLModElement | HTMLDetailsElement | HTMLDialogElement | HTMLDivElement | HTMLDListElement | HTMLEmbedElement | HTMLFieldSetElement | HTMLFormElement | HTMLHeadingElement | HTMLHeadElement | HTMLHRElement | HTMLHtmlElement | HTMLIFrameElement | HTMLImageElement | HTMLInputElement | HTMLLabelElement | HTMLLegendElement | HTMLLIElement | HTMLLinkElement | HTMLMapElement | HTMLMenuElement | HTMLMetaElement | HTMLMeterElement | HTMLObjectElement | HTMLOListElement | HTMLOptGroupElement | HTMLOptionElement | HTMLOutputElement | HTMLParagraphElement | HTMLPictureElement | HTMLPreElement | HTMLProgressElement | HTMLScriptElement | HTMLSelectElement | HTMLSlotElement | HTMLSourceElement | HTMLSpanElement | HTMLStyleElement | HTMLTableElement | HTMLTableSectionElement | HTMLTableCellElement | HTMLTemplateElement | HTMLTextAreaElement | HTMLTimeElement | HTMLTitleElement | HTMLTableRowElement | HTMLTrackElement | HTMLUListElement | HTMLVideoElement}
@@ -36,6 +64,22 @@ function todo() {
     console.log(...arguments);
     throw new Todo();
 }
+
+
+
+/**
+ * @template T
+ * @param {T} elements
+ * @return T
+ */
+function std_elements(elements) {
+    if (!isObjectValues(elements)) {
+        throw new Error('Provided element does not include expected elements.');
+    }
+
+    return elements;
+}
+
 
 
 /**
@@ -540,6 +584,54 @@ function std_fetch_follow(response) {
 }
 
 
+
+/**
+ *
+ * @param {Blob} blob
+ * @param {string} name
+ */
+function std_download(blob, name) {
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style.display = "none";
+
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = name;
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * @param {DataTransfer} dataTransfer
+ * @return {boolean}
+ */
+function std_fs_hasFiles(dataTransfer) {
+    for (const item of dataTransfer.items) {
+        if (item.kind === "file") {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param {DataTransfer} dataTransfer
+ * @return {number}
+ */
+function std_fs_countFiles(dataTransfer) {
+    let i = 0;
+
+    for (const item of dataTransfer.items) {
+        if (item.kind === "file") {
+            i++;
+        }
+    }
+
+    return i;
+}
 
 function std_dom_scrollToFragment() {
     const fragment = location.hash.startsWith('#')

@@ -15,7 +15,7 @@ use components\Message\Message;
 use core\actions\Action;
 use core\App;
 use core\communication\UploadedFile;
-use core\data\Data;
+use core\storage\Data;
 use core\database\sql\ModelDescription;
 use core\fs\variants\FileVariant;
 use core\fs\variants\FileVariantTransformer;

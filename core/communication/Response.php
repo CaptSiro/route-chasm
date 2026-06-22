@@ -192,7 +192,7 @@ class Response {
      *
      * Checks for valid file path and sets headers to download it.
      */
-    public function download(string $file, ?string $name = null): void {
+    public function download(string $file, ?string $name = null, bool $doFlush = true): void {
         $this->setHeaders([
             HttpHeader::CONTENT_DESCRIPTION => "RequestFile Transfer",
             HttpHeader::CONTENT_TYPE => 'application/octet-stream',
@@ -201,7 +201,27 @@ class Response {
             HttpHeader::CONTENT_LENGTH => filesize($file)
         ]);
 
-        $this->readFile($file);
+        $this->readFile($file, $doFlush);
+    }
+
+    /**
+     * Exits the execution.
+     *
+     * Downloads the content string as a file on the client
+     */
+    public function downloadContent(string $content, string $name): void {
+        $this->setHeaders([
+            HttpHeader::CONTENT_DESCRIPTION => "RequestFile Transfer",
+            HttpHeader::CONTENT_TYPE => 'application/octet-stream',
+            HttpHeader::CONTENT_DISPOSITION => "attachment; filename=" . $name,
+            HttpHeader::PREGMA => "public",
+            HttpHeader::CONTENT_LENGTH => mb_strlen($content)
+        ]);
+
+        $this->generateHeaders();
+        echo $content;
+
+        $this->flush();
     }
 
     /**

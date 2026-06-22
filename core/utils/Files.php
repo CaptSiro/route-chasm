@@ -19,6 +19,10 @@ class Files {
         return str_replace('\\', '/', $path);
     }
 
+    /**
+     * @param string $path
+     * @return string|null Returns only the extension ./path/to/file.txt -> txt
+     */
     public static function extension(string $path): ?string {
         $base = basename($path);
         $len = strlen($base);

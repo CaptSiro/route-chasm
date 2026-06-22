@@ -8,7 +8,8 @@ use core\collections\StrictDictionary;
 use core\communication\format\Format;
 use core\communication\Request;
 use core\communication\UploadedFile;
-use core\data\Data;
+use core\storage\Data;
+use core\storage\Temporary;
 use core\io\FileReader;
 use core\utils\Arrays;
 use core\utils\Ini;
@@ -149,7 +150,6 @@ class DictionaryBody implements RequestBody {
         $files = [];
 
         $maxSize = Strings::toBytes(Php::get(Ini::UPLOAD_MAX_FILESIZE));
-        $tempDirectory = Data::namespace('temp', create: true);
 
         while (!$content->isEndOfFile() || $buffer !== '') {
             while (!str_contains($buffer, $sectionMarker)) {
@@ -202,7 +202,7 @@ class DictionaryBody implements RequestBody {
             $temporary = null;
 
             if ($isFile) {
-                $temporaryPath = tempnam($tempDirectory, 'upload_');
+                $temporaryPath = Temporary::file('upload_');
                 $temporary = fopen($temporaryPath, 'wb');
 
                 if ($temporary === false) {
@@ -231,7 +231,6 @@ class DictionaryBody implements RequestBody {
                     $buffer = substr($buffer, $safeLength);
 
                     if (!$isFile) {
-                        var_dump($name);
                         Arrays::append($fields, $name, $data);
                         continue;
                     }

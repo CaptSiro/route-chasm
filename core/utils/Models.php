@@ -18,8 +18,9 @@ class Models {
     }
 
     /**
-     * @param array<Model> $models
-     * @return array<int, Model>
+     * @template T of Model
+     * @param array<T> $models
+     * @return array<int, T>
      */
     public static function identity(array $models): array {
         $ret = [];

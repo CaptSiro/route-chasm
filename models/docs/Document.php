@@ -5,7 +5,7 @@ namespace models\docs;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use core\App;
-use core\data\DataItem;
+use core\storage\DataItem;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\Model;

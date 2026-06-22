@@ -7,36 +7,6 @@ window.addEventListener(FS_RELOAD_CURRENT_DIRECTORY, () => {
 
 
 /**
- * @param {DataTransfer} dataTransfer
- * @return {boolean}
- */
-function fs_hasFiles(dataTransfer) {
-    for (const item of dataTransfer.items) {
-        if (item.kind === "file") {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * @param {DataTransfer} dataTransfer
- * @return {number}
- */
-function fs_countFiles(dataTransfer) {
-    let i = 0;
-
-    for (const item of dataTransfer.items) {
-        if (item.kind === "file") {
-            i++;
-        }
-    }
-
-    return i;
-}
-
-/**
  * @param {HTMLElement} element
  */
 function fs_dropArea_init(element) {
@@ -48,7 +18,7 @@ function fs_dropArea_init(element) {
     const isDropArea = x => x.classList.contains("fs-drop-area");
 
     const drop = async event => {
-        if (!fs_hasFiles(event.dataTransfer)) {
+        if (!std_fs_hasFiles(event.dataTransfer)) {
             return;
         }
 
@@ -106,7 +76,7 @@ function fs_dropArea_init(element) {
 
     element.addEventListener("drop", drop);
     window.addEventListener("drop", (event) => {
-        if (!fs_hasFiles(event.dataTransfer)) {
+        if (!std_fs_hasFiles(event.dataTransfer)) {
             return;
         }
 
@@ -114,7 +84,7 @@ function fs_dropArea_init(element) {
     });
 
     window.addEventListener("dragover", event => {
-        if (!fs_hasFiles(event.dataTransfer)) {
+        if (!std_fs_hasFiles(event.dataTransfer)) {
             return;
         }
 
@@ -126,7 +96,7 @@ function fs_dropArea_init(element) {
             return;
         }
 
-        if (fs_countFiles(event.dataTransfer) > 1) {
+        if (std_fs_countFiles(event.dataTransfer) > 1) {
             dropMultiple.classList.add("display");
             dropSingle.classList.remove("display");
         } else {
@@ -147,7 +117,7 @@ function fs_dropArea_init(element) {
     });
 
     window.addEventListener("dragleave", event => {
-        if (!fs_hasFiles(event.dataTransfer)) {
+        if (!std_fs_hasFiles(event.dataTransfer)) {
             return;
         }
 

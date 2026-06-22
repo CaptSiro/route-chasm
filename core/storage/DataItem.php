@@ -1,6 +1,6 @@
 <?php
 
-namespace core\data;
+namespace core\storage;
 
 class DataItem {
     private ?string $content;

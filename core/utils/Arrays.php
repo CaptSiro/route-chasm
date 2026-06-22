@@ -42,6 +42,26 @@ class Arrays {
     }
 
     /**
+     * The result does not contain original keys
+     *
+     * @param array $array
+     * @return array
+     */
+    public static function flatten(array $array): array {
+        $ret = [];
+        foreach ($array as $item) {
+            if (is_array($item)) {
+                $ret = array_merge($ret, $item);
+                continue;
+            }
+
+            $ret[] = $item;
+        }
+
+        return $ret;
+    }
+
+    /**
      * @param array $array
      * @param array $values
      * @return Closure Rewert changes to previous state

@@ -130,7 +130,7 @@ class Docs extends Router {
     }
 
     public function createSearchUrl(): Url {
-        return $this->createUrl(Path::from('search'));
+        return $this->createUrl('/search');
     }
 
     public function requestFragmentGeneration(Client $client, string $file): array {

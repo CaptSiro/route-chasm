@@ -1,6 +1,6 @@
 <?php
 
-namespace core\data;
+namespace core\storage;
 
 use core\route\Path;
 

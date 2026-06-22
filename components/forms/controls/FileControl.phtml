@@ -1,0 +1,34 @@
+<?php /** @var FileControl $this */
+
+use components\forms\controls\FileControl;
+use components\Icon;
+use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
+
+Javascript::importDefault($this);
+
+$name = Html::escapeAttribute($this->name);
+
+?><label class="form-file-control" x-init="fileControl" data-name="<?= $name ?>">
+    <input
+        type="file"
+        name="<?= $name ?><?= $this->isMultiple() ? '[]' : '' ?>"
+        <?= $this->stringifyAttributes() ?>
+    >
+
+    <div class="file-control-content column">
+        <div>
+            <div class="file-control-icon row center">
+                <?= Icon::nf('nf-md-folder_file') ?>
+                <?php if (!empty($this->label)): ?>
+                    <span><?= Html::escape($this->label) ?></span>
+                <?php endif; ?>
+            </div>
+
+            <strong><?= $this->tr('Drop files here') ?></strong>
+            <span><?= $this->tr('or click to browse') ?></span>
+        </div>
+
+        <div class="files row display-none"></div>
+    </div>
+</label>

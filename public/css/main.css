@@ -139,6 +139,44 @@ a.no-decoration:visited {
     text-decoration: unset !important;
 }
 
+code {
+    background-color: black;
+    color: #0aa25e;
+    padding: 2px 4px;
+    border-radius: var(--border-radius-smaller);
+}
+
+.tag {
+    display: flex;
+    flex-direction: row;
+    padding: 0 0 0 1em;
+    border-radius: var(--border-radius);
+    color: var(--text-0) !important;
+    background-color: var(--container-0);
+    border: 2px solid var(--container-3);
+    text-decoration: none;
+    height: fit-content;
+}
+
+.tag span {
+    margin: auto;
+}
+
+.tag button,
+.tag .button {
+    border-radius: unset;
+    background-color: unset;
+    border: unset;
+    padding: 0.5em 1em;
+}
+
+.tag button:hover,
+.tag .button:hover {
+    color: var(--accent-3);
+    outline: unset;
+    background-color: unset;
+}
+
 
 
 button,

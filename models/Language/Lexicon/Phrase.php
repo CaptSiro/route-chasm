@@ -190,28 +190,41 @@ class Phrase extends Model implements LexiconTemplate {
     }
 
     public function addTranslationRaw(int $languageId, string $translation, ?int $ruleId = null): Translation {
+        $instance = null;
+
         foreach ($this->getTranslations() as $t) {
-            $equal = $t->languageId === $languageId
-                && $t->ruleId === $ruleId
-                && $t->translation === $translation;
+            $equalLanguageAndRule = $t->languageId === $languageId
+                && $t->ruleId === $ruleId;
+
+            $equal = $equalLanguageAndRule && $t->translation === $translation;
+
             if ($equal) {
                 return $t;
             }
+
+            if ($equalLanguageAndRule) {
+                $instance = $t;
+            }
         }
 
-        $t = Translation::createTranslationRaw(
-            $this->id,
-            $languageId,
-            $translation,
-            $ruleId
-        );
+        if (is_null($instance)) {
+            $instance = Translation::createTranslationRaw(
+                $this->id,
+                $languageId,
+                $translation,
+                $ruleId
+            );
+        } else {
+            $instance->translation = $translation;
+            $instance->save();
+        }
 
-        $this->translations[] = $t;
+        $this->translations[] = $instance;
         if (!$this->isDynamic) {
-            $this->staticTranslations[$languageId] = $t;
+            $this->staticTranslations[$languageId] = $instance;
         }
 
-        return $t;
+        return $instance;
     }
 
     public function translate(Language $language): ?string {
@@ -242,7 +255,11 @@ class Phrase extends Model implements LexiconTemplate {
             }
 
             $translation->setPhraseModel($this);
-            if ($translation->getRule()->match($value)) {
+            if (is_null($rule = $translation->getRule())) {
+                return $translation->format($value);
+            }
+
+            if ($rule->match($value)) {
                 return $translation->format($value);
             }
         }

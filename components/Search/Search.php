@@ -54,7 +54,7 @@ class Search extends Router {
     }
 
     protected function createResultsUrl(string $query): Url {
-        $ret = $this->createUrl(Path::from('results'));
+        $ret = $this->createUrl('/results');
         $ret->setQueryArgument(RouteChasmEnvironment::QUERY_SEARCH, $query);
         return $ret;
     }

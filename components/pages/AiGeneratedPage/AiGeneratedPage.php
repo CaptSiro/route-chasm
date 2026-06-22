@@ -8,7 +8,7 @@ use core\App;
 use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
-use core\data\DataItem;
+use core\storage\DataItem;
 use core\http\HttpCode;
 use core\http\HttpMethod;
 use core\locale\LexiconUnit;

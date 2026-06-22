@@ -4,7 +4,7 @@ namespace models\Page;
 
 use components\forms\description\TextField;
 use core\App;
-use core\data\DataItem;
+use core\storage\DataItem;
 use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
