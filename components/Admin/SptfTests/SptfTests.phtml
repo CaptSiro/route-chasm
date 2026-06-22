@@ -3,12 +3,15 @@
 use components\Admin\SptfTests\SptfTests;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Css::importDefault($this);
 Javascript::importDefault($this);
 
 ?><section>
-    <button x-init="sptf_hideButton">Hide passed tests</button>
+    <button x-init="sptf_hideButton">
+        <?= Html::escape($this->tr('Hide passed tests')) ?>
+    </button>
 </section>
 
 <section class="sptf">

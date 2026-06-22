@@ -1,12 +1,13 @@
 <?php /** @var Form $this */
 
 use components\forms\Form;
+use core\view\Html;
 
 Form::importAssets();
 
 ?><form
     class="form <?= $this->getCssClass() ?>"
-    data-method="<?= $this->method ?>"
+    data-method="<?= Html::escapeAttribute($this->method) ?>"
     data-transformer="<?= $this->bodyTransformer ?>"
     <?php if (!is_null($this->action)): ?>
         action="<?= $this->action ?>"

@@ -11,6 +11,8 @@ use RecursiveIteratorIterator;
 use SplFileInfo;
 
 class Test {
+    public const LEXICON_GROUP = 'unit-testing';
+
     public static function case(string $name, callable $suite): void {
         Context::startSuite();
         Context::setIsPrintingAllowed(false);

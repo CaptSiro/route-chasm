@@ -2,16 +2,22 @@
 
 namespace components;
 
+use core\locale\LexiconUnit;
 use core\view\FormatAble;
 use core\view\FormatAbleTrait;
 use core\view\ViewTemplate;
 
 class CallStack implements ViewTemplate, FormatAble {
-    use FormatAbleTrait;
+    use FormatAbleTrait, LexiconUnit;
+
+    public const LEXICON_GROUP = 'callstack';
+
+
 
     protected array $stack;
 
     public function __construct(int $remove = 0) {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
         $count = max($remove, 0) + 1;

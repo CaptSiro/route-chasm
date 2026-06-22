@@ -1,11 +1,18 @@
 <?php /** @var CallStack $this */
 
 use components\CallStack;
+use core\view\Html;
+
+$in = Html::escape($this->tr('in'));
 
 ?><div class="trace">
     <?php foreach ($this->stack as $entry): ?>
+        <?php $class = $this->getEntryClass($entry) ?>
+
         <div>
-            <code><?= $this->getEntryClass($entry) ?><?= $entry['function'] ?>(...) in <?= $entry['file'] ?>:<?= $entry['line'] ?></code>
+            <code>
+                <?= $class ?><?= $entry['function'] ?>(...) <?= $in ?> <?= $entry['file'] ?>:<?= $entry['line'] ?>
+            </code>
         </div>
     <?php endforeach; ?>
 </div>

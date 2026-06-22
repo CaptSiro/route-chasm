@@ -1,9 +1,12 @@
 <?php /** @var Button $this */
 
 use components\forms\controls\Button;
+use core\view\Html;
 
 ?><button
     type="<?= $this->type ?>"
     class="<?= $this->getCssClass() ?>"
     <?= $this->stringifyAttributes() ?>
-><?= $this->label ?></button>
+>
+    <?= Html::escape($this->label) ?>
+</button>

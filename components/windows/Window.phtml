@@ -3,12 +3,16 @@
 use components\Icon;
 use components\windows\Window;
 use core\sideloader\importers\Css\Css;
+use core\view\Html;
 
 Css::import($this->getResource('window.css'));
 
 ?><?php if ($this->openButton): ?>
-    <button onclick="window_open($('#<?= $this->id ?>'))">Open <?= $this->title ?></button>
+    <button onclick="window_open($('#<?= $this->id ?>'))">
+        <?= Html::escape($this->tr('Open')) ?> <?= Html::escape($this->title) ?>
+    </button>
 <?php endif; ?>
+
 <div
     class="window hide"
     id="<?= $this->id ?>"
@@ -24,7 +28,8 @@ Css::import($this->getResource('window.css'));
     <?= $this->stringifyAttributes() ?>
 >
     <div class="head">
-        <span><?= $this->title ?></span>
+        <span><?= Html::escape($this->title) ?></span>
+
         <div class="controls">
             <?php if ($this->hasFlag(Window::FLAG_MINIMIZABLE)): ?>
                 <button class="minimize">

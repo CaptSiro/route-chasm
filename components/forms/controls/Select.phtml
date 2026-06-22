@@ -7,11 +7,15 @@ use core\view\Html;
 
 Form::importAssets();
 
+$id = Html::escapeAttribute($this->getId());
+
 ?><div class="form-select" x-init="form_select_init" <?= $this->stringifyAttributes() ?>>
-    <label for="<?= $this->getId() ?>_search"><?= $this->label ?></label>
+    <label for="<?= $id ?>_search">
+        <?= Html::escape($this->label) ?>
+    </label>
 
     <label>
-        <select name="<?= $this->name ?>">
+        <select name="<?= Html::escapeAttribute($this->name) ?>">
             <?php foreach ($this->values as $value => $label): ?>
                 <option
                     value="<?= Html::escapeAttribute($value) ?>"
@@ -30,8 +34,10 @@ Form::importAssets();
 
     <div class="head">
         <div class="stack">
-            <label for="<?= $this->getId() ?>_search" class="selection form-input-icon">
-                <span class="option"><?= $this->values[$this->selected] ?? '' ?></span>
+            <label for="<?= $id ?>_search" class="selection form-input-icon">
+                <span class="option">
+                    <?= Html::escape($this->values[$this->selected] ?? '') ?>
+                </span>
                 <?= Icon::nf('nf-fa-angle_down', 'v') ?>
             </label>
 
@@ -39,7 +45,7 @@ Form::importAssets();
                 <input
                     type="text"
                     class="select-search"
-                    id="<?= $this->getId() ?>_search"
+                    id="<?= $id ?>_search"
                     placeholder="<?= $this->getAttribute('placeholder') ?>"
                 >
                 <?= Icon::nf('nf-fa-angle_up', '^') ?>
@@ -53,7 +59,9 @@ Form::importAssets();
                         <div
                             class="dropdown-item <?= $value == $this->selected ? 'cursor' : '' ?>"
                             data-value="<?= Html::escapeAttribute($value) ?>"
-                        ><?= Html::escape($label) ?></div>
+                        >
+                            <?= Html::escape($label) ?>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             </div>

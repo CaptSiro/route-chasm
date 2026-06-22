@@ -1,15 +1,17 @@
 <?php /** @var Checkbox $this */
 
 use components\forms\controls\Checkbox;
+use core\view\Html;
 
-$id = $this->getId();
+$id = Html::escapeAttribute($this->getId());
 
 ?><label class="checkbox-container <?= $this->cssClass ?>" for="<?= $id ?>">
     <input
         type="checkbox"
-        name="<?= $this->name ?>"
+        name="<?= Html::escapeAttribute($this->name) ?>"
         id="<?= $id ?>"
         <?= $this->stringifyAttributes() ?>
     >
-    <span><?= $this->label ?></span>
+
+    <span><?= Html::escape($this->label) ?></span>
 </label>

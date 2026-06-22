@@ -2,11 +2,13 @@
 
 namespace components\tf;
 
+use core\locale\LexiconUnit;
+use core\tf\Test;
 use core\view\FormatAble;
 use core\view\FormatAbleTrait;
 
 class Interrupt implements FormatAble {
-    use FormatAbleTrait;
+    use FormatAbleTrait, LexiconUnit;
 
 
 
@@ -14,7 +16,9 @@ class Interrupt implements FormatAble {
         protected string $type,
         protected string $message,
         protected array $trace,
-    ) {}
+    ) {
+        $this->setLexiconGroup(Test::LEXICON_GROUP);
+    }
 
 
 

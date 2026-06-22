@@ -1,5 +1,8 @@
 <?php /** @var SaveError $this */
 
 use components\SaveError\SaveError;
+use core\view\Html;
 
-?><h1><?= $this->message ?></h1>
+?><h1>
+    <?= Html::escape($this->message) ?>
+</h1>

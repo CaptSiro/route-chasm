@@ -3,6 +3,7 @@
 use components\Admin\Nexus\AdminNexus;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Javascript::importDefault($this);
 Css::importDefault($this);
@@ -10,10 +11,12 @@ Css::importDefault($this);
 ?><section class="nexus">
     <?php if ($this->showHeader): ?>
         <div class="head">
-            <h1><?= $this->getTitle() ?></h1>
+            <h1><?= Html::escape($this->getTitle()) ?></h1>
 
             <?php if ($this->canShowCreateButton()): ?>
-                <a class="button" href="<?= $this->getCreateLink() ?>"><?= $this->createButtonLabel ?></a>
+                <a class="button" href="<?= $this->getCreateLink() ?>">
+                    <?= Html::escape($this->createButtonLabel) ?>
+                </a>
             <?php endif; ?>
 
             <?= $this->getTemplateSlot(AdminNexus::SLOT_HEADER_ITEM) ?>

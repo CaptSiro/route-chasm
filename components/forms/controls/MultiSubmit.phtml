@@ -1,16 +1,19 @@
 <?php /** @var MultiSubmit $this */
 
 use components\forms\controls\MultiSubmit;
+use core\view\Html;
 
 ?><div class="form-actions">
     <?php foreach ($this->actions as $action): ?>
         <button
-            type="<?= $action->getType() ?>"
+            type="<?= Html::escapeAttribute($action->getType()) ?>"
             <?php if (!is_null($action->getName())): ?>
-                name="<?= $action->getName() ?>"
-                value="<?= $action->getValue() ?>"
+                name="<?= Html::escapeAttribute($action->getName()) ?>"
+                value="<?= Html::escapeAttribute($action->getValue()) ?>"
             <?php endif; ?>
             <?= $action->stringifyAttributes() ?>
-        ><?= $action->getLabel() ?></button>
+        >
+            <?= Html::escape($action->getLabel()) ?>
+        </button>
     <?php endforeach; ?>
 </div>

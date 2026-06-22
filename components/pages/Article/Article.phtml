@@ -18,14 +18,14 @@ $language = $this->localization->getLanguage();
 
     <aside class="article-toc-wrapper">
         <div class="article-toc-container">
-            <h3><?= $this->tr("Table of Contents") ?></h3>
+            <h3><?= Html::escape($this->tr("Table of Contents")) ?></h3>
 
             <div class="article-toc-content"></div>
         </div>
 
         <?php if (!empty($related = $this->page->getRelated())): ?>
             <div class="article-related-container column">
-                <h3><?= $this->tr("Related") ?></h3>
+                <h3><?= Html::escape($this->tr("Related")) ?></h3>
 
                 <div class="article-related-content column">
                     <?php foreach ($related as $page): ?>

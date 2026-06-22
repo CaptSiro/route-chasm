@@ -1,7 +1,8 @@
 <?php
 
-namespace components\layout\PageMenu;
+namespace example\components;
 
+use components\layout\PageMenu\PageMenu;
 use components\Search\HeaderSearch;
 use core\view\Renderer;
 use core\view\View;

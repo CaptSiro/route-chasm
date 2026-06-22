@@ -1,10 +1,11 @@
 <?php /** @var SearchResults $this */
 
 use components\Search\SearchResults;
+use core\view\Html;
 
 ?><?php if (empty($this->results)): ?>
     <div class="search-empty">
-        <?= $this->tr('No results found') ?>
+        <?= Html::escape($this->tr('No results found')) ?>
     </div>
 <?php else: ?>
     <div class="search-results">

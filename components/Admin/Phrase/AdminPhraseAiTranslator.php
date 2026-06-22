@@ -8,6 +8,7 @@ use components\ai\StaticTranslation\StaticTranslation;
 use core\ai\Client;
 use core\ai\clients\OpenAi;
 use core\App;
+use core\locale\LexiconUnit;
 use core\ResourceLoader;
 use core\utils\Strings;
 use core\view\Renderer;
@@ -19,7 +20,9 @@ use models\Language\Lexicon\Rule;
 use models\Language\Lexicon\Translation;
 
 class AdminPhraseAiTranslator implements ViewTemplate {
-    use Renderer, ResourceLoader;
+    use Renderer, ResourceLoader, LexiconUnit;
+
+    public const LEXICON_GROUP = 'admin.phrase.ai-translator';
 
     public const AI_MODEL = 'gpt-4o-mini';
 
@@ -124,5 +127,7 @@ class AdminPhraseAiTranslator implements ViewTemplate {
 
     public function __construct(
         protected AdminPhraseEditor $context
-    ) {}
+    ) {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+    }
 }

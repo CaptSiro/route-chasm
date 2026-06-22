@@ -5,6 +5,7 @@ use components\Icon;
 use components\pages\AiGeneratedPage\AiGeneratedPage;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Javascript::importDefault($this);
 Css::importDefault($this);
@@ -20,7 +21,7 @@ Css::importDefault($this);
 
     <div class="row edit-controls">
         <button onclick="aiPage_toggleEditMode()">
-            <?= Icon::nf('nf-fa-edit', $this->tr('Edit')) ?>
+            <?= Icon::nf('nf-fa-edit', Html::escape($this->tr('Edit'))) ?>
         </button>
 
         <button
@@ -29,7 +30,7 @@ Css::importDefault($this);
             data-file-content-css=".file-content[data-target='#<?= AiGeneratedPage::TARGET_CSS ?>'] pre"
             data-file-content-js=".file-content[data-target='#<?= AiGeneratedPage::TARGET_JS ?>'] pre"
         >
-            <?= Icon::nf('nf-fa-save', $this->tr('Save')) ?>
+            <?= Icon::nf('nf-fa-save', Html::escape($this->tr('Save'))) ?>
         </button>
     </div>
 </div>

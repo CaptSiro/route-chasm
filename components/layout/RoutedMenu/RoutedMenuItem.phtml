@@ -1,6 +1,7 @@
 <?php /** @var RoutedMenuItem $this */
 
 use components\layout\RoutedMenu\RoutedMenuItem;
+use core\view\Html;
 
 ?><div class="item-label">
     <?php if (!is_null($this->icon)): ?>
@@ -11,9 +12,11 @@ use components\layout\RoutedMenu\RoutedMenuItem;
 
     <?php if ($this->hasItem()): ?>
         <a href="<?= $this->createUrl() ?>">
-            <?= $this->tr($this->label) ?>
+            <?= Html::escape($this->tr($this->label)) ?>
         </a>
     <?php else: ?>
-        <span><?= $this->tr($this->label) ?></span>
+        <span>
+            <?= Html::escape($this->tr($this->label)) ?>
+        </span>
     <?php endif; ?>
 </div>

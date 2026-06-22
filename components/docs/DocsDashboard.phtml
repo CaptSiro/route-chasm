@@ -1,14 +1,15 @@
 <?php /** @var DocsDashboard $this */
 
 use components\docs\DocsDashboard;
+use core\view\Html;
 
 ?><section>
-    <h1><?= $this->tr('Docs') ?></h1>
+    <h1><?= Html::escape($this->tr('Docs')) ?></h1>
 
     <?= $this->createForm() ?>
 
     <div>
-        <h3><?= $this->tr('Total documents generated') ?>: <?= $this->loader->count() ?></h3>
+        <h3><?= Html::escape($this->tr('Total documents generated')) ?>: <?= $this->loader->count() ?></h3>
     </div>
 
     <?= $this->createGrid() ?>

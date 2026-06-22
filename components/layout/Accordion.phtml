@@ -3,6 +3,7 @@
 use components\layout\Accordion;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Css::importDefault($this);
 Javascript::importDefault($this);
@@ -13,7 +14,7 @@ Javascript::importDefault($this);
     data-is-expanded="<?= $this->isExpanded ?>"
 >
     <div class="title">
-        <?= $this->title ?>
+        <?= Html::escape($this->title) ?>
     </div>
 
     <div class="content">

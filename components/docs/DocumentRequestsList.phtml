@@ -7,7 +7,7 @@ use core\view\Html;
 Javascript::import($this->getResource('docs.js'));
 
 ?><div class="column" x-init="docs_documentRequestsList">
-    <h3><?= $this->tr('Requests') ?></h3>
+    <h3><?= Html::escape($this->tr('Requests')) ?></h3>
 
     <div class="list column-smaller"></div>
 

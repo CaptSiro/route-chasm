@@ -1,11 +1,16 @@
 <?php /** @var BreadCrumb $this */
 
 use components\layout\BreadCrumbs\BreadCrumb;
+use core\view\Html;
 
 ?><li class="bread-crumb">
     <?php if (is_null($this->getUrl())): ?>
-        <span><?= $this->getLabel() ?></span>
+        <span>
+            <?= Html::escape($this->getLabel()) ?>
+        </span>
     <?php else: ?>
-        <a href="<?= $this->getUrl() ?>"><?= $this->getLabel() ?></a>
+        <a href="<?= $this->getUrl() ?>">
+            <?= Html::escape($this->getLabel()) ?>
+        </a>
     <?php endif; ?>
 </li>

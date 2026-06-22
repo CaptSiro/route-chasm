@@ -5,13 +5,16 @@ namespace components\windows;
 use components\html\Attribute;
 use components\html\HtmlAttribute;
 use core\Flags;
+use core\locale\LexiconUnit;
 use core\utils\Strings;
 use core\view\Html;
 use core\view\Renderer;
 use core\view\View;
 
 class Window implements View, Attribute {
-    use Renderer, HtmlAttribute, Flags;
+    use Renderer, HtmlAttribute, Flags, LexiconUnit;
+
+    public const LEXICON_GROUP = 'window';
 
     public const FLAG_MINIMIZABLE = 1;
     public const FLAG_DRAGGABLE = 2;
@@ -62,6 +65,7 @@ class Window implements View, Attribute {
     ) {
         $this->addJavascriptInit('window_init');
         $this->id = 'window_'. self::generateId();
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
     public function getId(): string {

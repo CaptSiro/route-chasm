@@ -3,6 +3,7 @@
 use components\pages\Article\ArticleEditor;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Javascript::importDefault($this);
 
@@ -13,7 +14,7 @@ Javascript::importDefault($this);
             href="<?= $this->page->getUrlToModel(RouteChasmEnvironment::MOUNT_DEFAULT_CONTEXT) ?>"
             target="_blank"
         >
-            <?= $this->tr('View on web') ?>
+            <?= Html::escape($this->tr('View on web')) ?>
         </a>
     </div>
 

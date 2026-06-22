@@ -34,15 +34,20 @@ $description = $this->localization->getMeta()->description;
 
     <div class="article-content">
         <h2 class="article-title">
-            <a href="<?= $url ?>"><?= Html::escape($title) ?></a>
+            <a href="<?= $url ?>">
+                <?= Html::escape($title) ?>
+            </a>
         </h2>
 
         <?php if (!empty($description)): ?>
-            <p class="article-description"><?= Html::escape($description) ?></p>
+            <p class="article-description">
+                <?= Html::escape($description) ?>
+            </p>
         <?php endif; ?>
 
         <a href="<?= $url ?>" class="read-more">
-            <span><?= $this->tr('Read more') ?></span>
+            <span><?= Html::escape($this->tr('Read more')) ?></span>
+
             <?= Icon::nf('nf-fa-arrow_right', '→') ?>
         </a>
     </div>

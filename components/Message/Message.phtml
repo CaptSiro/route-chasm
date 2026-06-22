@@ -15,5 +15,5 @@ Css::importDefault($this);
         <span><?= $this->getTypeLabel() ?></span>
     </h2>
 
-    <?= $this->content ?>
+    <?= Html::escape($this->content) ?>
 </div>

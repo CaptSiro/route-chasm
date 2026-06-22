@@ -5,10 +5,14 @@ use core\view\Html;
 
 ?><?php if ($this->isLink): ?>
     <a href="<?= $this->value ?>" class="search-result" data-title="<?= Html::escapeAttribute($this->label) ?>">
-        <div class="search-result-title"><?= Html::escape($this->label) ?></div>
+        <div class="search-result-title">
+            <?= Html::escape($this->label) ?>
+        </div>
 
         <?php if (!is_null($this->meta)): ?>
-            <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
+            <div class="search-result-meta">
+                <?= Html::escape($this->meta) ?>
+            </div>
         <?php endif; ?>
     </a>
 <?php else: ?>
@@ -17,10 +21,14 @@ use core\view\Html;
         data-value="<?= Html::escapeAttribute($this->value) ?>"
         data-title="<?= Html::escapeAttribute($this->label) ?>"
     >
-        <div class="search-result-title"><?= Html::escape($this->label) ?></div>
+        <div class="search-result-title">
+            <?= Html::escape($this->label) ?>
+        </div>
 
         <?php if (!is_null($this->meta)): ?>
-            <div class="search-result-meta"><?= Html::escape($this->meta) ?></div>
+            <div class="search-result-meta">
+                <?= Html::escape($this->meta) ?>
+            </div>
         <?php endif; ?>
     </div>
 <?php endif; ?>

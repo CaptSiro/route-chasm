@@ -2,10 +2,12 @@
 
 use components\Modules\Modules;
 use core\sideloader\importers\Css\Css;
+use core\view\Html;
 
 Css::importDefault($this);
 
 ?><section>
-    <h1>Loaded modules</h1>
+    <h1><?= Html::escape($this->tr('Loaded modules')) ?></h1>
+    
     <?= $this->getModules() ?>
 </section>

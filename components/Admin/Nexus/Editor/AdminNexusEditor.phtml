@@ -1,10 +1,11 @@
 <?php /** @var AdminNexusEditor $this */
 
 use components\Admin\Nexus\Editor\AdminNexusEditor;
+use core\view\Html;
 
 ?><section>
     <div class="header">
-        <h1><?= $this->getTitle() ?></h1>
+        <h1><?= Html::escape($this->getTitle()) ?></h1>
 
         <?php if (!is_null($this->headerContent)): ?>
             <div class="header-content row">

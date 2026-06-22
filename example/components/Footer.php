@@ -1,7 +1,8 @@
 <?php
 
-namespace components\layout\PageMenu;
+namespace example\components;
 
+use components\layout\PageMenu\PageMenu;
 use core\admin\Admin;
 use core\App;
 use core\locale\LexiconUnit;

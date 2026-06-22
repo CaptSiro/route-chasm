@@ -17,6 +17,7 @@ use core\database\sql\Table;
 use core\locale\Lexicon;
 use core\locale\LexiconTemplate;
 use core\utils\Arrays;
+use core\view\Html;
 use models\Language\Language;
 use models\Language\Lexicon\Grid\LexiconGridRow;
 
@@ -281,5 +282,9 @@ class Phrase extends Model implements LexiconTemplate {
 
         return $this->translateTemplate($value, $targetLanguage)
             ?? $this->formatDefault($value);
+    }
+
+    public function formatEscaped(string $value, ?Language $targetLanguage = null): string {
+        return Html::escape($this->format($value, $targetLanguage));
     }
 }

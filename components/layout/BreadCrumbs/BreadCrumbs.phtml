@@ -2,14 +2,19 @@
 
 use components\layout\BreadCrumbs\BreadCrumbs;
 use core\sideloader\importers\Css\Css;
+use core\view\Html;
 
 Css::importDefault($this);
+
+// todo delimitor li tag -> ::before css element from attr(data-delimitor)
 
 ?><?php if (count($this->items) > 0): ?>
     <ul class="bread-crumbs">
         <?php $first = true; foreach ($this->items as $item): ?>
             <?php if (!$first && !is_null($this->delimitor)): ?>
-                <li class="delimitor"><?= $this->delimitor ?></li>
+                <li class="delimitor">
+                    <?= Html::escape($this->delimitor) ?>
+                </li>
             <?php endif; ?>
 
             <?= $item ?>

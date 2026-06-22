@@ -4,6 +4,7 @@ use components\Icon;
 use components\Search\HeaderSearch;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Css::importDefault($this);
 Javascript::importDefault($this);
@@ -22,7 +23,7 @@ Javascript::importDefault($this);
             class="header-search-input"
             type="search"
             name="q"
-            placeholder="<?= $this->tr($this->placeholder) ?>"
+            placeholder="<?= Html::escapeAttribute($this->tr($this->placeholder)) ?>"
             autocomplete="off"
         >
 
@@ -33,7 +34,7 @@ Javascript::importDefault($this);
 
     <div class="header-search-dropdown">
         <div class="search-empty">
-            <?= $this->tr('No results found') ?>
+            <?= Html::escape($this->tr('No results found')) ?>
         </div>
     </div>
 </div>

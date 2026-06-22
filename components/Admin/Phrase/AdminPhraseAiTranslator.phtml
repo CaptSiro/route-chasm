@@ -2,10 +2,13 @@
 
 use components\Admin\Phrase\AdminPhraseAiTranslator;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Javascript::importDefault($this);
 
 ?><button
     x-init="phraseTranslator_init"
     data-url="<?= $this->context->getAiTranslateLink() ?>"
->Translate with AI</button>
+>
+    <?= Html::escape($this->tr('Translate with AI')) ?>
+</button>

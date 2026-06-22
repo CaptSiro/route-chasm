@@ -25,8 +25,9 @@ $name = Html::escapeAttribute($this->name);
                 <?php endif; ?>
             </div>
 
-            <strong><?= $this->tr('Drop files here') ?></strong>
-            <span><?= $this->tr('or click to browse') ?></span>
+            <strong><?= Html::escape($this->tr('Drop files here')) ?></strong>
+
+            <span><?= Html::escape($this->tr('or click to browse')) ?></span>
         </div>
 
         <div class="files row display-none"></div>

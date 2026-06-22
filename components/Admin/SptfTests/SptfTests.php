@@ -2,14 +2,22 @@
 
 namespace components\Admin\SptfTests;
 
+use core\locale\LexiconUnit;
 use core\tf\Test;
 use core\view\ContainerContent;
 
 class SptfTests extends ContainerContent {
+    use LexiconUnit;
+
+    public const LEXICON_GROUP = Test::LEXICON_GROUP;
+
+
+
     public function __construct(
         protected string $directory
     ) {
         parent::__construct();
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
 

@@ -1,8 +1,14 @@
 <?php /** @var SpotlightSwitchLink $this */
 
 use components\layout\Spotlight\SpotlightSwitchLink;
+use core\view\Html;
 
 ?><p class="form-note">
-    <?= $this->note ?>
-    <button class="link" type="button" <?= $this::createAttributes($this->item) ?>><?= $this->linkLabel ?></button>
+    <?= Html::escape($this->note) ?>
+
+    <button
+        class="link"
+        type="button"
+        <?= $this::createAttributes($this->item) ?>
+    ><?= Html::escape($this->linkLabel) ?></button>
 </p>

@@ -29,6 +29,11 @@ class Message implements Action, ViewTemplate, FormatAble {
     protected CallStack $stack;
     protected Formatter $formatter;
 
+    /**
+     * @param string $content
+     * @param MessageType $type
+     * @param int $stackTraceShiftCount
+     */
     public function __construct(
         protected string $content,
         protected MessageType $type = MessageType::ERROR,

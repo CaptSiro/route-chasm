@@ -246,7 +246,7 @@ class AdminPageEditor extends AdminNexusEditor {
 
             if (empty($structure)) {
                 $response->sendMessage(
-                    $messageClientNotConnected->format(Objects::getClass($client)),
+                    $messageClientNotConnected->formatEscaped(Objects::getClass($client)),
                     HttpCode::SE_INTERNAL_SERVER_ERROR
                 );
             }

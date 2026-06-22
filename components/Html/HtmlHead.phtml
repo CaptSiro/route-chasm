@@ -6,6 +6,7 @@ use components\Jsml;
 use core\App;
 use core\route\Path;
 use core\sideloader\SideLoader;
+use core\view\Html;
 
 ?>
 <head>
@@ -16,10 +17,13 @@ use core\sideloader\SideLoader;
     <link rel="icon" type="image/x-icon" href="<?= App::getInstance()->attach(Path::from("/public/images/favicon.png")) ?>">
 
     <?php foreach ($this->meta as $name => $content): ?>
-        <meta name="<?= $name ?>" content="<?= $content ?>">
+        <meta
+            name="<?= Html::escapeAttribute($name) ?>"
+            content="<?= Html::escapeAttribute($content) ?>"
+        >
     <?php endforeach; ?>
 
-    <title><?= $this->title ?></title>
+    <title><?= Html::escape($this->title) ?></title>
 
     <?= new FrontEndCore() ?>
     <?= Jsml::getInstance() ?>

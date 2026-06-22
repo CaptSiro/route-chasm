@@ -1,8 +1,8 @@
 <?php /** @var Wireframe $this */
 
 use components\pages\Wireframe;
-use components\layout\PageMenu\Footer;
-use components\layout\PageMenu\Header;
+use core\view\Html;use example\components\Footer;
+use example\components\Header;
 
 ?><!DOCTYPE html>
 <html lang="<?= $this->language ?>">
@@ -14,7 +14,9 @@ use components\layout\PageMenu\Header;
 
     <?php if (!$this->page->isReleased()): ?>
         <div class="release-notice center" style="background-color: var(--error)">
-            <strong class="pad-gap"><?= $this->tr('This is page is not released') ?></strong>
+            <strong class="pad-gap">
+                <?= Html::escape($this->tr('This is page is not released')) ?>
+            </strong>
         </div>
     <?php endif; ?>
 
@@ -29,7 +31,7 @@ use components\layout\PageMenu\Header;
             <?= $this->content ?>
         <?php else: ?>
             <div class="center">
-                <h1><?= $this->tr('Page is not accessible') ?></h1>
+                <h1><?= Html::escape($this->tr('Page is not accessible')) ?></h1>
             </div>
         <?php endif; ?>
     </main>

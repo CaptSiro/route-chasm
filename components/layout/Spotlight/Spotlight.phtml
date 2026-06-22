@@ -3,6 +3,7 @@
 use components\layout\Spotlight\Spotlight;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 
 Css::importDefault($this);
 Javascript::importDefault($this);
@@ -11,7 +12,9 @@ Javascript::importDefault($this);
     <?php foreach ($this->views as $label => $view): ?>
         <div
             class="spotlight-item <?= $this->visibilityClass($label) ?>"
-            data-spotlight-item="<?= $label ?>"
-        ><?= $view->render() ?></div>
+            data-spotlight-item="<?= Html::escapeAttribute($label) ?>"
+        >
+            <?= $view ?>
+        </div>
     <?php endforeach; ?>
 </div>

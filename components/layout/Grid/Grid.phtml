@@ -2,6 +2,7 @@
 
 use components\layout\Grid\Grid;
 use core\sideloader\importers\Css\Css;
+use core\view\Html;
 
 Css::importDefault($this);
 
@@ -13,7 +14,7 @@ Css::importDefault($this);
         <?php if ($this->hasFlag(Grid::FLAG_SHOW_HEADER)): ?>
             <div class="grid-header">
                 <?php foreach ($this->columns as $column): ?>
-                    <h4><?= $column->getLabel() ?></h4>
+                    <h4><?= Html::escape($column->getLabel()) ?></h4>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>

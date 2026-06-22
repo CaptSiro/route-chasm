@@ -244,7 +244,7 @@ class ArticleEditor extends ContainerContent {
                 if (!empty($result[self::PROPERTY_CONTENT])) {
                     if (is_null($localization = $this->page->getLocalization($language))) {
                         $response->sendMessage(
-                            $messagePageIsNotLocalized->format($language->code),
+                            $messagePageIsNotLocalized->formatEscaped($language->code),
                             HttpCode::CE_BAD_REQUEST
                         );
                     }

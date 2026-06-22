@@ -3,6 +3,7 @@
 use components\Admin\AdminProject;
 use core\admin\AdminRouter;
 use core\App;
+use core\view\Html;
 
 ?>
 <?php $app = App::getInstance() ?>
@@ -13,7 +14,7 @@ use core\App;
                 class="no-decoration"
                 href="<?= $app->attach(AdminRouter::getInstance()->getPath()) ?>"
             >
-                <?= $project ?>
+                <?= Html::escape($project) ?>
             </a>
         </h2>
         <?php if (!is_null($author = $app->getProjectAuthor())): ?>
@@ -23,9 +24,11 @@ use core\App;
                         class="no-decoration"
                         href="<?= $authorLink ?>"
                         target="_blank"
-                    ><?= $author ?></a>
+                    >
+                        <?= Html::escape($author) ?>
+                    </a>
                 <?php else: ?>
-                    <?= $this->tr('by') ?> <?= $author ?>
+                    <?= $this->tr('by') ?> <?= Html::escape($author) ?>
                 <?php endif; ?>
             </span>
         <?php endif; ?>

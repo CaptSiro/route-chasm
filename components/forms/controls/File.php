@@ -2,6 +2,7 @@
 
 namespace components\forms\controls;
 
+// todo remove
 class File extends Input {
     public const FILE_TYPE_IMAGE = "image/*";
 

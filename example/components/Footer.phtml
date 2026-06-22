@@ -1,7 +1,8 @@
 <?php /** @var Footer $this */
 
-use components\layout\PageMenu\Footer;
+use example\components\Footer;
 use core\sideloader\importers\Css\Css;
+use core\view\Html;
 
 Css::importDefault($this);
 
@@ -10,7 +11,7 @@ Css::importDefault($this);
         <div class="footer-brand">
             <div class="footer-logo"><?= $this->getProjectName() ?></div>
             <p class="footer-description">
-                PHP framework built for structured systems and long-term maintainability.
+                <?= Html::escape($this->tr('PHP framework built for structured systems and long-term maintainability.')) ?>
             </p>
         </div>
 
@@ -22,7 +23,7 @@ Css::importDefault($this);
     <div class="footer-bottom">
         <?= $this->getAdminLoginLink() ?>
 
-        <div class="footer-copy">© 2026 <?= $this->getProjectName() ?>. All rights reserved.</div>
+        <div class="footer-copy">© 2026 <?= Html::escape($this->getProjectName()) ?>. <?= Html::escape($this->tr('All rights reserved.')) ?></div>
 
         <div class="footer-legal">
             <?= $this->legal ?>

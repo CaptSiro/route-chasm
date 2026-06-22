@@ -2,11 +2,13 @@
 
 namespace components\tf;
 
+use core\locale\LexiconUnit;
+use core\tf\Test;
 use core\view\FormatAble;
 use core\view\FormatAbleTrait;
 
 class ExpectationMessage implements FormatAble {
-    use FormatAbleTrait;
+    use FormatAbleTrait, LexiconUnit;
 
 
 
@@ -14,7 +16,9 @@ class ExpectationMessage implements FormatAble {
         protected string $hint,
         protected mixed $expected,
         protected mixed $actual,
-    ) {}
+    ) {
+        $this->setLexiconGroup(Test::LEXICON_GROUP);
+    }
 
 
 

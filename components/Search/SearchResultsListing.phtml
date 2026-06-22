@@ -1,18 +1,20 @@
 <?php /** @var SearchResultsListing $this */
 
-use components\layout\PageMenu\Footer;
-use components\layout\PageMenu\Header;
 use components\pages\Listing\Listing;
 use components\Search\SearchResultsListing;
 use core\App;
 use core\view\Html;
+use example\components\Footer;
+use example\components\Header;
 
 Listing::importAssets();
 
 ?><?= Header::default() ?>
 
 <div class="listing page-container">
-    <h1 class="page-title"><?= $this->tr('Search results for') ?>: <?= Html::escape($this->query) ?></h1>
+    <h1 class="page-title">
+        <?= Html::escape($this->tr('Search results for')) ?>: <?= Html::escape($this->query) ?>
+    </h1>
 
     <div class="article-grid">
         <?php $language = App::getInstance()->getRequest()->getLanguage() ?>

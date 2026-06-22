@@ -7,19 +7,21 @@ use core\view\Html;
 
 Form::importAssets();
 
+$id = Html::escapeAttribute($this->getId());
+
 $valuesEscaped = [];
 foreach ($this->values as $value => $label) {
-    $valuesEscaped[Html::escapeAttribute($value)] = $label;
+    $valuesEscaped[Html::escapeAttribute($value)] = Html::escape($label);
 }
 
 $selectedEscaped = array_map(fn($x) => Html::escapeAttribute($x), $this->selected);
 
 ?><div class="form-select multiple" x-init="form_multiSelect_init" <?= $this->stringifyAttributes() ?>>
     <label>
-        <select name="<?= $this->name ?>" multiple data-extract="form_multiSelect_extract">
+        <select name="<?= Html::escapeAttribute($this->name) ?>" multiple data-extract="form_multiSelect_extract">
             <?php foreach ($valuesEscaped as $value => $label): ?>
                 <option
-                    value="<?= $value ?>"
+                    value="<?= Html::escapeAttribute($value) ?>"
                     <?php if (in_array($value, $selectedEscaped)): ?>
                         selected
                         <?php if ($this->selectedOptionsAreEternal): ?>
@@ -35,8 +37,8 @@ $selectedEscaped = array_map(fn($x) => Html::escapeAttribute($x), $this->selecte
 
     <div class="head">
         <div class="stack">
-            <label for="<?= $this->getId() ?>_search" class="selection form-input-icon">
-                <span class="option"><?= $this->label ?></span>
+            <label for="<?= $id ?>_search" class="selection form-input-icon">
+                <span class="option"><?= Html::escape($this->label) ?></span>
                 <?= Icon::nf('nf-fa-angle_down', 'v') ?>
             </label>
 
@@ -44,8 +46,8 @@ $selectedEscaped = array_map(fn($x) => Html::escapeAttribute($x), $this->selecte
                 <input
                     type="text"
                     class="select-search"
-                    id="<?= $this->getId() ?>_search"
-                    placeholder="<?= $this->getAttribute('placeholder') ?>"
+                    id="<?= $id ?>_search"
+                    placeholder="<?= Html::escapeAttribute($this->getAttribute('placeholder')) ?>"
                 >
                 <?= Icon::nf('nf-fa-angle_up', '^') ?>
             </label>

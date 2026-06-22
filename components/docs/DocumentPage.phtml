@@ -2,11 +2,11 @@
 
 use components\docs\DocumentPage;
 use components\Icon;
-use components\layout\PageMenu\Footer;
 use components\Markdown\Markdown;
 use components\pages\Article\Article;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
+use example\components\Footer;
 use models\Privilege\Privilege;
 
 Javascript::import($this->getResource('docs.js'));
@@ -24,13 +24,13 @@ Article::importAssets();
         <div class="page" x-init="docs_documentPage">
             <aside class="article-toc-wrapper">
                 <div class="article-toc-container">
-                    <h3><?= $this->tr("Table of Contents") ?></h3>
+                    <h3><?= Html::escape($this->tr("Table of Contents")) ?></h3>
 
                     <div class="article-toc-content"></div>
                 </div>
 
                 <div class="article-related-container column">
-                    <h3><?= $this->tr("Related") ?></h3>
+                    <h3><?= Html::escape($this->tr("Related")) ?></h3>
 
                     <div class="article-related-content column"></div>
                 </div>
@@ -44,11 +44,11 @@ Article::importAssets();
                         </button>
 
                         <button class="md-save">
-                            <?= Icon::nf('nf-fa-save', $this->tr('Save')) ?>
+                            <?= Icon::nf('nf-fa-save', Html::escape($this->tr('Save'))) ?>
                         </button>
 
                         <button class="md-re-generate">
-                            <?= Icon::nf('nf-fa-arrows_rotate', $this->tr('Re-generate')) ?>
+                            <?= Icon::nf('nf-fa-arrows_rotate', Html::escape($this->tr('Re-generate'))) ?>
                         </button>
                     </div>
 

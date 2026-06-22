@@ -1,7 +1,10 @@
 <?php /** @var Submit $this */
 
 use components\forms\controls\Submit;
+use core\view\Html;
 
 ?><div class="form-actions">
-    <button type="submit"><?= $this->label ?></button>
+    <button type="submit">
+        <?= Html::escape($this->label) ?>
+    </button>
 </div>

@@ -10,29 +10,31 @@ use models\fs\File;
 Javascript::importDefault($this);
 Css::importDefault($this);
 
-$id = $this->getId();
+$id = Html::escapeAttribute($this->getId());
 
 ?><div
     class="file-control <?= $this->cssClass ?>"
     x-init="form_fs_fileControl"
     data-control-id="<?= $id ?>"
-    data-file-type="<?= $this->fileType ?>"
+    data-file-type="<?= Html::escapeAttribute($this->fileType) ?>"
 >
     <div class="form-control">
         <?php if (!is_null($this->label)): ?>
-            <span class="control-label"><?= $this->label ?></span>
+            <span class="control-label">
+                <?= Html::escape($this->label) ?>
+            </span>
         <?php endif; ?>
 
         <input
             type="hidden"
-            value="<?= $this->hash ?>"
-            name="<?= $this->name ?>"
+            value="<?= Html::escapeAttribute($this->hash) ?>"
+            name="<?= Html::escapeAttribute($this->name) ?>"
             id="<?= $id ?>"
             <?= $this->stringifyAttributes() ?>
         >
 
         <button class="select">
-            <?= $this->tr('Select') ?>
+            <?= Html::escape($this->tr('Select')) ?>
         </button>
     </div>
 
@@ -50,10 +52,18 @@ $id = $this->getId();
 
     <div class="preview-file <?= $isFile && !$isTypeOfImage ? '' : 'display-none' ?>">
         <div class="file-preview general">
-            <div class="icon"><?= $this->file?->getEntryIcon() ?></div>
+            <div class="icon">
+                <?= $this->file?->getEntryIcon() ?>
+            </div>
+
             <div class="details">
-                <div class="name"><?= Html::escape($this->file?->getFileName()) ?></div>
-                <div class="size"><?= Html::escape($this->file?->getHumanReadableSize()) ?></div>
+                <div class="name">
+                    <?= Html::escape($this->file?->getFileName()) ?>
+                </div>
+
+                <div class="size">
+                    <?= Html::escape($this->file?->getHumanReadableSize()) ?>
+                </div>
             </div>
         </div>
     </div>
@@ -62,7 +72,10 @@ $id = $this->getId();
         <div class="file-preview general">
             <div class="icon"><?= Icon::nf('nf-md-file_question', '?') ?></div>
             <div class="details">
-                <div class="name">None</div>
+                <div class="name">
+                    <?= Html::escape($this->tr('None')) ?>
+                </div>
+
                 <div class="size">- B</div>
             </div>
         </div>

@@ -1,15 +1,20 @@
 <?php /** @var TextArea $this */
 
 use components\forms\controls\TextArea;
+use core\view\Html;
 
-$id = $this->getId();
+$id = Html::escapeAttribute($this->getId());
 
 ?><div class="form-control <?= $this->cssClass ?>">
-    <label for="<?= $id ?>"><?= $this->label ?></label>
+    <label for="<?= $id ?>">
+        <?= Html::escape($this->label) ?>
+    </label>
+
     <textarea
         id="<?= $id ?>"
-        name="<?= $this->name ?>"
-        id="<?= $id ?>"
+        name="<?= Html::escapeAttribute($this->name) ?>"
         <?= $this->stringifyAttributes() ?>
-    ><?= $this->value ?></textarea>
+    >
+        <?= Html::escape($this->value) ?>
+    </textarea>
 </div>

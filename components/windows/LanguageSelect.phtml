@@ -3,6 +3,7 @@
 use components\windows\LanguageSelect;
 use core\App;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
 use models\Language\Language;
 
 Javascript::importDefault($this);
@@ -21,6 +22,8 @@ $appLocale = App::getInstance()
             <?php endif; ?>
             x-init="languageSelect_languageButton"
             data-code="<?= $locale->getIdentifier() ?>"
-        ><?= $locale->getName() ?></button>
+        >
+            <?= Html::escape($locale->getName()) ?>
+        </button>
     <?php endforeach; ?>
 </div>

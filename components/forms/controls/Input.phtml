@@ -1,17 +1,20 @@
 <?php /** @var Input $this */
 
 use components\forms\controls\Input;
+use core\view\Html;
 
-$id = $this->getId();
+$id = Html::escapeAttribute($this->getId());
 
 ?><div class="form-control <?= $this->cssClass ?>">
     <?php if (!empty($this->label)): ?>
-        <label for="<?= $id ?>"><?= $this->label ?></label>
+        <label for="<?= $id ?>">
+            <?= Html::escape($this->label) ?>
+        </label>
     <?php endif; ?>
     <input
-        type="<?= $this->type ?>"
-        value="<?= $this->value ?>"
-        name="<?= $this->name ?>"
+        type="<?= Html::escapeAttribute($this->type) ?>"
+        value="<?= Html::escapeAttribute($this->value) ?>"
+        name="<?= Html::escapeAttribute($this->name) ?>"
         id="<?= $id ?>"
         <?= $this->stringifyAttributes() ?>
     >

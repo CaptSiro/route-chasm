@@ -4,10 +4,13 @@ namespace components\forms\controls;
 
 use components\html\Attribute;
 use components\html\HtmlAttribute;
+use core\locale\LexiconUnit;
 use core\view\Renderer;
 
 class Input implements Control, Attribute {
-    use Renderer, FormControl, FormControlInfo, HtmlAttribute;
+    use Renderer, FormControl, FormControlInfo, HtmlAttribute, LexiconUnit;
+
+    public const LEXICON_GROUP = 'form.control';
 
 
 
@@ -19,6 +22,7 @@ class Input implements Control, Attribute {
     ) {
         $this->attributes = [];
         $this->setTemplate(self::getTemplateResourceSelf());
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
 

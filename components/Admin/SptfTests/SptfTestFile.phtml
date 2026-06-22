@@ -1,6 +1,7 @@
 <?php /** @var SptfTestFile $this */
 
 use components\Admin\SptfTests\SptfTestFile;
+use core\view\Html;
 
 ?><div
     class="test-file"
@@ -20,7 +21,7 @@ use components\Admin\SptfTests\SptfTestFile;
                 <div class="suite-head ">
                     <span class="outcome"><?= $outcome->value ?></span>
                     <span class="time"><?= sprintf("%.02f s", $suite->getTime()) ?></span>
-                    <span class="name"><?= $suite->getName() ?></span>
+                    <span class="name"><?= Html::escape($suite->getName()) ?></span>
                     <span class="stats">
                         <?php $passed = $suite->getPassed() ?>
                         <?php $failed = $suite->getFailed() ?>
@@ -31,7 +32,9 @@ use components\Admin\SptfTests\SptfTestFile;
                         <?php if ($failed !== 0): ?>
                             <span class="failed"><?= $failed ?>F</span>
                         <?php endif; ?>
-                        <?php if ($passed !== 0 || $failed !== 0): ?>assertions<?php endif; ?>
+                        <?php if ($passed !== 0 || $failed !== 0): ?>
+                            <?= Html::escape($this->tr('assertions')) ?>
+                        <?php endif; ?>
                     </span>
                 </div>
 

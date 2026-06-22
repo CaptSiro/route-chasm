@@ -3,6 +3,7 @@
 use components\Admin\PrivilegeResourceMap;
 use components\forms\controls\Checkbox;
 use core\sideloader\importers\Css\Css;
+use core\view\Html;
 
 Css::importDefault($this);
 
@@ -11,13 +12,13 @@ Css::importDefault($this);
         <span></span>
 
         <?php foreach ($this->privileges as $privilege): ?>
-            <span><?= $privilege->name ?></span>
+            <span><?= Html::escape($privilege->name) ?></span>
         <?php endforeach; ?>
     </div>
 
     <?php foreach ($this->resources as $resource): ?>
         <div class="map-row">
-            <span><?= $resource->name ?></span>
+            <span><?= Html::escape($resource->name) ?></span>
 
             <?php foreach ($this->privileges as $privilege): ?>
                 <?php $position = PrivilegeResourceMap::createPosition($privilege, $resource) ?>

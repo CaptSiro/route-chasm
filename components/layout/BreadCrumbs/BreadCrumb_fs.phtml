@@ -3,13 +3,16 @@
 use components\layout\BreadCrumbs\BreadCrumb;
 use core\fs\FileSystem;
 use core\utils\Arrays;
+use core\view\Html;
+
+$label = Html::escape($this->getLabel());
 
 ?><li class="bread-crumb">
     <?php if (is_null($this->getUrl())): ?>
-        <span><?= $this->getLabel() ?></span>
+        <span><?= $label ?></span>
     <?php else: ?>
         <button <?= Arrays::htmlEncode(FileSystem::createDirectoryLinkAttributes($this->getUrl())) ?>>
-            <?= $this->getLabel() ?>
+            <?= $label ?>
         </button>
     <?php endif; ?>
 </li>

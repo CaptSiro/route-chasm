@@ -9,10 +9,10 @@ use core\view\Html;
     </div>
 
     <div class='expected'>
-        Expected: <?= Html::escape(json_encode($this->expected)) ?>
+        <?= Html::escape($this->tr('Expected')) ?>: <?= Html::escape(json_encode($this->expected)) ?>
     </div>
 
     <div class='actual'>
-        Got: <?= Html::escape(json_encode($this->actual)) ?>
+        <?= Html::escape($this->tr('Got')) ?>: <?= Html::escape(json_encode($this->actual)) ?>
     </div>
 </div>

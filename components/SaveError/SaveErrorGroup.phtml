@@ -1,5 +1,9 @@
-<?php /** @var SaveError $this */
+<?php /** @var SaveErrorGroup $this */
 
-use components\SaveError\SaveError;
+use components\SaveError\SaveErrorGroup;
 
-?><h1><?= $this->message ?></h1>
+?><div class="error-group column">
+    <?php foreach ($this->errors as $error): ?>
+        <?= $error ?>
+    <?php endforeach; ?>
+</div>

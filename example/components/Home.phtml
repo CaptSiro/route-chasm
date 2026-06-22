@@ -1,11 +1,11 @@
 <?php /** @var Home $this */
 
+use example\components\Footer;
+use example\components\Header;
 use example\components\Home;
-use components\layout\PageMenu\Footer;
-use components\layout\PageMenu\Header;
 use core\sideloader\importers\Css\Css;
 
-Css::import($this->getResource('home.css'));
+Css::importDefault($this);
 
 $docsLink = $this->createDocsLink();
 $projectLink = $this->getProjectLink();
