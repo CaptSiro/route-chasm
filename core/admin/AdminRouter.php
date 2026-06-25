@@ -62,7 +62,7 @@ class AdminRouter extends Router {
             // if it is just / render message 'Admin Home'
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
-                $this->home ?? ContextAwareWebPage::wrap(new Message('Admin Home', MessageType::NOTICE))
+                $this->home ?? ContextAwareWebPage::wrap(new Message('Admin Home', MessageType::CONFIRMATION))
             ),
         );
 

@@ -11,7 +11,7 @@ class StaticMount implements Mount {
 
 
     public function __construct(
-        protected string $alias
+        protected string $alias = 'static'
     ) {}
 
 

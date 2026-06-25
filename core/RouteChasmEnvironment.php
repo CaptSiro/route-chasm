@@ -58,6 +58,7 @@ class RouteChasmEnvironment {
     public const ENV_DATABASE_PORT = "DATABASE_PORT";
     public const ENV_DATABASE_CHARSET = "DATABASE_CHARSET";
     public const ENV_ADMIN_LOGIN_PASSWORD = "ADMIN_LOGIN_PASSWORD";
+    public const ENV_DASHBOARD_LOGIN_PASSWORD = "DASHBOARD_LOGIN_PASSWORD";
 
     public const USER_RESOURCE_PAGE = 'Pages';
     public const USER_RESOURCE_FILE_SYSTEM = 'File System';

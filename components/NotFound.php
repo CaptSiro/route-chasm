@@ -19,4 +19,8 @@ class NotFound extends ContainerContent {
         $this->setLexiconGroup(self::LEXICON_GROUP);
         $head->setTitle($title);
     }
+
+    public function createTitle(): string {
+        return $this->tr('Page not found') . ': ' . $this->title;
+    }
 }

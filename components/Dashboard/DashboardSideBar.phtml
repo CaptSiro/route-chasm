@@ -1,0 +1,15 @@
+<?php /** @var DashboardSideBar $this */
+
+use components\Dashboard\DashboardSideBar;
+
+?><nav>
+    <div class="start">
+        <?= $this->getTemplateSlot($this::SLOT_HEADER) ?>
+
+        <?= $this->menu ?>
+    </div>
+
+    <div class="end">
+        <?= $this->getTemplateSlot($this::SLOT_FOOTER) ?>
+    </div>
+</nav>

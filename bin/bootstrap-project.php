@@ -47,6 +47,8 @@ $router->expose('public', (new Assets($assetDirectories))
 
 
 $router->use('/', new Home());
+$admin = new \components\Admin\Admin();
+$router->bind($admin->mount('/dashboard'), $admin);
 
 
 

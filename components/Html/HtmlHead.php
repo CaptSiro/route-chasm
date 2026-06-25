@@ -10,10 +10,12 @@ use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\StringRenderer;
 use core\view\View;
+use models\Language\Language;
 
 class HtmlHead extends Component implements Head {
     protected array $meta;
     protected array $elements;
+    protected Language $language;
 
 
 
@@ -24,6 +26,9 @@ class HtmlHead extends Component implements Head {
 
         $this->meta = [];
         $this->elements = [];
+        $this->language = App::getInstance()
+            ->getRequest()
+            ->getLanguage();
 
         $env = App::getInstance()->getEnv();
         if (!is_null($env)) {
@@ -67,5 +72,14 @@ class HtmlHead extends Component implements Head {
     public function addElement(View|string $view): static {
         $this->elements[] = $view;
         return $this;
+    }
+
+    public function setLanguage(Language $language): static {
+        $this->language = $language;
+        return $this;
+    }
+
+    public function getLanguageCode(): string {
+        return $this->language->code;
     }
 }

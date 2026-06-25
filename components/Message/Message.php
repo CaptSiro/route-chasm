@@ -3,8 +3,12 @@
 namespace components\Message;
 
 use components\CallStack;
+use components\Dashboard\Dashboard;
+use components\Dashboard\DashboardSideBar;
+use components\Dashboard\DashboardView;
 use components\html\HtmlHead;
 use components\Icon;
+use components\layout\Menu\Menu;
 use components\layout\WebPage\ContextAwareWebPage;
 use core\actions\Action;
 use core\actions\ActionBindRouteNode;
@@ -15,6 +19,7 @@ use core\route\RouteNode;
 use core\view\FormatAble;
 use core\view\FormatAbleTrait;
 use core\view\Formatter;
+use core\view\View;
 use core\view\ViewTemplate;
 
 class Message implements Action, ViewTemplate, FormatAble {
@@ -69,7 +74,7 @@ class Message implements Action, ViewTemplate, FormatAble {
     public function getIcon(): string {
         return Icon::nf(match ($this->type) {
             MessageType::INFO => 'nf-oct-info',
-            MessageType::NOTICE => 'nf-fa-check_circle',
+            MessageType::CONFIRMATION => 'nf-fa-check_circle',
             MessageType::WARNING => 'nf-fa-warning',
             MessageType::ERROR => 'nf-cod-error',
         }, $this->getTypeLabel());
@@ -102,7 +107,7 @@ class Message implements Action, ViewTemplate, FormatAble {
     public function getActorName(): string {
         $type = $this->type->toLowerCase();
         $content = $this->getContentTrimmed();
-        return "Message($type, $content...)";
+        return "Message($type, $content)";
     }
 
     public function onBind(RouteNode $bindingPoint): void {

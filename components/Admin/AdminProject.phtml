@@ -3,20 +3,27 @@
 use components\Admin\AdminProject;
 use core\admin\AdminRouter;
 use core\App;
+use core\sideloader\importers\Css\Css;
 use core\view\Html;
 
-?>
-<?php $app = App::getInstance() ?>
-<?php if (!is_null($project = $app->getProjectName())): ?>
-    <div class="project">
+$app = App::getInstance();
+Css::importDefault($this);
+
+$router = is_null($this->dashboard)
+    ? AdminRouter::getInstance()
+    : $this->dashboard;
+
+?><?php if (!is_null($project = $app->getProjectName())): ?>
+    <div class="admin-project">
         <h2>
             <a
                 class="no-decoration"
-                href="<?= $app->attach(AdminRouter::getInstance()->getPath()) ?>"
+                href="<?= $app->attach($router->getPath()) ?>"
             >
                 <?= Html::escape($project) ?>
             </a>
         </h2>
+
         <?php if (!is_null($author = $app->getProjectAuthor())): ?>
             <span class="author">
                 <?php if (!is_null($authorLink = $app->getProjectAuthorLink())): ?>

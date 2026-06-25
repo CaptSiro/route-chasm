@@ -1,0 +1,21 @@
+<?php /** @var DashboardPage $this */
+
+use components\Dashboard\DashboardPage;
+use core\sideloader\importers\Css\Css;
+
+Css::importDefault($this);
+
+?><!DOCTYPE html>
+<html lang="<?= $this->head->getLanguageCode() ?>">
+<?= $this->head ?>
+
+<body>
+    <div class="root dashboard-page">
+        <?= $this->dashboard->getSideBar() ?>
+
+        <main>
+            <?= $this->view ?>
+        </main>
+    </div>
+</body>
+</html>
