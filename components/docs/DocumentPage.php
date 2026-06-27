@@ -4,7 +4,6 @@ namespace components\docs;
 
 use components\html\HtmlHead;
 use components\layout\BreadCrumbs\BreadCrumbs;
-use components\layout\PageMenu\Header;
 use components\layout\PageMenu\PageMenu;
 use components\pages\Article\Article;
 use components\Search\HeaderSearch;
@@ -13,6 +12,7 @@ use components\layout\WebPage\WebPage;
 use core\route\Path;
 use core\view\ContainerContent;
 use core\view\StringRenderer;
+use example\components\Header;
 use models\Menu;
 
 class DocumentPage extends ContainerContent {
