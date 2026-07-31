@@ -2,6 +2,7 @@
 
 namespace core\admin;
 
+use components\Admin\AdminPageView;
 use components\Admin\Nexus\AdminNexus;
 use components\Admin\PhpInfo;
 use components\Admin\Phrase\AdminPhrasePacks;
@@ -209,23 +210,23 @@ class Admin {
             $router->use(
                 Route::menu('/System/Modules')
                     ->icon('Modules', Icon::nf('nf-md-package_variant')),
-                (new Modules())
-                    ->setUserResource($system)
+                AdminPageView::fromComponent((new Modules())
+                    ->setUserResource($system))
             );
 
             $router->use(
                 Route::menu('/System/PHP')
                     ->icon('PHP', Icon::nf('nf-dev-php')),
-                (new PhpInfo())
-                    ->setUserResource($system)
+                AdminPageView::fromComponent((new PhpInfo())
+                    ->setUserResource($system))
             );
 
             $router->use(
                 Route::menu('/System/Tests/RouteChasm')
                     ->icon('Tests', Icon::nf('nf-md-beaker_check_outline'))
                     ->icon('RouteChasm', Icon::nf('nf-md-alpha_r_box')),
-                (new SptfTests(Path::join(DIRECTORY_FRAMEWORK, '/tests/cases')))
-                    ->setUserResource($system)
+                AdminPageView::fromComponent((new SptfTests(Path::join(DIRECTORY_FRAMEWORK, '/tests/cases')))
+                    ->setUserResource($system))
             );
         }
     }
@@ -248,8 +249,8 @@ class Admin {
         $router->use(
             Route::menu('/Docs')
                 ->icon('Docs', Icon::nf('nf-md-file_document_multiple')),
-            (new DocsDashboard())
-                ->setUserResource($docs)
+            AdminPageView::fromComponent((new DocsDashboard())
+                ->setUserResource($docs))
         );
     }
 

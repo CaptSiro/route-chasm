@@ -36,7 +36,6 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\url\Url;
 use core\utils\Arrays;
 use core\utils\Objects;
-use locales\EnglishUS;
 use models\Language\Language;
 use models\Page\behavior\PageEditorBehavior;
 use models\Page\Page;
@@ -188,7 +187,7 @@ class AdminPageEditor extends AdminNexusEditor {
                 );
             }
 
-            $response->renderRoot(new SearchResults($results));
+            $response->render(new SearchResults($results));
         });
 
         $router->use('/template', function (Request $request, Response $response) {

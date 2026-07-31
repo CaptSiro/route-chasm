@@ -5,11 +5,11 @@ namespace components\forms\controls;
 use components\html\Attribute;
 use components\html\HtmlAttribute;
 use core\locale\LexiconUnit;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class FileControl implements Control, Attribute, ViewTemplate {
-    use Renderer, FormControl, FormControlInfo, HtmlAttribute, LexiconUnit;
+    use ViewTemplateRenderer, FormControl, FormControlInfo, HtmlAttribute, LexiconUnit;
 
     public const LEXICON_GROUP = 'form.drop-zone';
 

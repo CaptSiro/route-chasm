@@ -3,11 +3,11 @@
 namespace components;
 
 use core\Singleton;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class Jsml implements ViewTemplate {
-    use Renderer, Singleton;
+    use ViewTemplateRenderer, Singleton;
 
     protected function getSourceFiles(): array {
         $jsml = $this->getResource();

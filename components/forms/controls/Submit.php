@@ -3,10 +3,10 @@
 namespace components\forms\controls;
 
 use components\forms\Form;
-use core\view\Renderer;
+use core\view\ViewTemplateRenderer;
 
 class Submit implements Control {
-    use Renderer, FormControl;
+    use ViewTemplateRenderer, FormControl;
 
 
 

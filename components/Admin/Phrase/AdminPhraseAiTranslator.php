@@ -11,16 +11,16 @@ use core\App;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
 use core\utils\Strings;
-use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\Language\Language;
 use models\Language\Lexicon\Phrase;
 use models\Language\Lexicon\Rule;
 use models\Language\Lexicon\Translation;
 
 class AdminPhraseAiTranslator implements ViewTemplate {
-    use Renderer, ResourceLoader, LexiconUnit;
+    use ViewTemplateRenderer, ResourceLoader, LexiconUnit;
 
     public const LEXICON_GROUP = 'admin.phrase.ai-translator';
 

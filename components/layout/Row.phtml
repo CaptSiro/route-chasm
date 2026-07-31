@@ -7,7 +7,5 @@ use components\layout\Row;
     <?= $this->stringifyAttributes() ?>
     <?= $this->getStyle() ?>
 >
-    <?php foreach ($this->children as $child): ?>
-        <?= $child ?>
-    <?php endforeach; ?>
+    <?= $this->renderViews() ?>
 </div>

@@ -1,0 +1,15 @@
+<?php /** @var PageView $this */
+
+use core\view\PageView;
+
+$head = $this->getHead();
+
+?><!DOCTYPE html>
+<html lang="<?= $head->getLanguage()->code ?>">
+
+<?= $head ?>
+
+<body>
+    <?= $this->getView() ?>
+</body>
+</html>

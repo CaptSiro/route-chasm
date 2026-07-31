@@ -16,6 +16,7 @@ use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Models;
+use core\view\Container;
 use core\view\View;
 use models\Privilege\Privilege;
 use models\UserResource;
@@ -39,11 +40,11 @@ class GroupBehavior implements EditorBehavior {
         return null;
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         if (is_null($model)) {
-            $layout->add(new TextField(self::NAME_NAME, 'Name'));
+            $container->add(new TextField(self::NAME_NAME, 'Name'));
         } else {
-            $layout->add($name = new TextField(
+            $container->add($name = new TextField(
                 self::NAME_NAME,
                 'Name',
                 Models::getString($model, 'name')
@@ -72,7 +73,7 @@ class GroupBehavior implements EditorBehavior {
             }
         }
 
-        $layout->add(
+        $container->add(
             new PrivilegeResourceMap($privileges, $resources, $map, self::NAME_MAPPINGS)
         );
 

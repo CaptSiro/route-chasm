@@ -2,6 +2,7 @@
 
 namespace components\pages\Article;
 
+use core\locale\LexiconUnit;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
@@ -9,6 +10,8 @@ use models\Page\Page;
 use models\Page\PageLocalization;
 
 class Article extends Component {
+    use LexiconUnit;
+
     public const LEXICON_GROUP = 'article';
 
     public static function importAssets(): void {

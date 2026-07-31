@@ -2,6 +2,8 @@
 
 namespace core\view;
 
-interface Container extends View {
-    public function addContent(View $view): static;
+interface Container {
+    public function add(View|string $view): static;
+
+    public function addAll(array $views): static;
 }

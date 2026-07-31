@@ -5,17 +5,20 @@ namespace components\Modules;
 use components\layout\Grid\Grid;
 use core\App;
 use core\locale\LexiconUnit;
-use core\view\ContainerContent;
+use core\view\Controller;
 use core\view\View;
 
-class Modules extends ContainerContent {
-    public const LEXICON_GROUP = 'admin.modules';
+class Modules extends Controller {
+    use LexiconUnit;
+
+    public const LEXICON_GROUP = 'modules';
 
 
 
     public function __construct() {
         parent::__construct();
         $this->setLexiconGroup(self::LEXICON_GROUP);
+        $this->setTitle($this->tr('Modules'));
     }
 
     public function getModules(): View {

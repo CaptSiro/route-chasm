@@ -3,19 +3,19 @@
 namespace components\tf;
 
 use core\tf\TestOutcome;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class TestCaseHeader implements FormatAble {
-    use FormatAbleTrait;
-
-
-
+class TestCaseHeader extends Component {
     public function __construct(
         protected TestOutcome $outcome,
         protected string $name,
-        protected float $time
-    ) {}
+        protected float $time,
+        ?Renderer $renderer = new HtmlRenderer()
+    ) {
+        parent::__construct($renderer);
+    }
 
 
 

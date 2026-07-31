@@ -15,6 +15,8 @@ class CaughtError extends Interrupt implements Assertion {
             $this->error->getMessage(),
             $this->error->getTrace()
         );
+
+        $this->setTemplate(Interrupt::getTemplateResourceStatic());
     }
 
 

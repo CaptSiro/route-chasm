@@ -56,7 +56,7 @@ class AiPageEditorBehavior implements EditorBehavior {
         return $this->behavior->initForm($form, $model);
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Layout $container, ?Model $model): ?View {
         $aiPage = $model instanceof Page
             ? AiPage::fromPage($model)
             : null;
@@ -64,7 +64,7 @@ class AiPageEditorBehavior implements EditorBehavior {
         $column = new Column();
         $ret = $this->behavior->addControls($column, $aiPage);
 
-        $layout->add(new Accordion($this->tr('AI Page Generation'), $column));
+        $container->add(new Accordion($this->tr('AI Page Generation'), $column));
         return $ret;
     }
 

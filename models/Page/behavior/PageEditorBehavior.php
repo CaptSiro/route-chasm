@@ -27,6 +27,7 @@ use core\database\sql\Sql;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\utils\Models;
+use core\view\Container;
 use core\view\Html;
 use core\view\View;
 use models\fs\Shortcut;
@@ -93,7 +94,7 @@ class PageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         /** @var ?Page $model */
         $error = FormDescription::extract(Page::class)
             ->addControls($pageFields = new Column(0.5), $model);
@@ -161,7 +162,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         $row->add($column);
 
-        $layout->add(new Accordion($this->tr('General'), $row));
+        $container->add(new Accordion($this->tr('General'), $row));
 
         $tabs = [];
         $localizations = is_null($model)
@@ -188,13 +189,13 @@ class PageEditorBehavior implements EditorBehavior {
             ->getLocale()
             ->getName();
 
-        $layout->add(new Accordion(
+        $container->add(new Accordion(
             $this->tr('Localization'),
             new Tabs($tabs, $selected)
         ));
 
         if (!is_null($behavior = $this->getTemplateBehavior($model))) {
-            $behavior->addControls($layout, $model);
+            $behavior->addControls($container, $model);
         }
 
         return null;

@@ -10,13 +10,13 @@ use components\html\HtmlAttribute;
 use core\fs\variants\FileVariantTransformer;
 use core\fs\variants\ImageVariant;
 use core\locale\LexiconUnit;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\fs\File;
 use models\fs\Shortcut;
 
 class FileControl implements Control, Attribute, ViewTemplate {
-    use Renderer, FormControl, FormControlInfo, HtmlAttribute, LexiconUnit;
+    use ViewTemplateRenderer, FormControl, FormControlInfo, HtmlAttribute, LexiconUnit;
 
     public const LEXICON_GROUP = 'form.fs.file-control';
 

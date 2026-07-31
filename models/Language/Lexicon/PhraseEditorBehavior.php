@@ -18,6 +18,7 @@ use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Models;
+use core\view\Container;
 use core\view\StringRenderer;
 use core\view\View;
 use models\Language\Language;
@@ -93,17 +94,17 @@ class PhraseEditorBehavior implements EditorBehavior {
         }
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         if (is_null($model)) {
             return new Message($this->tr('Creating phrases is not supported'));
         }
 
-        $layout->add(new HiddenField(self::NAME_DELETED_TRANSLATIONS));
+        $container->add(new HiddenField(self::NAME_DELETED_TRANSLATIONS));
 
         /** @var Phrase $model */
-        $layout->add((new TextField('_ignored_', $this->tr('Default'), $model->default))
+        $container->add((new TextField('_ignored_', $this->tr('Default'), $model->default))
             ->readonly());
-        $layout->add((new TextField('_ignored_', $this->tr('Group'), $model->getLexiconGroup()->name))
+        $container->add((new TextField('_ignored_', $this->tr('Group'), $model->getLexiconGroup()->name))
             ->readonly());
 
         $tabs = [];
@@ -114,7 +115,7 @@ class PhraseEditorBehavior implements EditorBehavior {
             $this->addStaticTranslationControls($tabs, $model);
         }
 
-        $layout->add(new Tabs($tabs));
+        $container->add(new Tabs($tabs));
         return null;
     }
 

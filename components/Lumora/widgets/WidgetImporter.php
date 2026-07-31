@@ -3,11 +3,11 @@
 namespace components\Lumora\widgets;
 
 use core\ResourceLoader;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class WidgetImporter implements ViewTemplate {
-    use Renderer, ResourceLoader;
+    use ViewTemplateRenderer, ResourceLoader;
 
 
 

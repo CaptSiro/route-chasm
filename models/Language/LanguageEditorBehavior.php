@@ -15,6 +15,7 @@ use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\Locale;
 use core\utils\Components;
+use core\view\Container;
 use core\view\View;
 
 class LanguageEditorBehavior implements EditorBehavior {
@@ -29,7 +30,7 @@ class LanguageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         if (!is_null($model)) {
             return new Message("Languages are not editable");
         }
@@ -48,7 +49,7 @@ class LanguageEditorBehavior implements EditorBehavior {
             $values[$locale->getIdentifier()] = $locale->getName();
         }
 
-        $layout->add(new Select(self::NAME_CODE, "Locale", $values));
+        $container->add(new Select(self::NAME_CODE, "Locale", $values));
         return null;
     }
 

@@ -4,10 +4,10 @@ namespace components\forms\controls;
 
 use components\html\Attribute;
 use components\html\HtmlAttribute;
-use core\view\Renderer;
+use core\view\ViewTemplateRenderer;
 
 class TextArea implements Control, Attribute {
-    use Renderer, FormControl, FormControlInfo, HtmlAttribute;
+    use ViewTemplateRenderer, FormControl, FormControlInfo, HtmlAttribute;
 
     public function __construct(
         protected string $name = self::class,

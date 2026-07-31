@@ -10,6 +10,7 @@ use components\layout\Layout;
 use components\Message\Message;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
+use core\view\Container;
 use core\view\View;
 
 class FileSystemEntryEditorBehavior implements EditorBehavior {
@@ -35,7 +36,7 @@ class FileSystemEntryEditorBehavior implements EditorBehavior {
         return $this->editingEntriesIsNotSupported();
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         return $this->editingEntriesIsNotSupported();
     }
 

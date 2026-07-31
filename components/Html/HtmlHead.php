@@ -8,7 +8,6 @@ use core\App;
 use core\fs\FileSystem;
 use core\RouteChasmEnvironment;
 use core\view\Component;
-use core\view\StringRenderer;
 use core\view\View;
 use models\Language\Language;
 
@@ -20,7 +19,7 @@ class HtmlHead extends Component implements Head {
 
 
     public function __construct(
-        protected string $title = "",
+        string $title = "",
     ) {
         parent::__construct();
 
@@ -35,8 +34,8 @@ class HtmlHead extends Component implements Head {
             $this->addMeta("author", $env->get(RouteChasmEnvironment::ENV_PROJECT_AUTHOR));
         }
 
-        $this->addElement(new StringRenderer(FileSystem::createApi()));
-        $this->addElement(new StringRenderer(Search::createApi()));
+        $this->addElement(FileSystem::createApi());
+        $this->addElement(Search::createApi());
     }
 
 
@@ -56,17 +55,6 @@ class HtmlHead extends Component implements Head {
         }
 
         return $this->addMeta($name, $content);
-    }
-
-    public function setTitle(string $title): void {
-        $this->title = $title;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitle(): string {
-        return $this->title;
     }
 
     public function addElement(View|string $view): static {

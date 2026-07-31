@@ -7,10 +7,10 @@ use components\forms\description\FormDescription;
 use components\Message\Message;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
-use components\pages\Wireframe;
 use core\actions\Action;
 use core\view\Component;
 use core\view\View;
+use models\Language\Language;
 use models\Page\AiPage;
 use models\Page\Page;
 
@@ -74,7 +74,7 @@ class AiPageTemplate implements PageTemplate {
         );
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
-        return AiGeneratedPage::build($wireframe, $page);
+    public function buildContent(Page $page, Language $language): Component {
+        return AiGeneratedPage::build($page, $language);
     }
 }

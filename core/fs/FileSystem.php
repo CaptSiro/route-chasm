@@ -4,6 +4,7 @@ namespace core\fs;
 
 use Closure;
 use components\Admin\AdminFileSystemCreateDirectory;
+use components\Admin\AdminPageView;
 use components\Admin\Nexus\AdminNexus;
 use components\Admin\Nexus\Editor\AdminNexusEditor;
 use components\fs\FileSystemDropArea;
@@ -28,6 +29,7 @@ use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\utils\Files;
 use core\utils\Php;
+use core\view\Component;
 use core\view\Html;
 use core\view\View;
 use locales\EnglishUS;
@@ -234,7 +236,7 @@ class FileSystem {
         );
     }
 
-    public static function getNexus(): Action {
+    public static function getNexus(): Component {
         $messageDirectoryNotFound = self::getMessageDirectoryNotFound();
 
         $directoryId = App::getInstance()
@@ -281,14 +283,14 @@ class FileSystem {
     }
 
     public static function setRouter(Route $route, Router $router): void {
-        $action = FileSystem::getNexus();
+        $nexus = FileSystem::getNexus();
 
-        if ($action instanceof AdminNexus) {
-            $action->setRouter($route, $router);
+        if ($nexus instanceof AdminNexus) {
+            $nexus->setRouter($route, $router);
             return;
         }
 
-        $router->use($route, $action);
+        $router->use($route, AdminPageView::fromComponent($nexus));
     }
 
     public static function listDirectoryModal(

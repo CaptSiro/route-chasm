@@ -12,17 +12,17 @@ use core\communication\Response;
 use core\fs\FileSystem;
 use core\fs\variants\FileVariantTransformer;
 use core\route\RouteNode;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
-use core\view\ViewTemplate;
+use core\view\Component;
+use core\view\IncorrectRendererOverrideCallException;
+use core\view\Payload;
+use core\view\Renderer;
+use core\view\RendererOverride;
+use core\view\renderers\HtmlRenderer;
 
-class FileVariantTransformers implements ViewTemplate, Action, FormatAble {
-    use ActionBindRouteNode, ActorClassName, FormatAbleTrait;
+class FileVariantTransformers extends Component implements Action, RendererOverride {
+    use ActionBindRouteNode, ActorClassName;
 
 
-
-    protected Formatter $formatter;
 
     /**
      * @param array<FileVariantTransformer> $transformers
@@ -30,9 +30,10 @@ class FileVariantTransformers implements ViewTemplate, Action, FormatAble {
     public function __construct(
         protected array $transformers,
         protected string $selectName = self::class,
-        protected string $selectLabel = 'Transformers'
+        protected string $selectLabel = 'Transformers',
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        $this->setFormatter(Formatter::default($this));
+        parent::__construct($renderer);
     }
 
 
@@ -47,22 +48,12 @@ class FileVariantTransformers implements ViewTemplate, Action, FormatAble {
     }
 
     public function perform(Request $request, Response $response): void {
-        $response->renderRoot($this);
+        $response->render($this);
     }
 
 
 
-    // FormatAble
-    public function toHtml(): string {
-        $values = [];
-        foreach ($this->transformers as $transformer) {
-            $values[FileSystem::createVariantIdentifier($transformer)] = $transformer->getTransformerLabel();
-        }
-
-        Form::importAssets();
-        return new Select($this->selectName, $this->selectLabel, $values);
-    }
-
+    // Component
     public function jsonSerialize(): array {
         $json = [];
 
@@ -74,5 +65,30 @@ class FileVariantTransformers implements ViewTemplate, Action, FormatAble {
         }
 
         return $json;
+    }
+
+
+
+    // RendererOverride
+    public function hasRendererOverride(Renderer $renderer, Payload $payload): bool {
+        return $renderer instanceof HtmlRenderer;
+    }
+
+    public function performRendererOverride(Renderer $renderer, Payload $payload): string {
+        if (!$this->hasRendererOverride($renderer, $payload)) {
+            throw new IncorrectRendererOverrideCallException(HtmlRenderer::class, $renderer::class);
+        }
+
+        return $this->toHtml();
+    }
+
+    public function toHtml(): string {
+        $values = [];
+        foreach ($this->transformers as $transformer) {
+            $values[FileSystem::createVariantIdentifier($transformer)] = $transformer->getTransformerLabel();
+        }
+
+        Form::importAssets();
+        return new Select($this->selectName, $this->selectLabel, $values);
     }
 }

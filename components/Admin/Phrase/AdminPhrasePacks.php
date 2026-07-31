@@ -2,15 +2,15 @@
 
 namespace components\Admin\Phrase;
 
+use components\Admin\AdminPageView;
 use components\forms\controls\FileControl;
 use components\forms\controls\MultiSelect;
 use components\forms\controls\Submit;
 use components\forms\Form;
-use components\html\HtmlHead;
-use components\layout\WebPage\ContextAwareWebPage;
 use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
+use core\locale\LexiconUnit;
 use core\storage\Temporary;
 use core\http\HttpCode;
 use core\http\HttpMethod;
@@ -21,7 +21,9 @@ use core\route\Router;
 use core\utils\Arrays;
 use core\utils\Files;
 use core\utils\Models;
-use core\view\ContainerContent;
+use core\view\Controller;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 use models\Language\Language;
 use models\Language\Lexicon\LexiconGroup;
 use models\Language\Lexicon\Phrase;
@@ -30,7 +32,9 @@ use models\Language\Lexicon\Translation;
 use models\Privilege\Privilege;
 use ZipArchive;
 
-class AdminPhrasePacks extends ContainerContent {
+class AdminPhrasePacks extends Controller {
+    use LexiconUnit;
+
     public const NAME_LANGUAGE_SELECT = 'languageSelect';
 
     public const NAME_IMPORT_FILES = 'importFiles';
@@ -47,11 +51,13 @@ class AdminPhrasePacks extends ContainerContent {
 
 
 
-    public function __construct() {
-        parent::__construct(new ContextAwareWebPage(head: $head = new HtmlHead()));
+    public function __construct(
+        ?Renderer $renderer = null
+    ) {
+        parent::__construct($renderer);
         $this->setLexiconGroup(self::LEXICON_GROUP);
 
-        $head->setTitle($this->tr('Admin - Translation Packs'));
+        $this->setTitle($this->tr('Admin - Translation Packs'));
     }
 
 
@@ -100,7 +106,7 @@ class AdminPhrasePacks extends ContainerContent {
             return false;
         }
 
-        $router->use($route, $this);
+        $router->use($route, AdminPageView::fromComponent($this));
         return true;
     }
 

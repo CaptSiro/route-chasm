@@ -4,11 +4,12 @@ namespace components\tf;
 
 use core\locale\LexiconUnit;
 use core\tf\Test;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class Interrupt implements FormatAble {
-    use FormatAbleTrait, LexiconUnit;
+class Interrupt extends Component {
+    use LexiconUnit;
 
 
 
@@ -16,7 +17,9 @@ class Interrupt implements FormatAble {
         protected string $type,
         protected string $message,
         protected array $trace,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
+        parent::__construct($renderer);
         $this->setLexiconGroup(Test::LEXICON_GROUP);
     }
 

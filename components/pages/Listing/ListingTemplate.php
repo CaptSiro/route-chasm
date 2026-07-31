@@ -11,6 +11,7 @@ use core\actions\Action;
 use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\View;
+use models\Language\Language;
 use models\Page\Page;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
@@ -51,7 +52,7 @@ class ListingTemplate implements PageTemplate {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
+    public function buildContent(Page $page, Language $language): Component {
         $portionSize = Setting::fromName(
             self::NAME_PORTION_SIZE,
             true,
@@ -61,7 +62,7 @@ class ListingTemplate implements PageTemplate {
 
         return new Listing(
             $page,
-            $wireframe->getLocalization(),
+            Wireframe::getLocalization($page, $language),
             $portionSize->toInt()
         );
     }

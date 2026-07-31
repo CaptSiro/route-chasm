@@ -1,0 +1,47 @@
+.admin-page {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    overflow: hidden;
+    height: 100vh;
+}
+
+nav {
+    position: relative;
+    background-color: var(--container-1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+nav .resize-handle {
+    position: absolute;
+}
+
+nav .nav-item {
+    padding: calc(var(--gap) / 2) var(--gap);
+    display: flex;
+    gap: calc(var(--gap) / 2);
+    align-items: center;
+}
+
+nav .nav-item:hover {
+    background-color: var(--accent-0);
+    cursor: pointer;
+}
+
+.project {
+    margin: var(--gap);
+}
+
+.author {
+    color: var(--text-1);
+    font-size: 0.8em;
+}
+
+.admin-page main {
+    overflow: auto;
+}
+
+main > section {
+    padding: var(--gap);
+}

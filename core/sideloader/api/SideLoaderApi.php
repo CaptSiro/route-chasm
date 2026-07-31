@@ -2,11 +2,11 @@
 
 namespace core\sideloader\api;
 
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class SideLoaderApi implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
     public function __construct(
         protected string $importUrl

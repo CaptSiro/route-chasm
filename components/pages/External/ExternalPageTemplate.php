@@ -7,10 +7,10 @@ use components\forms\description\FormDescription;
 use components\Message\Message;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
-use components\pages\Wireframe;
 use core\actions\Action;
 use core\view\Component;
 use core\view\View;
+use models\Language\Language;
 use models\Page\ExternalPage;
 use models\Page\Page;
 
@@ -55,7 +55,7 @@ class ExternalPageTemplate implements PageTemplate {
         );
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
+    public function buildContent(Page $page, Language $language): Component {
         return new External(ExternalPage::fromPage($page)->url);
     }
 }

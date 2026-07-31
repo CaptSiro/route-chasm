@@ -2,9 +2,18 @@
 
 namespace core\tf;
 
-class Suite {
+use core\view\renderers\XmlRenderer;
+use core\view\ViewTemplateTrait;
+use JsonSerializable;
+
+class Suite implements JsonSerializable {
+    use ViewTemplateTrait;
+
+
+
     protected int $passed;
     protected int $failed;
+    protected array $failedAssertions;
 
     /**
      * @param string $name
@@ -29,6 +38,11 @@ class Suite {
 
             $this->passed++;
         }
+
+        $this->failedAssertions = array_filter(
+            $this->assertions,
+            fn(Assertion $x) => !$x->result()
+        );
     }
 
 
@@ -59,5 +73,28 @@ class Suite {
 
     public function getOutcome(): TestOutcome {
         return TestOutcome::fromStats($this->passed, $this->failed);
+    }
+
+    public function toXml(): string {
+        return $this->renderTemplated(
+            $this->getTemplate(XmlRenderer::TEMPLATE_EXTENSION)
+        );
+    }
+
+
+
+    // JsonSerializable
+    public function jsonSerialize(): array {
+        return [
+            'name' => $this->name,
+            'outcome' => $this->getOutcome(),
+            'time' => $this->time,
+            'failed' => $this->failed,
+            'passed' => $this->passed,
+            'assertions' => array_map(
+                fn(Assertion $x) => $x->error(),
+                $this->failedAssertions
+            )
+        ];
     }
 }

@@ -6,7 +6,7 @@ use components\Admin\Nexus\AdminNexus;
 use components\Admin\Phrase\AdminPhrasePacks;
 use components\Admin\SptfTests\SptfTests;
 use components\Dashboard\Dashboard;
-use components\Dashboard\DashboardPage;
+use components\Dashboard\DashboardPageView;
 use components\Dashboard\DashboardSideBar;
 use components\Dashboard\DashboardSideBarItem;
 use components\docs\Docs;
@@ -50,7 +50,7 @@ use models\UserResource;
 class Admin extends Dashboard {
     public function __construct() {
         parent::__construct(
-            new DashboardPage($this, new HtmlHead('Admin Home'), new AdminHome())
+            new DashboardPageView($this, new HtmlHead('Admin Home'), new AdminHome())
         );
 
         $this->createRoutes();
@@ -62,7 +62,7 @@ class Admin extends Dashboard {
         $this->add(
             Route::menu("/Test")
                 ->icon("Test", Icon::nf('nf-md-web')),
-            DashboardPage::fromMessage($this, new Message('Test', MessageType::INFO)),
+            DashboardPageView::fromMessage($this, new Message('Test', MessageType::INFO)),
             UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_DOMAIN)
         );
     }

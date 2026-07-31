@@ -24,7 +24,9 @@ class AdminPhraseEditor extends AdminNexusEditor {
 
     protected PhraseEditorBehavior $phraseBehavior;
 
-    public function __construct(PhraseEditorBehavior $behaviour = new PhraseEditorBehavior()) {
+    public function __construct(
+        PhraseEditorBehavior $behaviour = new PhraseEditorBehavior()
+    ) {
         parent::__construct($this->phraseBehavior = $behaviour);
         $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->setTemplate(AdminNexusEditor::getTemplateResourceStatic());

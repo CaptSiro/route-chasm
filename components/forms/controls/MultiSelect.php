@@ -6,10 +6,10 @@ use components\html\Attribute;
 use components\html\HtmlAttribute;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Javascript\Javascript;
-use core\view\Renderer;
+use core\view\ViewTemplateRenderer;
 
 class MultiSelect implements Control, Attribute {
-    use Renderer, FormControl, FormControlInfo, HtmlAttribute;
+    use ViewTemplateRenderer, FormControl, FormControlInfo, HtmlAttribute;
 
 
 

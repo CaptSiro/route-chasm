@@ -2,19 +2,18 @@
 
 namespace components\Search;
 
+use core\locale\LexiconUnit;
 use core\view\Component;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
+use core\view\Renderer;
 use core\view\View;
 
-class SearchResults extends Component implements FormatAble {
-    use FormatAbleTrait;
+class SearchResults extends Component {
+    use LexiconUnit;
 
 
 
     /**
-     * @param array<FormatAble> $results
+     * @param array<View> $results
      */
     public function __construct(
         protected array $results,
@@ -22,11 +21,21 @@ class SearchResults extends Component implements FormatAble {
     ) {
         parent::__construct();
         $this->setLexiconGroup(Search::LEXICON_GROUP);
-
-        $this->setFormatter(Formatter::default($this));
     }
 
 
+
+    public function setRenderer(Renderer $renderer): static {
+        foreach ($this->results as $result) {
+            Component::propagateSetRenderer($result, $renderer);
+        }
+
+        if (!is_null($this->searchFooter)) {
+            Component::propagateSetRenderer($this->searchFooter, $renderer);
+        }
+
+        return parent::setRenderer($renderer);
+    }
 
     public function jsonSerialize(): array {
         return $this->results;

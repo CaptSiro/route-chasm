@@ -2,7 +2,6 @@
 
 namespace components\layout\WebPage;
 
-use components\html\HtmlHead;
 use core\App;
 use core\view\ArrayContainer;
 use core\view\Component;

@@ -16,11 +16,14 @@ use core\communication\Response;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\view\ContainerContent;
+use core\locale\LexiconUnit;
+use core\view\Controller;
 use core\view\View;
 use models\docs\Document;
 
-class DocsDashboard extends ContainerContent {
+class DocsDashboard extends Controller {
+    use LexiconUnit;
+
     public const LEXICON_GROUP = Docs::LEXICON_GROUP;
 
     public const NAME_FILES = 'files';

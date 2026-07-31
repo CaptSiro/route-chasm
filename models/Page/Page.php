@@ -279,7 +279,7 @@ class Page extends Model implements Destination, Priority {
     public function delete(): DatabaseAction {
         $template = $this->getTemplate();
         if (!is_null($error = $template->delete($this))) {
-            App::getInstance()->getResponse()->renderRoot($error);
+            App::getInstance()->getResponse()->render($error);
         }
 
         foreach ($this->getChildren() as $child) {
@@ -426,7 +426,7 @@ class Page extends Model implements Destination, Priority {
             ->getLanguage();
 
         return $this->getLocalization($language)
-            ?? $this->getLocalization(Language::getDefault());
+            ?? $this->getLocalization(Language::getDefault() ?? Language::fromEnv());
     }
 
     /**

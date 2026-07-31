@@ -116,7 +116,7 @@ class Navigator extends Router {
         $destination = self::getDestination($language, $path, $this->context);
         if (is_null($destination)) {
             $response->setStatus(HttpCode::CE_NOT_FOUND);
-            $response->renderRoot(new NotFound($path));
+            $response->render(new NotFound($path));
         }
 
         return $destination;

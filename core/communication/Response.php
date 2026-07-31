@@ -33,6 +33,13 @@ class Response {
         );
     }
 
+    protected static function applyBufferTransforms(string $text): string {
+        App::getInstance()
+            ->dispatch(self::EVENT_OB_TRANSFORM, $buffer = new BufferTransform($text));
+
+        return $buffer->getContents();
+    }
+
 
 
     protected array $headers;
@@ -141,7 +148,7 @@ class Response {
         $this->generateHeaders();
 
         if (!is_null($text)) {
-            echo $text;
+            echo self::applyBufferTransforms($text);
         }
 
         if (!$doFlushResponse) {
@@ -225,8 +232,8 @@ class Response {
     }
 
     /**
-     * Render object is rendered with given template to back buffer. Buffer contents may be transformed after rendering
-     * is completed with <code>EVENT_OB_TRANSFORM</code> event listeners. <code>EVENT_OB_TRANSFORM</code> is able to
+     * View object is rendered and on Buffer Transforms are applied on the output. Buffer contents may be transformed
+     * with <code>EVENT_OB_TRANSFORM</code> event listeners. <code>EVENT_OB_TRANSFORM</code> is able to
      * transform only data rendered from Render object. All data printed to output buffers prior to executing
      * Render::render() are not accessible to transform
      *
@@ -236,24 +243,7 @@ class Response {
      * @see Response::EVENT_OB_TRANSFORM
      */
     public function render(View $view, bool $doFlushResponse = true): void {
-        ob_start();
-        echo $view->render();
-
-        $this->generateHeaders();
-
-        $buffer = new BufferTransform(ob_get_clean());
-        App::getInstance()->dispatch(self::EVENT_OB_TRANSFORM, $buffer);
-        echo $buffer->getContents();
-
-        if (!$doFlushResponse) {
-            return;
-        }
-
-        $this->exit();
-    }
-
-    public function renderRoot(View $view, bool $doFlushResponse = true): void {
-        $this->render($view->getRoot(), $doFlushResponse);
+        $this->send($view->render(), $doFlushResponse);
     }
 
     public function sendMessage(string $message, int $httpCode, MessageType $type = MessageType::ERROR): void {
@@ -266,15 +256,6 @@ class Response {
                 1
             ),
         );
-    }
-
-    public function sendWebPage(View|string $view, bool $doFlushResponse = true): void {
-        if (($root = $view->getRoot()) instanceof WebPage) {
-            $this->render($root, $doFlushResponse);
-            return;
-        }
-
-        $this->render(ContextAwareWebPage::wrap($view), $doFlushResponse);
     }
 
     public function sendStatus(int $httpCode): void {

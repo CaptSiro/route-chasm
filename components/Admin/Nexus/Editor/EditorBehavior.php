@@ -4,9 +4,9 @@ namespace components\Admin\Nexus\Editor;
 
 use components\Admin\Nexus\Editor;
 use components\forms\Form;
-use components\layout\Layout;
 use core\App;
 use core\database\sql\Model;
+use core\view\Container;
 use core\view\View;
 
 interface EditorBehavior {
@@ -20,11 +20,11 @@ interface EditorBehavior {
     public function initForm(Form $form, ?Model $model): ?View;
 
     /**
-     * @param Layout $layout
+     * @param Container $container
      * @param Model|null $model The updating model (null on creation)
      * @return ?View Return View to render on error, null on success
      */
-    public function addControls(Layout $layout, ?Model $model): ?View;
+    public function addControls(Container $container, ?Model $model): ?View;
 
     /**
      * Called after the form is submitted and the model has been populated/saved.

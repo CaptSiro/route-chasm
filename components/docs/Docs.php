@@ -29,6 +29,7 @@ use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
 use core\utils\Files;
+use core\view\PageView;
 use DirectoryIterator;
 use models\docs\Document;
 use models\docs\Fragment;
@@ -187,7 +188,6 @@ class Docs extends Router {
         }
 
         if (!isset($fragmentResponse[self::PROPERTY_FRAGMENT_SUMMARY])) {
-            var_dump($fragmentResponse);
             App::getInstance()
                 ->getResponse()
                 ->sendStatus(HttpCode::SE_INTERNAL_SERVER_ERROR);
@@ -379,7 +379,7 @@ class Docs extends Router {
                     $this->searchFiles(strtolower($query), $maxEntries, $url->exists(self::QUERY_SEARCH_SOURCES_ONLY)),
                 );
 
-                $response->renderRoot(new SearchResults($results));
+                $response->render(new SearchResults($results));
             }
         );
 
@@ -402,7 +402,7 @@ class Docs extends Router {
                             $page->setDirectory($file);
                         }
 
-                        $response->renderRoot($page->setUserResource($this->resource));
+                        $response->render(PageView::fromComponent($page->setUserResource($this->resource)));
                     }
 
                     $language = $request->getLanguage();

@@ -9,7 +9,7 @@ use components\forms\controls\HiddenField;
 use components\forms\controls\MultiSubmit;
 use components\forms\Form;
 use components\forms\FormAction;
-use components\layout\WebPage\AdminWebPage;
+use components\Admin\AdminPageView;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\body\DictionaryBody;
@@ -20,14 +20,17 @@ use core\Flags;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\locale\LexiconUnit;
 use core\route\RouteNode;
 use core\sideloader\importers\Javascript\Javascript;
-use core\view\ContainerContent;
 use core\view\View;
+use core\view\Component;
+use core\view\Controller;
+use core\view\Renderer;
 use models\Privilege\Privilege;
 
-class AdminNexusEditor extends ContainerContent implements Editor {
-    use Flags, UnexpectedHttpMethod;
+class AdminNexusEditor extends Controller implements Editor {
+    use Flags, UnexpectedHttpMethod, LexiconUnit;
 
     public const FLAG_REMOVE_CANCEL_BUTTON = 1;
 
@@ -38,15 +41,16 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
 
 
-    protected AdminWebPage $page;
+    protected AdminPageView $page;
     protected ?Model $model = null;
     protected AdminNexus $context;
     protected ?View $headerContent = null;
 
     public function __construct(
-        protected EditorBehavior $behaviour
+        protected EditorBehavior $behaviour,
+        ?Renderer $renderer = null
     ) {
-        parent::__construct($this->page = new AdminWebPage());
+        parent::__construct();
         $this->setLexiconGroup(AdminNexus::LEXICON_GROUP);
         $this->behaviour->setEditor($this);
     }
@@ -61,6 +65,11 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
     public function setHeaderContent(View $headerContent): void {
         $this->headerContent = $headerContent;
+    }
+
+    public function setRenderer(Renderer $renderer): static {
+        Component::propagateSetRenderer($this->headerContent, $renderer);
+        return parent::setRenderer($renderer);
     }
 
     public function setModel(Model $model): static {
@@ -117,6 +126,8 @@ class AdminNexusEditor extends ContainerContent implements Editor {
             ->setValue(self::NAME_SUBMIT_ACTION, 'return');
 
         $form->add(new MultiSubmit($actions));
+
+        Component::propagateSetRenderer($form, $this->renderer);
         return $form;
     }
 
@@ -140,7 +151,7 @@ class AdminNexusEditor extends ContainerContent implements Editor {
 
         if ($error instanceof View) {
             $response->setStatus(HttpCode::CE_BAD_REQUEST);
-            $response->renderRoot($error);
+            $response->render($error);
         }
 
         if ($action === EditorBehaviorAction::CREATE) {

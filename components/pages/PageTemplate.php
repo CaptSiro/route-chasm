@@ -18,7 +18,7 @@ interface PageTemplate {
 
     public function delete(Page $page): ?View;
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component;
+    public function buildContent(Page $page, Language $language): Component;
 
     public function buildListingCard(Page $page, Language $language): View;
 

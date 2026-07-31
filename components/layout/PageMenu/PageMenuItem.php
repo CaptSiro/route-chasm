@@ -7,11 +7,11 @@ use components\layout\Menu\MenuItem;
 use components\layout\Menu\MenuItemContext;
 use core\locale\LexiconUnit;
 use core\route\Path;
-use core\view\Renderer;
+use core\view\ViewTemplateRenderer;
 use models\Page\Page;
 
 class PageMenuItem implements MenuItem {
-    use Renderer, MenuItemContext, LexiconUnit;
+    use ViewTemplateRenderer, MenuItemContext, LexiconUnit;
 
 
 

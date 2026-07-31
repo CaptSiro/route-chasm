@@ -10,6 +10,7 @@ use components\layout\Layout;
 use core\App;
 use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
+use core\view\Container;
 use core\view\View;
 use ReflectionClass;
 
@@ -78,7 +79,7 @@ class FormDescription implements EditorBehavior {
         return null;
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         $data = $model?->getData() ?? [];
 
         foreach ($this->controls as $property => $control) {
@@ -88,7 +89,7 @@ class FormDescription implements EditorBehavior {
                 $view->setValue($data[$property]);
             }
 
-            $layout->add($view);
+            $container->add($view);
         }
 
         return null;

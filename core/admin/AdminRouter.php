@@ -3,6 +3,7 @@
 namespace core\admin;
 
 use components\Admin\AdminLogin;
+use components\Admin\AdminPageView;
 use components\layout\Menu\Menu;
 use components\layout\WebPage\ContextAwareWebPage;
 use components\Message\Message;
@@ -62,13 +63,17 @@ class AdminRouter extends Router {
             // if it is just / render message 'Admin Home'
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
-                $this->home ?? ContextAwareWebPage::wrap(new Message('Admin Home', MessageType::CONFIRMATION))
+                AdminPageView::fromComponent(
+                    $this->home ?? AdminPageView::fromComponent(
+                        new Message('Admin Home', MessageType::CONFIRMATION)
+                    )
+                )
             ),
         );
 
         $this->use('/**',
             fn(Request $request, Response $response)
-                => $response->renderRoot(new NotFound($request->getRemainingPath()))
+                => $response->render(new NotFound($request->getRemainingPath()))
         );
     }
 

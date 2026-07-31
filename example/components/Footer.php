@@ -8,14 +8,14 @@ use core\App;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\view\Html;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\Menu;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class Footer implements ViewTemplate {
-    use Renderer, LexiconUnit;
+    use ViewTemplateRenderer, LexiconUnit;
 
     public const LEXICON_GROUP = 'footer';
 

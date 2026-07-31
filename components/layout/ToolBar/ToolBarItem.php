@@ -11,10 +11,10 @@ use core\collections\graph\TreeVertex;
 use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\RouteSegment;
-use core\view\Renderer;
+use core\view\ViewTemplateRenderer;
 
 class ToolBarItem implements MenuItem, Attribute {
-    use Renderer, MenuItemContext, LexiconUnit, HtmlAttribute;
+    use ViewTemplateRenderer, MenuItemContext, LexiconUnit, HtmlAttribute;
 
     public const LEXICON_GROUP = 'tool-bar';
 

@@ -2,11 +2,11 @@
 
 namespace components\layout\BreadCrumbs;
 
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class BreadCrumb implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
 
 

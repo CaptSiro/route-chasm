@@ -2,9 +2,9 @@
 
 namespace components\Admin\Nexus;
 
+use components\Admin\AdminPageView;
 use components\layout\Grid\GridLayout;
 use components\layout\Grid\GridLayoutFactory;
-use components\layout\WebPage\AdminWebPage;
 use components\Message\Message;
 use components\Message\MessageType;
 use core\actions\UnexpectedHttpMethod;
@@ -16,17 +16,20 @@ use core\database\sql\ModelDescription;
 use core\http\Http;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
 use core\url\Url;
-use core\view\ContainerContent;
-use core\view\TemplateSlots;
+use core\view\Component;
+use core\view\Controller;
+use core\view\Renderer;
+use core\view\ViewTemplateSlotTrait;
 use models\Privilege\Privilege;
 
-class AdminNexus extends ContainerContent {
-    use TemplateSlots, UnexpectedHttpMethod;
+class AdminNexus extends Controller {
+    use ViewTemplateSlotTrait, UnexpectedHttpMethod, LexiconUnit;
 
     public const LEXICON_GROUP = 'admin.nexus';
 
@@ -40,7 +43,6 @@ class AdminNexus extends ContainerContent {
 
 
 
-    protected AdminWebPage $webPage;
     protected ?Path $urlPath = null;
     protected NexusLinkCreator $linkCreator;
     protected bool $showCreateButton = true;
@@ -57,10 +59,12 @@ class AdminNexus extends ContainerContent {
         protected ModelDescription $modelDescription,
         protected Editor $editor,
         protected GridLayoutFactory $gridFactory,
-        protected ?string $title = null,
-        protected ?string $createButtonLabel = null
+        ?string $title = null,
+        protected ?string $createButtonLabel = null,
     ) {
-        parent::__construct($this->webPage = new AdminWebPage());
+        parent::__construct();
+        $this->title = $title;
+
         $this->setLexiconGroup(self::LEXICON_GROUP);
 
         $this->editor->setContext($this);
@@ -71,12 +75,17 @@ class AdminNexus extends ContainerContent {
 
 
 
+    public function setRenderer(Renderer $renderer): static {
+        Component::propagateSetRenderer($this->editor, $renderer);
+        return parent::setRenderer($renderer);
+    }
+
     public function setRouter(Route $route, Router $router): bool {
         if (!$this->hasRequestAccess(Privilege::fromName(Privilege::READ))) {
             return false;
         }
 
-        $router->use($route, $this);
+        $router->use($route, AdminPageView::fromComponent($this));
         return true;
     }
 
@@ -131,6 +140,7 @@ class AdminNexus extends ContainerContent {
     public function setEditor(Editor $editor): static {
         $this->editor = $editor;
         $this->editor->setContext($this);
+        Component::propagateSetRenderer($editor, $this->renderer);
         return $this;
     }
 
@@ -153,7 +163,10 @@ class AdminNexus extends ContainerContent {
             $proxy->setContext($this);
         }
 
-        return $this->gridFactory->createGrid($proxy);
+        $grid = $this->gridFactory->createGrid($proxy);
+        Component::propagateSetRenderer($grid, $this->renderer);
+
+        return $grid;
     }
 
     public function getGrid(): Message|GridLayout {
@@ -181,12 +194,7 @@ class AdminNexus extends ContainerContent {
             return $this->tr($segment->getLabel() ?? $segment->getSource());
         }
 
-        return $this->title;
-    }
-
-    public function setTitle(?string $title): static {
-        $this->title = $title;
-        return $this;
+        return parent::getTitle();
     }
 
     public function createModel(mixed $id): ?Model {
@@ -296,9 +304,7 @@ class AdminNexus extends ContainerContent {
     }
 
     public function perform(Request $request, Response $response): void {
-        $this->webPage
-            ->getHead()
-            ->setTitle($this->getTitle());
+        $this->setTitle($this->getTitle());
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {

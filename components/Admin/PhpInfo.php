@@ -2,6 +2,7 @@
 
 namespace components\Admin;
 
-use core\view\ContainerContent;
+use core\view\Controller;
 
-class PhpInfo extends ContainerContent {}
+class PhpInfo extends Controller {
+}

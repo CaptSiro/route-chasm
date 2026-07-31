@@ -7,12 +7,12 @@ use components\Admin\Nexus\Editor\EditorBehavior;
 use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\description\FormDescription;
 use components\forms\Form;
+use components\fs\ImageVariantPreview;
 use components\layout\Column;
-use components\layout\Layout;
 use components\layout\Row;
 use core\database\sql\Model;
+use core\view\Container;
 use core\view\View;
-use ImageVariantPreview;
 
 class ImageVariantBehavior implements EditorBehavior {
     use Editor\SetEditor;
@@ -35,7 +35,7 @@ class ImageVariantBehavior implements EditorBehavior {
         return $this->description->initForm($form, $model);
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         $row = new Row();
 
         $controls = new Column(0.5);
@@ -49,7 +49,7 @@ class ImageVariantBehavior implements EditorBehavior {
         ));
         $row->add($preview);
 
-        $layout->add($row);
+        $container->add($row);
         return null;
     }
 

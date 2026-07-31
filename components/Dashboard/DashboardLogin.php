@@ -18,16 +18,18 @@ use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\url\Url;
-use core\view\ContainerContent;
+use core\view\Controller;
 use core\view\Html;
+use core\view\Renderer;
 use core\view\View;
 use models\Setting\Setting;
 use models\User\User;
 
-class DashboardLogin extends ContainerContent {
-    use UnexpectedHttpMethod;
+class DashboardLogin extends Controller {
+    use UnexpectedHttpMethod, LexiconUnit;
 
 
 
@@ -55,8 +57,9 @@ class DashboardLogin extends ContainerContent {
 
     public function __construct(
         protected Dashboard $dashboard,
+        ?Renderer $renderer = null
     ) {
-        parent::__construct($this->page = new WebPage());
+        parent::__construct($renderer);
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
@@ -165,7 +168,7 @@ class DashboardLogin extends ContainerContent {
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                $response->renderRoot($this);
+                $response->render($this);
                 break;
             }
 

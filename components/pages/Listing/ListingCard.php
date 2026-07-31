@@ -5,14 +5,14 @@ namespace components\pages\Listing;
 use core\fs\variants\ImageVariant;
 use core\locale\LexiconUnit;
 use core\url\Url;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\fs\File;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
 class ListingCard implements ViewTemplate {
-    use Renderer, LexiconUnit;
+    use ViewTemplateRenderer, LexiconUnit;
 
 
     public const LEXICON_GROUP = 'listing.card';

@@ -2,18 +2,18 @@
 
 namespace components\Lumora;
 
-use components\layout\WebPage\WebPage;
 use components\Lumora\Editor\Editor;
-use core\view\ContainerContent;
+use core\view\Controller;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class Display extends ContainerContent {
-    protected WebPage $webPage;
-
+class Display extends Controller {
     public function __construct(
         string $title,
-        protected Editor $editor
+        protected Editor $editor,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        parent::__construct($this->webPage = new WebPage());
-        $this->webPage->getHead()->setTitle($title);
+        parent::__construct($renderer);
+        $this->setTitle($title);
     }
 }

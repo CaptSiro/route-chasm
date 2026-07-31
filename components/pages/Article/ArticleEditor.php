@@ -31,19 +31,21 @@ use core\communication\Response;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
+use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\utils\Arrays;
-use core\view\ContainerContent;
+use core\view\Controller;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 use core\view\View;
-use locales\EnglishUS;
 use models\Language\Language;
 use models\Page\Page;
 use models\Page\PageLocalization;
 use models\Privilege\Privilege;
 use models\UserResource;
 
-class ArticleEditor extends ContainerContent {
-    use UnexpectedHttpMethod;
+class ArticleEditor extends Controller {
+    use UnexpectedHttpMethod, LexiconUnit;
 
     public const LEXICON_GROUP = 'admin.article.editor';
 
@@ -59,9 +61,10 @@ class ArticleEditor extends ContainerContent {
     protected ContextAwareWebPage $webPage;
 
     public function __construct(
-        protected Page $page
+        protected Page $page,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        parent::__construct($this->webPage = new ContextAwareWebPage());
+        parent::__construct($renderer);
         $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->setUserResource(UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE));
 

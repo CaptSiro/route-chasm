@@ -5,12 +5,12 @@ namespace core\sideloader\importers\Css;
 use core\sideloader\FileImporter;
 use core\sideloader\Importer;
 use core\sideloader\SideLoader;
-use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class Css implements Importer, View {
-    use FileImporter, Renderer;
+    use ViewTemplateRenderer, FileImporter;
 
     public const FILE_EXTENSION = 'css';
     public const FILE_MIME_TYPE = 'text/css';

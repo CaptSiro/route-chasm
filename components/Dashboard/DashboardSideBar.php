@@ -3,12 +3,12 @@
 namespace components\Dashboard;
 
 use components\layout\Menu\Menu;
-use core\view\Renderer;
-use core\view\TemplateSlots;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
+use core\view\ViewTemplateSlotTrait;
 
 class DashboardSideBar implements ViewTemplate {
-    use Renderer, TemplateSlots;
+    use ViewTemplateRenderer, ViewTemplateSlotTrait;
 
     public const SLOT_HEADER = 'header';
 

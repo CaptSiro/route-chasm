@@ -1,12 +1,13 @@
 <?php
 
+namespace components\fs;
 
 use core\ResourceLoader;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class ImageVariantPreview implements ViewTemplate {
-    use Renderer, ResourceLoader;
+    use ViewTemplateRenderer, ResourceLoader;
 
 
 

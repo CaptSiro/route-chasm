@@ -23,6 +23,7 @@ use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Components;
 use core\utils\Models;
+use core\view\Container;
 use core\view\View;
 use models\Group\Group;
 
@@ -48,7 +49,7 @@ class UserEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         if (!is_null($model) && !($model instanceof User)) {
             return new Message("Provided resource is not User");
         }
@@ -60,7 +61,7 @@ class UserEditorBehavior implements EditorBehavior {
             $loginAsUser->addDataAttribute('url', $this->editor->createLoginAsUserUrl($model));
             $loginAsUser->addJavascriptInit('admin_user_loginAsUser');
 
-            $layout->add(
+            $container->add(
                 $row->add($loginAsUser)
             );
         }
@@ -104,7 +105,7 @@ class UserEditorBehavior implements EditorBehavior {
 
         $column->add(new MultiSelect(self::NAME_GROUPS, 'Groups', $groups, $userGroups));
 
-        $layout->add(new Accordion($this->tr('RouteChasm user profile'), $column));
+        $container->add(new Accordion($this->tr('RouteChasm user profile'), $column));
 
         return null;
     }

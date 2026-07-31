@@ -9,7 +9,6 @@ use components\forms\controls\TextField;
 use components\forms\Form;
 use components\layout\Spotlight\Spotlight;
 use components\layout\Spotlight\SpotlightSwitchLink;
-use components\layout\WebPage\WebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\body\DictionaryBody;
@@ -17,15 +16,19 @@ use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
 use core\http\HttpMethod;
+use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\url\Url;
-use core\view\ContainerContent;
+use core\view\Component;
+use core\view\Controller;
+use core\view\PageView;
+use core\view\Renderer;
 use core\view\View;
 use models\Setting\Setting;
 use models\User\User;
 
-class AdminLogin extends ContainerContent {
-    use UnexpectedHttpMethod;
+class AdminLogin extends Controller {
+    use UnexpectedHttpMethod, LexiconUnit;
 
 
 
@@ -49,10 +52,10 @@ class AdminLogin extends ContainerContent {
 
 
 
-    protected WebPage $page;
-
-    public function __construct() {
-        parent::__construct($this->page = new WebPage());
+    public function __construct(
+        ?Renderer $renderer = null
+    ) {
+        parent::__construct($renderer);
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
@@ -115,10 +118,12 @@ class AdminLogin extends ContainerContent {
         ));
         $envLogin->add(new Submit());
 
-        return new Spotlight([
+        Component::propagateSetRenderer($spotlight = new Spotlight([
             self::METHOD_USER => $userLogin,
             self::METHOD_ENV => $envLogin
-        ]);
+        ]), $this->renderer);
+
+        return $spotlight;
     }
 
     public function perform(Request $request, Response $response): void {
@@ -139,13 +144,11 @@ class AdminLogin extends ContainerContent {
             return;
         }
 
-        $this->page
-            ->getHead()
-            ->setTitle($this->tr('Login'));
+        $this->setTitle($this->tr('Login'));
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                $response->renderRoot($this);
+                $response->render(PageView::fromComponent($this));
                 break;
             }
 

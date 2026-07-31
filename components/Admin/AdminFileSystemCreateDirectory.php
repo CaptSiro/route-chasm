@@ -4,12 +4,12 @@ namespace components\Admin;
 
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\fs\Directory;
 
 class AdminFileSystemCreateDirectory implements ViewTemplate {
-    use Renderer, ResourceLoader, LexiconUnit;
+    use ViewTemplateRenderer, ResourceLoader, LexiconUnit;
 
     public const LEXICON_GROUP = 'admin.fs';
 

@@ -6,19 +6,17 @@ use components\forms\controls\MultiSelect;
 use components\forms\controls\Select;
 use components\html\Attribute;
 use components\html\HtmlAttribute;
-use components\layout\Layout;
 use core\locale\Lexicon;
 use core\locale\LexiconTranslator;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
+use core\view\Container;
+use core\view\ContainerTrait;
 use core\view\Html;
-use core\view\View;
 
-class Form extends Component implements Layout, Attribute {
-    use HtmlAttribute;
-
-
+class Form extends Component implements Container, Attribute {
+    use HtmlAttribute, ContainerTrait;
 
     const LEXICON_GROUP = 'forms';
 
@@ -71,8 +69,6 @@ class Form extends Component implements Layout, Attribute {
 
 
 
-    /** @var array<View> */
-    protected array $elements;
     protected string $bodyTransformer;
 
 
@@ -88,7 +84,6 @@ class Form extends Component implements Layout, Attribute {
         protected ?string $namespace = null,
     ) {
         parent::__construct();
-        $this->elements = [];
         $this->bodyTransformer = FormTransformer::TRANSFORMER_FORM_DATA;
         $this->addJavascriptInit('form_init');
     }
@@ -131,11 +126,6 @@ class Form extends Component implements Layout, Attribute {
         return $this;
     }
 
-    public function add(View|string $child): static {
-        $this->elements[] = $child;
-        return $this;
-    }
-
     public function createId(string $name): string {
         if (is_null($this->namespace)) {
             return $name;
@@ -143,6 +133,8 @@ class Form extends Component implements Layout, Attribute {
 
         return $this->namespace ."__". $name;
     }
+
+
 
     public function render(): string {
         $last = self::$form;

@@ -57,7 +57,11 @@ class Language extends Model implements IsDefault {
         return $language;
     }
 
-    public static function fromCode(string $code): ?static {
+    public static function fromCode(?string $code): ?static {
+        if (is_null($code)) {
+            return null;
+        }
+
         static::modelCache_loadAll(fn(Language $x) => $x->code);
 
         return static::modelCache_get($code)

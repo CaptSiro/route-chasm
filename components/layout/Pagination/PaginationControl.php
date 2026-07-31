@@ -3,15 +3,17 @@
 namespace components\layout\Pagination;
 
 use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
 class PaginationControl extends Component implements Pagination {
     public function __construct(
         protected int $current = 0,
         protected int $max = 0,
         protected ?PaginationUrlCreator $creator = null,
-        bool $isMiddleware = false
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        parent::__construct($isMiddleware);
+        parent::__construct($renderer);
     }
 
 

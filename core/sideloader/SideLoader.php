@@ -23,11 +23,12 @@ use core\view\BufferTransform;
 use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\Setting\Setting;
 use models\SideLoaderRecord;
 
-class SideLoader implements ViewTemplate {
-    use Renderer, Singleton, LexiconUnit;
+class SideLoader implements View {
+    use ViewTemplateRenderer, Singleton, LexiconUnit;
 
 
 

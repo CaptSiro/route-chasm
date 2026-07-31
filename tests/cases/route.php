@@ -291,7 +291,6 @@ function perform_actions(array $traces, ?Request $request = null, ?Response $res
             $request->set(Request::PATH_INDEX, $index);
 
             foreach ($vertex->get()->getActions() as $action) {
-                var_dump("performing ". $action->getActorName());
                 $action->perform($request, $response);
             }
 

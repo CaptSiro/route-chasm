@@ -3,15 +3,13 @@
 namespace components\Dashboard;
 
 use core\view\Html;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class DashboardSideBarItem implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
     public static function button(string $onClick, string $labelHtml, ?string $icon = null): static {
-
-
         return new self(
             Html::wrapUnsafe(
                 'div',
@@ -26,13 +24,6 @@ class DashboardSideBarItem implements ViewTemplate {
     }
 
     public static function link(string $href, string $labelHtml, ?string $icon = null): static {
-        /**
-         * <a href="<?= AdminLogin::createLogoutUrl($request->getUrl()) ?>">
-             * <span><?= Html::escape($this->trg(AdminRouter::LEXICON_GROUP, 'Logout')) ?></span>
-             * <span>(<?= Html::escape(User::fromRequest($request)->username) ?>)</span>
-         * </a>
-         */
-
         return new self(
             Html::wrapUnsafe(
                 'a',

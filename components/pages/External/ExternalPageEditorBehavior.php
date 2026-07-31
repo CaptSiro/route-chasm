@@ -45,7 +45,7 @@ class ExternalPageEditorBehavior implements EditorBehavior {
         return $this->behavior->initForm($form, $model);
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function addControls(Layout $container, ?Model $model): ?View {
         $external = $model instanceof Page
             ? ExternalPage::fromPage($model)
             : null;
@@ -53,7 +53,7 @@ class ExternalPageEditorBehavior implements EditorBehavior {
         $column = new Column();
         $ret = $this->behavior->addControls($column, $external);
 
-        $layout->add(new Accordion($this->tr('External Page'), $column));
+        $container->add(new Accordion($this->tr('External Page'), $column));
         return $ret;
     }
 

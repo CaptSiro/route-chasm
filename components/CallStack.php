@@ -3,12 +3,12 @@
 namespace components;
 
 use core\locale\LexiconUnit;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\ViewTemplate;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class CallStack implements ViewTemplate, FormatAble {
-    use FormatAbleTrait, LexiconUnit;
+class CallStack extends Component {
+    use LexiconUnit;
 
     public const LEXICON_GROUP = 'callstack';
 
@@ -16,7 +16,12 @@ class CallStack implements ViewTemplate, FormatAble {
 
     protected array $stack;
 
-    public function __construct(int $remove = 0) {
+    public function __construct(
+        int $remove = 0,
+        ?Renderer $renderer = new HtmlRenderer()
+    ) {
+        parent::__construct($renderer);
+
         $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->stack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
@@ -36,9 +41,6 @@ class CallStack implements ViewTemplate, FormatAble {
         return $entry['class'] . $entry['type'];
     }
 
-
-
-    // FormatAble
     public function jsonSerialize(): array {
         return $this->stack;
     }

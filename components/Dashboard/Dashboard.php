@@ -20,6 +20,8 @@ use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
 use core\view\Component;
+use core\view\Controller;
+use core\view\PageView;
 use core\view\View;
 use models\Privilege\Privilege;
 use models\User\User;
@@ -75,20 +77,23 @@ abstract class Dashboard extends Router {
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
                 $this->default
-                    ?? DashboardPage::fromMessage($this, new Message('Welcome to dashboard', MessageType::INFO))
+                    ?? DashboardPageView::fromMessage($this, new Message('Welcome to dashboard', MessageType::INFO))
             ),
         );
 
         $router->use('/**',
             fn(Request $request, Response $response)
-                => $response->render(DashboardPage::notFound($this, $request->getRemainingPath()))
+                => $response->render(DashboardPageView::notFound($this, $request->getRemainingPath()))
         );
     }
 
-    public function add(Route $route, Component $component, ?UserResource $resource = null): static {
-        if (!is_null($resource)) {
-            $component->setUserResource($resource);
-        }
+    public function add(
+        Route $route,
+        Component $component,
+        ?UserResource $resource = null,
+        ?PageView $pageView = null
+    ): static {
+        $pageView ??= new DashboardPageView($this);
 
         if (!$this->hasRequestAccess(Privilege::fromName(Privilege::READ))) {
             return $this;
@@ -98,7 +103,20 @@ abstract class Dashboard extends Router {
             $component->setDashboard($this);
         }
 
-        $this->use($route, $component);
+
+        if (!is_null($resource) && $component instanceof Controller) {
+            $component->setUserResource($resource);
+        }
+
+        $this->use($route, function (Request $request, Response $response) use ($component, $pageView) {
+            if ($component instanceof Controller) {
+                $component->perform($request, $response);
+            }
+
+            $response->render(
+                $pageView->setComponent($component)
+            );
+        });
         return $this;
     }
 

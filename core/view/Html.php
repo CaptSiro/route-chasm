@@ -13,7 +13,11 @@ class Html {
         return htmlspecialchars($content);
     }
 
-    public static function escapeAttribute(string $value): string {
+    public static function escapeAttribute(?string $value): string {
+        if (is_null($value)) {
+            return '';
+        }
+
         return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5);
     }
 

@@ -178,7 +178,6 @@ class FileServer extends Router {
 
                 foreach ($files as $file) {
                     $f = $file->getName();
-                    var_dump($f);
                     switch ($e = $file->getError()) {
                         case UPLOAD_ERR_OK: {
                             if (!is_null(FileSystem::storeUploadedFile($directory, $file))) {
@@ -370,7 +369,7 @@ class FileServer extends Router {
                 $name = $query->get('name', 'file-variant-transformers');
                 $label = $query->get('label', 'Transformers');
 
-                $response->renderRoot(
+                $response->render(
                     new FileVariantTransformers(
                         $variant->getTransformers(),
                         $name,

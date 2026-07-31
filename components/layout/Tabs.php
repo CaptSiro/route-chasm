@@ -2,12 +2,12 @@
 
 namespace components\layout;
 
-use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class Tabs implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
     protected ?string $selected = null;
 

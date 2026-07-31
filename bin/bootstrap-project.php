@@ -5,6 +5,7 @@
 use components\Admin\AdminHome;
 use components\docs\Docs;
 use core\route\Path;
+use core\view\PageView;
 use example\components\Home;
 use components\pages\PageFactory;
 use components\Search\Search;
@@ -46,7 +47,7 @@ $router->expose('public', (new Assets($assetDirectories))
 
 
 
-$router->use('/', new Home());
+$router->use('/', PageView::fromComponent(new Home()));
 $admin = new \components\Admin\Admin();
 $router->bind($admin->mount('/dashboard'), $admin);
 

@@ -6,11 +6,13 @@ use components\forms\controls\PasswordField;
 use components\forms\controls\Submit;
 use components\forms\Form;
 use core\http\HttpMethod;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class WizardAuth implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
+
+
 
     protected Form $form;
 

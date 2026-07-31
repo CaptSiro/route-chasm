@@ -43,12 +43,13 @@ class PageFactory implements NavigationFactory {
             $response->sendMessage($messageTemplateNotSet, HttpCode::CE_CONFLICT);
         }
 
-        $wireframe = new Wireframe($page);
-        $wireframe->addContent(
-            $template->buildContent($wireframe, $page)
+        return Wireframe::fromTemplate(
+            $template,
+            $page,
+            App::getInstance()
+                ->getRequest()
+                ->getLanguage()
         );
-
-        return $wireframe;
     }
 
     public function createSlug(int $languageId, int $contextId, string $slug, ?int $parentId, Page $page): Slug {
