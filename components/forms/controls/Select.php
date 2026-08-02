@@ -2,10 +2,10 @@
 
 namespace components\forms\controls;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Attribute;
+use core\view\HtmlAttribute;
 use core\view\ViewTemplateRenderer;
 
 class Select implements Control, Attribute {

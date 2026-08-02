@@ -1,6 +1,6 @@
 <?php
 
-namespace components\Dashboard;
+namespace components\layout\Dashboard;
 
 trait DashboardContentTrait {
     protected Dashboard $dashboard;

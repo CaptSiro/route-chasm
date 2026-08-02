@@ -1,0 +1,12 @@
+<?php /** @var DashboardLogin $this */
+
+use components\layout\Dashboard\DashboardLogin;
+use core\sideloader\importers\Css\Css;
+
+Css::importDefault($this);
+
+?><div class="root">
+    <main>
+        <?= $this->createLoginForm() ?>
+    </main>
+</div>

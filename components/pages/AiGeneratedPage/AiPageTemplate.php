@@ -9,6 +9,7 @@ use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use core\actions\Action;
 use core\view\Component;
+use core\view\PageView;
 use core\view\View;
 use models\Language\Language;
 use models\Page\AiPage;
@@ -64,7 +65,7 @@ class AiPageTemplate implements PageTemplate {
     }
 
     public function buildEditor(Page $page): Action {
-        return new Message('AI Generated Page has no content editor associated with its template');
+        return PageView::fromComponent(new Message('AI Generated Page has no content editor associated with its template'));
     }
 
     public function buildEditorBehavior(): ?EditorBehavior {

@@ -1,6 +1,6 @@
 <?php
 
-namespace components\Dashboard;
+namespace components\layout\Dashboard;
 
 use core\view\Html;
 use core\view\ViewTemplate;

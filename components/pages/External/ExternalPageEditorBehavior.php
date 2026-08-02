@@ -8,11 +8,11 @@ use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\Form;
 use components\layout\Accordion;
 use components\layout\Column;
-use components\layout\Layout;
 use components\Message\Message;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
+use core\view\Container;
 use core\view\View;
 use models\Page\ExternalPage;
 use models\Page\Page;
@@ -45,7 +45,7 @@ class ExternalPageEditorBehavior implements EditorBehavior {
         return $this->behavior->initForm($form, $model);
     }
 
-    public function addControls(Layout $container, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         $external = $model instanceof Page
             ? ExternalPage::fromPage($model)
             : null;

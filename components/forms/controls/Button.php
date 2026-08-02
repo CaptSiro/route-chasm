@@ -2,8 +2,8 @@
 
 namespace components\forms\controls;
 
-use components\html\HtmlAttribute;
 use core\ResourceLoader;
+use core\view\HtmlAttribute;
 use core\view\ViewTemplate;
 use core\view\ViewTemplateRenderer;
 

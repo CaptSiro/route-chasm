@@ -21,7 +21,6 @@ use components\forms\FormAction;
 use components\layout\Accordion;
 use components\layout\Tabs;
 use components\Markdown\MarkdownEditor;
-use components\layout\WebPage\ContextAwareWebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\ai\clients\OpenAi;
 use core\App;
@@ -58,8 +57,6 @@ class ArticleEditor extends Controller {
 
 
 
-    protected ContextAwareWebPage $webPage;
-
     public function __construct(
         protected Page $page,
         ?Renderer $renderer = new HtmlRenderer()
@@ -68,9 +65,7 @@ class ArticleEditor extends Controller {
         $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->setUserResource(UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_PAGE));
 
-        $this->webPage
-            ->getHead()
-            ->setTitle($page->getLocalizationOrDefault()?->title ?? 'Article Editor');
+        $this->setTitle($page->getLocalizationOrDefault()?->title ?? 'Article Editor');
     }
 
 

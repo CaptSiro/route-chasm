@@ -2,55 +2,28 @@
 
 namespace components\Admin;
 
-use components\Admin\Nexus\AdminNexus;
-use components\Admin\Phrase\AdminPhrasePacks;
-use components\Admin\SptfTests\SptfTests;
-use components\Dashboard\Dashboard;
-use components\Dashboard\DashboardPageView;
-use components\Dashboard\DashboardSideBar;
-use components\Dashboard\DashboardSideBarItem;
-use components\docs\Docs;
-use components\docs\DocsDashboard;
-use components\forms\description\FormDescription;
-use components\html\HtmlHead;
+use components\layout\Dashboard\Dashboard;
+use components\layout\Dashboard\DashboardPageView;
+use components\layout\Dashboard\DashboardSideBar;
+use components\layout\Dashboard\DashboardSideBarItem;
 use components\Icon;
-use components\layout\Grid\description\GridDescription;
 use components\layout\Menu\Menu;
-use components\layout\RoutedMenu\RoutedMenu;
 use components\Message\Message;
 use components\Message\MessageType;
-use components\Modules\Modules;
 use components\windows\LanguageSelect;
-use core\App;
 use core\collections\Views;
-use core\database\sql\ModelDescription;
-use core\fs\FileSystem;
-use core\route\Path;
 use core\route\Route;
-use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\view\View;
-use models\Domain\Domain;
-use models\extensions\IsDefault\IsDefaultExtension;
-use models\fs\ImageVariantBehavior;
-use models\fs\ImageVariantTransformer;
-use models\Group\Group;
-use models\Group\GroupBehavior;
-use models\Language\Language;
-use models\Language\LanguageEditorBehavior;
-use models\Language\Lexicon\Phrase;
-use models\Page\Page;
-use models\Page\PageStatus;
-use models\Privilege\Privilege;
-use models\Setting\Setting;
 use models\User\User;
-use models\User\UserEditorBehavior;
 use models\UserResource;
 
 class Admin extends Dashboard {
     public function __construct() {
         parent::__construct(
-            new DashboardPageView($this, new HtmlHead('Admin Home'), new AdminHome())
+            DashboardPageView::fromDashboardComponent(
+                $this, (new AdminHome())->setTitle('Admin Home')
+            )
         );
 
         $this->createRoutes();

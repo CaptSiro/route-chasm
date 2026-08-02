@@ -2,9 +2,9 @@
 
 namespace components\forms\controls;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use core\locale\LexiconUnit;
+use core\view\Attribute;
+use core\view\HtmlAttribute;
 use core\view\ViewTemplateRenderer;
 
 class Input implements Control, Attribute {

@@ -1,12 +1,14 @@
 <?php /** @var DashboardPageView $this */
 
-use components\Dashboard\DashboardPageView;
+use components\layout\Dashboard\DashboardPageView;
 use core\sideloader\importers\Css\Css;
 
 Css::importDefault($this);
 
+$head = $this->getHead();
+
 ?><!DOCTYPE html>
-<html lang="<?= $this->head->getLanguageCode() ?>">
+<html lang="<?= $head->getLanguage()->code ?>">
 <?= $this->head ?>
 
 <body>

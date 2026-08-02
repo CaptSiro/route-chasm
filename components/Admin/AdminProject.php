@@ -2,7 +2,7 @@
 
 namespace components\Admin;
 
-use components\Dashboard\Dashboard;
+use components\layout\Dashboard\Dashboard;
 use core\admin\AdminRouter;
 use core\locale\LexiconUnit;
 use core\view\ViewTemplate;

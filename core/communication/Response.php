@@ -2,17 +2,21 @@
 
 namespace core\communication;
 
-use components\layout\WebPage\ContextAwareWebPage;
-use components\layout\WebPage\WebPage;
 use components\Message\Message;
 use components\Message\MessageType;
 use core\App;
+use core\communication\format\Format;
 use core\communication\format\FormatMatcher;
 use core\communication\format\LimitedFormat;
 use core\communication\format\ResponseFormat;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\view\BufferTransform;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
+use core\view\renderers\JsonRenderer;
+use core\view\renderers\XmlRenderer;
 use core\view\View;
 
 class Response {
@@ -44,6 +48,7 @@ class Response {
 
     protected array $headers;
     protected bool $headersSent;
+    protected ?Renderer $renderer;
 
 
 
@@ -58,6 +63,19 @@ class Response {
 
     public function getFormat(?Request $request = null): string {
         return $this->format->getIdentifier($request ?? App::getInstance()->getRequest());
+    }
+
+    public function getRenderer(): ?Renderer {
+        if (isset($this->renderer)) {
+            return $this->renderer;
+        }
+
+        return $this->renderer = match ($this->getFormat()) {
+            Format::IDENT_HTML => new HtmlRenderer(),
+            Format::IDENT_JSON => new JsonRenderer(),
+            Format::IDENT_XML => new XmlRenderer(),
+            default => null
+        };
     }
 
     public function hasHeader(string $header): bool {
@@ -238,11 +256,21 @@ class Response {
      * Render::render() are not accessible to transform
      *
      * @param View $view
+     * @param Renderer|null $renderer Override default renderer passed to $view if it is an instance of Component
      * @param bool $doFlushResponse
      * @return void
      * @see Response::EVENT_OB_TRANSFORM
+     * @see Component::setRenderer()
      */
-    public function render(View $view, bool $doFlushResponse = true): void {
+    public function render(View $view, ?Renderer $renderer = null, bool $doFlushResponse = true): void {
+        if ($view instanceof Component) {
+            $renderer ??= $this->getRenderer();
+
+            if (!is_null($renderer) && !($renderer instanceof HtmlRenderer)) {
+                $view->setRenderer($renderer);
+            }
+        }
+
         $this->send($view->render(), $doFlushResponse);
     }
 

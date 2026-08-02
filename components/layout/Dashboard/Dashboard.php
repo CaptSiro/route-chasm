@@ -1,6 +1,6 @@
 <?php
 
-namespace components\Dashboard;
+namespace components\layout\Dashboard;
 
 use components\layout\Menu\Menu;
 use components\layout\RoutedMenu\RoutedMenu;

@@ -13,7 +13,6 @@ use components\ai\Schema\StringSchema;
 use components\layout\Column;
 use components\forms\Form;
 use components\layout\Accordion;
-use components\layout\Layout;
 use core\ai\clients\OpenAi;
 use core\App;
 use core\communication\body\DictionaryBody;
@@ -21,6 +20,7 @@ use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Container;
 use core\view\View;
 use models\Page\AiPage;
 use models\Page\Page;
@@ -56,7 +56,7 @@ class AiPageEditorBehavior implements EditorBehavior {
         return $this->behavior->initForm($form, $model);
     }
 
-    public function addControls(Layout $container, ?Model $model): ?View {
+    public function addControls(Container $container, ?Model $model): ?View {
         $aiPage = $model instanceof Page
             ? AiPage::fromPage($model)
             : null;

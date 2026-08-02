@@ -1,6 +1,6 @@
 <?php
 
-namespace components\Dashboard;
+namespace components\layout\Dashboard;
 
 use components\forms\controls\HiddenField;
 use components\forms\controls\PasswordField;
@@ -10,7 +10,6 @@ use components\forms\Form;
 use components\Icon;
 use components\layout\Spotlight\Spotlight;
 use components\layout\Spotlight\SpotlightSwitchLink;
-use components\layout\WebPage\WebPage;
 use core\actions\UnexpectedHttpMethod;
 use core\App;
 use core\communication\body\DictionaryBody;
@@ -23,6 +22,7 @@ use core\RouteChasmEnvironment;
 use core\url\Url;
 use core\view\Controller;
 use core\view\Html;
+use core\view\PageView;
 use core\view\Renderer;
 use core\view\View;
 use models\Setting\Setting;
@@ -52,8 +52,6 @@ class DashboardLogin extends Controller {
     }
 
 
-
-    protected WebPage $page;
 
     public function __construct(
         protected Dashboard $dashboard,
@@ -162,13 +160,11 @@ class DashboardLogin extends Controller {
             return;
         }
 
-        $this->page
-            ->getHead()
-            ->setTitle($this->tr('Dashboard Login'));
+        $this->setTitle($this->tr('Dashboard Login'));
 
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                $response->render($this);
+                $response->render(PageView::fromComponent($this));
                 break;
             }
 

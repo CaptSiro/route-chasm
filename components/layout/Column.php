@@ -2,12 +2,11 @@
 
 namespace components\layout;
 
-use components\html\HtmlAttribute;
-use core\view\Renderer;
-use core\view\View;
 use core\view\Component;
 use core\view\Container;
-use core\view\renderers\HtmlRenderer;
+use core\view\HtmlAttribute;
+use core\view\Renderer;
+use core\view\View;
 use JsonSerializable;
 
 class Column extends Component implements View, Container, JsonSerializable {
@@ -18,7 +17,7 @@ class Column extends Component implements View, Container, JsonSerializable {
     /**
      * @param float $widthPercentage
      * @param array<View|string> $views
-     * @param \core\view2\Renderer $renderer
+     * @param Renderer|null $renderer
      */
     public function __construct(
         float $widthPercentage = 1,

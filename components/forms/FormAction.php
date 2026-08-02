@@ -2,8 +2,8 @@
 
 namespace components\forms;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
+use core\view\Attribute;
+use core\view\HtmlAttribute;
 
 class FormAction implements Attribute {
     use HtmlAttribute;

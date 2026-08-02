@@ -7,10 +7,8 @@ use components\layout\PageMenu\PageMenu;
 use components\pages\Article\Article;
 use components\Search\HeaderSearch;
 use components\Search\Search;
-use components\layout\WebPage\WebPage;
 use core\locale\LexiconUnit;
 use core\route\Path;
-use core\view\Component;
 use core\view\Controller;
 use core\view\Head;
 use core\view\Renderer;
@@ -23,8 +21,6 @@ class DocumentPage extends Controller {
     public const LEXICON_GROUP = Article::LEXICON_GROUP;
 
 
-
-    protected WebPage $webPage;
 
     public function __construct(
         string $title,

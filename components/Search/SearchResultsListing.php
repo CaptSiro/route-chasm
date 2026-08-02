@@ -5,7 +5,6 @@ namespace components\Search;
 use components\layout\Pagination\Pagination;
 use components\layout\Pagination\PaginationControl;
 use components\layout\Pagination\PaginationFactory;
-use components\layout\WebPage\WebPage;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\view\Controller;
@@ -23,7 +22,6 @@ class SearchResultsListing extends Controller {
 
 
     protected PaginationFactory $factory;
-    protected WebPage $webPage;
 
     public function __construct(
         protected string $query,

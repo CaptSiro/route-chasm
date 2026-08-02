@@ -1,10 +1,10 @@
 <?php
 
-namespace core\view2;
+namespace core\view;
 
 use JsonSerializable;
 
-class json implements View, JsonSerializable {
+class json extends Component implements View, JsonSerializable {
     public static function view(mixed $json): View {
         return new self($json);
     }
@@ -13,7 +13,9 @@ class json implements View, JsonSerializable {
 
     public function __construct(
         protected mixed $json
-    ) {}
+    ) {
+        parent::__construct();
+    }
 
 
 
@@ -23,13 +25,13 @@ class json implements View, JsonSerializable {
     }
 
     public function __toString(): string {
-        return $this;
+        return $this->render();
     }
 
 
 
     // JsonSerializable
     public function jsonSerialize(): mixed {
-        return $this;
+        return $this->json;
     }
 }

@@ -4,16 +4,16 @@ namespace components\forms;
 
 use components\forms\controls\MultiSelect;
 use components\forms\controls\Select;
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use core\locale\Lexicon;
 use core\locale\LexiconTranslator;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
+use core\view\Attribute;
 use core\view\Component;
 use core\view\Container;
 use core\view\ContainerTrait;
 use core\view\Html;
+use core\view\HtmlAttribute;
 
 class Form extends Component implements Container, Attribute {
     use HtmlAttribute, ContainerTrait;

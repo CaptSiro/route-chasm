@@ -10,6 +10,7 @@ use components\pages\Wireframe;
 use core\actions\Action;
 use core\RouteChasmEnvironment;
 use core\view\Component;
+use core\view\PageView;
 use core\view\View;
 use models\Language\Language;
 use models\Page\Page;
@@ -45,7 +46,7 @@ class ListingTemplate implements PageTemplate {
     }
 
     public function buildEditor(Page $page): Action {
-        return new Message('Page Listing has no content editor associated with its template');
+        return PageView::fromComponent(new Message('Page Listing has no content editor associated with its template'));
     }
 
     public function buildEditorBehavior(): ?EditorBehavior {

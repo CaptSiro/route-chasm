@@ -1,6 +1,6 @@
 <?php
 
-namespace components\html;
+namespace core\view;
 
 interface Attribute {
     public function addAttribute(string $name, mixed $value = null): static;

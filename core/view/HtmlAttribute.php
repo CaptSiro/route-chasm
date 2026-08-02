@@ -1,6 +1,6 @@
 <?php
 
-namespace components\html;
+namespace core\view;
 
 use core\utils\Arrays;
 
