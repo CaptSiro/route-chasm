@@ -9,7 +9,6 @@ use components\ai\Schema\Schema;
 use components\ai\Schema\StringSchema;
 use components\layout\ToolBar\ToolBar;
 use components\layout\ToolBar\ToolBarItem;
-use components\layout\WebPage\WebPage;
 use components\Lumora\widgets\Ai\AiWidget;
 use components\Lumora\widgets\Code\CodeWidget;
 use components\Lumora\widgets\Command\CommandWidget;
@@ -31,12 +30,12 @@ use components\Lumora\widgets\Text\TextWidget;
 use components\Lumora\widgets\TextEditor\TextEditorWidget;
 use components\Lumora\widgets\Widget;
 use components\Lumora\widgets\WidgetImporter;
-use components\pages\Wireframe;
 use core\actions\UnexpectedHttpMethod;
 use core\ai\clients\OpenAi;
 use core\communication\body\DictionaryBody;
 use core\communication\Request;
 use core\communication\Response;
+use core\locale\LexiconUnit;
 use core\storage\DataItem;
 use core\fs\FileServer;
 use core\fs\variants\ImageVariant;
@@ -45,13 +44,18 @@ use core\http\HttpMethod;
 use core\route\Route;
 use core\RouteChasmEnvironment;
 use core\utils\Arrays;
-use core\view\ContainerContent;
+use core\view\Controller;
 use core\view\Html;
+use core\view\PageView;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 use DateTime;
 use models\Page\PageLocalization;
 
-class Editor extends ContainerContent {
-    use UnexpectedHttpMethod;
+class Editor extends Controller {
+    use UnexpectedHttpMethod, LexiconUnit;
+
+    public const LEXICON_GROUP = 'editor';
 
 
 
@@ -81,7 +85,6 @@ class Editor extends ContainerContent {
 
 
 
-    protected WebPage $webPage;
     protected ToolBar $toolBar;
     /** @var array<Widget> */
     protected array $widgets;
@@ -93,15 +96,18 @@ class Editor extends ContainerContent {
      * @param PageLocalization $localization
      * @param string $title
      * @param array<Widget>|null $widgets
+     * @param Renderer|null $renderer
      */
     public function __construct(
         protected DataItem $storage,
         protected PageLocalization $localization,
         string $title = "Editor",
-        ?array $widgets = null
+        ?array $widgets = null,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        parent::__construct($this->webPage = new WebPage(head: Wireframe::createHtmlHead($this->localization)));
-        $this->webPage->getHead()->setTitle($title);
+        parent::__construct($renderer);
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+        $this->setTitle($title);
 
         $this->importer = new WidgetImporter();
 
@@ -172,11 +178,6 @@ class Editor extends ContainerContent {
         $item->addAttribute("data-aspect-ratio", Html::escapeAttribute($aspectRatio));
 
         $this->toolBar->add(Route::menu("/View/Mode/". Html::escape($label)), $item);
-        return $this;
-    }
-
-    public function setTitle(string $title): static {
-        $this->webPage->getHead()->setTitle($title);
         return $this;
     }
 
@@ -254,8 +255,8 @@ class Editor extends ContainerContent {
 
 
 
-    // Action
-    public function perform(Request $request, Response $response): void {
+    // Controller
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case "GENERATE": {
                 $messageUnableToGenerateWidget = $this->tr("Unable to generate widget based on the prompt.");
@@ -295,7 +296,7 @@ class Editor extends ContainerContent {
             }
 
             case HttpMethod::GET: {
-                parent::perform($request, $response);
+                $response->render(PageView::fromComponent($this));
                 return;
             }
 
@@ -306,7 +307,7 @@ class Editor extends ContainerContent {
             }
 
             default: {
-                $this->handleUnexpectedMethod($request, $response);
+                $response->render(PageView::fromComponent($this));
                 break;
             }
         }

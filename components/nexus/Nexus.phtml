@@ -1,0 +1,18 @@
+<?php /** @var Nexus $this */
+
+use components\nexus\Nexus;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+
+Javascript::importDefault($this);
+Css::importDefault($this);
+
+?><section class="nexus">
+    <?= $this->getTemplateSlot($this::SLOT_HEADER) ?>
+
+    <?= $this->getTemplateSlot($this::SLOT_BREAD_CRUMBS) ?>
+
+    <?= $this->getTemplateSlot($this::SLOT_OVERVIEW) ?>
+
+    <?= $this->getTemplateSlot($this::SLOT_FOOTER) ?>
+</section>

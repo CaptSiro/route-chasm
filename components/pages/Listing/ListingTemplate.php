@@ -2,15 +2,17 @@
 
 namespace components\pages\Listing;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
 use components\Message\Message;
+use components\nexus\NexusEditorBehavior;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use components\pages\Wireframe;
 use core\actions\Action;
 use core\RouteChasmEnvironment;
 use core\view\Component;
+use core\view\PageView;
 use core\view\View;
+use models\Language\Language;
 use models\Page\Page;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
@@ -44,14 +46,14 @@ class ListingTemplate implements PageTemplate {
     }
 
     public function buildEditor(Page $page): Action {
-        return new Message('Page Listing has no content editor associated with its template');
+        return PageView::fromComponent(new Message('Page Listing has no content editor associated with its template'));
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
+    public function buildContent(Page $page, Language $language): Component {
         $portionSize = Setting::fromName(
             self::NAME_PORTION_SIZE,
             true,
@@ -61,7 +63,7 @@ class ListingTemplate implements PageTemplate {
 
         return new Listing(
             $page,
-            $wireframe->getLocalization(),
+            Wireframe::getLocalization($page, $language),
             $portionSize->toInt()
         );
     }

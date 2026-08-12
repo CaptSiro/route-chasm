@@ -3,22 +3,15 @@
 namespace components\Message;
 
 use components\CallStack;
-use components\html\HtmlHead;
 use components\Icon;
-use components\layout\WebPage\ContextAwareWebPage;
-use core\actions\Action;
-use core\actions\ActionBindRouteNode;
-use core\communication\Request;
-use core\communication\Response;
 use core\locale\LexiconUnit;
-use core\route\RouteNode;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
+use core\view\Component;
+use core\view\Renderer;
 use core\view\ViewTemplate;
+use JsonSerializable;
 
-class Message implements Action, ViewTemplate, FormatAble {
-    use ActionBindRouteNode, FormatAbleTrait, LexiconUnit;
+class Message extends Component implements ViewTemplate, JsonSerializable {
+    use LexiconUnit;
 
     public const LEXICON_GROUP = 'message';
 
@@ -27,21 +20,18 @@ class Message implements Action, ViewTemplate, FormatAble {
 
 
     protected CallStack $stack;
-    protected Formatter $formatter;
 
-    /**
-     * @param string $content
-     * @param MessageType $type
-     * @param int $stackTraceShiftCount
-     */
     public function __construct(
         protected string $content,
         protected MessageType $type = MessageType::ERROR,
         int $stackTraceShiftCount = 0,
+        ?Renderer $renderer = null,
     ) {
-        $this->setLexiconGroup(self::LEXICON_GROUP);
-        $this->setFormatter(Formatter::default($this));
+        parent::__construct($renderer);
         $this->stack = new CallStack(max($stackTraceShiftCount, 0));
+
+        $this->setLexiconGroup(self::LEXICON_GROUP);
+        $this->setTitle($this->getContentTrimmed());
     }
 
 
@@ -69,7 +59,7 @@ class Message implements Action, ViewTemplate, FormatAble {
     public function getIcon(): string {
         return Icon::nf(match ($this->type) {
             MessageType::INFO => 'nf-oct-info',
-            MessageType::NOTICE => 'nf-fa-check_circle',
+            MessageType::CONFIRMATION => 'nf-fa-check_circle',
             MessageType::WARNING => 'nf-fa-warning',
             MessageType::ERROR => 'nf-cod-error',
         }, $this->getTypeLabel());
@@ -90,28 +80,5 @@ class Message implements Action, ViewTemplate, FormatAble {
             'message' => $this->content,
             'stack' => $this->stack,
         ];
-    }
-
-
-
-    // Action
-    public function isMiddleware(): bool {
-        return false;
-    }
-
-    public function getActorName(): string {
-        $type = $this->type->toLowerCase();
-        $content = $this->getContentTrimmed();
-        return "Message($type, $content...)";
-    }
-
-    public function onBind(RouteNode $bindingPoint): void {
-        $this->bindRouteNode($bindingPoint);
-    }
-
-    public function perform(Request $request, Response $response): void {
-        $page = new ContextAwareWebPage(head: new HtmlHead($this->getContentTrimmed()));
-        $page->addContent($this);
-        $response->render($page);
     }
 }

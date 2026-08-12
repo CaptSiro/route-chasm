@@ -2,11 +2,11 @@
 
 namespace models\Language\Lexicon\Grid;
 
-use components\Admin\Nexus\NexusProxy;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\description\GridDescription;
 use components\layout\Grid\Loader\ModelGridLoader;
+use components\nexus\NexusProxy;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Connection;

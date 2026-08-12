@@ -5,11 +5,11 @@ namespace core\sideloader\importers\Javascript;
 use core\sideloader\FileImporter;
 use core\sideloader\Importer;
 use core\sideloader\SideLoader;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class Javascript implements Importer, ViewTemplate {
-    use Renderer, FileImporter;
+    use FileImporter, ViewTemplateRenderer;
 
     public const FILE_EXTENSION = 'js';
     public const FILE_MIME_TYPE = 'text/javascript';

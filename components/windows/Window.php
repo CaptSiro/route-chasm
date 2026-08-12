@@ -2,17 +2,18 @@
 
 namespace components\windows;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use core\Flags;
 use core\locale\LexiconUnit;
 use core\utils\Strings;
+use core\view\Attribute;
 use core\view\Html;
-use core\view\Renderer;
+use core\view\HtmlAttribute;
 use core\view\View;
+use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
-class Window implements View, Attribute {
-    use Renderer, HtmlAttribute, Flags, LexiconUnit;
+class Window implements ViewTemplate, Attribute {
+    use ViewTemplateRenderer, HtmlAttribute, Flags, LexiconUnit;
 
     public const LEXICON_GROUP = 'window';
 

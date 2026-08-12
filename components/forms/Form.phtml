@@ -15,8 +15,8 @@ Form::importAssets();
     <?= $this->stringifyAttributes() ?>
 >
     <div class="form-barrier">
-        <?php foreach ($this->elements as $control): ?>
-            <?= $control ?>
+        <?php foreach ($this->views as $view): ?>
+            <?= $view ?>
         <?php endforeach; ?>
     </div>
 </form>

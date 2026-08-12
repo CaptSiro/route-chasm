@@ -9,11 +9,11 @@ use core\collections\graph\TreeVertex;
 use core\collections\graph\Vertex;
 use core\route\Route;
 use core\route\RouteExtend;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class ToolBar implements Graph, ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
 
 

@@ -1,0 +1,23 @@
+<?php /** @var DashboardPageView $this */
+
+use components\layout\Dashboard\DashboardPageView;
+use core\sideloader\importers\Css\Css;
+
+Css::importDefault($this);
+
+$head = $this->getHead();
+
+?><!DOCTYPE html>
+<html lang="<?= $head->getLanguage()->code ?>">
+<?= $this->head ?>
+
+<body>
+    <div class="root dashboard-page">
+        <?= $this->dashboard->getSideBar() ?>
+
+        <main>
+            <?= $this->view ?>
+        </main>
+    </div>
+</body>
+</html>

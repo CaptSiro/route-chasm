@@ -3,24 +3,19 @@
 namespace components\SaveError;
 
 use components\Message\MessageType;
-use core\App;
 use core\http\HttpCode;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
-use core\view\ViewTemplate;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class SaveError implements ViewTemplate, FormatAble {
-    use FormatAbleTrait;
-
-
-
+class SaveError extends Component {
     public function __construct(
-        protected string $property,
+        protected string $modelProperty,
         protected string $message,
-        protected int $code = HttpCode::CE_BAD_REQUEST
+        protected int $code = HttpCode::CE_BAD_REQUEST,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        $this->setFormatter(Formatter::default($this));
+        parent::__construct($renderer);
     }
 
 
@@ -29,19 +24,8 @@ class SaveError implements ViewTemplate, FormatAble {
         return $this->message;
     }
 
-    public function getProperty(): string {
-        return $this->property;
-    }
-
-
-
-    // FormatAble
-    public function render(): string {
-        App::getInstance()
-            ->getResponse()
-            ->setStatus($this->code);
-
-        return $this->renderFormatter();
+    public function getModelProperty(): string {
+        return $this->modelProperty;
     }
 
     public function toText(): string {
@@ -53,7 +37,7 @@ class SaveError implements ViewTemplate, FormatAble {
             "type" => MessageType::ERROR,
             "message" => $this->message,
             "code" => $this->code,
-            "property" => $this->property
+            "property" => $this->modelProperty
         ];
     }
 }

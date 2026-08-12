@@ -2,21 +2,17 @@
 
 namespace components\tf;
 
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class ErrorMessage implements FormatAble {
-    use FormatAbleTrait;
-
-
-
-
+class ErrorMessage extends Component {
     public function __construct(
         protected string $hint,
         protected string $message,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        $this->setFormatter(Formatter::default($this));
+        parent::__construct($renderer);
     }
 
 
@@ -33,7 +29,6 @@ class ErrorMessage implements FormatAble {
         return $this->message . ' (' . $this->hint . ')';
     }
 
-    // JsonSerializable
     public function jsonSerialize(): array {
         return [
             'hint' => $this->hint,

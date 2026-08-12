@@ -28,6 +28,10 @@ trait IsDefaultTrait {
         $columns[PROPERTY_IS_DEFAULT] = new GridColumn('Is Default', '96px');
     }
 
+    public static function getIsDefaultExtension(): IsDefaultExtension {
+        return new IsDefaultExtension(ModelDescription::extract(static::class));
+    }
+
 
 
     #[Column('is_default', Column::TYPE_BOOLEAN)]

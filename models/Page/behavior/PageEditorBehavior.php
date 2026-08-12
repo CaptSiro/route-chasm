@@ -2,10 +2,7 @@
 
 namespace models\Page\behavior;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\Admin\Nexus\Editor\SetEditor;
-use components\Admin\AdminPageEditor;
+use components\Admin\PageNexusEditor;
 use components\forms\controls\HiddenField;
 use components\forms\controls\MultiSelect;
 use components\forms\description\FormDescription;
@@ -13,10 +10,12 @@ use components\forms\Form;
 use components\fs\FileControl;
 use components\layout\Accordion;
 use components\layout\Column;
-use components\layout\Layout;
 use components\layout\Row;
 use components\layout\Tabs;
 use components\Message\Message;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\App;
 use core\collections\StrictDictionary;
 use core\communication\body\DictionaryBody;
@@ -27,6 +26,7 @@ use core\database\sql\Sql;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
 use core\utils\Models;
+use core\view\Container;
 use core\view\Html;
 use core\view\View;
 use models\fs\Shortcut;
@@ -39,8 +39,8 @@ use models\Page\PageMeta;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
 
-class PageEditorBehavior implements EditorBehavior {
-    use LexiconUnit, SetEditor;
+class PageEditorBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
 
     public const NAME_LANGUAGE_ID = 'languageId';
     public const NAME_PARENT_ID = 'parentId';
@@ -52,14 +52,18 @@ class PageEditorBehavior implements EditorBehavior {
 
     public function __construct(
         protected ?string $navigationContext = null,
-        protected EditorBehavior $localization = new LocalizedPageEditorBehavior()
+        protected NexusEditorBehavior $localization = new LocalizedPageEditorBehavior()
     ) {
-        $this->setLexiconGroup(AdminPageEditor::LEXICON_GROUP);
+        $this->setLexiconGroup(PageNexusEditor::LEXICON_GROUP);
     }
 
 
 
-    protected function getTemplateBehavior(?Model $model): ?EditorBehavior {
+    public function getTitle(): string {
+        return $this->tr("Page Properties");
+    }
+
+    protected function getTemplateBehavior(?Model $model): ?NexusEditorBehavior {
         if (!($model instanceof Page)) {
             return null;
         }
@@ -67,8 +71,12 @@ class PageEditorBehavior implements EditorBehavior {
         $behavior = $model->getTemplate()
             ->buildEditorBehavior();
 
+        if (is_null($behavior)) {
+            return null;
+        }
+
         if (isset($this->editor)) {
-            $behavior?->setEditor($this->editor);
+            $behavior->editor = $this->editor;
         }
 
         return $behavior;
@@ -78,7 +86,9 @@ class PageEditorBehavior implements EditorBehavior {
         return NavigationContext::getContextId($this->navigationContext);
     }
 
-    public function initForm(Form $form, ?Model $model): ?View {
+    public function onFormInitialization(NexusEditor $editor, Form $form, ?Model $model): ?View {
+        $this->editor = $editor;
+
         $form->setBodyTransformer('form_json');
         $form->add(new HiddenField(self::NAME_PARENT_ID, App::getInstance()
             ->getRequest()
@@ -87,16 +97,16 @@ class PageEditorBehavior implements EditorBehavior {
             ->get(RouteChasmEnvironment::QUERY_PAGE_PARENT, '')));
 
         if (!is_null($behavior = $this->getTemplateBehavior($model))) {
-            $behavior->initForm($form, $model);
+            return $behavior->onFormInitialization($editor, $form, $model);
         }
 
         return null;
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         /** @var ?Page $model */
         $error = FormDescription::extract(Page::class)
-            ->addControls($pageFields = new Column(0.5), $model);
+            ->onFormGeneration($pageFields = new Column(0.5), $model);
         if (!is_null($error)) {
             return $error;
         }
@@ -113,7 +123,7 @@ class PageEditorBehavior implements EditorBehavior {
             $selected
         ));
 
-        if ($this->editor instanceof AdminPageEditor) {
+        if ($this->editor instanceof PageNexusEditor) {
             $options = [];
             $language = App::getInstance()
                 ->getRequest()
@@ -122,7 +132,7 @@ class PageEditorBehavior implements EditorBehavior {
             $searchUrl = $this->editor->createSearchUrl();
 
             if (!is_null($model)) {
-                $searchUrl->setQueryArgument(AdminPageEditor::QUERY_EXCLUDE, $model->getId());
+                $searchUrl->setQueryArgument(PageNexusEditor::QUERY_EXCLUDE, $model->getId());
 
                 foreach ($model->getRelated() as $p) {
                     $options[$p->id] = $p->createPath($language)->toString(prependSlash: false);
@@ -161,7 +171,7 @@ class PageEditorBehavior implements EditorBehavior {
 
         $row->add($column);
 
-        $layout->add(new Accordion($this->tr('General'), $row));
+        $container->add(new Accordion($this->tr('General'), $row));
 
         $tabs = [];
         $localizations = is_null($model)
@@ -169,7 +179,7 @@ class PageEditorBehavior implements EditorBehavior {
             : $model->getLocalizations();
 
         foreach (Language::all() as $language) {
-            $error = $this->localization->addControls(
+            $error = $this->localization->onFormGeneration(
                 $localizationFields = new Column(),
                 $localizations[$language->id] ?? null
             );
@@ -188,13 +198,13 @@ class PageEditorBehavior implements EditorBehavior {
             ->getLocale()
             ->getName();
 
-        $layout->add(new Accordion(
+        $container->add(new Accordion(
             $this->tr('Localization'),
             new Tabs($tabs, $selected)
         ));
 
         if (!is_null($behavior = $this->getTemplateBehavior($model))) {
-            $behavior->addControls($layout, $model);
+            $behavior->onFormGeneration($container, $model);
         }
 
         return null;
@@ -335,7 +345,7 @@ class PageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    protected function onSubmitPage(Page $page, EditorBehaviorAction $action, Request $request): ?View {
+    protected function onSubmitPage(Page $page, NexusEditorAction $action, Request $request): ?View {
         $fields = $request
             ->body(DictionaryBody::class)
             ->getFields();
@@ -362,7 +372,7 @@ class PageEditorBehavior implements EditorBehavior {
             $page->remove = null;
         }
 
-        if ($action === EditorBehaviorAction::CREATE) {
+        if ($action === NexusEditorAction::CREATE) {
             $page->created = Sql::datetimeNow();
         }
 
@@ -478,7 +488,7 @@ class PageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         /** @var Page $model */
 
         $request = App::getInstance()->getRequest();

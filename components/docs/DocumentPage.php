@@ -2,36 +2,38 @@
 
 namespace components\docs;
 
-use components\html\HtmlHead;
 use components\layout\BreadCrumbs\BreadCrumbs;
-use components\layout\PageMenu\Header;
 use components\layout\PageMenu\PageMenu;
 use components\pages\Article\Article;
 use components\Search\HeaderSearch;
 use components\Search\Search;
-use components\layout\WebPage\WebPage;
+use core\locale\LexiconUnit;
 use core\route\Path;
-use core\view\ContainerContent;
-use core\view\StringRenderer;
+use core\view\Controller;
+use core\view\Head;
+use core\view\Renderer;
+use example\components\Header;
 use models\Menu;
 
-class DocumentPage extends ContainerContent {
+class DocumentPage extends Controller {
+    use LexiconUnit;
+
     public const LEXICON_GROUP = Article::LEXICON_GROUP;
 
 
-
-    protected WebPage $webPage;
 
     public function __construct(
         string $title,
         protected Docs $docs,
         protected BreadCrumbs $breadCrumbs,
-        protected ?string $directory = null
+        protected ?string $directory = null,
+        ?Renderer $renderer = null
     ) {
-        parent::__construct($this->webPage = new WebPage(head: $head = new HtmlHead(title: 'Docs - '. $title)));
-        $head->addElement(new StringRenderer(Search::createApi()));
+        parent::__construct($renderer);
 
         $this->setLexiconGroup(self::LEXICON_GROUP);
+        $this->setTitle($this->tr('Docs') . ' - ' . $title);
+        $this->setProperty(Head::PAYLOAD_HTML_ELEMENTS, [Search::createApi()]);
     }
 
 

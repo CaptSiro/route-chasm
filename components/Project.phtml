@@ -1,0 +1,37 @@
+<?php /** @var Project $this */
+
+use components\Project;
+use core\App;
+use core\sideloader\importers\Css\Css;
+use core\view\Html;
+
+$app = App::getInstance();
+Css::importDefault($this);
+
+?><?php if (!is_null($project = $app->getProjectName())): ?>
+    <div class="admin-project">
+        <h2>
+            <a
+                class="no-decoration"
+            >
+                <?= Html::escape($project) ?>
+            </a>
+        </h2>
+
+        <?php if (!is_null($author = $app->getProjectAuthor())): ?>
+            <span class="author">
+                <?php if (!is_null($authorLink = $app->getProjectAuthorLink())): ?>
+                    <?= $this->tr('by') ?> <a
+                        class="no-decoration"
+                        href="<?= $authorLink ?>"
+                        target="_blank"
+                    >
+                        <?= Html::escape($author) ?>
+                    </a>
+                <?php else: ?>
+                    <?= $this->tr('by') ?> <?= Html::escape($author) ?>
+                <?php endif; ?>
+            </span>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

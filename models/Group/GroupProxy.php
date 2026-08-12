@@ -2,7 +2,7 @@
 
 namespace models\Group;
 
-use components\Admin\Nexus\NexusProxy;
+use components\nexus\NexusProxy;
 use models\extensions\Editable\EditableProxy;
 
 class GroupProxy extends NexusProxy {
@@ -20,7 +20,7 @@ class GroupProxy extends NexusProxy {
         $id = (string) $this->item->getId();
 
         return $this->createEditValue(
-            $this->context->getUpdateLink((string) $this->item->getId())
+            $this->context->getUpdateUrl((string) $this->item->getId())
         );
     }
 }

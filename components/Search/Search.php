@@ -6,14 +6,13 @@ use components\pages\Listing\ListingTemplate;
 use core\communication\Request;
 use core\communication\Response;
 use core\locale\LexiconUnit;
-use core\route\Path;
 use core\route\RouteNode;
 use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
 use core\view\Html;
-use core\view\StringRenderer;
+use core\view\str;
 use models\Page\Page;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
@@ -86,14 +85,14 @@ class Search extends Router {
             );
 
             $viewAll = count($results) >= $maxEntries
-                ? new StringRenderer(Html::wrapUnsafe(
+                ? str::view(Html::wrapUnsafe(
                     'a',
                     $this->tr('View all results...'),
                     ['href' => $this->createResultsUrl($query)]
                 ))
                 : null;
 
-            $response->renderRoot(new SearchResults($results, $viewAll));
+            $response->render(new SearchResults($results, $viewAll));
         });
 
         $router->use('/results', function (Request $request, Response $response) {
@@ -108,7 +107,7 @@ class Search extends Router {
                 [PROPERTY_EDITABLE => true]
             );
 
-            $response->renderRoot(new SearchResultsListing(
+            $response->render(new SearchResultsListing(
                 $query,
                 $portionSize->toInt()
             ));

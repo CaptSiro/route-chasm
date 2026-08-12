@@ -1,0 +1,58 @@
+<?php
+/** @var PhrasePacks $this */
+
+use components\Admin\Phrase\PhrasePacks;
+use components\Icon;
+use core\locale\Lexicon;
+use core\sideloader\importers\Css\Css;
+use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
+
+Css::importDefault($this);
+Javascript::importDefault($this);
+
+// todo add breadcrumbs
+
+?><div class="page-container">
+    <div class="page-section">
+        <div class="translation-header">
+            <h1><?= Html::escape($this->tr('Translation Packs')) ?></h1>
+            <p><?= Html::escape($this->tr('Import existing translation packs or generate a new export package.')) ?></p>
+        </div>
+
+        <div class="translation-grid">
+            <section class="card">
+                <div class="card-header row">
+                    <div class="card-icon">
+                        <?= Icon::nf('nf-fa-upload', '⬆') ?>
+                    </div>
+
+                    <h2><?= Html::escape($this->tr('Import Translation Packs')) ?></h2>
+                </div>
+
+                <p class="description">
+                    <?= Lexicon::format(Html::escape($this->tr('Upload a single translation pack {}')), "<code>.json</code>") ?>
+                    <?= Lexicon::format(Html::escape($this->tr('or a {} archive containing multiple packs.')), "<code>.zip</code>") ?>
+                </p>
+
+                <?= $this->createImportForm() ?>
+            </section>
+
+            <section class="card">
+                <div class="card-header row">
+                    <div class="card-icon">
+                        <?= Icon::nf('nf-fa-download', '⬇') ?>
+                    </div>
+
+                    <h2><?= Html::escape($this->tr('Export Translation Pack')) ?></h2>
+                </div>
+
+                <p class="description">
+                    <?= Html::escape($this->tr('Generate a translation package for a specific language.')) ?>
+                </p>
+
+                <?= $this->createExportForm() ?>
+            </section>
+        </div>
+    </div>
+</div>

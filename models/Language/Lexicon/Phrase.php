@@ -2,11 +2,12 @@
 
 namespace models\Language\Lexicon;
 
-use components\Admin\Nexus\AdminNexus;
-use components\Admin\Phrase\AdminPhraseEditor;
+use components\Admin\Phrase\PhraseNexusEditor;
 use components\forms\description\TextField;
 use components\layout\Grid\description\Grid;
 use components\layout\Grid\description\GridColumn;
+use components\nexus\Nexus;
+use components\nexus\NexusHeader;
 use core\App;
 use core\database\sql\Column;
 use core\database\sql\Database;
@@ -25,13 +26,17 @@ use models\Language\Lexicon\Grid\LexiconGridRow;
 #[Table('core_lexicon')]
 #[Database(App::DATABASE)]
 class Phrase extends Model implements LexiconTemplate {
-    public static function getNexus(): AdminNexus {
-        return (new AdminNexus(
+    public static function getNexus(): Nexus {
+        $nexus = Nexus::fromEditor(
             ModelDescription::extract(Phrase::class),
-            new AdminPhraseEditor(),
+            new PhraseNexusEditor(),
             LexiconGridRow::getGridDescription()
-        ))
-            ->showCreateButton(false);
+        );
+
+        $header = new NexusHeader($nexus);
+        $header->setShowCreateAction(false);
+
+        return $nexus->setTemplateSlot(Nexus::SLOT_HEADER, $header);
     }
 
     /** @var array<string, array<string, static>> */

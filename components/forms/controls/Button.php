@@ -2,13 +2,13 @@
 
 namespace components\forms\controls;
 
-use components\html\HtmlAttribute;
 use core\ResourceLoader;
-use core\view\Renderer;
+use core\view\HtmlAttribute;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class Button implements ViewTemplate {
-    use Renderer, ResourceLoader, HtmlAttribute;
+    use ViewTemplateRenderer, ResourceLoader, HtmlAttribute;
 
     public function __construct(
         protected string $label,

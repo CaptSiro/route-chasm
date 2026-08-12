@@ -12,6 +12,7 @@ use core\route\RouteNode;
 use core\route\Router;
 use core\route\RouteTree;
 use core\view\Component;
+use core\view\PageViewFactory;
 use models\Language\Language;
 use models\Navigation\NavigationContext;
 use models\Navigation\NavigationFactoryRecord;
@@ -116,7 +117,11 @@ class Navigator extends Router {
         $destination = self::getDestination($language, $path, $this->context);
         if (is_null($destination)) {
             $response->setStatus(HttpCode::CE_NOT_FOUND);
-            $response->renderRoot(new NotFound($path));
+            $response->render(
+                PageViewFactory::getDefaultFactory()
+                    ->create()
+                    ->setComponent((new NotFound())->setTitle($path))
+            );
         }
 
         return $destination;

@@ -2,17 +2,24 @@
 
 namespace components;
 
-use components\html\HtmlHead;
-use components\layout\WebPage\ContextAwareWebPage;
+use core\locale\LexiconUnit;
 use core\sideloader\importers\Css\Css;
-use core\view\ContainerContent;
+use core\view\Controller;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
+use JsonSerializable;
 
-class Explorer extends ContainerContent {
+class Explorer extends Controller implements JsonSerializable {
+    use LexiconUnit;
+
+
+
     public function __construct(
         protected string $directory,
         protected string $label,
         protected string $url,
-        protected bool $isParentEntryAllowed = true
+        protected bool $isParentEntryAllowed = true,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
         Css::importDefault($this);
 
@@ -20,6 +27,28 @@ class Explorer extends ContainerContent {
             $this->url .= "/";
         }
 
-        parent::__construct(new ContextAwareWebPage(head: new HtmlHead("Explorer - $this->label")));
+        parent::__construct($renderer);
+        $this->setTitle($this->trt("Explorer - {}", $this->label));
+    }
+
+
+
+    // JsonSerializable
+    public function jsonSerialize(): array {
+        $ret = [];
+
+        foreach (scandir($this->directory) as $entry) {
+            if ($entry === "." || ($entry === ".." && !$this->isParentEntryAllowed)) {
+                continue;
+            }
+
+            $ret[] = [
+                'entry' => $entry,
+                'type' => is_dir($this->directory . "/" . $entry) ? 'directory' : 'file',
+                'url' => $this->url . urlencode($entry),
+            ];
+        }
+
+        return $ret;
     }
 }

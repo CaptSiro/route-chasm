@@ -2,7 +2,7 @@
 
 namespace components\pages;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
+use components\nexus\NexusEditorBehavior;
 use core\actions\Action;
 use core\view\Component;
 use core\view\View;
@@ -18,7 +18,7 @@ interface PageTemplate {
 
     public function delete(Page $page): ?View;
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component;
+    public function buildContent(Page $page, Language $language): Component;
 
     public function buildListingCard(Page $page, Language $language): View;
 
@@ -30,5 +30,5 @@ interface PageTemplate {
 
     public function buildEditor(Page $page): Action;
 
-    public function buildEditorBehavior(): ?EditorBehavior;
+    public function buildEditorBehavior(): ?NexusEditorBehavior;
 }

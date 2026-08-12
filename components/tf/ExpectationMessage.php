@@ -4,11 +4,12 @@ namespace components\tf;
 
 use core\locale\LexiconUnit;
 use core\tf\Test;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class ExpectationMessage implements FormatAble {
-    use FormatAbleTrait, LexiconUnit;
+class ExpectationMessage extends Component {
+    use LexiconUnit;
 
 
 
@@ -16,7 +17,9 @@ class ExpectationMessage implements FormatAble {
         protected string $hint,
         protected mixed $expected,
         protected mixed $actual,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
+        parent::__construct($renderer);
         $this->setLexiconGroup(Test::LEXICON_GROUP);
     }
 

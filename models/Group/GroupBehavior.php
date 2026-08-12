@@ -2,26 +2,23 @@
 
 namespace models\Group;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\Admin\Nexus\Editor\GetEditor;
-use components\Admin\Nexus\Editor\SetEditor;
 use components\Admin\PrivilegeResourceMap;
 use components\forms\controls\TextField;
-use components\forms\Form;
-use components\layout\Layout;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditorBehavior;
 use components\SaveError\SaveError;
 use core\App;
 use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Models;
+use core\view\Container;
 use core\view\View;
 use models\Privilege\Privilege;
 use models\UserResource;
 
-class GroupBehavior implements EditorBehavior {
-    use GetEditor, SetEditor, LexiconUnit;
+class GroupBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
 
     public const LEXICON_GROUP = 'admin.group.editor';
     public const NAME_NAME = 'name';
@@ -35,15 +32,15 @@ class GroupBehavior implements EditorBehavior {
 
 
 
-    public function initForm(Form $form, ?Model $model): ?View {
-        return null;
+    public function getTitle(): string {
+        return $this->tr('Group');
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         if (is_null($model)) {
-            $layout->add(new TextField(self::NAME_NAME, 'Name'));
+            $container->add(new TextField(self::NAME_NAME, 'Name'));
         } else {
-            $layout->add($name = new TextField(
+            $container->add($name = new TextField(
                 self::NAME_NAME,
                 'Name',
                 Models::getString($model, 'name')
@@ -72,14 +69,14 @@ class GroupBehavior implements EditorBehavior {
             }
         }
 
-        $layout->add(
+        $container->add(
             new PrivilegeResourceMap($privileges, $resources, $map, self::NAME_MAPPINGS)
         );
 
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         if (!($model instanceof Group)) {
             return new SaveError('', $this->tr('Provided model is not type of '. Group::class));
         }
@@ -89,7 +86,7 @@ class GroupBehavior implements EditorBehavior {
             ->body(DictionaryBody::class)
             ->getFields();
 
-        if ($action === EditorBehaviorAction::CREATE || $model->isEditable()) {
+        if ($action === NexusEditorAction::CREATE || $model->isEditable()) {
             $model->set($fields->toArray());
         }
 

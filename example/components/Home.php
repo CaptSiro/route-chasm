@@ -3,31 +3,33 @@
 namespace example\components;
 
 use components\docs\Docs;
-use components\html\HtmlHead;
 use components\layout\Menu\Menu;
-use components\layout\WebPage\ContextAwareWebPage;
 use core\App;
+use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
-use core\view\ContainerContent;
+use core\view\Controller;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
 
-class Home extends ContainerContent {
+class Home extends Controller {
+    use LexiconUnit;
+
+
+
     protected Menu $menu;
 
     public const LEXICON_GROUP = 'home';
 
 
 
-    public function __construct() {
-        parent::__construct(
-            new ContextAwareWebPage(
-                head: $head = new HtmlHead(
-                    App::getEnvStatic()->get(RouteChasmEnvironment::ENV_PROJECT) ?? 'RouteChasm'
-                )
-            )
-        );
+    public function __construct(
+        ?Renderer $renderer = new HtmlRenderer()
+    ) {
+        parent::__construct($renderer);
 
+        $this->setTitle(App::getEnvStatic()->get(RouteChasmEnvironment::ENV_PROJECT) ?? 'RouteChasm');
         $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->tr('Testing phrase');
 
@@ -38,7 +40,7 @@ class Home extends ContainerContent {
             [PROPERTY_EDITABLE => true]
         );
 
-        $head->addMeta('description', $description->toString());
+        $this->addPropertyHtmlMeta('description', $description->toString());
     }
 
 

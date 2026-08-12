@@ -4,11 +4,11 @@ namespace components\Markdown;
 
 use components\forms\Form;
 use core\view\Html;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class MarkdownEditor implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
 
 

@@ -4,13 +4,13 @@ namespace example\components;
 
 use components\layout\PageMenu\PageMenu;
 use components\Search\HeaderSearch;
-use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\Menu;
 
 class Header implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
 
 

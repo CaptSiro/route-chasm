@@ -2,11 +2,12 @@
 
 namespace models\extensions\IsDefault;
 
-use components\Admin\Nexus\AdminNexus;
-use components\Admin\Nexus\NexusExtension;
+use components\nexus\Nexus;
+use components\nexus\NexusExtension;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\Model;
+use core\database\sql\ModelDescription;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\ResourceLoader;
@@ -20,7 +21,11 @@ class IsDefaultExtension implements NexusExtension {
 
 
 
-    protected AdminNexus $context;
+    protected Nexus $context;
+
+    public function __construct(
+        protected ModelDescription $modelDescription
+    ) {}
 
 
 
@@ -29,7 +34,7 @@ class IsDefaultExtension implements NexusExtension {
             return null;
         }
 
-        $ret = $this->context->getLink();
+        $ret = $this->context->getUrl();
         $ret->getPath()
             ->append('set-as-default');
 
@@ -37,7 +42,7 @@ class IsDefaultExtension implements NexusExtension {
         return $ret;
     }
 
-    public function onBind(AdminNexus $context, Router $router): void {
+    public function onBind(Nexus $context, Router $router): void {
         $this->context = $context;
 
         $router->use('/set-as-default', function (Request $request, Response $response) {
@@ -45,7 +50,7 @@ class IsDefaultExtension implements NexusExtension {
                 ->getQuery()
                 ->get(self::QUERY_MODEL_ID);
 
-            $model = $this->context->getModelDescription()
+            $model = $this->modelDescription
                 ->getFactory()
                 ->fromId($id);
 

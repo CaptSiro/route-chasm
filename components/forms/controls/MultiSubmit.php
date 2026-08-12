@@ -3,11 +3,11 @@
 namespace components\forms\controls;
 
 use components\forms\FormAction;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class MultiSubmit implements ViewTemplate {
-    use Renderer, FormControl;
+    use ViewTemplateRenderer, FormControl;
 
     /**
      * @param array<FormAction> $actions

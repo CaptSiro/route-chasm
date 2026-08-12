@@ -4,19 +4,17 @@ namespace components\fs;
 
 use core\locale\LexiconUnit;
 use core\view\Container;
-use core\view\Renderer;
-use core\view\View;
+use core\view\ContainerTrait;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\fs\Directory;
 
 class FileSystemDropArea implements Container, ViewTemplate {
-    use Renderer, LexiconUnit;
+    use ViewTemplateRenderer, ContainerTrait, LexiconUnit;
 
     public const LEXICON_GROUP = 'file-system.drop-area';
 
 
-
-    protected View $content;
 
     public function __construct(
         protected ?Directory $directory = null,
@@ -40,13 +38,5 @@ class FileSystemDropArea implements Container, ViewTemplate {
 
     public function setReadonly(bool $readonly): void {
         $this->readonly = $readonly;
-    }
-
-
-
-    // Container
-    public function addContent(View $view): static {
-        $this->content = $view;
-        return $this;
     }
 }

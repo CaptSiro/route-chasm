@@ -16,8 +16,6 @@ use core\http\HttpHeader;
 use core\http\HttpMethod;
 use core\locale\LexiconUnit;
 use core\route\Path;
-use locales\EnglishUS;
-use models\Language\Language;
 
 class Assets extends Controller {
     use Flags, LexiconUnit;

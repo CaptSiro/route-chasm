@@ -2,31 +2,33 @@
 
 namespace models\Language\Lexicon;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\Admin\Nexus\Editor\SetEditor;
-use components\Admin\Phrase\AdminPhraseEditor;
+use components\Admin\Phrase\PhraseNexusEditor;
 use components\forms\controls\HiddenField;
 use components\forms\controls\TextField;
 use components\forms\Form;
 use components\layout\Column;
-use components\layout\Layout;
 use components\layout\Tabs;
 use components\Message\Message;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\App;
 use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\utils\Models;
-use core\view\StringRenderer;
+use core\view\Container;
+use core\view\str;
 use core\view\View;
 use models\Language\Language;
 
-class PhraseEditorBehavior implements EditorBehavior {
-    use LexiconUnit, SetEditor;
+class PhraseEditorBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
 
-    public const LEXICON_GROUP = AdminPhraseEditor::LEXICON_GROUP;
+    public const LEXICON_GROUP = PhraseNexusEditor::LEXICON_GROUP;
     public const NAME_DELETED_TRANSLATIONS = 'deleted_translations';
+
+
 
     public function __construct() {
         $this->setLexiconGroup(self::LEXICON_GROUP);
@@ -34,9 +36,13 @@ class PhraseEditorBehavior implements EditorBehavior {
 
 
 
-    public function initForm(Form $form, ?Model $model): ?View {
+    public function getTitle(): string {
+        return $this->tr('Phrase Translation');
+    }
+
+    public function onFormInitialization(NexusEditor $editor, Form $form, ?Model $model): ?View {
         $form->setBodyTransformer('form_json');
-        return null;
+        return parent::onFormInitialization($editor, $form, $model);
     }
 
     protected function addDynamicTranslationControls(array &$tabs, Phrase $phrase): void {
@@ -62,10 +68,10 @@ class PhraseEditorBehavior implements EditorBehavior {
             );
         }
 
-        if ($this->editor instanceof AdminPhraseEditor) {
+        if ($this->editor instanceof PhraseNexusEditor) {
             foreach ($languages as $language) {
                 $tabs[$language->getLocale()->getName()]->add(
-                    new StringRenderer($this->editor->createAddTranslationButton($language->id))
+                    str::view($this->editor->createAddTranslationButton($language->id))
                 );
             }
         }
@@ -93,17 +99,17 @@ class PhraseEditorBehavior implements EditorBehavior {
         }
     }
 
-    public function addControls(Layout $layout, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         if (is_null($model)) {
             return new Message($this->tr('Creating phrases is not supported'));
         }
 
-        $layout->add(new HiddenField(self::NAME_DELETED_TRANSLATIONS));
+        $container->add(new HiddenField(self::NAME_DELETED_TRANSLATIONS));
 
         /** @var Phrase $model */
-        $layout->add((new TextField('_ignored_', $this->tr('Default'), $model->default))
+        $container->add((new TextField('_ignored_default_', $this->tr('Default'), $model->default))
             ->readonly());
-        $layout->add((new TextField('_ignored_', $this->tr('Group'), $model->getLexiconGroup()->name))
+        $container->add((new TextField('_ignored_group_', $this->tr('Group'), $model->getLexiconGroup()->name))
             ->readonly());
 
         $tabs = [];
@@ -114,7 +120,7 @@ class PhraseEditorBehavior implements EditorBehavior {
             $this->addStaticTranslationControls($tabs, $model);
         }
 
-        $layout->add(new Tabs($tabs));
+        $container->add(new Tabs($tabs));
         return null;
     }
 
@@ -171,9 +177,23 @@ class PhraseEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function submitTranslations(Phrase $phrase, array $translationRawObjects): ?View {
+        if (!$phrase->isDynamic) {
+            if (!is_null($error = $this->onSubmitStatic($phrase, $translationRawObjects))) {
+                return $error;
+            }
+        } else {
+            if (!is_null($error = $this->onSubmitDynamic($phrase, $translationRawObjects))) {
+                return $error;
+            }
+        }
+
+        return null;
+    }
+
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         /** @var Phrase $model */
-        if ($action === EditorBehaviorAction::CREATE) {
+        if ($action === NexusEditorAction::CREATE) {
             return new Message(
                 $this->tr('Creating phrases is not supported')
             );
@@ -197,19 +217,5 @@ class PhraseEditorBehavior implements EditorBehavior {
         );
 
         return $this->submitTranslations($model, $objects);
-    }
-
-    public function submitTranslations(Phrase $phrase, array $translationRawObjects): ?View {
-        if (!$phrase->isDynamic) {
-            if (!is_null($error = $this->onSubmitStatic($phrase, $translationRawObjects))) {
-                return $error;
-            }
-        } else {
-            if (!is_null($error = $this->onSubmitDynamic($phrase, $translationRawObjects))) {
-                return $error;
-            }
-        }
-
-        return null;
     }
 }

@@ -3,12 +3,12 @@
 namespace components\layout\BreadCrumbs;
 
 use core\RouteChasmEnvironment;
-use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class BreadCrumbs implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
     /**
      * @param array<string, string|View> $breadcrumbs url => label

@@ -2,10 +2,10 @@
 
 namespace components\layout\Menu;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use core\route\Path;
+use core\view\Attribute;
 use core\view\Component;
+use core\view\HtmlAttribute;
 
 /**
  * @template T

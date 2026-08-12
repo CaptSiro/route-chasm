@@ -2,14 +2,14 @@
 
 namespace components\forms\controls;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use core\RouteChasmEnvironment;
 use core\sideloader\importers\Javascript\Javascript;
-use core\view\Renderer;
+use core\view\Attribute;
+use core\view\HtmlAttribute;
+use core\view\ViewTemplateRenderer;
 
 class Select implements Control, Attribute {
-    use Renderer, FormControl, HtmlAttribute;
+    use ViewTemplateRenderer, FormControl, HtmlAttribute;
 
     public const DATA_ATTRIBUTE_SEARCH_FUNCTION = 'search';
     public const DATA_ATTRIBUTE_ON_OPTION_SELECTED_FUNCTION = 'on-option-selected';

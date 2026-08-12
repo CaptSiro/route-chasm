@@ -3,17 +3,17 @@
 namespace components\fs;
 
 use components\layout\Grid\GridLayout;
-use core\view\Renderer;
 use core\view\View;
+use core\view\ViewTemplateRenderer;
 
 class FileSystemGrid implements GridLayout {
-    use Renderer;
+    use ViewTemplateRenderer;
 
     public function __construct(
         protected GridLayout $grid,
         protected FileSystemDropArea $area,
     ) {
-        $this->area->addContent($grid);
+        $this->area->add($grid);
     }
 
 

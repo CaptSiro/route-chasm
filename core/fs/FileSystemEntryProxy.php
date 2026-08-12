@@ -3,8 +3,8 @@
 namespace core\fs;
 
 use Closure;
-use components\Admin\Nexus\NexusProxy;
 use components\Icon;
+use components\nexus\NexusProxy;
 use core\fs\variants\FileVariantTransformer;
 use core\fs\variants\ImageVariant;
 use core\ResourceLoader;

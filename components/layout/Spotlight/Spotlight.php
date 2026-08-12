@@ -2,12 +2,12 @@
 
 namespace components\layout\Spotlight;
 
-use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 
 class Spotlight implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
 
 

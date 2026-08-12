@@ -18,10 +18,8 @@ use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\Singleton;
 use core\url\Url;
-use locales\EnglishUS;
 use models\fs\Directory;
 use models\fs\File;
-use models\Language\Language;
 use models\User\User;
 
 class FileServer extends Router {
@@ -178,7 +176,6 @@ class FileServer extends Router {
 
                 foreach ($files as $file) {
                     $f = $file->getName();
-                    var_dump($f);
                     switch ($e = $file->getError()) {
                         case UPLOAD_ERR_OK: {
                             if (!is_null(FileSystem::storeUploadedFile($directory, $file))) {
@@ -370,7 +367,7 @@ class FileServer extends Router {
                 $name = $query->get('name', 'file-variant-transformers');
                 $label = $query->get('label', 'Transformers');
 
-                $response->renderRoot(
+                $response->render(
                     new FileVariantTransformers(
                         $variant->getTransformers(),
                         $name,

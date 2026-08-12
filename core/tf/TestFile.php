@@ -2,7 +2,15 @@
 
 namespace core\tf;
 
-class TestFile {
+use core\view\renderers\XmlRenderer;
+use core\view\ViewTemplateTrait;
+use JsonSerializable;
+
+class TestFile implements JsonSerializable {
+    use ViewTemplateTrait;
+
+
+
     protected int $failed;
     protected int $passed;
 
@@ -39,5 +47,23 @@ class TestFile {
 
     public function getSuites(): array {
         return $this->suites;
+    }
+
+    public function toXml(): string {
+        return $this->renderTemplated(
+            $this->getTemplate(XmlRenderer::TEMPLATE_EXTENSION)
+        );
+    }
+
+
+
+    // JsonSerializable
+    public function jsonSerialize(): array {
+        return [
+            'file' => $this->file,
+            'failed' => $this->failed,
+            'passed' => $this->passed,
+            'suits' => $this->suites,
+        ];
     }
 }

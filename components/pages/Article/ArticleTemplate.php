@@ -2,7 +2,7 @@
 
 namespace components\pages\Article;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
+use components\nexus\NexusEditorBehavior;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use components\pages\Wireframe;
@@ -11,6 +11,7 @@ use core\fs\variants\FileVariantTransformer;
 use core\fs\variants\ImageVariant;
 use core\view\Component;
 use core\view\View;
+use models\Language\Language;
 use models\Page\Page;
 
 class ArticleTemplate implements PageTemplate {
@@ -58,15 +59,17 @@ class ArticleTemplate implements PageTemplate {
         return new ArticleEditor($page);
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
+    public function buildContent(Page $page, Language $language): Component {
+        $localization = Wireframe::getLocalization($page, $language);
+
         return new Article(
             $page,
-            $wireframe->getLocalization(),
-            $wireframe->getLocalization()
+            $localization,
+            $localization
                 ->get(self::DATA_CONTENT)
                 ->read() ?? ''
         );

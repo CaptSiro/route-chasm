@@ -5,7 +5,7 @@ namespace components\Message;
 enum MessageType: string {
     case INFO = "INFO";
 
-    case NOTICE = "NOTICE";
+    case CONFIRMATION = "NOTICE";
 
     case WARNING = "WARNING";
 

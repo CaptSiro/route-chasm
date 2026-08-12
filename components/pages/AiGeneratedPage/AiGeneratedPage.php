@@ -3,7 +3,6 @@
 namespace components\pages\AiGeneratedPage;
 
 use components\fs\FileContent\FileContent;
-use components\pages\Wireframe;
 use core\App;
 use core\communication\body\DictionaryBody;
 use core\communication\Request;
@@ -15,14 +14,15 @@ use core\locale\LexiconUnit;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
+use core\view\Controller;
 use core\view\Html;
-use core\view\Renderer;
-use core\view\StringRenderer;
+use core\view\str;
+use core\view\ViewTemplateRenderer;
 use models\Page\Page;
 use models\User\User;
 
-class AiGeneratedPage extends Component {
-    use Renderer, LexiconUnit;
+class AiGeneratedPage extends Controller {
+    use ViewTemplateRenderer, LexiconUnit;
 
 
 
@@ -32,7 +32,7 @@ class AiGeneratedPage extends Component {
     public const TARGET_CSS = 'ai-page-source_css';
     public const TARGET_JS = 'ai-page-source_js';
 
-    public static function build(Wireframe $wireframe, Page $page): Component {
+    public static function build(Page $page): Component {
         $html = $page->get(AiPageTemplate::DATA_ITEM_HTML);
         $css = $page->get(AiPageTemplate::DATA_ITEM_CSS);
         $js = $page->get(AiPageTemplate::DATA_ITEM_JS);
@@ -43,12 +43,12 @@ class AiGeneratedPage extends Component {
             return static::renderHtml($html, $css, $js);
         }
 
-        return new static($wireframe, $html, $css, $js);
+        return new static($html, $css, $js);
     }
 
     protected static function renderHtml(DataItem $html, DataItem $css, DataItem $js): Component {
         if (!$html->exists()) {
-            return new StringRenderer('');
+            return str::view('');
         }
 
         if ($css->exists()) {
@@ -59,7 +59,7 @@ class AiGeneratedPage extends Component {
             Javascript::import($js->getFilePath());
         }
 
-        return new StringRenderer($html->read());
+        return str::view($html->read());
     }
 
 
@@ -68,7 +68,6 @@ class AiGeneratedPage extends Component {
     protected bool $sourcesCreated = false;
 
     public function __construct(
-        protected Wireframe $wireframe,
         protected DataItem $html,
         protected DataItem $css,
         protected DataItem $js,
@@ -112,36 +111,34 @@ class AiGeneratedPage extends Component {
             'index.html' => $this->createFileContent($this->html, '#'. self::TARGET_HTML)
         ];
 
-        $head = $this->wireframe->getHead();
-
         if ($this->css->exists()) {
             $this->sources['styles.css'] = $this->createFileContent($this->css, '#'. self::TARGET_CSS);
-            $head->addElement(Html::wrapUnsafe(
+            $this->addPropertyHtmlElements([Html::wrapUnsafe(
                 'style',
                 $this->css->read(),
                 ['id' => self::TARGET_CSS]
-            ));
+            )]);
         }
 
         if ($this->js->exists()) {
             $this->sources['script.js'] = $this->createFileContent($this->js, '#'. self::TARGET_JS);
-            $head->addElement(Html::wrapUnsafe(
+            $this->addPropertyHtmlElements([Html::wrapUnsafe(
                 'script',
                 $this->js->read(),
                 [
                     'defer' => '',
                     'id' => self::TARGET_JS
                 ]
-            ));
+            )]);
         }
 
         return $this->sources;
     }
 
-    public function perform(Request $request, Response $response): void {
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::perform($request, $response);
+                parent::performControllerAction($request, $response);
                 return;
             }
 

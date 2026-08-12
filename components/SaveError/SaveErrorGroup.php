@@ -3,16 +3,12 @@
 namespace components\SaveError;
 
 use components\Message\MessageType;
-use core\App;
 use core\http\HttpCode;
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
-use core\view\ViewTemplate;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
 
-class SaveErrorGroup implements ViewTemplate, FormatAble {
-    use FormatAbleTrait;
-
+class SaveErrorGroup extends Component {
     /**
      * @param string $separator
      * @param array<SaveError> $errors
@@ -29,9 +25,10 @@ class SaveErrorGroup implements ViewTemplate, FormatAble {
 
     public function __construct(
         protected array $errors,
-        protected int $code = HttpCode::CE_BAD_REQUEST
+        protected int $code = HttpCode::CE_BAD_REQUEST,
+        ?Renderer $renderer = new HtmlRenderer()
     ) {
-        $this->setFormatter(Formatter::default($this));
+        parent::__construct($renderer);
     }
 
 
@@ -41,15 +38,6 @@ class SaveErrorGroup implements ViewTemplate, FormatAble {
     }
 
 
-
-    // FormatAble
-    public function render(): string {
-        App::getInstance()
-            ->getResponse()
-            ->setStatus($this->code);
-
-        return $this->renderFormatter();
-    }
 
     public function toText(): string {
         return self::joinMessages("\n", $this->errors);

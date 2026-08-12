@@ -2,8 +2,6 @@
 
 namespace components\layout\ToolBar;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
 use components\layout\Menu\MenuItem;
 use components\layout\Menu\MenuItemContext;
 use core\collections\graph\Edge;
@@ -11,10 +9,12 @@ use core\collections\graph\TreeVertex;
 use core\locale\LexiconUnit;
 use core\route\Path;
 use core\route\RouteSegment;
-use core\view\Renderer;
+use core\view\Attribute;
+use core\view\HtmlAttribute;
+use core\view\ViewTemplateRenderer;
 
 class ToolBarItem implements MenuItem, Attribute {
-    use Renderer, MenuItemContext, LexiconUnit, HtmlAttribute;
+    use ViewTemplateRenderer, MenuItemContext, LexiconUnit, HtmlAttribute;
 
     public const LEXICON_GROUP = 'tool-bar';
 

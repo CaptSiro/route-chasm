@@ -13,9 +13,9 @@ Javascript::import($this->getResource('docs.js'));
 Markdown::importAssets();
 Article::importAssets();
 
-?><?= $this->createHeader() ?>
+echo $this->createHeader();
 
-<div class="page-section bc-no-margin">
+?><div class="page-section bc-no-margin">
     <?= $this->breadCrumbs ?>
 </div>
 

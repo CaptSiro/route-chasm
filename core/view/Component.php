@@ -2,68 +2,65 @@
 
 namespace core\view;
 
-use core\actions\Action;
-use core\actions\ActionBindRouteNode;
-use core\actions\ActorClassName;
-use core\actions\Barrier;
-use core\actions\IsLastAction;
-use core\App;
-use core\communication\Request;
-use core\communication\Response;
-use core\http\HttpCode;
-use core\locale\LexiconUnit;
-use core\route\Path;
-use core\route\RouteNode;
-use core\route\Router;
-use core\url\Url;
-use models\Privilege\Privilege;
-use RuntimeException;
+use core\view\renderers\HtmlRenderer;
 
-class Component implements ViewTemplate, Action {
-    use Renderer, ActionBindRouteNode, ActorClassName, IsLastAction, LexiconUnit, Barrier;
+class Component implements ViewTemplate, Payload {
+    use ViewTemplateTrait, PayloadTrait;
+
+    public static function propagateSetRenderer(mixed $variable, Renderer $renderer): void {
+        if ($variable instanceof Component) {
+            $variable->setRenderer($renderer);
+        }
+    }
 
 
+
+    protected ?string $title = null;
 
     public function __construct(
-        protected bool $isMiddleware = false
-    ) {}
+        protected ?Renderer $renderer = null
+    ) {
+        if (is_null($this->renderer)) {
+            $this->renderer = HtmlRenderer::getInstance();
+        }
+    }
+
+
+
+    public function getTitle(): ?string {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static {
+        $this->title = $title;
+        $this->setProperty(Head::PAYLOAD_TITLE, $title);
+        return $this;
+    }
+
+    public function addPropertyHtmlMeta(string $key, string $meta): static {
+        $this->addProperty(Head::PAYLOAD_HTML_META, $meta, $key);
+        return $this;
+    }
+
+    /**
+     * @param array<string|View> $elements
+     * @return $this
+     */
+    public function addPropertyHtmlElements(array $elements): static {
+        $this->addAllProperties(Head::PAYLOAD_HTML_ELEMENTS, $elements);
+        return $this;
+    }
+
+    public function setRenderer(Renderer $renderer): static {
+        $this->renderer = $renderer;
+        return $this;
+    }
+
+    public function render(): string {
+        return $this->renderer->render($this);
+    }
 
     public function __toString(): string {
         return $this->render();
-    }
-
-
-
-    // Action
-    public function isMiddleware(): bool {
-        return $this->isMiddleware;
-    }
-
-    public function onBind(RouteNode $bindingPoint): void {
-        $this->bindRouteNode($bindingPoint);
-    }
-
-    public function createUrl(Path|string|null $relative = null): Url {
-        if (!isset($this->routeNode)) {
-            throw new RuntimeException('Route Node is not set. Cannot create URL.');
-        }
-
-        return Router::createUrlFromNode($this->routeNode, $relative);
-    }
-
-    public function performComponentAction(Request $request, Response $response): void {
-        $response->renderRoot($this);
-    }
-
-    public function perform(Request $request, Response $response): void {
-        if (!$this->isLastAction($request)) {
-            return;
-        }
-
-        if (!$this->hasRequestAccess(Privilege::fromName(Privilege::READ), $request)) {
-            $response->sendStatus(HttpCode::CE_FORBIDDEN);
-        }
-
-        $this->performComponentAction($request, $response);
     }
 }

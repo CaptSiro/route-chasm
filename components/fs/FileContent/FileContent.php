@@ -2,13 +2,13 @@
 
 namespace components\fs\FileContent;
 
-use components\html\Attribute;
-use components\html\HtmlAttribute;
-use core\view\Renderer;
+use core\view\Attribute;
+use core\view\HtmlAttribute;
 use core\view\View;
+use core\view\ViewTemplateRenderer;
 
 class FileContent implements View, Attribute {
-    use Renderer, HtmlAttribute;
+    use ViewTemplateRenderer, HtmlAttribute;
 
     public function __construct(
         protected string $filePath,

@@ -69,7 +69,7 @@ class Procedure implements Action {
         }
 
         if ($ret instanceof View) {
-            $response->renderRoot($ret);
+            $response->render($ret);
         }
     }
 }

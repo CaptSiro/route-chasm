@@ -2,7 +2,7 @@
 
 namespace models\Page\behavior;
 
-use components\Admin\Nexus\NexusProxy;
+use components\nexus\NexusProxy;
 use core\App;
 use core\RouteChasmEnvironment;
 use core\view\Html;

@@ -1,0 +1,19 @@
+<?php /** @var NexusHeader $this */
+
+use components\nexus\NexusHeader;
+use core\sideloader\importers\Css\Css;
+use core\view\Html;
+
+Css::importDefault($this);
+
+?><div class="nexus-header">
+    <h1><?= $this->getHtmlHeaderTitle() ?></h1>
+
+    <?php if ($this->showCreateAction): ?>
+        <a class="button" href="<?= $this->nexus->getCreateUrl() ?>">
+            <?= Html::escape($this->createActionLabel) ?>
+        </a>
+    <?php endif; ?>
+
+    <?= $this->getTemplateSlot($this::SLOT_ITEM) ?>
+</div>

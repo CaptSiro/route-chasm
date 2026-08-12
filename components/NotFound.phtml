@@ -6,7 +6,7 @@ use core\view\Html;
 
 ?><div class="page-container">
     <div class="page-section column">
-        <?= new Message($this->tr('Page not found') . ': ' . $this->title) ?>
+        <?= new Message($this->getTitle()) ?>
 
         <div>
             <button onclick="history.back()">

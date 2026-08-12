@@ -2,17 +2,21 @@
 
 namespace core\communication;
 
-use components\layout\WebPage\ContextAwareWebPage;
-use components\layout\WebPage\WebPage;
 use components\Message\Message;
 use components\Message\MessageType;
 use core\App;
+use core\communication\format\Format;
 use core\communication\format\FormatMatcher;
 use core\communication\format\LimitedFormat;
 use core\communication\format\ResponseFormat;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\view\BufferTransform;
+use core\view\Component;
+use core\view\Renderer;
+use core\view\renderers\HtmlRenderer;
+use core\view\renderers\JsonRenderer;
+use core\view\renderers\XmlRenderer;
 use core\view\View;
 
 class Response {
@@ -33,10 +37,18 @@ class Response {
         );
     }
 
+    protected static function applyBufferTransforms(string $text): string {
+        App::getInstance()
+            ->dispatch(self::EVENT_OB_TRANSFORM, $buffer = new BufferTransform($text));
+
+        return $buffer->getContents();
+    }
+
 
 
     protected array $headers;
     protected bool $headersSent;
+    protected ?Renderer $renderer;
 
 
 
@@ -51,6 +63,19 @@ class Response {
 
     public function getFormat(?Request $request = null): string {
         return $this->format->getIdentifier($request ?? App::getInstance()->getRequest());
+    }
+
+    public function getRenderer(): ?Renderer {
+        if (isset($this->renderer)) {
+            return $this->renderer;
+        }
+
+        return $this->renderer = match ($this->getFormat()) {
+            Format::IDENT_HTML => new HtmlRenderer(),
+            Format::IDENT_JSON => new JsonRenderer(),
+            Format::IDENT_XML => new XmlRenderer(),
+            default => null
+        };
     }
 
     public function hasHeader(string $header): bool {
@@ -141,7 +166,7 @@ class Response {
         $this->generateHeaders();
 
         if (!is_null($text)) {
-            echo $text;
+            echo self::applyBufferTransforms($text);
         }
 
         if (!$doFlushResponse) {
@@ -225,35 +250,28 @@ class Response {
     }
 
     /**
-     * Render object is rendered with given template to back buffer. Buffer contents may be transformed after rendering
-     * is completed with <code>EVENT_OB_TRANSFORM</code> event listeners. <code>EVENT_OB_TRANSFORM</code> is able to
+     * View object is rendered and on Buffer Transforms are applied on the output. Buffer contents may be transformed
+     * with <code>EVENT_OB_TRANSFORM</code> event listeners. <code>EVENT_OB_TRANSFORM</code> is able to
      * transform only data rendered from Render object. All data printed to output buffers prior to executing
      * Render::render() are not accessible to transform
      *
      * @param View $view
+     * @param Renderer|null $renderer Override default renderer passed to $view if it is an instance of Component
      * @param bool $doFlushResponse
      * @return void
      * @see Response::EVENT_OB_TRANSFORM
+     * @see Component::setRenderer()
      */
-    public function render(View $view, bool $doFlushResponse = true): void {
-        ob_start();
-        echo $view->render();
+    public function render(View $view, ?Renderer $renderer = null, bool $doFlushResponse = true): void {
+        if ($view instanceof Component) {
+            $renderer ??= $this->getRenderer();
 
-        $this->generateHeaders();
-
-        $buffer = new BufferTransform(ob_get_clean());
-        App::getInstance()->dispatch(self::EVENT_OB_TRANSFORM, $buffer);
-        echo $buffer->getContents();
-
-        if (!$doFlushResponse) {
-            return;
+            if (!is_null($renderer) && !($renderer instanceof HtmlRenderer)) {
+                $view->setRenderer($renderer);
+            }
         }
 
-        $this->exit();
-    }
-
-    public function renderRoot(View $view, bool $doFlushResponse = true): void {
-        $this->render($view->getRoot(), $doFlushResponse);
+        $this->send($view->render(), $doFlushResponse);
     }
 
     public function sendMessage(string $message, int $httpCode, MessageType $type = MessageType::ERROR): void {
@@ -266,15 +284,6 @@ class Response {
                 1
             ),
         );
-    }
-
-    public function sendWebPage(View|string $view, bool $doFlushResponse = true): void {
-        if (($root = $view->getRoot()) instanceof WebPage) {
-            $this->render($root, $doFlushResponse);
-            return;
-        }
-
-        $this->render(ContextAwareWebPage::wrap($view), $doFlushResponse);
     }
 
     public function sendStatus(int $httpCode): void {

@@ -3,11 +3,12 @@
 namespace models\extensions\Priority;
 
 use Closure;
-use components\Admin\Nexus\AdminNexus;
-use components\Admin\Nexus\NexusExtension;
+use components\nexus\Nexus;
+use components\nexus\NexusExtension;
 use core\communication\Request;
 use core\communication\Response;
 use core\database\sql\Model;
+use core\database\sql\ModelDescription;
 use core\database\sql\query\Query;
 use core\database\sql\Sql;
 use core\http\HttpCode;
@@ -24,13 +25,14 @@ class PriorityExtension implements NexusExtension {
 
 
 
-    protected AdminNexus $context;
+    protected Nexus $context;
 
     /**
      * @param Closure|null $modifyUpdate `fn(UpdateQuery, Model) => void`
      */
     public function __construct(
-        protected ?Closure $modifyUpdate = null
+        protected ModelDescription $modelDescription,
+        protected ?Closure $modifyUpdate = null,
     ) {}
 
 
@@ -40,7 +42,7 @@ class PriorityExtension implements NexusExtension {
             return null;
         }
 
-        $ret = $this->context->getLink()
+        $ret = $this->context->getUrl()
             ->copy();
 
         $ret->getPath()
@@ -50,15 +52,14 @@ class PriorityExtension implements NexusExtension {
         return $ret;
     }
 
-    public function onBind(AdminNexus $context, Router $router): void {
+    public function onBind(Nexus $context, Router $router): void {
         $this->context = $context;
 
         $router->use('/set-priority', function (Request $request, Response $response) {
             $query = $request->getUrl()
                 ->getQuery();
 
-            $description = $this->context->getModelDescription();
-            $model = $description->getFactory()
+            $model = $this->modelDescription->getFactory()
                 ->fromId($query->getStrict(self::QUERY_MODEL_ID));
 
             if (!($model instanceof Priority)) {
@@ -74,14 +75,14 @@ class PriorityExtension implements NexusExtension {
                 $lower = $target;
                 $upper = $current - 1;
 
-                $update = Sql::update($description->getTable())
+                $update = Sql::update($this->modelDescription->getTable())
                     ->set($priority, "$priority + 1")
                     ->where(Query::infer("? <= $priority AND $priority <= ?", $lower, $upper));
             } else if ($target > $current) {
                 $lower = $current + 1;
                 $upper = $target;
 
-                $update = Sql::update($description->getTable())
+                $update = Sql::update($this->modelDescription->getTable())
                     ->set($priority, "$priority - 1")
                     ->where(Query::infer("? <= $priority AND $priority <= ?", $lower, $upper));
             }
@@ -91,7 +92,7 @@ class PriorityExtension implements NexusExtension {
                     ($this->modifyUpdate)($update, $model);
                 }
 
-                $update->run($description->getConnection());
+                $update->run($this->modelDescription->getConnection());
             }
 
             $model->setPriority($target, true);

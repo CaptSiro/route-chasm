@@ -13,7 +13,7 @@ class ShowExplorerPolicy implements DirectoryPolicy {
         $remaining = urldecode($app->getRequest()->getAnyParam() ?? '');
 
         $app->getResponse()
-            ->renderRoot(new Explorer(
+            ->render(new Explorer(
                 $path,
                 basename($assets->getDirectories()[0]) .'/'. $remaining, // todo fix for multiple asset directories
                 $app->getRequest()->getUrl()->getPath()->toString(),

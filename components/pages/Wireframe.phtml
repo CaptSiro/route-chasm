@@ -1,14 +1,17 @@
 <?php /** @var Wireframe $this */
 
 use components\pages\Wireframe;
-use core\view\Html;use example\components\Footer;
+use core\view\Html;
+use example\components\Footer;
 use example\components\Header;
 
+$head = $this->getHead();
+
 ?><!DOCTYPE html>
-<html lang="<?= $this->language ?>">
+<html lang="<?= $head->getLanguage() ?>">
 <?= $this->head ?>
 <body>
-    <?php if ($this->doAddHeader): ?>
+    <?php if ($this->payload->getPropertyBoolean($this::PAYLOAD_DO_ADD_HEADER, true)): ?>
         <?= Header::default() ?>
     <?php endif; ?>
 
@@ -20,7 +23,7 @@ use example\components\Header;
         </div>
     <?php endif; ?>
 
-    <?php if ($this->doAddBreadCrumbs): ?>
+    <?php if ($this->payload->getPropertyBoolean($this::PAYLOAD_DO_ADD_BREAD_CRUMBS, true)): ?>
         <div class="wireframe page-section bc-no-margin">
             <?= $this->getBreadCrumbs() ?>
         </div>
@@ -28,7 +31,7 @@ use example\components\Header;
 
     <main class="wireframe page-container">
         <?php if ($this->hasContentAccess()): ?>
-            <?= $this->content ?>
+            <?= $this->view ?>
         <?php else: ?>
             <div class="center">
                 <h1><?= Html::escape($this->tr('Page is not accessible')) ?></h1>
@@ -36,7 +39,7 @@ use example\components\Header;
         <?php endif; ?>
     </main>
 
-    <?php if ($this->doAddFooter): ?>
+    <?php if ($this->payload->getPropertyBoolean($this::PAYLOAD_DO_ADD_FOOTER, true)): ?>
         <?= Footer::default() ?>
     <?php endif; ?>
 </body>

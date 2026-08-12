@@ -2,16 +2,25 @@
 
 namespace components\layout;
 
+use core\view\Component;
 use core\view\Renderer;
 use core\view\View;
-use core\view\ViewTemplate;
 
-class Accordion implements ViewTemplate {
-    use Renderer;
-
+class Accordion extends Component {
     public function __construct(
-        protected string $title,
+        string $title,
         protected View $content,
-        protected bool $isExpanded = true
-    ) {}
+        protected bool $isExpanded = true,
+        ?Renderer $renderer = null
+    ) {
+        parent::__construct($renderer);
+        $this->setTitle($title);
+    }
+
+
+
+    public function setRenderer(Renderer $renderer): static {
+        Component::propagateSetRenderer($this->content, $renderer);
+        return parent::setRenderer($renderer);
+    }
 }

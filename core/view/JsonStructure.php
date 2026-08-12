@@ -31,10 +31,6 @@ class JsonStructure implements JsonSerializable, View {
         return json_encode($this->jsonSerialize());
     }
 
-    public function getRoot(): View {
-        return $this;
-    }
-
     public function __toString(): string {
         return $this->render();
     }

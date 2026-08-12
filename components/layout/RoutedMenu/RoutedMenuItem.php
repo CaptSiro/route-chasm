@@ -12,11 +12,11 @@ use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
 use core\route\RouteSegment;
-use core\view\Renderer;
+use core\view\ViewTemplateRenderer;
 use RuntimeException;
 
 class RoutedMenuItem implements MenuItem {
-    use Renderer, MenuItemContext, LexiconUnit;
+    use ViewTemplateRenderer, MenuItemContext, LexiconUnit;
 
 
 

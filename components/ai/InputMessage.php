@@ -3,12 +3,12 @@
 namespace components\ai;
 
 use core\ResourceLoader;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use JsonSerializable;
 
 class InputMessage implements ViewTemplate, JsonSerializable {
-    use Renderer, ResourceLoader;
+    use ViewTemplateRenderer, ResourceLoader;
 
     const ROLE_SYSTEM = 'system';
     const ROLE_USER = 'user';

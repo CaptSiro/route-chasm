@@ -4,13 +4,13 @@ namespace components\Search;
 
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\Setting\Setting;
 use const models\extensions\Editable\PROPERTY_EDITABLE;
 
 class HeaderSearch implements ViewTemplate {
-    use Renderer, LexiconUnit;
+    use ViewTemplateRenderer, LexiconUnit;
 
     public const LEXICON_GROUP = Search::LEXICON_GROUP;
 

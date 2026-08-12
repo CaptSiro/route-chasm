@@ -2,15 +2,16 @@
 
 namespace components\pages;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
 use components\layout\ToolBar\ToolBarItem;
 use components\Lumora\Display;
 use components\Lumora\Editor\Editor;
+use components\nexus\NexusEditorBehavior;
 use core\actions\Action;
 use core\route\Route;
 use core\RouteChasmEnvironment;
 use core\view\Component;
 use core\view\View;
+use models\Language\Language;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
@@ -69,19 +70,22 @@ class TextPageTemplate implements PageTemplate {
         return $this->createEditor($page, $localization);
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return null;
     }
 
-    public function buildContent(Wireframe $wireframe, Page $page): Component {
-        $localization = $wireframe->getLocalization();
+    public function buildContent(Page $page, Language $language): Component {
+        $localization = Wireframe::getLocalization($page, $language);
 
-        $wireframe->setDoAddHeader(false);
-        $wireframe->setDoAddFooter(false);
-
-        return new Display(
+        $display = new Display(
             $localization->title,
             $this->createEditor($page, $localization)
         );
+
+        $display->setProperty(Wireframe::PAYLOAD_DO_ADD_HEADER, false);
+        $display->setProperty(Wireframe::PAYLOAD_DO_ADD_BREAD_CRUMBS, false);
+        $display->setProperty(Wireframe::PAYLOAD_DO_ADD_FOOTER, false);
+
+        return $display;
     }
 }

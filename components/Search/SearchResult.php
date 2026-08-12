@@ -2,16 +2,11 @@
 
 namespace components\Search;
 
-use core\view\FormatAble;
-use core\view\FormatAbleTrait;
-use core\view\Formatter;
-use core\view\ViewTemplate;
+use core\view\Component;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
-class SearchResult implements ViewTemplate, FormatAble {
-    use FormatAbleTrait;
-
+class SearchResult extends Component {
     public static function fromPage(Page $page, PageLocalization $localization): static {
         return new static(
             $localization->title,
@@ -28,7 +23,7 @@ class SearchResult implements ViewTemplate, FormatAble {
         protected ?string $meta = null,
         protected bool $isLink = true,
     ) {
-        $this->setFormatter(Formatter::default($this));
+        parent::__construct();
     }
 
 

@@ -2,13 +2,13 @@
 
 namespace components\Admin;
 
-use core\view\Renderer;
 use core\view\ViewTemplate;
+use core\view\ViewTemplateRenderer;
 use models\Privilege\Privilege;
 use models\UserResource;
 
 class PrivilegeResourceMap implements ViewTemplate {
-    use Renderer;
+    use ViewTemplateRenderer;
 
 
 

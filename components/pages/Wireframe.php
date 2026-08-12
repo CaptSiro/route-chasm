@@ -2,17 +2,17 @@
 
 namespace components\pages;
 
-use components\html\HtmlHead;
 use components\Icon;
 use components\layout\BreadCrumbs\BreadCrumbs;
-use core\actions\Action;
 use core\App;
-use core\communication\Request;
-use core\communication\Response;
+use core\Deprecated;
+use core\locale\LexiconUnit;
 use core\view\Component;
-use core\view\Container;
+use core\view\Head;
 use core\view\Html;
-use core\view\StringRenderer;
+use core\view\PageView;
+use core\view\Payload;
+use core\view\Renderer;
 use core\view\View;
 use DateTime;
 use models\Language\Language;
@@ -22,24 +22,72 @@ use models\Privilege\Privilege;
 use models\User\User;
 use RuntimeException;
 
-class Wireframe extends Component implements Container {
+class Wireframe extends PageView {
+    use LexiconUnit;
+
+    public const PAYLOAD_DO_ADD_HEADER = 'wireframe:do-add-header';
+    public const PAYLOAD_DO_ADD_FOOTER = 'wireframe:do-add-footer';
+    public const PAYLOAD_DO_ADD_BREAD_CRUMBS = 'wireframe:do-add-bread-crumbs';
+
     public const LEXICON_GROUP = 'page';
 
 
 
-    public static function createHtmlHead(PageLocalization $localization): HtmlHead {
-        $head = new HtmlHead(Html::escape($localization->title));
+    /**
+     * @param View $view
+     * @param string $title
+     * @return static
+     * @deprecated
+     */
+    public static function from(View $view, string $title): static {
+        throw new Deprecated();
+    }
 
-        if (!is_null($meta = $localization->getMeta())) {
-            $head->addMetaNonEmpty('description', Html::escape($meta->description));
-            $head->addMetaNonEmpty('keywords', Html::escape($meta->keywords));
-            $head->addMetaNonEmpty('og-title', Html::escape($meta->ogTitle));
-            $head->addMetaNonEmpty('og-description', Html::escape($meta->ogDescription));
+    /**
+     * @param Component $component
+     * @return static
+     * @deprecated
+     */
+    public static function fromComponent(Component $component): static {
+        throw new Deprecated();
+    }
+
+    public static function fromTemplate(PageTemplate $template, Page $page, Language $language): static {
+        $component = $template->buildContent($page, $language);
+
+        return (new static($page, $language))
+            ->setView($component)
+            ->setPayload($component);
+    }
+
+
+
+    public static function getLocalization(Page $page, Language $language): PageLocalization {
+        $localization = $page->getLocalization($language)
+            ?? $page->getLocalization(App::getDefaultLanguage());
+
+        if (is_null($localization)) {
+            throw new RuntimeException("No localization found for page. Cannot display.");
         }
 
-        $head->addElement(new StringRenderer(self::createLocalizationApi($localization)));
+        return $localization;
+    }
 
-        return $head;
+    public static function loadPayload(Payload $payload, PageLocalization $localization): void {
+        $payload->setProperty(Head::PAYLOAD_TITLE, $localization->title);
+
+        if (!is_null($meta = $localization->getMeta())) {
+            $payload->addAllProperties(Head::PAYLOAD_HTML_META, [
+                'description' => Html::escape($meta->description),
+                'keywords' => Html::escape($meta->keywords),
+                'og-title' => Html::escape($meta->ogTitle),
+                'og-description' => Html::escape($meta->ogDescription),
+            ]);
+        }
+
+        $payload->addAllProperties(Head::PAYLOAD_HTML_ELEMENTS, [
+            self::createLocalizationApi($localization)
+        ]);
     }
 
     public static function createLocalizationApi(PageLocalization $localization): string {
@@ -107,73 +155,27 @@ class Wireframe extends Component implements Container {
 
 
 
-    protected Language $language;
-    protected HtmlHead $head;
-    protected PageLocalization $localization;
-    protected View $content;
-    protected ?Action $action;
-    protected bool $doAddHeader = true;
-    protected bool $doAddFooter = true;
-    protected bool $doAddBreadCrumbs = true;
-
     public function __construct(
         protected Page $page,
-        bool $isMiddleware = false,
-        ?Language $language = null
+        protected Language $language,
+        ?View $view = null,
+        ?Payload $payload = null,
+        ?Renderer $renderer = null,
     ) {
-        parent::__construct($isMiddleware);
+        parent::__construct($view, $payload, $renderer);
         $this->setLexiconGroup(self::LEXICON_GROUP);
+    }
 
-        $this->language = $language ?? App::getInstance()
-            ->getRequest()
-            ->getLanguage();
-
-        $localization = $page->getLocalization($this->language)
-            ?? $page->getLocalization(App::getDefaultLanguage());
-
-        if (is_null($localization)) {
-            throw new RuntimeException("No localization found for page. Cannot display.");
-        }
-
-        $this->localization = $localization;
-        $this->head = self::createHtmlHead($localization);
+    public function setPayload(Payload $payload): static {
+        self::loadPayload($payload, self::getLocalization($this->page, $this->language));
+        return parent::setPayload($payload);
     }
 
 
-
-    public function getHead(): HtmlHead {
-        return $this->head;
-    }
 
     public function getBreadCrumbs(): BreadCrumbs {
         return BreadCrumbs::from(static::createBreadCrumbs($this->page))
             ->setDelimitor(null);
-    }
-
-    public function setDoAddHeader(bool $doAddHeader): void {
-        $this->doAddHeader = $doAddHeader;
-    }
-
-    public function setDoAddBreadCrumbs(bool $doAddBreadCrumbs): void {
-        $this->doAddBreadCrumbs = $doAddBreadCrumbs;
-    }
-
-    public function setDoAddFooter(bool $doAddFooter): void {
-        $this->doAddFooter = $doAddFooter;
-    }
-
-    public function getLocalization(): PageLocalization {
-        return $this->localization;
-    }
-
-    public function addContent(View $view): static {
-        $this->content = $view;
-
-        if ($view instanceof Action) {
-            $this->action = $view;
-        }
-
-        return $this;
     }
 
     public function hasContentAccess(): bool {
@@ -181,14 +183,5 @@ class Wireframe extends Component implements Container {
             User::fromRequest(App::getInstance()->getRequest()),
             Privilege::fromName(Privilege::READ)
         );
-    }
-
-    public function perform(Request $request, Response $response): void {
-        if (!is_null($this->action)) {
-            $this->action->perform($request, $response);
-            return;
-        }
-
-        parent::perform($request, $response);
     }
 }

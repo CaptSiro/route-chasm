@@ -5,5 +5,5 @@ namespace components\layout;
 use core\view\View;
 
 interface Layout {
-    public function add(View|string $child): static;
+    public function add(View|string $view): static;
 }

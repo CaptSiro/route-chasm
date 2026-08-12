@@ -17,7 +17,7 @@ Css::importDefault($this);
     data-upload="<?= FileServer::getInstance()->createFileUploadUrl($this->directory) ?>"
 >
     <div class="content">
-        <?= $this->content ?>
+        <?= $this->renderViews() ?>
     </div>
 
     <div class="overlays center">

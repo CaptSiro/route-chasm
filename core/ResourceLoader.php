@@ -56,6 +56,10 @@ trait ResourceLoader {
         return $sources;
     }
 
+    /**
+     * @return string Basename of `$this` class. Example: `\ns\Class` -> `Class`
+     * @see Objects::getClass()
+     */
     public function getClass(): string {
         return Objects::getClass($this);
     }

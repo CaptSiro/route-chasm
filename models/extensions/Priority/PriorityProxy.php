@@ -2,9 +2,9 @@
 
 namespace models\extensions\Priority;
 
-use components\Admin\Nexus\AdminNexus;
 use components\forms\Form;
 use components\Icon;
+use components\nexus\Nexus;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Html;
@@ -14,20 +14,23 @@ trait PriorityProxy {
 
 
 
-    public function setContext(AdminNexus $context): static {
+    public function setContext(Nexus $context): static {
         parent::setContext($context);
 
-        foreach ($context->getExtensions() as $extension) {
+        $context->on($context::EVENT_EXTENSION_ADDED, function ($extension) {
             if ($extension instanceof PriorityExtension) {
                 $this->priorityExtension = $extension;
-                break;
             }
-        }
+        });
 
         return $this;
     }
 
     public function getValuePriority(): string {
+        if (is_null($this->priorityExtension)) {
+            return 'PriorityProxy::$priorityExtension is null';
+        }
+
         $item = $this->getItem();
 
         if (Form::importAssets()) {

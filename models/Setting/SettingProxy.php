@@ -2,7 +2,7 @@
 
 namespace models\Setting;
 
-use components\Admin\Nexus\NexusProxy;
+use components\nexus\NexusProxy;
 use models\extensions\Editable\EditableProxy;
 
 class SettingProxy extends NexusProxy {

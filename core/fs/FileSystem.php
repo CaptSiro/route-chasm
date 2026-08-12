@@ -3,16 +3,16 @@
 namespace core\fs;
 
 use Closure;
-use components\Admin\AdminFileSystemCreateDirectory;
-use components\Admin\Nexus\AdminNexus;
-use components\Admin\Nexus\Editor\AdminNexusEditor;
+use components\Admin\FileSystemCreateDirectory;
 use components\fs\FileSystemDropArea;
 use components\fs\FileSystemGridFactory;
 use components\layout\BreadCrumbs\BreadCrumbs;
 use components\layout\Grid\description\GridColumn;
 use components\layout\Grid\GridLayoutFactory;
 use components\Message\Message;
-use core\actions\Action;
+use components\nexus\Nexus;
+use components\nexus\NexusActions;
+use components\nexus\NexusHeader;
 use core\App;
 use core\communication\UploadedFile;
 use core\storage\Data;
@@ -23,11 +23,10 @@ use core\fs\variants\ImageVariant;
 use core\locale\Lexicon;
 use core\ResourceLoader;
 use core\route\Path;
-use core\route\Route;
-use core\route\Router;
 use core\RouteChasmEnvironment;
 use core\utils\Files;
 use core\utils\Php;
+use core\view\Component;
 use core\view\Html;
 use core\view\View;
 use locales\EnglishUS;
@@ -234,7 +233,11 @@ class FileSystem {
         );
     }
 
-    public static function getNexus(): Action {
+    public static function getUserResource(): UserResource {
+        return UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM);
+    }
+
+    public static function getNexus(): Component {
         $messageDirectoryNotFound = self::getMessageDirectoryNotFound();
 
         $directoryId = App::getInstance()
@@ -251,7 +254,7 @@ class FileSystem {
             return new Message($messageDirectoryNotFound);
         }
 
-        $directoryLinkProvider = function (Directory $directory) {
+        $directoryUrlProvider = function (Directory $directory) {
             $url = App::getInstance()->getRequest()->getUrl()->copy();
             $url->setQueryArgument(RouteChasmEnvironment::QUERY_FILE_SYSTEM_DIRECTORY, $directory->id);
 
@@ -261,34 +264,26 @@ class FileSystem {
             );
         };
 
-        $nexus = new AdminNexus(
+        $nexus = Nexus::fromBehavior(
             ModelDescription::extract(File::class),
-            new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
-            self::listDirectory($directory, $directoryLinkProvider),
+            new FileSystemEntryEditorBehavior(),
+            self::listDirectory($directory, $directoryUrlProvider),
         );
 
+        $header = new NexusHeader($nexus);
+        $header
+            ->setTemplateSlot($header::SLOT_ITEM, new FileSystemCreateDirectory($directory))
+            ->removeTitle();
+
         $nexus
-            ->setUserResource(UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_FILE_SYSTEM))
-            ->showCreateButton(false)
-            ->setTitle("&nbsp;")
-            ->setTemplateSlot(AdminNexus::SLOT_HEADER_ITEM, new AdminFileSystemCreateDirectory($directory))
-            ->setTemplateSlot(AdminNexus::SLOT_BREAD_CRUMBS, static::generateBreadCrumbs(
+            ->setUserResource(self::getUserResource())
+            ->setTemplateSlot(Nexus::SLOT_HEADER, $header)
+            ->setTemplateSlot(Nexus::SLOT_BREAD_CRUMBS, static::generateBreadCrumbs(
                 $directory,
                 fn(Directory $x) => self::getBreadCrumbUrl($x)
             ));
 
         return $nexus;
-    }
-
-    public static function setRouter(Route $route, Router $router): void {
-        $action = FileSystem::getNexus();
-
-        if ($action instanceof AdminNexus) {
-            $action->setRouter($route, $router);
-            return;
-        }
-
-        $router->use($route, $action);
     }
 
     public static function listDirectoryModal(
@@ -322,14 +317,10 @@ class FileSystem {
             )
         );
 
-        $nexus = new AdminNexus(
-            ModelDescription::extract(File::class),
-            new AdminNexusEditor(new FileSystemEntryEditorBehavior()),
-            self::listDirectory(
-                $directory,
-                $directoryLinkProvider,
-                $fileType,
-                $readonly,
+        $nexus = new Nexus(
+            NexusActions::fromBehavior(
+                ModelDescription::extract(File::class),
+                new FileSystemEntryEditorBehavior(),
             )
         );
 
@@ -338,18 +329,26 @@ class FileSystem {
             fn(Directory $x) => self::getBreadCrumbUrl($x)
         );
 
-        $breadCrumbs->setItemTemplate($breadCrumbs->getResource("BreadCrumb_fs.phtml"));
         $nexus
-            ->showHeader(false)
-            ->showCreateButton(false)
-            ->doAddGridControls(false)
+            ->setTemplateSlot($nexus::SLOT_HEADER, null)
+            ->setTemplateSlot($nexus::SLOT_OVERVIEW, $nexus::createOverviewFromGridLayout(
+                $nexus,
+                self::listDirectory(
+                    $directory,
+                    $directoryLinkProvider,
+                    $fileType,
+                    $readonly,
+                ),
+                false
+            ))
             ->setTitle($directory->name)
-            ->setTemplateSlot(AdminNexus::SLOT_BREAD_CRUMBS, $breadCrumbs);
+            ->setTemplateSlot($nexus::SLOT_BREAD_CRUMBS, $breadCrumbs
+                ->setItemTemplate($breadCrumbs->getResource("BreadCrumb_fs.phtml")));
 
         if (!$readonly) {
             $nexus->setTemplateSlot(
-                AdminNexus::SLOT_BREAD_CRUMBS,
-                new AdminFileSystemCreateDirectory($directory)
+                $nexus::SLOT_BREAD_CRUMBS,
+                new FileSystemCreateDirectory($directory)
             );
         }
 

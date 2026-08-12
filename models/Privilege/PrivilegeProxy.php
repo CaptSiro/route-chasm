@@ -2,7 +2,7 @@
 
 namespace models\Privilege;
 
-use components\Admin\Nexus\NexusProxy;
+use components\nexus\NexusProxy;
 use models\extensions\Editable\EditableProxy;
 
 class PrivilegeProxy extends NexusProxy {

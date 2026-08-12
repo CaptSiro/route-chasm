@@ -13,6 +13,10 @@ class Arrays {
      * @return T
      */
     public static function first(array $array): mixed {
+        if (empty($array)) {
+            return null;
+        }
+
         return $array[array_key_first($array)];
     }
 
@@ -22,6 +26,10 @@ class Arrays {
      * @return T
      */
     public static function last(array $array): mixed {
+        if (empty($array)) {
+            return null;
+        }
+
         return $array[array_key_last($array)];
     }
 

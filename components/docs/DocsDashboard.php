@@ -16,11 +16,14 @@ use core\communication\Response;
 use core\http\HttpCode;
 use core\http\HttpHeader;
 use core\http\HttpMethod;
-use core\view\ContainerContent;
+use core\locale\LexiconUnit;
+use core\view\Controller;
 use core\view\View;
 use models\docs\Document;
 
-class DocsDashboard extends ContainerContent {
+class DocsDashboard extends Controller {
+    use LexiconUnit;
+
     public const LEXICON_GROUP = Docs::LEXICON_GROUP;
 
     public const NAME_FILES = 'files';
@@ -63,10 +66,10 @@ class DocsDashboard extends ContainerContent {
         return $grid;
     }
 
-    public function performComponentAction(Request $request, Response $response): void {
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::performComponentAction($request, $response);
+                parent::performControllerAction($request, $response);
                 break;
             }
 
