@@ -120,7 +120,7 @@ class Navigator extends Router {
             $response->render(
                 PageViewFactory::getDefaultFactory()
                     ->create()
-                    ->setComponent(new NotFound($path))
+                    ->setComponent((new NotFound())->setTitle($path))
             );
         }
 

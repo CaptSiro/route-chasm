@@ -46,9 +46,8 @@ class DashboardPageView extends PageView implements DashboardContent {
         return new self($dashboard, $component, $component);
     }
 
-    public static function notFound(Dashboard $dashboard, string $title): static {
-        $notFound = new NotFound($title);
-        return self::fromDashboardComponent($dashboard, $notFound);
+    public static function notFound(Dashboard $dashboard): static {
+        return self::fromDashboardComponent($dashboard, new NotFound());
     }
 
 
