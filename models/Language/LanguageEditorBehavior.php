@@ -2,35 +2,39 @@
 
 namespace models\Language;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\Admin\Nexus\Editor\GetEditor;
-use components\Admin\Nexus\Editor\SetEditor;
 use components\forms\controls\Select;
-use components\forms\Form;
-use components\layout\Layout;
 use components\Message\Message;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditorBehavior;
 use core\App;
 use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
+use core\locale\LexiconUnit;
 use core\locale\Locale;
 use core\utils\Components;
 use core\view\Container;
 use core\view\View;
 
-class LanguageEditorBehavior implements EditorBehavior {
-    use GetEditor, SetEditor;
+class LanguageEditorBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
+
+    public const LEXICON_GROUP = 'language.editor';
 
     public const NAME_CODE = 'code';
 
 
 
-    // EditorBehavior
-    public function initForm(Form $form, ?Model $model): ?View {
-        return null;
+    public function __construct() {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
+
+
+    public function getTitle(): string {
+        return $this->tr('Language');
+    }
+
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         if (!is_null($model)) {
             return new Message("Languages are not editable");
         }
@@ -53,8 +57,8 @@ class LanguageEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
-        if ($action === EditorBehaviorAction::UPDATE) {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
+        if ($action === NexusEditorAction::UPDATE) {
             return new Message('Provided model for UserEditor is not instance of User');
         }
 

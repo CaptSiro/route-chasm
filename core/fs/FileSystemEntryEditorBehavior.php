@@ -2,19 +2,18 @@
 
 namespace core\fs;
 
-use components\Admin\Nexus\Editor;
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\Form;
-use components\layout\Layout;
 use components\Message\Message;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\view\Container;
 use core\view\View;
 
-class FileSystemEntryEditorBehavior implements EditorBehavior {
-    use Editor\GetEditor, Editor\SetEditor, LexiconUnit;
+class FileSystemEntryEditorBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
 
     public const LEXICON_GROUP = 'file-system.editor';
 
@@ -26,21 +25,25 @@ class FileSystemEntryEditorBehavior implements EditorBehavior {
 
 
 
+    public function getTitle(): string {
+        return $this->tr('File System Entry Properties');
+    }
+
     protected function editingEntriesIsNotSupported(): View {
         return new Message(
-            $this->tr('Creating/Editing entries is not supported')
+            $this->tr('Creating/Editing File System entries is not supported')
         );
     }
 
-    public function initForm(Form $form, ?Model $model): ?View {
+    public function onFormInitialization(NexusEditor $editor, Form $form, ?Model $model): ?View {
         return $this->editingEntriesIsNotSupported();
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         return $this->editingEntriesIsNotSupported();
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         return $this->editingEntriesIsNotSupported();
     }
 }

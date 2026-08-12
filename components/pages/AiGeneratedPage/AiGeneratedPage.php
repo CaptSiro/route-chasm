@@ -14,13 +14,14 @@ use core\locale\LexiconUnit;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\view\Component;
+use core\view\Controller;
 use core\view\Html;
 use core\view\str;
 use core\view\ViewTemplateRenderer;
 use models\Page\Page;
 use models\User\User;
 
-class AiGeneratedPage extends Component {
+class AiGeneratedPage extends Controller {
     use ViewTemplateRenderer, LexiconUnit;
 
 
@@ -134,10 +135,10 @@ class AiGeneratedPage extends Component {
         return $this->sources;
     }
 
-    public function perform(Request $request, Response $response): void {
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::perform($request, $response);
+                parent::performControllerAction($request, $response);
                 return;
             }
 

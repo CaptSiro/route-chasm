@@ -2,7 +2,7 @@
 
 namespace models\fs;
 
-use components\Admin\Nexus\NexusProxy;
+use components\nexus\NexusProxy;
 use core\view\Html;
 
 class ImageVariantProxy extends NexusProxy {

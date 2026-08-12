@@ -2,7 +2,7 @@
 
 namespace components\pages\Article;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
+use components\nexus\NexusEditorBehavior;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use components\pages\Wireframe;
@@ -59,7 +59,7 @@ class ArticleTemplate implements PageTemplate {
         return new ArticleEditor($page);
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return null;
     }
 

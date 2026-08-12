@@ -5,7 +5,7 @@ use core\view\Xml;
 
 ?><error class="<?= Xml::escape($this->getClass()) ?>">
     <error-property>
-        <?= Xml::escape($this->property) ?>
+        <?= Xml::escape($this->modelProperty) ?>
     </error-property>
 
     <error-message>

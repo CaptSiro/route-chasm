@@ -66,10 +66,10 @@ class DocsDashboard extends Controller {
         return $grid;
     }
 
-    public function performComponentAction(Request $request, Response $response): void {
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
-                parent::performComponentAction($request, $response);
+                parent::performControllerAction($request, $response);
                 break;
             }
 

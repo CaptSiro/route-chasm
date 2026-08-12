@@ -2,17 +2,17 @@
 
 namespace components\pages\AiGeneratedPage;
 
-use components\Admin\Nexus\Editor;
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\ai\InputMessage;
 use components\ai\PageGeneration\PageGeneration;
 use components\ai\Schema\ObjectSchema;
 use components\ai\Schema\Schema;
 use components\ai\Schema\StringSchema;
-use components\layout\Column;
 use components\forms\Form;
 use components\layout\Accordion;
+use components\layout\Column;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\ai\clients\OpenAi;
 use core\App;
 use core\communication\body\DictionaryBody;
@@ -26,7 +26,7 @@ use models\Page\AiPage;
 use models\Page\Page;
 use RuntimeException;
 
-class AiPageEditorBehavior implements EditorBehavior {
+class AiPageEditorBehavior extends NexusEditorBehavior {
     use ResourceLoader, LexiconUnit;
 
     public const LEXICON_GROUP = 'editor.ai-generated-page';
@@ -39,7 +39,7 @@ class AiPageEditorBehavior implements EditorBehavior {
 
 
     public function __construct(
-        protected EditorBehavior $behavior,
+        protected NexusEditorBehavior $behavior,
         protected AiPageTemplate $context
     ) {
         $this->setLexiconGroup(self::LEXICON_GROUP);
@@ -47,28 +47,28 @@ class AiPageEditorBehavior implements EditorBehavior {
 
 
 
-    public function setEditor(Editor $editor): void {
-        $this->behavior->setEditor($editor);
+    public function getTitle(): string {
+        return $this->tr('AI Page Properties');
     }
 
-    public function initForm(Form $form, ?Model $model): ?View {
+    public function onFormInitialization(NexusEditor $editor, Form $form, ?Model $model): ?View {
         Javascript::import($this->getResource($this->getClass() . '.js'));
-        return $this->behavior->initForm($form, $model);
+        return $this->behavior->onFormInitialization($editor, $form, $model);
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         $aiPage = $model instanceof Page
             ? AiPage::fromPage($model)
             : null;
 
         $column = new Column();
-        $ret = $this->behavior->addControls($column, $aiPage);
+        $ret = $this->behavior->onFormGeneration($column, $aiPage);
 
         $container->add(new Accordion($this->tr('AI Page Generation'), $column));
         return $ret;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         $fields = App::getInstance()
             ->getRequest()
             ->body(DictionaryBody::class)
@@ -83,7 +83,7 @@ class AiPageEditorBehavior implements EditorBehavior {
         $samePrompt = !is_null($aiPage)
             && $aiPage->prompt === $prompt;
 
-        if ($action === EditorBehaviorAction::UPDATE && !$samePrompt && !is_null($prompt)) {
+        if ($action === NexusEditorAction::UPDATE && !$samePrompt && !is_null($prompt)) {
             $client = OpenAi::fromEnv();
             $request = $client->createRequest();
 

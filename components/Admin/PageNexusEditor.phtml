@@ -1,0 +1,24 @@
+<?php /** @var PageNexusEditor $this */
+
+use components\Admin\PageNexusEditor;
+use core\view\Html;
+
+?><section>
+    <h1><?= $this->getTitle() ?></h1>
+
+    <div class="row">
+        <?php if (!is_null($this->model)): ?>
+            <a href="<?= $this->getUrlToModel() ?>" target="_blank" class="button">
+                <?= Html::escape($this->tr('View on web')) ?>
+            </a>
+        <?php endif; ?>
+
+        <?php if ($this->model?->getTemplate()?->hasEditor() ?? false): ?>
+            <a href="<?= $this->getTemplateEditorLink() ?>" target="_blank" class="button">
+                <?= Html::escape($this->tr('Edit page content')) ?>
+            </a>
+        <?php endif; ?>
+    </div>
+
+    <?= $this->getForm() ?>
+</section>

@@ -4,7 +4,6 @@ namespace components\layout;
 
 use core\view\Component;
 use core\view\Renderer;
-use core\view\renderers\HtmlRenderer;
 use core\view\View;
 
 class Accordion extends Component {

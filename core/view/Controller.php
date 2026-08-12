@@ -6,7 +6,9 @@ use core\actions\Action;
 use core\actions\ActionBindRouteNode;
 use core\actions\ActorClassName;
 use core\actions\Barrier;
+use core\actions\Block;
 use core\actions\IsLastAction;
+use core\actions\UserResourceBarrier;
 use core\communication\Request;
 use core\communication\Response;
 use core\http\HttpCode;
@@ -17,7 +19,7 @@ use core\url\Url;
 use models\Privilege\Privilege;
 use RuntimeException;
 
-class Controller extends Component implements Action {
+class Controller extends Component implements Action, UserResourceBarrier {
     use ActionBindRouteNode, ActorClassName, IsLastAction, Barrier;
 
 
@@ -54,10 +56,44 @@ class Controller extends Component implements Action {
         return Router::createUrlFromNode($this->routeNode, $relative);
     }
 
-    public function performComponentAction(Request $request, Response $response): void {
-        $response->render($this);
+    public function createBlockMiddleware(Privilege $privilege): Action {
+        return new Block($this->getUserResource(), $privilege);
     }
 
+    /**
+     * Render the controller into default `PageView` given by `PageViewFactory`
+     *
+     * Override this method if implicit routing checks are required, otherwise override `perform()` method
+     *
+     * @param Request $request
+     * @param Response $response
+     * @return void
+     *
+     * @see PageView
+     * @see PageViewFactory
+     * @see Controller::perform()
+     */
+    public function performControllerAction(Request $request, Response $response): void {
+        $response->render(
+            PageViewFactory::getDefaultFactory()
+                ->create()
+                ->setComponent($this)
+        );
+    }
+
+    /**
+     * Checks routing node leaf run condition `isLastAction()` and checks read privilege on bound `UserResource`.
+     * If both checks are met, `performControllerAction()` is called
+     *
+     * Override this method if you need to override the checks otherwise override `performControllerAction()` method
+     *
+     * @param Request $request
+     * @param Response $response
+     * @return void
+     *
+     * @see IsLastAction::isLastAction()
+     * @see Controller::performControllerAction()
+     */
     public function perform(Request $request, Response $response): void {
         if (!$this->isLastAction($request)) {
             return;
@@ -67,6 +103,6 @@ class Controller extends Component implements Action {
             $response->sendStatus(HttpCode::CE_FORBIDDEN);
         }
 
-        $this->performComponentAction($request, $response);
+        $this->performControllerAction($request, $response);
     }
 }

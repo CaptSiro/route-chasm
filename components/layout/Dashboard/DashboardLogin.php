@@ -97,7 +97,7 @@ class DashboardLogin extends Controller {
         return $setting->toBoolean();
     }
 
-    // todo createRegisterForm
+    // todo: createRegisterForm
 
     public function createLoginForm(): View {
         $useEnvPasswordMethod = $this->useEnvPasswordMethod()

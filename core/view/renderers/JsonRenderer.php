@@ -6,6 +6,7 @@ use core\utils\Objects;
 use core\view\Renderer;
 use core\view\Payload;
 use core\view\RendererOverride;
+use JsonSerializable;
 use RuntimeException;
 
 class JsonRenderer implements Renderer {
@@ -16,9 +17,9 @@ class JsonRenderer implements Renderer {
             return $view->performRendererOverride($this, $payload);
         }
 
-        if (!($view instanceof JsonRenderer)) {
+        if (!($view instanceof JsonSerializable)) {
             $class = Objects::getClass($view);
-            $jsonClass = JsonRenderer::class;
+            $jsonClass = JsonSerializable::class;
 
             throw new RuntimeException("Cannot render $class, because it does not implements $jsonClass");
         }

@@ -3,7 +3,6 @@
 namespace components\SaveError;
 
 use components\Message\MessageType;
-use core\App;
 use core\http\HttpCode;
 use core\view\Component;
 use core\view\Renderer;

@@ -7,7 +7,6 @@ use core\tf\Test;
 use core\tf\TestFile;
 use core\view\Component;
 use core\view\Renderer;
-use core\view\renderers\HtmlRenderer;
 use JsonSerializable;
 
 class SptfTestFile extends Component implements JsonSerializable {

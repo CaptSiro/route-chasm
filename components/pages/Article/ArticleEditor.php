@@ -168,7 +168,7 @@ class ArticleEditor extends Controller {
         }
     }
 
-    public function perform(Request $request, Response $response): void {
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case HttpMethod::GET: {
                 parent::perform($request, $response);

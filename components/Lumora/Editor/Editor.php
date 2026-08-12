@@ -46,6 +46,7 @@ use core\RouteChasmEnvironment;
 use core\utils\Arrays;
 use core\view\Controller;
 use core\view\Html;
+use core\view\PageView;
 use core\view\Renderer;
 use core\view\renderers\HtmlRenderer;
 use DateTime;
@@ -254,8 +255,8 @@ class Editor extends Controller {
 
 
 
-    // Action
-    public function perform(Request $request, Response $response): void {
+    // Controller
+    public function performControllerAction(Request $request, Response $response): void {
         switch ($request->getHttpMethod()) {
             case "GENERATE": {
                 $messageUnableToGenerateWidget = $this->tr("Unable to generate widget based on the prompt.");
@@ -295,7 +296,7 @@ class Editor extends Controller {
             }
 
             case HttpMethod::GET: {
-                parent::perform($request, $response);
+                $response->render(PageView::fromComponent($this));
                 return;
             }
 
@@ -306,7 +307,7 @@ class Editor extends Controller {
             }
 
             default: {
-                $this->handleUnexpectedMethod($request, $response);
+                $response->render(PageView::fromComponent($this));
                 break;
             }
         }

@@ -2,10 +2,10 @@
 
 namespace components\pages;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
 use components\layout\ToolBar\ToolBarItem;
 use components\Lumora\Display;
 use components\Lumora\Editor\Editor;
+use components\nexus\NexusEditorBehavior;
 use core\actions\Action;
 use core\route\Route;
 use core\RouteChasmEnvironment;
@@ -70,7 +70,7 @@ class TextPageTemplate implements PageTemplate {
         return $this->createEditor($page, $localization);
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return null;
     }
 

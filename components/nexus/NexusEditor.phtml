@@ -1,0 +1,22 @@
+<?php /** @var NexusEditor $this */
+
+use components\nexus\NexusEditor;
+use core\view\Html;
+
+?><section>
+    <?php if (!is_null($header = $this->getTemplateSlot($this::SLOT_HEADER))): ?>
+        <?= $header ?>
+    <?php else: ?>
+        <div class="header">
+            <h1><?= Html::escape($this->getTitle()) ?></h1>
+
+            <?php if (!is_null($headerContent = $this->getTemplateSlot($this::SLOT_HEADER_CONTENT))): ?>
+                <div class="header-content row">
+                    <?= $headerContent ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
+    <?= $this->getForm() ?>
+</section>

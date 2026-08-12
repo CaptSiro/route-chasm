@@ -2,44 +2,47 @@
 
 namespace models\fs;
 
-use components\Admin\Nexus\Editor;
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\description\FormDescription;
 use components\forms\Form;
 use components\fs\ImageVariantPreview;
 use components\layout\Column;
 use components\layout\Row;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\database\sql\Model;
+use core\locale\LexiconUnit;
 use core\view\Container;
 use core\view\View;
 
-class ImageVariantBehavior implements EditorBehavior {
-    use Editor\SetEditor;
+class ImageVariantBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
 
-    public static function createEditor(): Editor {
-        return new Editor\AdminNexusEditor(new static());
-    }
+    public const LEXICON_GROUP = 'file-system.editor';
 
 
 
     protected FormDescription $description;
 
     public function __construct() {
+        $this->setLexiconGroup(self::LEXICON_GROUP);
         $this->description = FormDescription::extract(ImageVariantTransformer::class);
     }
 
 
 
-    public function initForm(Form $form, ?Model $model): ?View {
-        return $this->description->initForm($form, $model);
+    public function getTitle(): string {
+        return $this->tr('Image Variant');
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
-        $row = new Row();
+    public function onFormInitialization(NexusEditor $editor, Form $form, ?Model $model): ?View {
+        return $this->description->onFormInitialization($editor, $form, $model);
+    }
 
-        $controls = new Column(0.5);
-        $this->description->addControls($controls, $model);
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
+        $container->add($row = new Row());
+
+        $this->description->onFormGeneration($controls = new Column(0.5), $model);
         $row->add($controls);
 
         $preview = new Column(0.5);
@@ -49,11 +52,10 @@ class ImageVariantBehavior implements EditorBehavior {
         ));
         $row->add($preview);
 
-        $container->add($row);
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         return $this->description->onSubmit($model, $action);
     }
 }

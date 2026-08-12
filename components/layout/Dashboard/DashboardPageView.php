@@ -2,7 +2,6 @@
 
 namespace components\layout\Dashboard;
 
-use components\Message\Message;
 use components\NotFound;
 use core\Deprecated;
 use core\locale\LexiconUnit;
@@ -45,10 +44,6 @@ class DashboardPageView extends PageView implements DashboardContent {
 
     public static function fromDashboardComponent(Dashboard $dashboard, Component $component): static {
         return new self($dashboard, $component, $component);
-    }
-
-    public static function fromMessage(Dashboard $dashboard, Message $message): static {
-        return new self($dashboard, $message, $message);
     }
 
     public static function notFound(Dashboard $dashboard, string $title): static {

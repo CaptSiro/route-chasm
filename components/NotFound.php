@@ -14,7 +14,6 @@ class NotFound extends Component {
 
 
     public function __construct(
-        string $title,
         ?Renderer $renderer = null
     ) {
         parent::__construct($renderer);

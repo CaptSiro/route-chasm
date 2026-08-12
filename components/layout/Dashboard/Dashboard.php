@@ -6,8 +6,10 @@ use components\layout\Menu\Menu;
 use components\layout\RoutedMenu\RoutedMenu;
 use components\Message\Message;
 use components\Message\MessageType;
+use components\NotFound;
 use core\actions\Barrier;
 use core\actions\Procedure;
+use core\actions\UserResourceBarrier;
 use core\actions\When;
 use core\communication\Request;
 use core\communication\Response;
@@ -19,16 +21,18 @@ use core\route\Path;
 use core\route\Route;
 use core\route\RouteNode;
 use core\route\Router;
+use core\utils\Objects;
 use core\view\Component;
 use core\view\Controller;
 use core\view\PageView;
+use core\view\PageViewFactory;
 use core\view\View;
 use models\Privilege\Privilege;
 use models\User\User;
 use models\UserResource;
 use RuntimeException;
 
-abstract class Dashboard extends Router {
+abstract class Dashboard extends Router implements UserResourceBarrier {
     use InstanceCounter, Barrier, LexiconUnit;
 
 
@@ -56,6 +60,22 @@ abstract class Dashboard extends Router {
 
 
 
+    /**
+     * Returns the name of the class by default.
+     *
+     * Provide label for the dashboard. Translation of the label is not necessary
+     *
+     * @return string
+     */
+    public function getDashboardLabel(): string {
+        return Objects::getBaseClass(static::class);
+    }
+
+    public function createPageView(): PageView {
+        return PageViewFactory::getDefaultFactory()
+            ->create();
+    }
+
     public function getDashboardLogin(): DashboardLogin {
         return $this->dashboardLogin;
     }
@@ -64,26 +84,31 @@ abstract class Dashboard extends Router {
         parent::onBind($bindingPoint);
 
         $router = $bindingPoint->getRouter();
+        $greetings = new Message($this->tr('Welcome to ' . $this->getDashboardLabel()), MessageType::INFO);
 
         $router->use('/',
             Procedure::middleware(function (Request $request) {
                 $request->set(self::KEY_DASHBOARD_ID, $this->getInstanceId());
+                PageViewFactory::setDefaultFactory(new DashboardPageViewFactory($this));
+//                throw new RuntimeException('hey hey test');
             }),
 
-            // middleware
+            // Used as middleware
             $this->dashboardLogin,
 
-            // if it is just '/' render default or message 'Dashboard'
+            // If it is just '/' render default or message 'Dashboard'
             new When(
                 fn(Request $request) => $request->getRemainingPath()->getDepth() === 0,
                 $this->default
-                    ?? DashboardPageView::fromMessage($this, new Message('Welcome to dashboard', MessageType::INFO))
+                    ?? $this->createPageView()->setComponent($greetings)
             ),
         );
 
         $router->use('/**',
-            fn(Request $request, Response $response)
-                => $response->render(DashboardPageView::notFound($this, $request->getRemainingPath()))
+            function (Request $request, Response $response) {
+                $notFound = new NotFound($request->getRemainingPath());
+                $response->render($this->createPageView()->setComponent($notFound));
+            }
         );
     }
 
@@ -99,24 +124,24 @@ abstract class Dashboard extends Router {
             return $this;
         }
 
+        if (is_null($component->getTitle()) && !is_null($last = $route->getLast())) {
+            $component->setTitle($this->tr($this->getDashboardLabel() . ' - ' . $last->getLabel(true)));
+        }
+
         if ($component instanceof DashboardContent) {
             $component->setDashboard($this);
         }
 
-
-        if (!is_null($resource) && $component instanceof Controller) {
-            $component->setUserResource($resource);
-        }
-
-        $this->use($route, function (Request $request, Response $response) use ($component, $pageView) {
-            if ($component instanceof Controller) {
-                $component->perform($request, $response);
+        if ($component instanceof Controller) {
+            if (!is_null($resource)) {
+                $component->setUserResource($resource);
             }
 
-            $response->render(
-                $pageView->setComponent($component)
-            );
-        });
+            $this->use($route, $component);
+            return $this;
+        }
+
+        $this->use($route, $pageView->setComponent($component));
         return $this;
     }
 

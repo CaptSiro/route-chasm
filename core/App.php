@@ -2,7 +2,6 @@
 
 namespace core;
 
-use Closure;
 use core\collections\dictionary\Map;
 use core\collections\dictionary\StrictMap;
 use core\communication\format\FormatMatcher;
@@ -24,6 +23,8 @@ use models\ModuleRecord;
 use ReflectionClass;
 
 class App implements Loader {
+    use Dispatcher;
+
     private static ?self $instance = null;
 
     public static function getInstance(): self {
@@ -82,7 +83,6 @@ class App implements Loader {
     private FormatMatcher $matcher;
     private readonly Map $options;
     protected ?Env $env;
-    protected array $listeners;
     protected bool $defaultModulesLoaded;
     protected array $modules;
     protected array $locales = [];
@@ -301,24 +301,5 @@ class App implements Loader {
             $request,
             $response ?? $this->response
         );
-    }
-
-    public function on(string $event, Closure $function): void {
-        if (!isset($this->listeners[$event])) {
-            $this->listeners[$event] = [$function];
-            return;
-        }
-
-        $this->listeners[$event][] = $function;
-    }
-
-    public function dispatch(string $event, mixed $context): void {
-        if (!isset($this->listeners[$event])) {
-            return;
-        }
-
-        foreach ($this->listeners[$event] as $listener) {
-            $listener($context);
-        }
     }
 }

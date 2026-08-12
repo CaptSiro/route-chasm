@@ -2,12 +2,13 @@
 
 namespace models\Page;
 
-use components\Admin\Nexus\AdminNexus;
-use components\Admin\AdminPageEditor;
+use components\Admin\PageNexusEditor;
 use components\forms\description\DateTime;
 use components\forms\description\Select;
+use components\nexus\Nexus;
+use components\nexus\NexusHeader;
 use components\pages\PageFactory;
-use components\pages\PageLinkCreator;
+use components\pages\PageNexusUrlCreator;
 use components\pages\Pages;
 use components\pages\PageTemplate;
 use core\App;
@@ -41,7 +42,6 @@ use models\fs\Shortcut;
 use models\Language\Language;
 use models\Menu;
 use models\Navigation\Slug;
-use models\Page\behavior\PageEditorBehavior;
 use models\Page\Grid\PageGridRow;
 use models\Privilege\Privilege;
 use models\User\User;
@@ -57,21 +57,27 @@ class Page extends Model implements Destination, Priority {
 
 
 
-    public static function getNexus(): AdminNexus {
-        return (new AdminNexus(
-            ModelDescription::extract(static::class),
-            new AdminPageEditor(new PageEditorBehavior()),
+    public static function getNexus(): Nexus {
+        $nexus = Nexus::fromEditor(
+            $page = ModelDescription::extract(static::class),
+            new PageNexusEditor(),
             PageGridRow::getGridDescription(),
-            title: '&nbsp;'
-        ))
-            ->setLinkCreator(new PageLinkCreator())
+        )
+            ->setUrlCreator(new PageNexusUrlCreator())
             ->addExtension(
-                new PriorityExtension(function (UpdateQuery $update, Model $model) {
+                new PriorityExtension($page, function (UpdateQuery $update, Model $model) {
                     if ($model instanceof Page) {
                         $update->where(Page::childrenQuery($model->parentId));
                     }
                 })
             );
+
+        $header = new NexusHeader($nexus, $nexus->tr('Create'));
+        $header->removeTitle();
+
+        $nexus->setTemplateSlot($nexus::SLOT_HEADER, $header);
+
+        return $nexus;
     }
 
     public static function publishedQuery(): Query {

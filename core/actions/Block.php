@@ -16,7 +16,7 @@ class Block implements Action {
 
 
     public function __construct(
-        protected UserResource $resource,
+        protected ?UserResource $resource,
         protected Privilege $privilege,
         protected $isMiddleware = true
     ) {}
@@ -32,6 +32,10 @@ class Block implements Action {
     }
 
     public function perform(Request $request, Response $response): void {
+        if (is_null($this->resource)) {
+            return;
+        }
+
         $user = User::fromRequest($request);
         if ($user->hasAccess($this->resource, $this->privilege)) {
             return;

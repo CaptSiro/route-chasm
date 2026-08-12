@@ -2,7 +2,7 @@
 
 namespace models\User;
 
-use components\Admin\Nexus\NexusProxy;
+use components\nexus\NexusProxy;
 use core\view\Html;
 
 class UserProxy extends NexusProxy {

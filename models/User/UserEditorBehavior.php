@@ -2,20 +2,17 @@
 
 namespace models\User;
 
-use components\Admin\Nexus\Editor;
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\Admin\AdminUserEditor;
+use components\Admin\UserNexusEditor;
 use components\forms\controls\Button;
 use components\forms\controls\MultiSelect;
 use components\forms\controls\PasswordField;
 use components\forms\controls\TextField;
-use components\forms\Form;
 use components\layout\Accordion;
 use components\layout\Column;
-use components\layout\Layout;
 use components\layout\Row;
 use components\Message\Message;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditorBehavior;
 use components\SaveError\SaveError;
 use core\App;
 use core\communication\body\DictionaryBody;
@@ -27,8 +24,8 @@ use core\view\Container;
 use core\view\View;
 use models\Group\Group;
 
-class UserEditorBehavior implements EditorBehavior {
-    use LexiconUnit, Editor\GetEditor, Editor\SetEditor;
+class UserEditorBehavior extends NexusEditorBehavior {
+    use LexiconUnit;
 
     public const LEXICON_GROUP = 'editor.user';
 
@@ -45,16 +42,16 @@ class UserEditorBehavior implements EditorBehavior {
 
 
 
-    public function initForm(Form $form, ?Model $model): ?View {
-        return null;
+    public function getTitle(): string {
+        return $this->tr('User');
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         if (!is_null($model) && !($model instanceof User)) {
             return new Message("Provided resource is not User");
         }
 
-        if ($this->editor instanceof AdminUserEditor) {
+        if ($this->editor instanceof UserNexusEditor) {
             $row = new Row();
 
             $loginAsUser = new Button($this->tr('Login as user'));
@@ -110,7 +107,7 @@ class UserEditorBehavior implements EditorBehavior {
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         if (!($model instanceof User)) {
             return new Message('Provided model for UserEditor is not instance of User');
         }
@@ -121,7 +118,7 @@ class UserEditorBehavior implements EditorBehavior {
             ->getFields();
 
         $password = $fields->getStrict(self::NAME_PASSWORD);
-        if ($action === EditorBehaviorAction::CREATE) {
+        if ($action === NexusEditorAction::CREATE) {
             // Implicit unique check for tag in the User::save() function
             $model->tag = $fields->getStrict(self::NAME_TAG);
 

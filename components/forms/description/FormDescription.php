@@ -2,21 +2,19 @@
 
 namespace components\forms\description;
 
-use components\Admin\Nexus\Editor;
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
-use components\forms\Form;
-use components\layout\Layout;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\App;
 use core\communication\body\DictionaryBody;
 use core\database\sql\Model;
+use core\database\sql\ModelDescription;
+use core\utils\Objects;
 use core\view\Container;
 use core\view\View;
 use ReflectionClass;
 
-class FormDescription implements EditorBehavior {
-    use Editor\SetEditor;
-
+class FormDescription extends NexusEditorBehavior {
     /**
      * @var array<string, static>
      */
@@ -48,11 +46,15 @@ class FormDescription implements EditorBehavior {
             }
         }
 
-        return self::$descriptions[$class] = new FormDescription($controls);
+        return self::$descriptions[$class] = new FormDescription(
+            Objects::getBaseClass($class),
+            $controls
+        );
     }
 
-    public static function getEditor(string $class): Editor {
-        return new Editor\AdminNexusEditor(
+    public static function getEditor(string $class): NexusEditor {
+        return new NexusEditor(
+            ModelDescription::extract($class),
             static::extract($class)
         );
     }
@@ -63,6 +65,7 @@ class FormDescription implements EditorBehavior {
      * @param array<string, ControlAttribute> $controls
      */
     public function __construct(
+        protected string $title,
         protected array $controls
     ) {}
 
@@ -75,11 +78,11 @@ class FormDescription implements EditorBehavior {
         return $this->controls;
     }
 
-    public function initForm(Form $form, ?Model $model): ?View {
-        return null;
+    public function getTitle(): string {
+        return $this->title;
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         $data = $model?->getData() ?? [];
 
         foreach ($this->controls as $property => $control) {
@@ -95,7 +98,7 @@ class FormDescription implements EditorBehavior {
         return null;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         $request = App::getInstance()->getRequest();
         $model->set($request
             ->body(DictionaryBody::class)

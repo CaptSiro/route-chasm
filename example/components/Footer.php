@@ -2,8 +2,8 @@
 
 namespace example\components;
 
+use components\Admin\Admin;
 use components\layout\PageMenu\PageMenu;
-use core\admin\Admin;
 use core\App;
 use core\locale\LexiconUnit;
 use core\RouteChasmEnvironment;
@@ -47,7 +47,7 @@ class Footer implements ViewTemplate {
             [PROPERTY_EDITABLE => true]
         );
 
-        if (!$setting->toBoolean() || is_null($url = Admin::getUrl())) {
+        if (!$setting->toBoolean() || is_null($url = Admin::getInstance()->createUrl())) {
             return '';
         }
 

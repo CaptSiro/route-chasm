@@ -75,8 +75,12 @@ class RouteSegment implements Copy {
         return $this->regex;
     }
 
-    public function getLabel(): ?string {
-        return $this->label;
+    public function getLabel(bool $defaultToSource = false): ?string {
+        if (!$defaultToSource) {
+            return $this->label;
+        }
+
+        return $this->label ?? $this->source;
     }
 
     public function setLabel(?string $label): void {

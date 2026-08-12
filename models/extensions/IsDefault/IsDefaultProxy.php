@@ -2,9 +2,9 @@
 
 namespace models\extensions\IsDefault;
 
-use components\Admin\Nexus\AdminNexus;
 use components\forms\controls\Checkbox;
 use components\forms\Form;
+use components\nexus\Nexus;
 use core\sideloader\importers\Javascript\Javascript;
 
 trait IsDefaultProxy {
@@ -12,20 +12,23 @@ trait IsDefaultProxy {
 
 
 
-    public function setContext(AdminNexus $context): static {
+    public function setContext(Nexus $context): static {
         parent::setContext($context);
 
-        foreach ($context->getExtensions() as $extension) {
+        $context->on($context::EVENT_EXTENSION_ADDED, function ($extension) {
             if ($extension instanceof IsDefaultExtension) {
                 $this->isDefaultExtension = $extension;
-                break;
             }
-        }
+        });
 
         return $this;
     }
 
     public function getValueIsDefault(string $name): string {
+        if (is_null($this->isDefaultExtension)) {
+            return 'IsDefaultProxy::$isDefaultExtension is null';
+        }
+
         $item = $this->getItem();
         if (!($item instanceof IsDefault)) {
             return parent::getValue($name);

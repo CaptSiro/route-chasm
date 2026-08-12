@@ -2,13 +2,13 @@
 
 namespace components\pages\External;
 
-use components\Admin\Nexus\Editor;
-use components\Admin\Nexus\Editor\EditorBehavior;
-use components\Admin\Nexus\Editor\EditorBehaviorAction;
 use components\forms\Form;
 use components\layout\Accordion;
 use components\layout\Column;
 use components\Message\Message;
+use components\nexus\NexusEditorAction;
+use components\nexus\NexusEditor;
+use components\nexus\NexusEditorBehavior;
 use core\database\sql\Model;
 use core\locale\LexiconUnit;
 use core\ResourceLoader;
@@ -17,7 +17,7 @@ use core\view\View;
 use models\Page\ExternalPage;
 use models\Page\Page;
 
-class ExternalPageEditorBehavior implements EditorBehavior {
+class ExternalPageEditorBehavior extends NexusEditorBehavior {
     use ResourceLoader, LexiconUnit;
 
     public const LEXICON_GROUP = 'editor.external-page';
@@ -30,34 +30,34 @@ class ExternalPageEditorBehavior implements EditorBehavior {
 
 
     public function __construct(
-        protected EditorBehavior $behavior,
+        protected NexusEditorBehavior $behavior,
     ) {
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 
 
 
-    public function setEditor(Editor $editor): void {
-        $this->behavior->setEditor($editor);
+    public function getTitle(): string {
+        return $this->tr('External Page Properties');
     }
 
-    public function initForm(Form $form, ?Model $model): ?View {
-        return $this->behavior->initForm($form, $model);
+    public function onFormInitialization(NexusEditor $editor, Form $form, ?Model $model): ?View {
+        return $this->behavior->onFormInitialization($editor, $form, $model);
     }
 
-    public function addControls(Container $container, ?Model $model): ?View {
+    public function onFormGeneration(Container $container, ?Model $model): ?View {
         $external = $model instanceof Page
             ? ExternalPage::fromPage($model)
             : null;
 
         $column = new Column();
-        $ret = $this->behavior->addControls($column, $external);
+        $ret = $this->behavior->onFormGeneration($column, $external);
 
         $container->add(new Accordion($this->tr('External Page'), $column));
         return $ret;
     }
 
-    public function onSubmit(Model $model, EditorBehaviorAction $action): ?View {
+    public function onSubmit(Model $model, NexusEditorAction $action): ?View {
         if (!($model instanceof Page)) {
             return new Message($this->tr('Provided model must be type of Page'));
         }

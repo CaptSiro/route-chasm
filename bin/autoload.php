@@ -109,6 +109,9 @@ spl_autoload_register(function ($class) {
     }
 
     http_response_code(500);
+    echo '<pre>';
+    echo json_encode(debug_backtrace(), JSON_PRETTY_PRINT);
+    echo '</pre>';
     echo "[Critical Error]: Class does not exists (" . htmlspecialchars($class) . ')';
     exit;
 });

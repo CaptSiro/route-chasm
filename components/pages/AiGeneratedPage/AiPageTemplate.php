@@ -2,9 +2,9 @@
 
 namespace components\pages\AiGeneratedPage;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
 use components\forms\description\FormDescription;
 use components\Message\Message;
+use components\nexus\NexusEditorBehavior;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use core\actions\Action;
@@ -68,7 +68,7 @@ class AiPageTemplate implements PageTemplate {
         return PageView::fromComponent(new Message('AI Generated Page has no content editor associated with its template'));
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return new AiPageEditorBehavior(
             FormDescription::extract(AiPage::class),
             $this
@@ -76,6 +76,6 @@ class AiPageTemplate implements PageTemplate {
     }
 
     public function buildContent(Page $page, Language $language): Component {
-        return AiGeneratedPage::build($page, $language);
+        return AiGeneratedPage::build($page);
     }
 }

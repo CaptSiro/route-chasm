@@ -2,8 +2,8 @@
 
 namespace components\pages\Listing;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
 use components\Message\Message;
+use components\nexus\NexusEditorBehavior;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use components\pages\Wireframe;
@@ -49,7 +49,7 @@ class ListingTemplate implements PageTemplate {
         return PageView::fromComponent(new Message('Page Listing has no content editor associated with its template'));
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return null;
     }
 

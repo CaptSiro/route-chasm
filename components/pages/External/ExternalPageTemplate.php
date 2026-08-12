@@ -2,9 +2,9 @@
 
 namespace components\pages\External;
 
-use components\Admin\Nexus\Editor\EditorBehavior;
 use components\forms\description\FormDescription;
 use components\Message\Message;
+use components\nexus\NexusEditorBehavior;
 use components\pages\PagePreview;
 use components\pages\PageTemplate;
 use core\actions\Action;
@@ -50,7 +50,7 @@ class ExternalPageTemplate implements PageTemplate {
         return PageView::fromComponent(new Message('External Page has no content editor associated with its template'));
     }
 
-    public function buildEditorBehavior(): ?EditorBehavior {
+    public function buildEditorBehavior(): ?NexusEditorBehavior {
         return new ExternalPageEditorBehavior(
             FormDescription::extract(ExternalPage::class)
         );

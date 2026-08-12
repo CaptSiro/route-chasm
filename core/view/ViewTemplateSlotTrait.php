@@ -10,12 +10,12 @@ trait ViewTemplateSlotTrait {
 
 
 
-    public function setTemplateSlot(string $slot, View $view): static {
+    public function setTemplateSlot(string $slot, View|string|null $view): static {
         $this->templateSlots[$slot] = $view;
         return $this;
     }
 
-    public function getTemplateSlot(string $slot): ?View {
+    public function getTemplateSlot(string $slot): View|string|null {
         return $this->templateSlots[$slot] ?? null;
     }
 

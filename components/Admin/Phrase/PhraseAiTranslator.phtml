@@ -1,0 +1,14 @@
+<?php /** @var PhraseAiTranslator $this */
+
+use components\Admin\Phrase\PhraseAiTranslator;
+use core\sideloader\importers\Javascript\Javascript;
+use core\view\Html;
+
+Javascript::importDefault($this);
+
+?><button
+    x-init="phraseTranslator_init"
+    data-url="<?= $this->context->getAiTranslateLink() ?>"
+>
+    <?= Html::escape($this->tr('Translate with AI')) ?>
+</button>

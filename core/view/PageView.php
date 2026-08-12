@@ -3,11 +3,15 @@
 namespace core\view;
 
 use core\actions\Action;
+use core\actions\UserResourceBarrier;
+use core\communication\Request;
+use core\communication\Response;
 use core\route\RouteNode;
 use core\utils\Objects;
 use core\view\renderers\XmlRenderer;
 use JsonSerializable;
 use models\Language\Language;
+use models\UserResource;
 use RuntimeException;
 
 class PageView extends Controller implements JsonSerializable {
@@ -111,6 +115,22 @@ class PageView extends Controller implements JsonSerializable {
 
 
     // Controller
+    public function setUserResource(?UserResource $userResource = null): static {
+        if ($this->view instanceof UserResourceBarrier) {
+            $this->view->setUserResource($userResource);
+        }
+
+        return parent::setUserResource($userResource);
+    }
+
+    public function performControllerAction(Request $request, Response $response): void {
+        if ($this->view instanceof Action) {
+            $this->view->perform($request, $response);
+        }
+
+        $response->render($this);
+    }
+
     public function onBind(RouteNode $bindingPoint): void {
         parent::onBind($bindingPoint);
 

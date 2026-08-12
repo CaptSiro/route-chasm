@@ -155,6 +155,14 @@ class Route implements ArrayIterator, Copy {
         return $this->segments;
     }
 
+    public function getFirst(): ?RouteSegment {
+        return Arrays::first($this->segments);
+    }
+
+    public function getLast(): ?RouteSegment {
+        return Arrays::last($this->segments);
+    }
+
     public function hasDynamicBehaviour(): bool {
         return self::isDynamic($this->source);
     }
