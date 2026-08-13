@@ -14,11 +14,12 @@ class NotFound extends Component {
 
 
     public function __construct(
+        string $title,
         ?Renderer $renderer = null
     ) {
         parent::__construct($renderer);
 
         $this->setLexiconGroup(self::LEXICON_GROUP);
-        $this->setTitle($this->tr('Page not found') . ': ' . $this->title);
+        $this->setTitle($this->tr('Page not found') . ': ' . $title);
     }
 }
