@@ -8,19 +8,89 @@ use core\RouteChasmEnvironment;
 
 
 
-function exc_dump_array(array $array): void {
-    foreach ($array as $key => $value) {
-        $v = json_encode($value);
+function exc_dump_array_pretty(array $array, ?string $label = null): void {
+    $label = is_null($label)
+        ? htmlspecialchars("[generic array]")
+        : htmlspecialchars($label);
 
-        echo "<code>
-            <span class=\"key\">$key</span>
-            <span class=\"separator\"> => </span>
-            <span class=\"value\">$v</span>
-        </code>";
+    if (($count = count($array)) === 0) {
+        echo "
+            <div class=\"acc-group\">
+                <button type=\"button\" class=\"acc-trigger\" aria-expanded=\"true\">
+                    <svg class=\"chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"
+                         stroke-linecap=\"round\" stroke-linejoin=\"round\">
+                        <path d=\"M9 5l7 7-7 7\"></path>
+                    </svg>
+                    <span class=\"var-name\">$label</span><span class=\"var-count\">$count</span></button>
+                <div class=\"acc-content open\">
+                    <div class=\"kv-empty\">Empty</div>
+                </div>
+            </div>";
+        return;
     }
+
+    echo "
+        <div class=\"acc-group\">
+        <button type=\"button\" class=\"acc-trigger\" aria-expanded=\"true\">
+            <svg class=\"chev\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"
+                 stroke-linecap=\"round\" stroke-linejoin=\"round\">
+                <path d=\"M9 5l7 7-7 7\"></path>
+            </svg>
+            <span class=\"var-name\">$label</span><span class=\"var-count\">44</span></button>
+        <div class=\"acc-content open\">
+            <div class=\"kv-table\">
+    ";
+
+    foreach ($array as $key => $value) {
+        $_key = htmlspecialchars($key);
+        $_value = htmlspecialchars(json_encode($value));
+
+        echo "
+                <div class=\"kv-row\">
+                    <span class=\"kv-key\">$_key</span>
+                    <span class=\"kv-sep\">=&gt;</span>
+                    <span class=\"kv-val\">$_value</span>
+                </div>
+        ";
+    }
+
+    echo "
+            </div>
+        </div>";
 }
 
 
+
+class __internal_Hazard {
+    public function __construct(
+        public Exception|Error|null $exception = null,
+        public mixed $severity = null,
+        public mixed $message = null,
+        public mixed $file = null,
+        public mixed $line = null
+    ) {}
+
+    public function isException(): true {
+        return !is_null($this->exception);
+    }
+
+    public function getMessage(): string {
+        return $this->isException()
+            ? $this->exception->getMessage()
+            : $this->message;
+    }
+
+    public function getType(): string {
+        return $this->isException()
+            ? get_class($this->exception)
+            : match ($this->severity) {
+                E_USER_ERROR => 'Error',
+                E_USER_WARNING => 'Warning',
+                E_USER_NOTICE => 'Notice',
+                default => 'Unknown Error',
+            };
+    }
+}
 
 function get_response_format(): string {
     $headers = apache_request_headers();
@@ -55,7 +125,8 @@ function error_handler($severity, $message, $file, $line): void {
         exit();
     }
 
-    require __DIR__ . '/error.phtml';
+    $hazard = new __internal_Hazard(null, $severity, $message, $file, $line);
+    require __DIR__ . '/hazard.phtml';
     exit();
 }
 
@@ -105,7 +176,8 @@ function exception_handler($exception): void {
         exit();
     }
 
-    require __DIR__ . '/exception.phtml';
+    $hazard = new __internal_Hazard($exception);
+    require __DIR__ . '/hazard.phtml';
     exit();
 }
 

@@ -1,0 +1,615 @@
+<?php /** @var __internal_Hazard $hazard */
+
+use core\App;
+use core\route\Path;
+use core\view\Html;
+
+?><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><?= Html::escape($hazard->getType()) ?>: <?= Html::escape($hazard->getMessage()) ?></title>
+
+    <link rel="icon" type="image/x-icon" href="<?= App::getInstance()->attach(Path::resolve('/public/images/favicon.png')) ?>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0d10;
+            --panel: #11151a;
+            --panel-2: #161c22;
+            --panel-3: #1c232b;
+            --border: #242c34;
+            --border-soft: #2f3842;
+            --text: #e7ebee;
+            --text-dim: #b4bec5;
+            --text-faint: #8c99a4;
+            --red: #ff6259;
+            --red-soft: rgba(255, 98, 89, 0.12);
+            --amber: #f2b53c;
+            --green: #3ecf8e;
+            --green-soft: rgba(62, 207, 142, 0.14);
+            --blue: #5fa8ea;
+            --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+            --ui: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            --radius: 10px;
+            --radius-sm: 6px;
+            --ease: cubic-bezier(.4, 0, .2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono), monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background-image: radial-gradient(circle at 15% -10%, rgba(255, 98, 89, 0.07), transparent 45%),
+            radial-gradient(circle at 85% 0%, rgba(95, 168, 234, 0.05), transparent 40%);
+        }
+
+        ::selection {
+            background: rgba(255, 98, 89, 0.28);
+            color: #fff;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        button {
+            font-family: inherit;
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .exception-banner {
+            padding: 26px 28px 22px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--red-soft), transparent 70%);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--red-soft);
+            border: 1px solid rgba(255, 98, 89, 0.35);
+            color: var(--red);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .exception-banner h1 {
+            font-family: var(--ui), sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        .exception-banner h1 .ex-type {
+            color: var(--red);
+        }
+
+        /* ---------------- layout ---------------- */
+        main.layout {
+            display: grid;
+            min-height: 100%;
+            grid-template-columns: 1fr;
+            gap: 1px;
+            background: var(--border-soft);
+        }
+
+        @media (min-width: 760px) {
+            main.layout {
+                grid-template-columns:1.15fr 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--panel);
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 16px 20px;
+            min-height: 60px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .panel-head h2 {
+            font-family: var(--ui), sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .ghost-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            font-size: 11.5px;
+            font-family: var(--ui), sans-serif;
+            font-weight: 500;
+            color: var(--text-dim);
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: border-color .15s var(--ease), color .15s var(--ease), background .15s var(--ease);
+        }
+
+        .ghost-btn:hover {
+            color: var(--text);
+            border-color: var(--blue);
+        }
+
+        .ghost-btn.copied {
+            color: var(--green);
+            border-color: rgba(62, 207, 142, 0.45);
+            background: var(--green-soft);
+        }
+
+        .ghost-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .trace-list {
+            list-style: none;
+            padding: 8px;
+        }
+
+        .frame {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            border-radius: var(--radius-sm);
+            transition: background .15s var(--ease);
+        }
+
+        .frame:hover {
+            background: var(--panel-2);
+        }
+
+        .frame + .frame {
+            margin-top: 1px;
+        }
+
+        .frame-index {
+            flex: 0 0 auto;
+            width: 22px;
+            font-size: 11px;
+            color: var(--text-faint);
+            text-align: right;
+        }
+
+        .frame-path {
+            flex: 1;
+            min-width: 0;
+            font-size: 12.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            direction: rtl;
+            text-align: left;
+        }
+
+        .frame-dir {
+            color: var(--text-faint);
+        }
+
+        .frame-file {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .frame-line {
+            flex: 0 0 auto;
+            font-size: 11.5px;
+            color: var(--blue);
+            background: rgba(95, 168, 234, 0.1);
+            border: 1px solid rgba(95, 168, 234, 0.25);
+            padding: 2px 7px;
+            border-radius: 999px;
+        }
+
+        .copy-btn {
+            flex: 0 0 auto;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-faint);
+            border-radius: 6px;
+            transition: color .15s var(--ease), background .15s var(--ease);
+        }
+
+        .copy-btn:hover {
+            color: var(--text);
+            background: var(--panel-3);
+        }
+
+        .copy-btn.copied {
+            color: var(--green);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .accordion {
+            padding: 8px;
+        }
+
+        .acc-group + .acc-group {
+            margin-top: 4px;
+        }
+
+        .acc-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12.5px;
+            color: var(--text);
+            transition: background .15s var(--ease);
+        }
+
+        .acc-trigger:hover {
+            background: var(--panel-2);
+        }
+
+        .acc-trigger .chev {
+            width: 12px;
+            height: 12px;
+            color: var(--text-faint);
+            transition: transform .2s var(--ease);
+            flex: 0 0 auto;
+        }
+
+        .acc-trigger[aria-expanded="true"] .chev {
+            transform: rotate(90deg);
+        }
+
+        .acc-trigger .var-name {
+            color: var(--red);
+            font-weight: 500;
+        }
+
+        .acc-trigger .var-count {
+            margin-left: auto;
+            font-size: 10.5px;
+            color: var(--text-faint);
+            background: var(--panel-3);
+            border: 1px solid var(--border);
+            padding: 1px 7px;
+            border-radius: 999px;
+        }
+
+        .acc-content {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height .25s var(--ease), opacity .2s var(--ease);
+        }
+
+        .acc-content.open {
+            max-height: 3000px;
+            opacity: 1;
+        }
+
+        .kv-table {
+            padding: 4px 8px 10px 34px;
+        }
+
+        .kv-row {
+            display: flex;
+            gap: 8px;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 11.5px;
+            line-height: 1.5;
+        }
+
+        .kv-row:hover {
+            background: var(--panel-2);
+        }
+
+        .kv-key {
+            flex: 0 0 auto;
+            color: var(--red);
+            white-space: nowrap;
+        }
+
+        .kv-key::before,
+        .kv-key::after {
+            content: '"';
+            color: var(--text-faint);
+        }
+
+        .kv-sep {
+            flex: 0 0 auto;
+            color: var(--text-faint);
+        }
+
+        .kv-val {
+            color: var(--amber);
+            word-break: break-all;
+        }
+
+        .kv-val.is-number {
+            color: var(--blue);
+        }
+
+        .kv-empty {
+            padding: 10px 8px 14px 34px;
+            font-size: 11.5px;
+            color: var(--text-faint);
+            font-style: italic;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translate(-50%, 16px);
+            padding: 10px 16px;
+            background: var(--panel-3);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--ui), sans-serif;
+            font-size: 12.5px;
+            color: var(--text);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .18s var(--ease), transform .18s var(--ease);
+            z-index: 50;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .toast strong {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition-duration: .001ms !important;
+                animation-duration: .001ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ide">
+        <section class="exception-banner">
+            <span class="badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round" style="width:11px;height:11px;">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 8v5"/>
+                    <circle cx="12" cy="16" r="0.6" fill="currentColor" stroke="none"/>
+                </svg>
+
+                Uncaught <?= $hazard->isException() ? 'Exception' : 'Error' ?>
+            </span>
+            <h1>
+                <span class="ex-type"><?= Html::escape($hazard->getType()) ?>:</span>
+                <?= Html::escape($hazard->getMessage()) ?>
+            </h1>
+        </section>
+
+        <main class="layout">
+            <section class="panel trace-panel">
+                <div class="panel-head">
+                    <h2>Stack trace</h2>
+
+                    <button class="ghost-btn" id="copyTraceBtn" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="11" height="11" rx="2"/>
+                            <path d="M5 15V6a2 2 0 012-2h9"/>
+                        </svg>
+                        <span class="label">Copy trace</span>
+                    </button>
+                </div>
+
+                <ol class="trace-list" id="traceList">
+                    <?php if (!$hazard->isException()): ?>
+                        <li class="frame" data-file="<?= Html::escapeAttribute(basename($hazard->file)) ?>"
+                            data-line="<?= $hazard->line ?>"
+                        >
+                            <span class="frame-index">1</span>
+
+                            <span class="frame-path">
+                                <span class="frame-file"><?= Html::escape($hazard->file) ?></span>
+                            </span>
+
+                            <span class="frame-line">:<?= $hazard->line ?></span>
+
+                            <button class="copy-btn" type="button" title="Copy “Dashboard.php on line 74”">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="11" height="11" rx="2"/>
+                                    <path d="M5 15V6a2 2 0 012-2h9"/>
+                                </svg>
+                            </button>
+                        </li>
+                    <?php else: ?>
+                        <?php $i = 1; foreach ($hazard->exception->getTrace() as $trace): ?>
+                            <?php $f = $trace['file']; $l = $trace['line'] ?>
+                            <li class="frame"
+                                data-file="<?= Html::escapeAttribute($f) ?>"
+                                data-line="<?= Html::escapeAttribute($l) ?>"
+                            >
+                                <span class="frame-index"><?= $i ?></span>
+
+                                <span class="frame-path">
+                                    <span class="frame-file"><?= Html::escape($f) ?></span>
+                                </span>
+
+                                <span class="frame-line">:<?= Html::escape($l) ?></span>
+
+                                <button class="copy-btn" type="button" title="Copy “Dashboard.php on line 74”">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+                                        <path d="M5 15V6a2 2 0 012-2h9"></path>
+                                    </svg>
+                                </button>
+                            </li>
+                        <?php $i++; endforeach; ?>
+                    <?php endif; ?>
+                </ol>
+            </section>
+
+            <section class="panel data-panel">
+                <div class="panel-head">
+                    <h2>Request data</h2>
+                </div>
+
+                <div class="accordion" id="super-globals">
+                    <?php exc_dump_array_pretty($_SERVER, '$_SERVER'); ?>
+                    <?php exc_dump_array_pretty($_GET, '$_GET'); ?>
+                    <?php exc_dump_array_pretty($_POST, '$_POST'); ?>
+                    <?php exc_dump_array_pretty($_FILES, '$_FILES'); ?>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        /* ---------------- toast ---------------- */
+        const toastEl = document.getElementById("toast");
+        let toastTimer = null;
+
+        function showToast(html) {
+            toastEl.innerHTML = html;
+            toastEl.classList.add("show");
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toastEl.classList.remove("show");
+            }, 1700);
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text).catch(function () {
+                    return fallbackCopy(text);
+                });
+            }
+            return fallbackCopy(text);
+        }
+
+        function fallbackCopy(text) {
+            return new Promise(function (resolve) {
+                /** @type {HTMLTextAreaElement} */
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                ta.style.position = "fixed";
+                ta.style.opacity = "0";
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try {
+                    document.execCommand("copy");
+                } catch (e) { /* no-op */
+                }
+                document.body.removeChild(ta);
+                resolve();
+            });
+        }
+
+        const frames = Array.from(document.querySelectorAll(".frame"));
+
+        for (const frame of frames) {
+            const btn = frame.querySelector(".copy-btn");
+            const file = frame.getAttribute("data-file");
+            const line = frame.getAttribute("data-line");
+
+            btn.addEventListener("click", function () {
+                const text = file + " on line " + line;
+                copyText(text).then(function () {
+                    btn.classList.add("copied");
+                    showToast("Copied <strong>" + file + " on line " + line + "</strong>");
+                    setTimeout(function () {
+                        btn.classList.remove("copied");
+                    }, 1200);
+                });
+            });
+        }
+
+        const copyTraceBtn = document.getElementById("copyTraceBtn");
+        copyTraceBtn.addEventListener("click", function () {
+            const lines = frames.map(function (f) {
+                return "at " + f.getAttribute("data-file") + " on line " + f.getAttribute("data-line");
+            });
+
+            copyText(lines.join("\n")).then(function () {
+                copyTraceBtn.classList.add("copied");
+                showToast("Copied <strong>full stack trace</strong>");
+                setTimeout(function () {
+                    copyTraceBtn.classList.remove("copied");
+                }, 1200);
+            });
+        });
+
+        /* ---------------- super globals accordion ---------------- */
+        const container = document.getElementById("super-globals");
+
+        for (const trigger of container.querySelectorAll(".acc-trigger")) {
+            trigger.addEventListener("click", function () {
+                const isOpen = trigger.nextElementSibling.classList.toggle("open");
+                trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            });
+            trigger.click();
+        }
+    </script>
+</body>
+</html>

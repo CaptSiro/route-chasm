@@ -106,8 +106,7 @@ abstract class Dashboard extends Router implements UserResourceBarrier {
 
         $router->use('/**',
             function (Request $request, Response $response) {
-                $notFound = new NotFound();
-                $notFound->setTitle($request->getRemainingPath());
+                $notFound = new NotFound($request->getRemainingPath());
                 $response->render($this->createPageView()->setComponent($notFound));
             }
         );
