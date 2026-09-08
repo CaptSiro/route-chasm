@@ -234,14 +234,6 @@ class Admin extends Dashboard {
 
         $this->createMenuLocalization();
         $this->createMenuSystem();
-
-
-        $this->add(
-            Route::menu("/Test")
-                ->icon("Test", Icon::nf('nf-md-web')),
-            DashboardPageView::fromDashboardComponent($this, new Message('Test', MessageType::INFO)),
-            UserResource::getSystemResource(RouteChasmEnvironment::USER_RESOURCE_DOMAIN)
-        );
     }
 
 
