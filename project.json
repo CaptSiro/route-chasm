@@ -1,5 +1,6 @@
 {
     "mount": {
+        "root": "./",
         "assets": "./public",
         "framework": "./",
         "storage": "./data",

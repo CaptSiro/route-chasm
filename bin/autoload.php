@@ -26,6 +26,7 @@ function autoload_import(string $file, string $class): void {
 
 $_dirs = [
     project_mounted("<framework>"),
+    project_mounted("<root>"),
     project_mounted("<project>"),
 ];
 
@@ -84,13 +85,18 @@ spl_autoload_register(function ($class) {
     }
 
     foreach ($_dirs as $dir) {
+        if (is_null($dir)) {
+            continue;
+        }
+
         $path = "$dir/$relativePath";
-        if (is_null($dir) || !file_exists($path)) {
+        if (!file_exists($path)) {
             continue;
         }
 
         autoload_addCacheRecord($path, $class);
         autoload_import($path, $class);
+        return;
     }
 
     foreach (scandir(DIRECTORY_REPOSITORY) as $entry) {

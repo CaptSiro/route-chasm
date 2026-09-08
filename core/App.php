@@ -72,7 +72,25 @@ class App implements Loader {
     }
 
     public static function getSource(string $resource): string {
-        return Path::join(DIRECTORY_FRAMEWORK, $resource);
+        global $_dirs;
+
+        if (file_exists($default = Path::join(DIRECTORY_FRAMEWORK, $resource))) {
+            return $default;
+        }
+
+        foreach ($_dirs as $dir) {
+            if (is_null($dir)) {
+                continue;
+            }
+
+            if (!file_exists($path = Path::join($dir, $resource))) {
+                continue;
+            }
+
+            return $path;
+        }
+
+        return '';
     }
 
 
