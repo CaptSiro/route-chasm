@@ -53,6 +53,22 @@ function $$(selector, element = document) {
     return element.querySelectorAll(selector);
 }
 
+/**
+ * @param {string | undefined} className
+ * @param {Record<string, boolean>} predicates
+ */
+function cls(className, predicates = {}) {
+    className = (className ?? '').trim();
+    
+    for (const c in predicates) {
+        if (predicates[c]) {
+            className += ' ' + c;
+        }
+    }
+    
+    return className;
+}
+
 
 
 class Todo extends Error {

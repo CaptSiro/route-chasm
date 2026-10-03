@@ -8,19 +8,11 @@ function autoload_imported(): int {
     return $_imported;
 }
 
-function autoload_import(string $file, string $class): void {
+function autoload_import(string $file): void {
     global $_imported;
     $_imported++;
 
     require_once $file;
-
-    if (method_exists($class, "init")) {
-        try {
-            call_user_func("$class::init");
-        } catch (TypeError) {
-            // abstract class extends init method but does not provide override
-        }
-    }
 }
 
 
@@ -72,7 +64,7 @@ spl_autoload_register(function ($class) {
     $relativePath = str_replace('\\', '/', $class) . '.php';
     if (isset($_classMap[$class])) {
         $_classMapHits++;
-        autoload_import($_classMap[$class], $class);
+        autoload_import($_classMap[$class]);
         return;
     }
 
@@ -80,7 +72,7 @@ spl_autoload_register(function ($class) {
 
     if (file_exists($file)) {
         autoload_addCacheRecord($file, $class);
-        autoload_import($file, $class);
+        autoload_import($file);
         return;
     }
 
@@ -95,7 +87,7 @@ spl_autoload_register(function ($class) {
         }
 
         autoload_addCacheRecord($path, $class);
-        autoload_import($path, $class);
+        autoload_import($path);
         return;
     }
 
@@ -110,7 +102,7 @@ spl_autoload_register(function ($class) {
         }
 
         autoload_addCacheRecord($entryFile, $class);
-        autoload_import($entryFile, $class);
+        autoload_import($entryFile);
         return;
     }
 

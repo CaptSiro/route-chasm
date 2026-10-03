@@ -2,11 +2,10 @@
 
 namespace core\utils;
 
-use core\Init;
 use core\patterns\Charset;
 use Transliterator;
 
-class Strings extends Init {
+class Strings {
     protected static string $charsAlpha;
     protected static Charset $charsetAlpha;
     protected static string $charsAlphaUpper;
@@ -269,3 +268,7 @@ class Strings extends Init {
         return $ret;
     }
 }
+
+
+
+Strings::init();
