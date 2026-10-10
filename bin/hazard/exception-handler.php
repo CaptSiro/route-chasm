@@ -70,7 +70,7 @@ class __internal_Hazard {
         public mixed $line = null
     ) {}
 
-    public function isException(): true {
+    public function isException(): bool {
         return !is_null($this->exception);
     }
 

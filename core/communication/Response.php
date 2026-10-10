@@ -196,12 +196,18 @@ class Response {
      *
      * **This function does not download the file on user's end. It only sends file's contents.**
      */
-    public function readFile(string $file, bool $doFlush = true): void {
+    public function readFile(string $file, bool $doFlush = true): bool {
         if (!file_exists($file)) {
             $this->sendMessage(
                 "RequestFile not found: $file",
                 HttpCode::CE_NOT_FOUND
             );
+        }
+        
+        if (!is_file($file)) {
+//            throw new \RuntimeException("The requested file is type of directory: $file");
+            // Silently exit and in the future make it report to Admin -> Analytics
+            return false;
         }
 
         $this->generateHeaders();
@@ -210,6 +216,8 @@ class Response {
         if ($doFlush) {
             $this->exit();
         }
+        
+        return true;
     }
 
     /**

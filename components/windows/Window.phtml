@@ -2,10 +2,7 @@
 
 use components\Icon;
 use components\windows\Window;
-use core\sideloader\importers\Css\Css;
 use core\view\Html;
-
-Css::import($this->getResource('window.css'));
 
 ?><?php if ($this->openButton): ?>
     <button onclick="window_open($('#<?= $this->id ?>'))">

@@ -17,13 +17,16 @@ use core\sideloader\api\SideLoaderApi;
 use core\sideloader\importers\Css\Css;
 use core\sideloader\importers\Javascript\Javascript;
 use core\Singleton;
+use core\storage\Data;
 use core\utils\Files;
 use core\utils\Regex;
 use core\view\BufferTransform;
+use core\view\Html;
 use core\view\View;
 use core\view\ViewTemplateRenderer;
 use models\Setting\Setting;
 use models\SideLoaderRecord;
+use RuntimeException;
 
 class SideLoader implements View {
     use ViewTemplateRenderer, Singleton, LexiconUnit;
@@ -223,7 +226,9 @@ class SideLoader implements View {
                     }
 
                     $response->send($importer->fileHead($entry->path), false);
-                    $response->readFile($entry->path, doFlush: false);
+                    if (!$response->readFile($entry->path, doFlush: false)) {
+                        // Catch and log into analytics, same above ^
+                    }
                 }
 
                 $response->send($importer->end(), false);
@@ -323,6 +328,10 @@ class SideLoader implements View {
     }
 
     public function import(string $type, string $file): void {
+        if (empty($file) || is_dir($file)) {
+            throw new RuntimeException("File is not either defined or it is directory: '" . Html::escape($file) . "'");
+        }
+        
         if (!isset($this->files[$type])) {
             $this->files[$type] = [$file];
             return;
