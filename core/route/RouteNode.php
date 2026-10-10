@@ -2,6 +2,7 @@
 
 namespace core\route;
 
+use Closure;
 use core\actions\Action;
 use core\collections\graph\TreeVertex;
 use core\Flags;
@@ -26,6 +27,8 @@ class RouteNode {
 
 
     protected ?TreeVertex $vertex;
+
+    protected ?Closure $loader = null;
 
 
 
@@ -67,6 +70,23 @@ class RouteNode {
      */
     public function setVertex(TreeVertex $vertex): void {
         $this->vertex = $vertex;
+    }
+
+    /**
+     * Registers a callback that adds this node's sub-routes on demand. It runs once, the first time
+     * route search reaches this node (RouteTree::find) or when load() is called explicitly.
+     */
+    public function setLoader(?Closure $loader): void {
+        $this->loader = $loader;
+    }
+
+    public function load(): void {
+        if (is_null($loader = $this->loader)) {
+            return;
+        }
+
+        $this->loader = null;
+        $loader();
     }
 
     /**

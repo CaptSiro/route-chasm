@@ -29,6 +29,97 @@ class RouteCompiler {
      * @return Route
      */
     public function parse(string $pattern, array $parameters = []): Route {
+        // [Claude review] Compiled routes are cached across requests, see RouteCompiler::cache*()
+        $key = $pattern . "\0" . json_encode($parameters) . "\0" . $this->config->getAnyRegex() . "\0"
+            . $this->config->getIdentRegex() . "\0" . (int) $this->config->isMergeConsecutiveSlashes();
+
+        if (!is_null($segments = self::cacheGet($key))) {
+            $route = new Route();
+
+            foreach ($segments as [$source, $regex, $isTerminal]) {
+                $segment = new RouteSegment($source, $regex);
+                if ($isTerminal) {
+                    $segment->setFlag(RouteSegment::FLAG_IS_TERMINAL);
+                }
+
+                $route->add($segment);
+            }
+
+            return $route;
+        }
+
+        $route = $this->compile($pattern, $parameters);
+
+        self::cacheSet($key, array_map(
+            fn(RouteSegment $x) => [$x->getSource(), (string) $x, $x->hasFlag(RouteSegment::FLAG_IS_TERMINAL)],
+            $route->getSegments()
+        ));
+
+        return $route;
+    }
+
+    /**
+     * [Claude review] Route cache: `<storage>/route-cache.php` returns an array, so OPcache keeps it in shared memory
+     * and loading it is ~free. Written at shutdown, only when a new pattern was compiled. Delete the file to reset.
+     */
+    public const CACHE_FILE = 'route-cache.php';
+    public const CACHE_MAX_ENTRIES = 4096;
+
+    private static ?array $cache = null;
+    private static bool $isCacheDirty = false;
+
+    protected static function getCacheFile(): ?string {
+        $storage = function_exists('project_mounted')
+            ? project_mounted('<storage>')
+            : null;
+
+        return is_null($storage)
+            ? null
+            : $storage . DIRECTORY_SEPARATOR . self::CACHE_FILE;
+    }
+
+    protected static function cacheGet(string $key): ?array {
+        if (is_null(self::$cache)) {
+            $file = self::getCacheFile();
+            $loaded = !is_null($file) && is_file($file)
+                ? include $file
+                : [];
+
+            self::$cache = is_array($loaded) ? $loaded : [];
+        }
+
+        return self::$cache[$key] ?? null;
+    }
+
+    protected static function cacheSet(string $key, array $segments): void {
+        if (count(self::$cache) >= self::CACHE_MAX_ENTRIES) {
+            // guards against unbounded growth if routes are ever built from dynamic input
+            return;
+        }
+
+        self::$cache[$key] = $segments;
+
+        if (!self::$isCacheDirty) {
+            self::$isCacheDirty = true;
+            register_shutdown_function([self::class, 'saveCache']);
+        }
+    }
+
+    public static function saveCache(): void {
+        if (!self::$isCacheDirty || is_null($file = self::getCacheFile())) {
+            return;
+        }
+
+        // Write + rename so concurrent requests never include a half-written file
+        $temporary = $file . '.' . getmypid() . '.tmp';
+        if (file_put_contents($temporary, '<?php return ' . var_export(self::$cache, true) . ';' . PHP_EOL) !== false) {
+            rename($temporary, $file);
+        }
+
+        self::$isCacheDirty = false;
+    }
+
+    protected function compile(string $pattern, array $parameters): Route {
         $route = new Route();
         $segment = '';
         $source = '';

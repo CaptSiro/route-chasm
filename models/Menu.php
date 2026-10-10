@@ -78,9 +78,12 @@ class Menu extends Model implements Name {
             return $this->pages;
         }
 
-        return $this->pages = Page::getDescription()
+        $this->pages = Page::getDescription()
             ->getFactory()
             ->allExecute($this->getPagesQuery());
+
+        Page::preloadLocalizations($this->pages);
+        return $this->pages;
     }
 
     /**
@@ -100,9 +103,14 @@ class Menu extends Model implements Name {
                 ->where(Page::publishedQuery());
         }
 
-        return $this->releasedPages = Page::getDescription()
+        // [Claude review] Bug fix: executed a fresh getPagesQuery() instead of $sql, dropping the status/publish
+        // filters above, so anonymous visitors saw non-public and unpublished pages in menus.
+        $this->releasedPages = Page::getDescription()
             ->getFactory()
-            ->allExecute($this->getPagesQuery());
+            ->allExecute($sql);
+
+        Page::preloadLocalizations($this->releasedPages);
+        return $this->releasedPages;
     }
 
     public function hasPage(Page $page): bool {

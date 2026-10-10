@@ -110,6 +110,26 @@ abstract class Dashboard extends Router implements UserResourceBarrier {
                 $response->render($this->createPageView()->setComponent($notFound));
             }
         );
+
+        // [Claude review] Dashboard routes are registered only when a request actually enters the dashboard
+        $bindingPoint->setLoader(fn() => $this->loadRoutes());
+    }
+
+    private bool $routesLoaded = false;
+
+    /**
+     * Override to register dashboard routes (e.g. with add()). Called lazily, once, see loadRoutes().
+     * Do not call from the constructor
+     */
+    public function createRoutes(): void {}
+
+    public function loadRoutes(): void {
+        if ($this->routesLoaded) {
+            return;
+        }
+
+        $this->routesLoaded = true;
+        $this->createRoutes();
     }
 
     public function add(
@@ -170,6 +190,8 @@ abstract class Dashboard extends Router implements UserResourceBarrier {
         if (isset($this->sideBar)) {
             return $this->sideBar;
         }
+
+        $this->loadRoutes(); // [Claude review] the menu is built from the routes
 
         return $this->sideBar = $this->createDashboardSideBar(
             RoutedMenu::from($this)

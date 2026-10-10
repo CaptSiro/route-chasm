@@ -24,6 +24,20 @@ class LexiconGroup extends Model {
             return $ret;
         }
 
+        // [Claude review] First miss loads all groups (a few dozen rows) in one query instead of 1 query per group
+        static $isPreloaded = false;
+        if (!$isPreloaded) {
+            $isPreloaded = true;
+
+            foreach (static::all() as $group) {
+                self::modelCache_set($group->name, $group);
+            }
+
+            if (!is_null($ret = self::modelCache_get($name))) {
+                return $ret;
+            }
+        }
+
         return self::modelCache_set(
             $name,
             static::createConditionally(

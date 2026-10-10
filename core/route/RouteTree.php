@@ -18,6 +18,8 @@ class RouteTree implements Graph {
      * @return array<TreeVertex>
      */
     public static function find(TreeVertex $root, Path $path): array {
+        $root->get()->load();
+
         if ($path->getDepth() === 0) {
             return [$root];
         }
@@ -43,6 +45,7 @@ class RouteTree implements Graph {
 
                 foreach ($edges as $edge) {
                     if ($edge->get()->test($segment)) {
+                        $edge->getVertex()->get()->load();
                         $layerNext[] = $edge->getVertex();
                     }
                 }

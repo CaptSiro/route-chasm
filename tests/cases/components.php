@@ -12,7 +12,7 @@ Test::case("component should render correct template", function () {
     Unit::expect(trim((string) $c))
         ->toBe($str);
 
-    Unit::expect($c->renderTemplated($c->getResource("./TestComponentUpperCase")))
+    Unit::expect($c->renderTemplated($c->getResource("./TestComponentUpperCase.phtml")))
         ->toBe(strtoupper($str));
 });
 

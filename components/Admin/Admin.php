@@ -57,7 +57,6 @@ class Admin extends Dashboard {
             )
         );
 
-        $this->createRoutes();
         $this->setLexiconGroup(self::LEXICON_GROUP);
     }
 

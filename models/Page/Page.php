@@ -115,6 +115,46 @@ class Page extends Model implements Destination, Priority {
     }
 
     /**
+     * Loads localizations and their slugs for many pages in 2 queries instead of 2 per page.
+     *
+     * @param array<Page> $pages
+     */
+    public static function preloadLocalizations(array $pages): void {
+        $pages = array_filter($pages, fn(Page $x) => isset($x->id) && !isset($x->localizations));
+        if (empty($pages)) {
+            return;
+        }
+
+        $ids = array_values(array_map(fn(Page $x) => $x->id, $pages));
+        $localizations = PageLocalization::all(where: Query::infer(
+            'id_page IN (' . implode(', ', array_fill(0, count($ids), '?')) . ')',
+            ...$ids
+        ));
+
+        $slugIds = array_values(array_unique(array_map(fn(PageLocalization $x) => $x->slugId, $localizations)));
+        $slugs = [];
+        if (!empty($slugIds)) {
+            $slugQuery = Query::infer('id_slug IN (' . implode(', ', array_fill(0, count($slugIds), '?')) . ')', ...$slugIds);
+            foreach (Slug::all(where: $slugQuery) as $slug) {
+                $slugs[$slug->id] = $slug;
+            }
+        }
+
+        $byPage = [];
+        foreach ($localizations as $localization) {
+            if (isset($slugs[$localization->slugId])) {
+                $localization->setSlug($slugs[$localization->slugId]);
+            }
+
+            $byPage[$localization->pageId][$localization->languageId] = $localization;
+        }
+
+        foreach ($pages as $page) {
+            $page->localizations = $byPage[$page->id] ?? [];
+        }
+    }
+
+    /**
      * @return array<Page>
      */
     public static function children(?Page $parent = null): array {
@@ -302,6 +342,12 @@ class Page extends Model implements Destination, Priority {
 
 
     public function getParent(): ?Page {
+        // [Claude review] Top-level pages ran `WHERE id_page = NULL` on every call (a cached null is not isset()).
+        // 24 of the home page's queries.
+        if (empty($this->parentId)) {
+            return null;
+        }
+
         if (!isset($this->parent)) {
             $this->parent = self::fromId($this->parentId, cache: true);
         }

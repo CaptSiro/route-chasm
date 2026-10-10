@@ -10,8 +10,6 @@ use core\database\sql\Column;
 use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
-use core\database\sql\query\Parameter;
-use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\utils\Strings;
 use core\view\View;
@@ -33,7 +31,16 @@ final class Setting extends Model implements Editable {
      * @return static|null
      */
     public static function fromName(string $name, bool $create = false, mixed $default = null, array $properties = []): ?self {
-        $setting = self::first(where: new Query('name = ?', [Parameter::infer($name)]));
+        // [Claude review] All settings (a handful of rows) are loaded once per request instead of 1 query per name
+        if (is_null(self::$byName)) {
+            self::$byName = [];
+
+            foreach (self::all() as $loaded) {
+                self::$byName[$loaded->name] = $loaded;
+            }
+        }
+
+        $setting = self::$byName[$name] ?? null;
         if (!is_null($setting) || !$create) {
             return $setting;
         }
@@ -51,6 +58,9 @@ final class Setting extends Model implements Editable {
 
 
     use EditableExtension;
+
+    /** @var array<string, Setting>|null per-request cache for fromName(), reset on save/delete */
+    private static ?array $byName = null;
 
     #[Column('id_setting', type: Column::TYPE_INTEGER, isPrimaryKey: true)]
     public int $id;
@@ -77,7 +87,13 @@ final class Setting extends Model implements Editable {
             $this->value = (string) $this->value;
         }
 
+        self::$byName = null; // [Claude review] invalidate fromName() cache (name may have changed)
         return parent::save();
+    }
+
+    public function delete(): DatabaseAction {
+        self::$byName = null; // [Claude review] invalidate fromName() cache
+        return parent::delete();
     }
 
     public function toInt(): int {
