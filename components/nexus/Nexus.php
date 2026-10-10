@@ -19,6 +19,7 @@ use core\route\Route;
 use core\route\RouteNode;
 use core\url\Url;
 use core\view\Controller;
+use core\view\LazyView;
 use core\view\Renderer;
 use core\view\View;
 use core\view\ViewTemplateSlotTrait;
@@ -56,13 +57,19 @@ class Nexus extends Controller implements DashboardContent {
     public static function createOverviewFromGridLayout(
         Nexus $nexus,
         GridLayoutFactory $gridFactory,
-        bool $addControlColumns = true
+        bool $addControlColumns = true,
+        bool $bindProxy = true,
     ): View {
         $g = self::LEXICON_GROUP;
         $messageGridNotCreated = Lexicon::translate($g, 'Grid description has zero columns');
 
-        $proxy = $gridFactory->getProxy() ?? new NexusProxy();
-        if ($proxy instanceof NexusProxy) {
+        $proxy = $gridFactory->getProxy();
+        if (is_null($proxy)) {
+            $proxy = new NexusProxy();
+            $bindProxy = true;
+        }
+
+        if ($bindProxy && $proxy instanceof NexusProxy) {
             $proxy->setContext($nexus);
         }
 
@@ -104,9 +111,19 @@ class Nexus extends Controller implements DashboardContent {
             new NexusHeader($nexus, $createButtonLabel)
         );
 
+        // [Claude review] Performance: the overview grid (incl. its DB query) is now built only when the Nexus is
+        // actually rendered, see LazyView. Every admin section builds a Nexus on every request just to register its
+        // routes, so this used to load all admin grids even for the public home page.
+        // The proxy is still bound to the Nexus eagerly (cheap): proxies may subscribe to Nexus events in
+        // setContext() - e.g. IsDefaultProxy listens for EVENT_EXTENSION_ADDED - and addExtension() is called right
+        // after fromEditor() returns, so binding it lazily would miss those events.
+        if (($proxy = $gridFactory->getProxy()) instanceof NexusProxy) {
+            $proxy->setContext($nexus);
+        }
+
         $nexus->setTemplateSlot(
             self::SLOT_OVERVIEW,
-            self::createOverviewFromGridLayout($nexus, $gridFactory)
+            new LazyView(fn() => self::createOverviewFromGridLayout($nexus, $gridFactory, bindProxy: false))
         );
 
         return $nexus;

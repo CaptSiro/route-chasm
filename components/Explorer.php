@@ -28,6 +28,7 @@ class Explorer extends Controller implements JsonSerializable {
         }
 
         parent::__construct($renderer);
+        $this->setLexiconGroup('explorer');
         $this->setTitle($this->trt("Explorer - {}", $this->label));
     }
 

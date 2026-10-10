@@ -74,8 +74,17 @@ class NexusEditor extends Controller {
 
     public function setContext(Nexus $context): static {
         $this->context = $context;
-        Javascript::import(Nexus::getStaticResource(Nexus::getBaseClass() . '.js'));
+        // [Claude review] Nexus.js import moved to renderTemplated(). setContext() runs while Admin registers its
+        // routes on every request, which added Nexus.js to every page incl. the public home page.
         return $this;
+    }
+
+    /**
+     * Imports Nexus.js only when the editor is actually rendered as HTML, see setContext().
+     */
+    public function renderTemplated(?string $template = null): string {
+        Javascript::import(Nexus::getStaticResource(Nexus::getBaseClass() . '.js'));
+        return parent::renderTemplated($template);
     }
 
     public function setModel(Model $model): static {

@@ -176,12 +176,24 @@ class DashboardLogin extends Controller {
                 $method = $fields->getStrict(self::FIELD_METHOD);
                 $password = $fields->getStrict(self::FIELD_PASSWORD);
 
+                // [Claude review] A field sent as `password[]=...` arrives as an array and made password_verify() /
+                // hash_equals() throw a TypeError (500). Reject anything that is not a string.
+                if (!is_string($password)) {
+                    $response->sendMessage($messageWrongPassword, HttpCode::CE_BAD_REQUEST);
+                }
+
                 if ($method === self::METHOD_ENV) {
                     if (!$this->useEnvPasswordMethod()) {
                         $response->sendMessage($messageEnvMethodNotAllowed, HttpCode::CE_METHOD_NOT_ALLOWED);
                     }
 
-                    if (App::getInstance()->getEnv()->get(RouteChasmEnvironment::ENV_ADMIN_LOGIN_PASSWORD) !== $password) {
+                    // [Claude review] Two fixes:
+                    //  1. An empty `ADMIN_LOGIN_PASSWORD=` line yields "" (not null), and `"" !== ""` is false, so an
+                    //     empty password logged anyone in as root. An unset/empty env password now always fails.
+                    //     getEnv() is also null-safe now (no .env file -> fatal error before).
+                    //  2. hash_equals() instead of !== for a constant-time comparison (no timing side channel).
+                    $envPassword = App::getInstance()->getEnv()?->get(RouteChasmEnvironment::ENV_ADMIN_LOGIN_PASSWORD);
+                    if (is_null($envPassword) || $envPassword === '' || !hash_equals($envPassword, $password)) {
                         $response->sendMessage($messageWrongPassword, HttpCode::CE_BAD_REQUEST);
                     }
 

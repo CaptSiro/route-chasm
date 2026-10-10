@@ -37,6 +37,7 @@ use core\sideloader\importers\Javascript\Javascript;
 use core\url\Url;
 use core\utils\Arrays;
 use core\utils\Objects;
+use core\view\LazyView;
 use models\Language\Language;
 use models\Page\behavior\PageEditorBehavior;
 use models\Page\Page;
@@ -284,9 +285,12 @@ class PageNexusEditor extends NexusEditor {
             $response->json($children);
         });
 
+        // [Claude review] Performance: the form is now built lazily, on render. onBind() runs on every request (Admin
+        // registers all routes up front), and building the form eagerly also imported this editor's JS/CSS
+        // (see createGenerateStructureForm()) into EVERY page, including the public home page.
         $this->context->setTemplateSlot(
             $this->context::SLOT_FOOTER,
-            $this->createGenerateStructureForm()
+            new LazyView(fn() => $this->createGenerateStructureForm())
         );
     }
 

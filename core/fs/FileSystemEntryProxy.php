@@ -35,13 +35,14 @@ class FileSystemEntryProxy extends NexusProxy {
     public function __construct(
         protected Closure $directoryLinkProvider
     ) {
-        self::import();
         $this->imageTransformer = ImageVariant::get(ImageVariant::TRANSFORMER_FULL_HD);
     }
 
 
 
     public function getValue(string $name): string {
+        self::import();
+
         if ($name === 'size') {
             if ($this->item instanceof File) {
                 return Html::wrap('span', $this->item->getHumanReadableSize());

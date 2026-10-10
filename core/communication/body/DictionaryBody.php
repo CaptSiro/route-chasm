@@ -212,48 +212,60 @@ class DictionaryBody implements RequestBody {
                 }
             }
 
+            // [Claude review] Rewritten loop. Problems with the previous version:
+            //  1. Denial of service: when the body ended without the closing boundary (truncated/malformed request),
+            //     the `$safeLength <= 0 -> continue` branch spun forever at EOF, pinning a PHP worker until
+            //     max_execution_time.
+            //  2. Performance/memory: data was only flushed after EOF, so the whole file was accumulated in
+            //     $buffer and strpos() rescanned the ever-growing buffer after every 8 KiB read (O(n^2)).
+            //     File data is now flushed to the temp file as soon as it is safely before any possible boundary.
+            //  3. When flushed at EOF, text fields were split into several chunks and Arrays::append() turned
+            //     them into arrays. Text fields are no longer flushed in chunks.
+            //  4. Size limit: the final chunk was written regardless of $maxSize.
+            //  5. After the boundary, only strlen($boundary) bytes were skipped although $boundaryMarker (newline +
+            //     boundary) was matched; that left stray characters in front of the next part's headers.
+            $isPartial = false;
+            $markerLength = strlen($boundaryMarker);
+
             while (true) {
-                if (!str_contains($buffer, $boundaryMarker) && !$content->isEndOfFile()) {
-                    $buffer .= $content->read($chunkSize);
-                    continue;
+                $pos = strpos($buffer, $boundaryMarker);
+
+                if ($pos !== false) {
+                    $data = substr($buffer, 0, $pos);
+
+                    if ($isFile) {
+                        $size += strlen($data);
+
+                        if ($size <= $maxSize) {
+                            fwrite($temporary, $data);
+                        }
+                    } else {
+                        Arrays::append($fields, $name, $data);
+                    }
+
+                    $buffer = substr($buffer, $pos + $markerLength);
+                    break;
                 }
 
-                $pos = strpos($buffer, $boundaryMarker);
-                if ($pos === false) {
-                    $safeLength = strlen($buffer) - strlen($boundaryMarker) - 4;
+                if ($content->isEndOfFile()) {
+                    // Body ended without the closing boundary -> discard this part
+                    $isPartial = true;
+                    $buffer = '';
+                    break;
+                }
 
-                    if ($safeLength <= 0) {
-                        continue;
-                    }
-
+                // Keep the last (marker length - 1) bytes, they may be the beginning of a boundary split by a read
+                if ($isFile && ($safeLength = strlen($buffer) - $markerLength + 1) > 0) {
                     $data = substr($buffer, 0, $safeLength);
                     $buffer = substr($buffer, $safeLength);
-
-                    if (!$isFile) {
-                        Arrays::append($fields, $name, $data);
-                        continue;
-                    }
-
                     $size += strlen($data);
 
                     if ($size <= $maxSize) {
                         fwrite($temporary, $data);
                     }
-
-                    continue;
                 }
 
-                $data = substr($buffer, 0, $pos);
-
-                if ($isFile) {
-                    $size += strlen($data);
-                    fwrite($temporary, $data);
-                } else {
-                    Arrays::append($fields, $name, $data);
-                }
-
-                $buffer = substr($buffer, $pos + strlen($boundary));
-                break;
+                $buffer .= $content->read($chunkSize);
             }
 
             if (!$isFile) {
@@ -262,6 +274,15 @@ class DictionaryBody implements RequestBody {
 
             fflush($temporary);
             fclose($temporary);
+
+            if ($isPartial) {
+                @unlink($temporaryPath);
+                Arrays::append($files, $name, new UploadedFile(
+                    $fileName, $type, $size,
+                    UPLOAD_ERR_PARTIAL
+                ));
+                continue;
+            }
 
             if ($size > $maxSize) {
                 @unlink($temporaryPath);

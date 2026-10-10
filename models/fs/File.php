@@ -42,8 +42,8 @@ class File extends Model implements FileSystemEntry, Destination {
         return static::first(where: Query::infer('hash = ?', $hash));
     }
 
-    public static function fromName(?Directory $parent, string $name): static {
-        $where = $parent->isRoot()
+    public static function fromName(?Directory $parent, string $name): ?static {
+        $where = (is_null($parent) || $parent->isRoot())
             ? Query::infer('id_fs_parent IS NULL AND name = ?', $name)
             : Query::infer('id_fs_parent = ? AND name = ?', $parent->id, $name);
 
@@ -97,15 +97,20 @@ class File extends Model implements FileSystemEntry, Destination {
     }
 
     public function delete(): DatabaseAction {
+        foreach ($this->getShortcuts() as $shortcut) {
+            $shortcut->delete();
+        }
+
         $result = parent::delete();
         if ($result === DatabaseAction::NONE) {
             return DatabaseAction::NONE;
         }
 
-        unlink($this->getRealPath());
-
-        foreach ($this->getShortcuts() as $shortcut) {
-            $shortcut->delete();
+        // [Claude review] Guard the unlink function: a missing blob raised a warning, which the global error handler
+        // turns into a 500-page even though the DB record was already removed.
+        $realPath = $this->getRealPath();
+        if (file_exists($realPath)) {
+            unlink($realPath);
         }
 
         return DatabaseAction::DELETE;

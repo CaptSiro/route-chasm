@@ -36,7 +36,9 @@ function exc_dump_array_pretty(array $array, ?string $label = null): void {
                  stroke-linecap=\"round\" stroke-linejoin=\"round\">
                 <path d=\"M9 5l7 7-7 7\"></path>
             </svg>
-            <span class=\"var-name\">$label</span><span class=\"var-count\">44</span></button>
+            <span class=\"var-name\">$label</span><span class=\"var-count\">$count</span></button>
+            <!-- [Claude review] var-count was hard-coded to 44 instead of the actual \$count -->
+
         <div class=\"acc-content open\">
             <div class=\"kv-table\">
     ";
@@ -94,13 +96,34 @@ class __internal_Hazard {
 
 function get_response_format(): string {
     $headers = apache_request_headers();
-    return strtolower($_GET[RouteChasmEnvironment::QUERY_RESPONSE_FORMAT]
+    $format = $_GET[RouteChasmEnvironment::QUERY_RESPONSE_FORMAT]
         ?? $headers[HttpHeader::X_RESPONSE_FORMAT]
-        ?? 'html');
+        ?? 'html';
+
+    // [Claude review] `?o[]=x` makes $_GET['o'] an array and strtolower() would throw a TypeError from inside the
+    // error/exception handler itself, hiding the original error.
+    return is_string($format)
+        ? strtolower($format)
+        : 'html';
+}
+
+/**
+ * Added header() refuses values containing CR/LF and raises a warning. Exception messages are often
+ * multi-line, and inside exception_handler() that warning re-entered error_handler(), which replaced the original
+ * exception page with an unrelated "Header may not contain more than a single header" error.
+ */
+function exc_header_safe(string $value): string {
+    return str_replace(["\r", "\n"], ' ', $value);
 }
 
 function error_handler($severity, $message, $file, $line): void {
-    if (RouteChasmEnvironment::ERROR_SEVERITY_BLACKLIST & $severity > 0) {
+    if ((RouteChasmEnvironment::ERROR_SEVERITY_BLACKLIST & $severity) !== 0) {
+        return;
+    }
+
+    // [Claude review] Respect error_reporting() so the `@` silence operator works (e.g. `@unlink(...)` in
+    // DictionaryBody). Before this, any suppressed warning still aborted the request with a 500 page.
+    if (!(error_reporting() & $severity)) {
         return;
     }
 
@@ -109,7 +132,7 @@ function error_handler($severity, $message, $file, $line): void {
     }
 
     http_response_code(500);
-    header("X-Internal-Server-Error: $message ($file:$line)");
+    header("X-Internal-Server-Error: " . exc_header_safe("$message ($file:$line)"));
 
     $responseType = strtolower(get_response_format());
 
@@ -143,12 +166,12 @@ function exception_handler($exception): void {
         $t = $t[0];
 
         if (isset($t['file']) && isset($t['line'])) {
-            header("X-Internal-Server-Error: $message ($t[file]:$t[line])");
+            header("X-Internal-Server-Error: " . exc_header_safe("$message ($t[file]:$t[line])"));
         } else {
-            header("X-Internal-Server-Error: $message");
+            header("X-Internal-Server-Error: " . exc_header_safe($message));
         }
     } else {
-        header("X-Internal-Server-Error: $message");
+        header("X-Internal-Server-Error: " . exc_header_safe($message));
     }
 
     $responseType = strtolower(get_response_format());

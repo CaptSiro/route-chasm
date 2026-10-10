@@ -482,7 +482,7 @@ use core\view\Html;
                         </li>
                     <?php else: ?>
                         <?php $i = 1; foreach ($hazard->exception->getTrace() as $trace): ?>
-                            <?php $f = $trace['file']; $l = $trace['line'] ?>
+                            <?php $f = $trace['file'] ?? '[internal]'; $l = $trace['line'] ?? '' ?>
                             <li class="frame"
                                 data-file="<?= Html::escapeAttribute($f) ?>"
                                 data-line="<?= Html::escapeAttribute($l) ?>"

@@ -16,6 +16,12 @@ function autoload_import(string $file): void {
 }
 
 
+// [Claude review] Performance helper for the class-map lookup in the autoloader below. Evaluated once per request.
+// opcache_is_script_cached() can be missing (no OPcache) or restricted by opcache.restrict_api.
+define('AUTOLOAD_HAS_OPCACHE', function_exists('opcache_is_script_cached')
+    && filter_var(ini_get('opcache.enable' . (PHP_SAPI === 'cli' ? '_cli' : '')), FILTER_VALIDATE_BOOLEAN)
+    && empty(ini_get('opcache.restrict_api')));
+
 $_dirs = [
     project_mounted("<framework>"),
     project_mounted("<root>"),
@@ -61,11 +67,31 @@ function autoload_cacheHits(): int {
 spl_autoload_register(function ($class) {
     global $_dirs, $_classMap, $_classMapHits;
 
+    // [Claude review] Reject strings that are not valid class names. The name is turned directly into a file path,
+    // so a dynamic name such as class_exists("..\\..\\some\\file") would otherwise require an arbitrary .php file
+    // outside the source tree (path traversal -> code execution if any class name is ever user influenced).
+    if (!preg_match('/^[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*(\\\\[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*)*$/', $class)) {
+        return;
+    }
+
     $relativePath = str_replace('\\', '/', $class) . '.php';
     if (isset($_classMap[$class])) {
-        $_classMapHits++;
-        autoload_import($_classMap[$class]);
-        return;
+        // [Claude review] The class map is persisted to disk, so after a class file is moved or deleted the stale
+        // entry made require_once fail fatally on every request until class-map.json was deleted by hand.
+        // Stale entries are now dropped and the normal lookup below runs instead.
+        // [Claude review] Performance: a plain file_exists() here added ~300 stat calls per request (~5-13 ms on
+        // Windows). opcache_is_script_cached() is an in-memory lookup (~200x cheaper); OPcache already revalidates
+        // cached scripts against disk itself, so we only stat files that OPcache does not know yet.
+        $cached = $_classMap[$class];
+        if ((AUTOLOAD_HAS_OPCACHE && opcache_is_script_cached($cached)) || file_exists($cached)) {
+            $_classMapHits++;
+            autoload_import($_classMap[$class]);
+            return;
+        }
+
+        unset($_classMap[$class]);
+        global $_classMapWrites;
+        $_classMapWrites++;
     }
 
     $file = __DIR__ . "/../$relativePath";
@@ -108,7 +134,9 @@ spl_autoload_register(function ($class) {
 
     http_response_code(500);
     echo '<pre>';
-    echo json_encode(debug_backtrace(), JSON_PRETTY_PRINT);
+    // [Claude review] debug_backtrace() included every call's arguments (objects, DB config, request data...) and
+    // was echoed unescaped into HTML: information disclosure + XSS. Arguments are now omitted and output escaped.
+    echo htmlspecialchars(json_encode(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), JSON_PRETTY_PRINT));
     echo '</pre>';
     echo "[Critical Error]: Class does not exists (" . htmlspecialchars($class) . ')';
     exit;

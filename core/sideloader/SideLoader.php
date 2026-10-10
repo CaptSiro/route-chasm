@@ -65,6 +65,11 @@ class SideLoader implements View {
 
     protected array $files;
     /**
+     * Per-request memo of real path => record, filled by joinHashed()
+     * @var array<string, SideLoaderRecord>
+     */
+    protected array $records = [];
+    /**
      * @var array<string, Importer> $importers
      */
     protected array $importers;
@@ -203,25 +208,30 @@ class SideLoader implements View {
                     HttpHeader::CONTENT_TYPE => $importer->getFileMimeType()
                 ]);
 
-                $response->send($importer->begin(), false);
                 $files = $request->getUrl()->getQuery()->getStrict('files');
 
-                if (!str_contains($files, self::FILE_SEPARATOR)) {
-                    $entry = SideLoaderRecord::fromHash($files);
-                    if (is_null($entry)) {
-                        $response->sendMessage(
-                            $messageFileNotFound->format($files),
-                            HttpCode::CE_NOT_FOUND
-                        );
-                    }
-
-                    $response->send($importer->fileHead($entry->path), false);
-                    $response->readFile($entry->path);
+                // [Claude review] The single-file case used to:
+                //  - answer 404 only after begin() had already been echoed, so setting the status emitted a
+                //    "headers already sent" warning that the global error handler turned into a 500 page;
+                //  - call readFile() with flush, which exited before $importer->end(), so a single-file JS import
+                //    never dispatched 'scriptLoad' and std_onLoad() callbacks in that file never ran;
+                //  - call readFile() on a missing file -> sendMessage() mid-stream (same 500 as above).
+                // Unknown single hashes are now rejected before any output, and the file goes through the same
+                // loop as multi-file imports (which also skips entries whose file is gone from disk).
+                if (!str_contains($files, self::FILE_SEPARATOR) && is_null(SideLoaderRecord::fromHash($files))) {
+                    $response->sendMessage(
+                        $messageFileNotFound->format($files),
+                        HttpCode::CE_NOT_FOUND
+                    );
                 }
+
+                $response->send($importer->begin(), false);
 
                 foreach (explode(self::FILE_SEPARATOR, $files) as $hash) {
                     $entry = SideLoaderRecord::fromHash($hash);
-                    if (is_null($entry)) {
+                    // [Claude review] is_file() check added: readFile() on a missing file calls sendMessage(), which
+                    // cannot change the status after output started (see above) and aborted the whole bundle.
+                    if (is_null($entry) || !is_file($entry->path)) {
                         continue;
                     }
 
@@ -247,19 +257,30 @@ class SideLoader implements View {
         $first = true;
         $length = $this->hashLength->toInt();
 
+        // [Claude review] Performance: resolve all paths first and fetch their records with ONE query, memoized for
+        // the rest of the request. Previously each file ran its own `WHERE path = ?` query, and joinHashed() runs
+        // twice per type (X-Require header + importer URL), so the home page issued 30 such queries.
+        // realpath() returning false already means the file does not exist, so the extra file_exists() was dropped.
+        $reals = [];
         foreach (array_unique($files) as $file) {
-            $real = realpath($file);
-
-            if (!file_exists($real)) {
-                continue;
+            if (($real = realpath($file)) !== false) {
+                $reals[] = $real;
             }
+        }
 
-            $entry = SideLoaderRecord::fromPath($real);
+        $missing = array_values(array_filter($reals, fn($real) => !isset($this->records[$real])));
+        if (!empty($missing)) {
+            $this->records = array_merge($this->records, SideLoaderRecord::fromPaths($missing));
+        }
+
+        foreach (array_unique($reals) as $real) {
+            $entry = $this->records[$real] ?? null;
             if (is_null($entry)) {
                 $entry = new SideLoaderRecord();
                 $entry->hash = SideLoaderRecord::generateHash($this->maxRetries->toInt(), $length);
                 $entry->path = $real;
                 $entry->save();
+                $this->records[$real] = $entry;
             }
 
             if (!$first) {

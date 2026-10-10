@@ -23,7 +23,11 @@ class UserNexusEditor extends NexusEditor {
         parent::__construct($modelDescription, $behaviour);
 
         $this->setTemplate(NexusEditor::getTemplateResourceStatic());
+    }
+    
+    public function renderTemplated(?string $template = null): string {
         Javascript::importDefault($this);
+        return parent::renderTemplated($template);
     }
 
 

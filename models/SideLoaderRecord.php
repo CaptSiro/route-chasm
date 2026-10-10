@@ -25,11 +25,35 @@ class SideLoaderRecord extends Model {
         );
     }
 
+    /**
+     * Batch variant of fromPath(): one `WHERE path IN (...)` query instead of one per path.
+     *
+     * @param array<string> $paths
+     * @return array<string, static> keyed by path
+     */
+    public static function fromPaths(array $paths): array {
+        if (empty($paths)) {
+            return [];
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($paths), '?'));
+        $ret = [];
+
+        foreach (static::all(where: Query::infer("path IN ($placeholders)", ...array_values($paths))) as $record) {
+            $ret[$record->path] = $record;
+        }
+
+        return $ret;
+    }
+
     public static function generateHash(int $retries, int &$length): string {
         $attempt = 0;
-        $hash = Strings::randomBase64($length);
 
         do {
+            // [Claude review] Bug fix: the hash was generated once before the loop and never regenerated, so a single
+            // collision with an existing record made this loop forever (hanging the request), even after $length
+            // was increased. A fresh hash is now drawn on every attempt.
+            $hash = Strings::randomBase64($length);
             $record = self::fromHash($hash);
             if (is_null($record)) {
                 break;

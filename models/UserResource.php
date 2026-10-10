@@ -47,6 +47,21 @@ class UserResource extends Model {
             return $hit;
         }
 
+        // [Claude review] Performance: on the first miss, warm the cache with ALL system resources in one query
+        // (a handful of rows) instead of one query per name - the admin menu alone asked for 7 different names.
+        static $isPreloaded = false;
+        if (!$isPreloaded) {
+            $isPreloaded = true;
+
+            foreach (static::all(where: Query::infer('type = ?', self::TYPE_SYSTEM)) as $systemResource) {
+                static::modelCache_set($systemResource->name, $systemResource);
+            }
+
+            if (!is_null($hit = static::modelCache_get($name))) {
+                return $hit;
+            }
+        }
+
         $resource = static::first(
             where: Query::infer('name = ? AND type = ?', $name, self::TYPE_SYSTEM)
         );

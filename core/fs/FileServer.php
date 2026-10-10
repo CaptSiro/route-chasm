@@ -127,6 +127,48 @@ class FileServer extends Router {
 
 
 
+    /**
+     * None of the mutating /fs endpoints (upload, rename, delete, mkdir) checked who the
+     * caller is, so an anonymous visitor could upload arbitrary files (served back inline from this origin -> stored
+     * XSS) or delete/rename any file/directory. The dashboard login only lets admins in, so the same `isAdmin()`
+     * rule is used here (matches AiGeneratedPage). Terminates the request with 403 when the check fails.
+     */
+    protected function requireAdmin(Request $request, Response $response): void {
+        $user = User::fromRequest($request);
+
+        if (is_null($user) || !$user->isAdmin()) {
+            $response->sendStatus(HttpCode::CE_FORBIDDEN);
+        }
+    }
+
+    /**
+     * Uploaded files are served with the client-supplied MIME type. Without these headers an
+     * uploaded text/html or image/svg+xml file runs scripts in this origin when opened directly. `sandbox` CSP only
+     * affects documents navigated to directly, so <img>/<video> embedding keeps working. It is applied only to
+     * scriptable types, because some browsers refuse to render PDFs inline inside a sandboxed document.
+     */
+    protected function setUserContentHeaders(Response $response, File $file): void {
+        $response->setHeader('X-Content-Type-Options', 'nosniff');
+
+        $type = strtolower($file->type ?? '');
+        $isScriptable = str_contains($type, 'html')
+            || str_contains($type, 'xml')
+            || str_contains($type, 'svg')
+            || str_contains($type, 'javascript')
+            || in_array(strtolower($file->extension ?? ''), ['html', 'htm', 'xhtml', 'svg', 'xml', 'js', 'mjs'], true);
+
+        if ($isScriptable) {
+            $response->setHeader('Content-Security-Policy', 'sandbox');
+        }
+    }
+
+    /**
+     * Strips characters that would break out of the quoted `filename="..."` parameter.
+     */
+    protected static function sanitizeHeaderFileName(string $name): string {
+        return str_replace(['"', '\\', "\r", "\n"], '_', $name);
+    }
+
     protected function getTransformedFile(Request $request, File $file): string {
         $variant = $request->getUrl()
             ->getQuery()
@@ -136,7 +178,9 @@ class FileServer extends Router {
             return $file->getRealPath();
         }
 
-        [$v, $t] = explode(':', $variant);
+        // [Claude review] explode() returns a single element when ':' is missing, so `?v=foo` emitted an
+        // "Undefined array key 1" warning which the global error handler turns into a 500. Pad to two elements.
+        [$v, $t] = array_pad(explode(':', $variant, 2), 2, '');
         if (is_null($fileVariant = FileSystem::getVariant($v))) {
             return $file->getRealPath();
         }
@@ -162,6 +206,8 @@ class FileServer extends Router {
                 $messageFileStoringFailed = $this->crt("File '{}' uploaded successfully but storing failed");
                 $messageFileTooLarge = $this->crt("File '{}' is too large");
                 $messageFileDidNotUpload = $this->crt("File '{}' did not uploaded successfully.");
+
+                $this->requireAdmin($request, $response);
 
                 $directory = Directory::fromRequest($request);
 
@@ -219,7 +265,8 @@ class FileServer extends Router {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
-                $name = $file->getFileName();
+                $name = self::sanitizeHeaderFileName($file->getFileName());
+                $this->setUserContentHeaders($response, $file);
                 $response->setHeaders([
                     HttpHeader::CONTENT_DISPOSITION => "inline; filename=\"$name\"",
                     HttpHeader::CONTENT_TYPE => $file->type
@@ -229,17 +276,23 @@ class FileServer extends Router {
             }),
 
             Http::patch(function (Request $request, Response $response) {
+                $this->requireAdmin($request, $response);
+
                 if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
+                // [Claude review] Was ->getFiles(): `name` is a plain field (fs.js sends JSON { id, name }), so
+                // getStrict('name') on the files map always threw NotDefinedException.
                 $file->renameEntry($request
                     ->body(DictionaryBody::class)
-                    ->getFiles()
+                    ->getFields()
                     ->getStrict('name'));
             }),
 
             Http::delete(function (Request $request, Response $response) {
+                $this->requireAdmin($request, $response);
+
                 if (is_null($file = File::fromRequest($request))) {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
@@ -255,10 +308,11 @@ class FileServer extends Router {
                     $response->sendStatus(HttpCode::CE_NOT_FOUND);
                 }
 
-                $name = $request->getUrl()
+                $name = self::sanitizeHeaderFileName($request->getUrl()
                     ->getQuery()
-                    ->get('name', $file->getFileName());
+                    ->get('name', $file->getFileName()));
 
+                $this->setUserContentHeaders($response, $file);
                 $response->setHeaders([
                     HttpHeader::CONTENT_DISPOSITION => "inline; filename=\"$name\"",
                     HttpHeader::CONTENT_TYPE => $file->type
@@ -292,7 +346,9 @@ class FileServer extends Router {
             '/directory/',
             Http::get(function (Request $request, Response $response) {
                 $user = User::fromRequest($request);
-                $isAdmin = is_null($user) || $user->isAdmin();
+                // [Claude review] Was `is_null($user) || $user->isAdmin()`, which granted the editable (non-readonly)
+                // view when no user could be resolved. Unknown user must mean "not admin".
+                $isAdmin = !is_null($user) && $user->isAdmin();
 
                 $response->render(
                     FileSystem::listDirectoryModal(
@@ -305,10 +361,12 @@ class FileServer extends Router {
             }),
 
             Http::post(function (Request $request, Response $response) {
+                $this->requireAdmin($request, $response);
+
                 $parent = Directory::fromRequest($request);
                 $name = $request
                     ->body(DictionaryBody::class)
-                    ->getFiles()
+                    ->getFields()
                     ->getStrict('name');
 
                 FileSystem::makeDirectory($parent, $name);
@@ -317,6 +375,8 @@ class FileServer extends Router {
             }),
 
             Http::patch(function (Request $request, Response $response) {
+                $this->requireAdmin($request, $response);
+
                 $messageDirectoryNotFound = $this->tr('Could not find directory');
 
                 $fields = $request
@@ -335,6 +395,8 @@ class FileServer extends Router {
             }),
 
             Http::delete(function (Request $request, Response $response) {
+                $this->requireAdmin($request, $response);
+
                 $messageDirectoryNotFound = $this->tr('Could not find directory');
 
                 $fields = $request

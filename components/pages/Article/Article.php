@@ -15,8 +15,8 @@ class Article extends Component {
     public const LEXICON_GROUP = 'article';
 
     public static function importAssets(): void {
-        Javascript::import(self::getStaticResource('article.js'));
-        Css::import(self::getStaticResource('article.css'));
+        Javascript::import(self::getStaticResource('Article.js'));
+        Css::import(self::getStaticResource('Article.css'));
     }
 
 

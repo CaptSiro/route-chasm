@@ -14,7 +14,7 @@ use core\view\Html;
             <?php if ($entry === ".." && !$this->isParentEntryAllowed) continue; ?>
 
             <li class="explorer-item">
-                <a href="<?= $this->url . urlencode($entry) ?>">
+                <a href="<?= Html::escapeAttribute($this->url . urlencode($entry)) ?>">
                     <?= Html::escape($entry) ?>
 
                     <?php if (is_dir($this->directory ."/". $entry)): ?>/<?php endif; ?>

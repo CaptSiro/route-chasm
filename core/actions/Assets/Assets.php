@@ -92,7 +92,11 @@ class Assets extends Controller {
                         continue;
                     }
 
-                    if (!str_starts_with($entry, $directory)) {
+                    // [Claude review] A bare str_starts_with($entry, $directory) also accepted sibling directories that
+                    // share the prefix, e.g. root "/srv/app/public" matched "/srv/app/public-backup/secret". Require an
+                    // exact match or a directory separator right after the root.
+                    if ($entry !== $directory
+                        && !str_starts_with($entry, rtrim($directory, '/\\') . DIRECTORY_SEPARATOR)) {
                         continue;
                     }
 

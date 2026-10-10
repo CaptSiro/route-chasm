@@ -29,8 +29,15 @@ class Session implements StrictDictionary {
             return;
         }
 
+        // [Claude review] Added httponly/samesite/secure. Without HttpOnly any XSS (e.g. via an uploaded HTML file
+        // served from /fs) could read the session cookie directly; SameSite=Lax blocks cross-site POSTs carrying the
+        // admin session (the app has no CSRF tokens); Secure is set only when the request itself came over HTTPS so
+        // local plain-HTTP development keeps working.
         session_set_cookie_params([
             'path' => Strings::prepend('/', $this->domain->path),
+            'httponly' => true,
+            'samesite' => 'Lax',
+            'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
         ]);
         session_start();
         $this->isStarted = true;
@@ -68,7 +75,20 @@ class Session implements StrictDictionary {
     }
 
     public function toArray(): array {
+        // [Claude review] start() was missing, so calling toArray() first read an undefined $_SESSION (warning ->
+        // 500 via the global error handler, then TypeError on the array return type).
+        $this->start();
         return $_SESSION;
+    }
+
+    /**
+     * Issues a new session id while keeping the data. Must be called when the privilege
+     * level changes (login/logout) to prevent session fixation: otherwise an attacker who planted a known session
+     * id in the victim's browser is logged in as the victim once they authenticate.
+     */
+    public function regenerate(): void {
+        $this->start();
+        session_regenerate_id(true);
     }
 
     public function remove(string $name): mixed {

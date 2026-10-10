@@ -40,12 +40,14 @@ trait IsDefaultProxy {
 
         if ($item->isDefault()) {
             return (new Checkbox('', '', true))
-                ->readonly();
+                ->readonly()
+                ->render();
         }
 
         $url = $this->isDefaultExtension->createSetAsDefaultUrl($item);
         return (new Checkbox('', '', false))
             ->addDataAttribute('url', $url)
-            ->addJavascriptInit('isDefault_toggle');
+            ->addJavascriptInit('isDefault_toggle')
+            ->render();
     }
 }

@@ -3,7 +3,7 @@
 namespace core\locale;
 
 use core\App;
-use Transliterator;
+use core\utils\Strings;
 
 abstract class Locale {
     public static function autoload(): void {
@@ -36,7 +36,7 @@ abstract class Locale {
             return "";
         }
 
-        $transliterator = Transliterator::create('Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC');
+        $transliterator = Strings::getAsciiTransliterator();
 
         $ascii = $transliterator
             ? $transliterator->transliterate($text)

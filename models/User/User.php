@@ -65,10 +65,12 @@ class User extends Model {
     }
 
     public static function logout(): void {
-        App::getInstance()
+        $session = App::getInstance()
             ->getRequest()
-            ->getSession()
-            ->remove(App::KEY_LOGGED_IN_USER);
+            ->getSession();
+
+        $session->remove(App::KEY_LOGGED_IN_USER);
+        $session->regenerate();
     }
 
 
@@ -123,10 +125,12 @@ class User extends Model {
 
 
     public function login(): void {
-        App::getInstance()
+        $session = App::getInstance()
             ->getRequest()
-            ->getSession()
-            ->set(App::KEY_LOGGED_IN_USER, $this->id);
+            ->getSession();
+
+        $session->regenerate();
+        $session->set(App::KEY_LOGGED_IN_USER, $this->id);
     }
 
     /**

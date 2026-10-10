@@ -14,6 +14,7 @@ use core\database\sql\Database;
 use core\database\sql\DatabaseAction;
 use core\database\sql\Model;
 use core\database\sql\ModelDescription;
+use core\database\sql\query\Query;
 use core\database\sql\Table;
 use core\locale\Lexicon;
 use core\locale\LexiconTemplate;
@@ -47,10 +48,26 @@ class Phrase extends Model implements LexiconTemplate {
             return static::$groups[$group];
         }
 
-        $phrases = LexiconGroup::fromName($group, create: true)->getPhrases();
+        $lexiconGroup = LexiconGroup::fromName($group, create: true);
+        $phrases = $lexiconGroup->getPhrases();
         $ret = [];
 
+        // [Claude review] Performance: preload the translations of the whole group with ONE query. Previously every
+        // translated phrase lazily ran its own `SELECT ... WHERE id_phrase = ?` in getTranslations() (N+1); on the
+        // home page that was ~43 of the ~135 queries, mostly from building the admin menu.
+        $translations = [];
+        $phraseTable = ModelDescription::extract(Phrase::class)->getEscapedTable();
+        $groupTranslations = Translation::all(where: Query::infer(
+            "id_phrase IN (SELECT id_phrase FROM $phraseTable WHERE id_lexicon_group = ?)",
+            $lexiconGroup->id
+        ));
+
+        foreach ($groupTranslations as $translation) {
+            $translations[$translation->phraseId][] = $translation;
+        }
+
         foreach ($phrases as $phrase) {
+            $phrase->setLoadedTranslations($translations[$phrase->id] ?? []);
             $ret[$phrase->default] = $phrase;
         }
 
@@ -174,17 +191,26 @@ class Phrase extends Model implements LexiconTemplate {
 
     public function getTranslations(): array {
         if (!isset($this->translations)) {
-            $this->translations = Translation::forPhrase($this);
-
-            if (!$this->isDynamic) {
-                $this->staticTranslations = Arrays::changeKeys(
-                    $this->translations,
-                    fn(Translation $x) => $x->languageId
-                );
-            }
+            $this->setLoadedTranslations(Translation::forPhrase($this));
         }
 
         return $this->translations;
+    }
+
+    /**
+     * Phrase::getGroup() hands over translations that were preloaded for the whole group in a single query.
+     *
+     * @param array<Translation> $translations
+     */
+    public function setLoadedTranslations(array $translations): void {
+        $this->translations = $translations;
+
+        if (!$this->isDynamic) {
+            $this->staticTranslations = Arrays::changeKeys(
+                $this->translations,
+                fn(Translation $x) => $x->languageId
+            );
+        }
     }
 
     public function addTranslation(Language $language, string $translation, ?Rule $rule = null): Translation {

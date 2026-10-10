@@ -13,6 +13,6 @@ class Checkbox extends Input {
             $this->addAttribute("checked", $checked);
         }
 
-        $this->setTemplate($this->getResource("Checkbox"));
+        $this->setTemplate($this->getResource("Checkbox.phtml"));
     }
 }

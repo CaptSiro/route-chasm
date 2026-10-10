@@ -37,6 +37,13 @@ class Response {
         );
     }
 
+    /**
+     * Makes a value safe to place inside a quoted Content-Disposition `filename="..."`
+     */
+    protected static function quoteFileName(string $name): string {
+        return str_replace(['"', '\\', "\r", "\n"], '_', $name);
+    }
+
     protected static function applyBufferTransforms(string $text): string {
         App::getInstance()
             ->dispatch(self::EVENT_OB_TRANSFORM, $buffer = new BufferTransform($text));
@@ -199,7 +206,7 @@ class Response {
     public function readFile(string $file, bool $doFlush = true): bool {
         if (!file_exists($file)) {
             $this->sendMessage(
-                "RequestFile not found: $file",
+                "RequestFile not found: " . basename($file),
                 HttpCode::CE_NOT_FOUND
             );
         }
@@ -226,10 +233,17 @@ class Response {
      * Checks for valid file path and sets headers to download it.
      */
     public function download(string $file, ?string $name = null, bool $doFlush = true): void {
+        if (!is_file($file)) {
+            $this->readFile($file, $doFlush);
+            return;
+        }
+
+        // [Claude review] The filename is now quoted (and quotes/CR/LF stripped). Unquoted, names containing spaces,
+        // ';' or ',' were truncated or mis-parsed by browsers.
         $this->setHeaders([
             HttpHeader::CONTENT_DESCRIPTION => "RequestFile Transfer",
             HttpHeader::CONTENT_TYPE => 'application/octet-stream',
-            HttpHeader::CONTENT_DISPOSITION => "attachment; filename=" . ($name ?? basename($file)),
+            HttpHeader::CONTENT_DISPOSITION => 'attachment; filename="' . self::quoteFileName($name ?? basename($file)) . '"',
             HttpHeader::PREGMA => "public",
             HttpHeader::CONTENT_LENGTH => filesize($file)
         ]);
@@ -246,9 +260,11 @@ class Response {
         $this->setHeaders([
             HttpHeader::CONTENT_DESCRIPTION => "RequestFile Transfer",
             HttpHeader::CONTENT_TYPE => 'application/octet-stream',
-            HttpHeader::CONTENT_DISPOSITION => "attachment; filename=" . $name,
+            HttpHeader::CONTENT_DISPOSITION => 'attachment; filename="' . self::quoteFileName($name) . '"',
             HttpHeader::PREGMA => "public",
-            HttpHeader::CONTENT_LENGTH => mb_strlen($content)
+            // [Claude review] Was mb_strlen(), which counts characters, not bytes. For any non-ASCII content the
+            // advertised Content-Length was too small and browsers truncated the downloaded file.
+            HttpHeader::CONTENT_LENGTH => strlen($content)
         ]);
 
         $this->generateHeaders();
