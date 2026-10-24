@@ -14,21 +14,33 @@ function pageEditor_isStructureDescription(description) {
     return true;
 }
 
-function pageEditor_structure(description) {
-    if (!pageEditor_isStructureDescription(description)) {
+/**
+ * @typedef {{ title: string, template: string, children: PageEditorDescription[] }} PageEditorDescription
+ */
+
+/**
+ *
+ * @param {PageEditorDescription} props
+ * @return {HTMLDivElement|JsmlContent}
+ */
+function PageEditorStructure(props) {
+    if (!pageEditor_isStructureDescription(props)) {
         return;
     }
-
-    return jsml.div(_, [
-        jsml.span(_, [
-            jsml.span('title', description.title),
-            " ",
-            jsml.span('template', `(${description.template})`)
-        ]),
-        jsml.ul(_, description.children.map(x =>
-            jsml.li(_, pageEditor_structure(x))
-        ))
-    ]);
+    
+    return html`
+        <div>
+            <span>
+                <span class="title">${props.title}</span> <span class="template">${props.template}</span>
+            </span>
+            
+            <ul>
+                <${For} each="${props.children}">
+                    ${x => PageEditorStructure(x)}
+                </>
+            </ul>
+        </div>
+    `;
 }
 
 /**
@@ -46,18 +58,23 @@ async function pageEditor_onStructureSubmitSuccess(form, response) {
         return;
     }
 
-    const w = window_create('Generated structure', [
-        jsml.div('structure',
-            jsml.ul(_, structure.map(x =>
-                jsml.li(_, pageEditor_structure(x))
-            ))
-        ),
-        jsml.div('row', [
-            jsml.button({
-                onClick: () => location.reload(),
-            }, 'Reload to see effects')
-        ])
-    ]);
-
-    window_open(w);
+    window_open(window_create('Generated structure', html`
+        <div class="structure">
+            <ul>
+                <${For} each="${structure}">
+                    ${p => html`
+                        <li>
+                            <${PageEditorStructure} ...${p} />
+                        </li>
+                    `}
+                </>
+            </ul>
+        </div>
+        
+        <div class="row">
+            <button onClick="${() => location.reload()}">
+                Reload to see effects
+            </button>
+        </div>
+    `));
 }

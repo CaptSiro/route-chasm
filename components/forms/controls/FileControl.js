@@ -41,18 +41,23 @@ function fileControl(element) {
 
         for (let i = 0; i < input.files.length; i++) {
             const file = input.files[i];
-            const tag = Tag(file.name, true, () => {
-                const transfer = new DataTransfer();
-
-                for (let j = 0; j < input.files.length; j++) {
-                    if (j === i) {
-                        continue;
+            
+            const tag = Tag({
+                label: file.name,
+                isRemovable: true,
+                onRemove: () => {
+                    const transfer = new DataTransfer();
+                    
+                    for (let j = 0; j < input.files.length; j++) {
+                        if (j === i) {
+                            continue;
+                        }
+                        
+                        transfer.items.add(input.files[j]);
                     }
-
-                    transfer.items.add(input.files[j]);
+                    
+                    setFiles(transfer.files);
                 }
-
-                setFiles(transfer.files);
             });
 
             tag.addEventListener('click', event => {

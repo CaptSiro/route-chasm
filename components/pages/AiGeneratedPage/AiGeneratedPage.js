@@ -33,7 +33,7 @@ function aiPage_save(element, { fileContentHtml, fileContentCss, fileContentJs }
     }
 
     element.addEventListener('click', async () => {
-        const w = window_createNotice("Saving source files...", { isDialog: true });
+        const w = WindowNotice("Saving source files...", { isDialog: true });
         window_open(w);
 
         const body = { html: html.textContent };

@@ -325,8 +325,161 @@
  */
 
 /**
+ * One factory per tag. Written out instead of a mapped type (`{ [K in keyof JsmlTagMap]: … }`), because
+ * PhpStorm does not resolve the element type through a mapped type (it shows the raw `E`).
+ * Generated from lib.dom.d.ts (HTMLElementTagNameMap) and JsmlSvgTag.
+ *
+ * @typedef {{
+ *     a: JsmlFactory<HTMLAnchorElement, JsmlTagProps<"a">>,
+ *     abbr: JsmlFactory<HTMLElement, JsmlTagProps<"abbr">>,
+ *     address: JsmlFactory<HTMLElement, JsmlTagProps<"address">>,
+ *     area: JsmlFactory<HTMLAreaElement, JsmlTagProps<"area">>,
+ *     article: JsmlFactory<HTMLElement, JsmlTagProps<"article">>,
+ *     aside: JsmlFactory<HTMLElement, JsmlTagProps<"aside">>,
+ *     audio: JsmlFactory<HTMLAudioElement, JsmlTagProps<"audio">>,
+ *     b: JsmlFactory<HTMLElement, JsmlTagProps<"b">>,
+ *     base: JsmlFactory<HTMLBaseElement, JsmlTagProps<"base">>,
+ *     bdi: JsmlFactory<HTMLElement, JsmlTagProps<"bdi">>,
+ *     bdo: JsmlFactory<HTMLElement, JsmlTagProps<"bdo">>,
+ *     blockquote: JsmlFactory<HTMLQuoteElement, JsmlTagProps<"blockquote">>,
+ *     body: JsmlFactory<HTMLBodyElement, JsmlTagProps<"body">>,
+ *     br: JsmlFactory<HTMLBRElement, JsmlTagProps<"br">>,
+ *     button: JsmlFactory<HTMLButtonElement, JsmlTagProps<"button">>,
+ *     canvas: JsmlFactory<HTMLCanvasElement, JsmlTagProps<"canvas">>,
+ *     caption: JsmlFactory<HTMLTableCaptionElement, JsmlTagProps<"caption">>,
+ *     cite: JsmlFactory<HTMLElement, JsmlTagProps<"cite">>,
+ *     code: JsmlFactory<HTMLElement, JsmlTagProps<"code">>,
+ *     col: JsmlFactory<HTMLTableColElement, JsmlTagProps<"col">>,
+ *     colgroup: JsmlFactory<HTMLTableColElement, JsmlTagProps<"colgroup">>,
+ *     data: JsmlFactory<HTMLDataElement, JsmlTagProps<"data">>,
+ *     datalist: JsmlFactory<HTMLDataListElement, JsmlTagProps<"datalist">>,
+ *     dd: JsmlFactory<HTMLElement, JsmlTagProps<"dd">>,
+ *     del: JsmlFactory<HTMLModElement, JsmlTagProps<"del">>,
+ *     details: JsmlFactory<HTMLDetailsElement, JsmlTagProps<"details">>,
+ *     dfn: JsmlFactory<HTMLElement, JsmlTagProps<"dfn">>,
+ *     dialog: JsmlFactory<HTMLDialogElement, JsmlTagProps<"dialog">>,
+ *     div: JsmlFactory<HTMLDivElement, JsmlTagProps<"div">>,
+ *     dl: JsmlFactory<HTMLDListElement, JsmlTagProps<"dl">>,
+ *     dt: JsmlFactory<HTMLElement, JsmlTagProps<"dt">>,
+ *     em: JsmlFactory<HTMLElement, JsmlTagProps<"em">>,
+ *     embed: JsmlFactory<HTMLEmbedElement, JsmlTagProps<"embed">>,
+ *     fieldset: JsmlFactory<HTMLFieldSetElement, JsmlTagProps<"fieldset">>,
+ *     figcaption: JsmlFactory<HTMLElement, JsmlTagProps<"figcaption">>,
+ *     figure: JsmlFactory<HTMLElement, JsmlTagProps<"figure">>,
+ *     footer: JsmlFactory<HTMLElement, JsmlTagProps<"footer">>,
+ *     form: JsmlFactory<HTMLFormElement, JsmlTagProps<"form">>,
+ *     h1: JsmlFactory<HTMLHeadingElement, JsmlTagProps<"h1">>,
+ *     h2: JsmlFactory<HTMLHeadingElement, JsmlTagProps<"h2">>,
+ *     h3: JsmlFactory<HTMLHeadingElement, JsmlTagProps<"h3">>,
+ *     h4: JsmlFactory<HTMLHeadingElement, JsmlTagProps<"h4">>,
+ *     h5: JsmlFactory<HTMLHeadingElement, JsmlTagProps<"h5">>,
+ *     h6: JsmlFactory<HTMLHeadingElement, JsmlTagProps<"h6">>,
+ *     head: JsmlFactory<HTMLHeadElement, JsmlTagProps<"head">>,
+ *     header: JsmlFactory<HTMLElement, JsmlTagProps<"header">>,
+ *     hgroup: JsmlFactory<HTMLElement, JsmlTagProps<"hgroup">>,
+ *     hr: JsmlFactory<HTMLHRElement, JsmlTagProps<"hr">>,
+ *     html: JsmlFactory<HTMLHtmlElement, JsmlTagProps<"html">>,
+ *     i: JsmlFactory<HTMLElement, JsmlTagProps<"i">>,
+ *     iframe: JsmlFactory<HTMLIFrameElement, JsmlTagProps<"iframe">>,
+ *     img: JsmlFactory<HTMLImageElement, JsmlTagProps<"img">>,
+ *     input: JsmlFactory<HTMLInputElement, JsmlTagProps<"input">>,
+ *     ins: JsmlFactory<HTMLModElement, JsmlTagProps<"ins">>,
+ *     kbd: JsmlFactory<HTMLElement, JsmlTagProps<"kbd">>,
+ *     label: JsmlFactory<HTMLLabelElement, JsmlTagProps<"label">>,
+ *     legend: JsmlFactory<HTMLLegendElement, JsmlTagProps<"legend">>,
+ *     li: JsmlFactory<HTMLLIElement, JsmlTagProps<"li">>,
+ *     link: JsmlFactory<HTMLLinkElement, JsmlTagProps<"link">>,
+ *     main: JsmlFactory<HTMLElement, JsmlTagProps<"main">>,
+ *     map: JsmlFactory<HTMLMapElement, JsmlTagProps<"map">>,
+ *     mark: JsmlFactory<HTMLElement, JsmlTagProps<"mark">>,
+ *     menu: JsmlFactory<HTMLMenuElement, JsmlTagProps<"menu">>,
+ *     meta: JsmlFactory<HTMLMetaElement, JsmlTagProps<"meta">>,
+ *     meter: JsmlFactory<HTMLMeterElement, JsmlTagProps<"meter">>,
+ *     nav: JsmlFactory<HTMLElement, JsmlTagProps<"nav">>,
+ *     noscript: JsmlFactory<HTMLElement, JsmlTagProps<"noscript">>,
+ *     object: JsmlFactory<HTMLObjectElement, JsmlTagProps<"object">>,
+ *     ol: JsmlFactory<HTMLOListElement, JsmlTagProps<"ol">>,
+ *     optgroup: JsmlFactory<HTMLOptGroupElement, JsmlTagProps<"optgroup">>,
+ *     option: JsmlFactory<HTMLOptionElement, JsmlTagProps<"option">>,
+ *     output: JsmlFactory<HTMLOutputElement, JsmlTagProps<"output">>,
+ *     p: JsmlFactory<HTMLParagraphElement, JsmlTagProps<"p">>,
+ *     picture: JsmlFactory<HTMLPictureElement, JsmlTagProps<"picture">>,
+ *     pre: JsmlFactory<HTMLPreElement, JsmlTagProps<"pre">>,
+ *     progress: JsmlFactory<HTMLProgressElement, JsmlTagProps<"progress">>,
+ *     q: JsmlFactory<HTMLQuoteElement, JsmlTagProps<"q">>,
+ *     rp: JsmlFactory<HTMLElement, JsmlTagProps<"rp">>,
+ *     rt: JsmlFactory<HTMLElement, JsmlTagProps<"rt">>,
+ *     ruby: JsmlFactory<HTMLElement, JsmlTagProps<"ruby">>,
+ *     s: JsmlFactory<HTMLElement, JsmlTagProps<"s">>,
+ *     samp: JsmlFactory<HTMLElement, JsmlTagProps<"samp">>,
+ *     script: JsmlFactory<HTMLScriptElement, JsmlTagProps<"script">>,
+ *     search: JsmlFactory<HTMLElement, JsmlTagProps<"search">>,
+ *     section: JsmlFactory<HTMLElement, JsmlTagProps<"section">>,
+ *     select: JsmlFactory<HTMLSelectElement, JsmlTagProps<"select">>,
+ *     slot: JsmlFactory<HTMLSlotElement, JsmlTagProps<"slot">>,
+ *     small: JsmlFactory<HTMLElement, JsmlTagProps<"small">>,
+ *     source: JsmlFactory<HTMLSourceElement, JsmlTagProps<"source">>,
+ *     span: JsmlFactory<HTMLSpanElement, JsmlTagProps<"span">>,
+ *     strong: JsmlFactory<HTMLElement, JsmlTagProps<"strong">>,
+ *     style: JsmlFactory<HTMLStyleElement, JsmlTagProps<"style">>,
+ *     sub: JsmlFactory<HTMLElement, JsmlTagProps<"sub">>,
+ *     summary: JsmlFactory<HTMLElement, JsmlTagProps<"summary">>,
+ *     sup: JsmlFactory<HTMLElement, JsmlTagProps<"sup">>,
+ *     table: JsmlFactory<HTMLTableElement, JsmlTagProps<"table">>,
+ *     tbody: JsmlFactory<HTMLTableSectionElement, JsmlTagProps<"tbody">>,
+ *     td: JsmlFactory<HTMLTableCellElement, JsmlTagProps<"td">>,
+ *     template: JsmlFactory<HTMLTemplateElement, JsmlTagProps<"template">>,
+ *     textarea: JsmlFactory<HTMLTextAreaElement, JsmlTagProps<"textarea">>,
+ *     tfoot: JsmlFactory<HTMLTableSectionElement, JsmlTagProps<"tfoot">>,
+ *     th: JsmlFactory<HTMLTableCellElement, JsmlTagProps<"th">>,
+ *     thead: JsmlFactory<HTMLTableSectionElement, JsmlTagProps<"thead">>,
+ *     time: JsmlFactory<HTMLTimeElement, JsmlTagProps<"time">>,
+ *     title: JsmlFactory<HTMLTitleElement, JsmlTagProps<"title">>,
+ *     tr: JsmlFactory<HTMLTableRowElement, JsmlTagProps<"tr">>,
+ *     track: JsmlFactory<HTMLTrackElement, JsmlTagProps<"track">>,
+ *     u: JsmlFactory<HTMLElement, JsmlTagProps<"u">>,
+ *     ul: JsmlFactory<HTMLUListElement, JsmlTagProps<"ul">>,
+ *     var: JsmlFactory<HTMLElement, JsmlTagProps<"var">>,
+ *     video: JsmlFactory<HTMLVideoElement, JsmlTagProps<"video">>,
+ *     wbr: JsmlFactory<HTMLElement, JsmlTagProps<"wbr">>,
+ *     svg: JsmlFactory<SVGSVGElement, JsmlTagProps<"svg">>,
+ *     g: JsmlFactory<SVGGElement, JsmlTagProps<"g">>,
+ *     path: JsmlFactory<SVGPathElement, JsmlTagProps<"path">>,
+ *     circle: JsmlFactory<SVGCircleElement, JsmlTagProps<"circle">>,
+ *     ellipse: JsmlFactory<SVGEllipseElement, JsmlTagProps<"ellipse">>,
+ *     line: JsmlFactory<SVGLineElement, JsmlTagProps<"line">>,
+ *     polyline: JsmlFactory<SVGPolylineElement, JsmlTagProps<"polyline">>,
+ *     polygon: JsmlFactory<SVGPolygonElement, JsmlTagProps<"polygon">>,
+ *     rect: JsmlFactory<SVGRectElement, JsmlTagProps<"rect">>,
+ *     use: JsmlFactory<SVGUseElement, JsmlTagProps<"use">>,
+ *     defs: JsmlFactory<SVGDefsElement, JsmlTagProps<"defs">>,
+ *     symbol: JsmlFactory<SVGSymbolElement, JsmlTagProps<"symbol">>,
+ *     marker: JsmlFactory<SVGMarkerElement, JsmlTagProps<"marker">>,
+ *     mask: JsmlFactory<SVGMaskElement, JsmlTagProps<"mask">>,
+ *     pattern: JsmlFactory<SVGPatternElement, JsmlTagProps<"pattern">>,
+ *     clipPath: JsmlFactory<SVGClipPathElement, JsmlTagProps<"clipPath">>,
+ *     linearGradient: JsmlFactory<SVGLinearGradientElement, JsmlTagProps<"linearGradient">>,
+ *     radialGradient: JsmlFactory<SVGRadialGradientElement, JsmlTagProps<"radialGradient">>,
+ *     stop: JsmlFactory<SVGStopElement, JsmlTagProps<"stop">>,
+ *     text: JsmlFactory<SVGTextElement, JsmlTagProps<"text">>,
+ *     tspan: JsmlFactory<SVGTSpanElement, JsmlTagProps<"tspan">>,
+ *     textPath: JsmlFactory<SVGTextPathElement, JsmlTagProps<"textPath">>,
+ *     foreignObject: JsmlFactory<SVGForeignObjectElement, JsmlTagProps<"foreignObject">>,
+ *     filter: JsmlFactory<SVGFilterElement, JsmlTagProps<"filter">>,
+ *     feGaussianBlur: JsmlFactory<SVGFEGaussianBlurElement, JsmlTagProps<"feGaussianBlur">>,
+ *     feOffset: JsmlFactory<SVGFEOffsetElement, JsmlTagProps<"feOffset">>,
+ *     feBlend: JsmlFactory<SVGFEBlendElement, JsmlTagProps<"feBlend">>,
+ *     feColorMatrix: JsmlFactory<SVGFEColorMatrixElement, JsmlTagProps<"feColorMatrix">>,
+ *     feMerge: JsmlFactory<SVGFEMergeElement, JsmlTagProps<"feMerge">>,
+ *     feMergeNode: JsmlFactory<SVGFEMergeNodeElement, JsmlTagProps<"feMergeNode">>,
+ *     animate: JsmlFactory<SVGAnimateElement, JsmlTagProps<"animate">>,
+ *     animateTransform: JsmlFactory<SVGAnimateTransformElement, JsmlTagProps<"animateTransform">>,
+ * }} JsmlTags
+ */
+
+/**
  * @typedef {JsmlH
- *     & { [K in keyof JsmlTagMap]: JsmlFactory<JsmlTagMap[K], JsmlTagProps<K>> }
+ *     & JsmlTags
  *     & { define: JsmlDefine, Fragment: typeof Fragment, Show: typeof Show, For: typeof For }
  *     & JsmlRegistered} Jsml
  */
@@ -2114,7 +2267,14 @@ function jsml_templateProps(templateProps, values) {
             continue;
         }
 
-        props[prop.name] = jsml_templateAttribute(prop.value, values);
+        // an expression inside the name, e.g. on:${EVENT_NAME}
+        const name = prop.name.includes(JSML_SLOT_OPEN)
+            ? jsml_splitSlots(prop.name)
+                .map(part => typeof part === "string" ? part : String(values[part.index]))
+                .join("")
+            : prop.name;
+
+        props[name] = jsml_templateAttribute(prop.value, values);
     }
 
     return props;
@@ -2225,6 +2385,76 @@ function html(strings, ...values) {
 
     return jsml_instantiateList(tree, values, false);
 }
+
+/**
+ * @param {TemplateStringsArray | JsmlContent} first
+ * @param {JsmlTemplateValue[]} values
+ * @returns {JsmlContent}
+ */
+function jsml_templateOrContent(first, values) {
+    // A tagged call passes the frozen strings array, which always has `raw`. Anything else is a value built earlier,
+    // typically by html``, so that html.element(html`…`) keeps the editor's HTML support for the `html` tag.
+    if (Array.isArray(first) && "raw" in first) {
+        return html(/** @type {TemplateStringsArray} */ (first), ...values);
+    }
+
+    return /** @type {JsmlContent} */ (first);
+}
+
+/**
+ * `html` for DOM APIs (`append`, `replaceWith`, `insertBefore`, …): always returns a `Node`. A single node is returned
+ * as is, anything else (several roots, text, live values) is wrapped in a `DocumentFragment`. Live parts keep updating
+ * after the fragment is inserted.
+ *
+ * Works as a tag or as a function over a `html` result. The function form keeps PhpStorm's HTML editing support,
+ * which it gives only to templates tagged `html`.
+ *
+ * @example list.append(html.node`<li>${text}</li>`)
+ * @example list.append(html.node(html`<li>${text}</li>`))
+ *
+ * @param {TemplateStringsArray | JsmlContent} strings
+ * @param {...JsmlTemplateValue} values
+ * @returns {Node}
+ */
+function jsml_htmlNode(strings, ...values) {
+    const content = jsml_templateOrContent(strings, values);
+
+    if (content instanceof Node) {
+        return content;
+    }
+
+    const fragment = document.createDocumentFragment();
+    jsml_append(fragment, content);
+    return fragment;
+}
+
+/**
+ * `html` for code that needs the element itself: returns the single root element and throws for any other shape.
+ * Typed as `HTMLElement`; for an `<svg>` root cast it: `/** @type {SVGSVGElement} *\/ (html.element`<svg>…</svg>`)`.
+ *
+ * Works as a tag or as a function over a `html` result. The function form keeps PhpStorm's HTML editing support,
+ * which it gives only to templates tagged `html`.
+ *
+ * @example const row = html.element`<tr><td>${name}</td></tr>`; row.dataset.id = id;
+ * @example const row = html.element(html`<tr><td>${name}</td></tr>`);
+ *
+ * @param {TemplateStringsArray | JsmlContent} strings
+ * @param {...JsmlTemplateValue} values
+ * @returns {HTMLElement}
+ */
+function jsml_htmlElement(strings, ...values) {
+    const content = jsml_templateOrContent(strings, values);
+
+    if (!(content instanceof Element)) {
+        const shape = Array.isArray(content) ? `${content.length} roots` : typeof content;
+        throw new TypeError(`html.element: the template must have exactly one element root, got ${shape}`);
+    }
+
+    return /** @type {HTMLElement} */ (content);
+}
+
+html.node = jsml_htmlNode;
+html.element = jsml_htmlElement;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // jsml entry point

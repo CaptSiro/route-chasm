@@ -43,21 +43,21 @@ async function choiceChangeListener(event, setter, lastValue, parent, collection
 }
 
 /**
- * @param {boolean} state
+ * @param {MaybeReactive<boolean>} state
  * @param {Setter<boolean>} setter
- * @param {string} label
+ * @param {JsmlContent} label
  * @returns {HTMLElement}
  */
 function CheckboxInspector(state, setter, label = "") {
-    const checkbox = (
-        CheckBox(state, label, {
-            onChange: async event => {
-                if (!(await setter(event.target.checked, checkbox))) {
-                    event.target.checked = !event.target.checked;
-                }
+    const checkbox = CheckBox({
+        checked: state,
+        label,
+        onChange: async event => {
+            if (!(await setter(event.target.checked, checkbox))) {
+                event.target.checked = !event.target.checked;
             }
-        })
-    );
+        }
+    });
 
     checkbox.classList.add("i-checkbox");
     return checkbox;
@@ -82,34 +82,30 @@ function RadioGroupInspector(setter, radios, label = undefined) {
             (last, current) => current.selected ? current.value : last,
             undefined
         );
-
-    const radioGroup = (
-        div({
-            class: "i-radio-group",
-            onChange: async event => {
-                lastValue = await choiceChangeListener(
-                    event,
-                    setter,
-                    lastValue,
-                    radioGroup,
-                    radioGroup.querySelectorAll(`input[name=${name}]`)
-                );
-            }
-        }, [
-            Optional(label !== undefined,
-                span(_, label)
-            ),
-            ...radios.map(radio => {
-                return (
-                    Radio(radio.text, radio.value, name, _,
-                        radio.selected !== undefined
-                            ? { checked: radio.selected }
-                            : undefined
-                    )
-                );
-            })
-        ], )
-    );
+    
+    const onChange = async event => {
+        lastValue = await choiceChangeListener(
+            event,
+            setter,
+            lastValue,
+            radioGroup,
+            radioGroup.querySelectorAll(`input[name=${name}]`)
+        );
+    };
+    
+    const radioGroup = html.element`
+        <div class="i-radio-group" onChange="${onChange}">
+            <${Show} when="${is(label)}">
+                <span>${label}</span>
+            </>
+            
+            <${For} each="${radios}">
+                ${x => html`
+                    <${Radio} label="${x.text}" value="${x.value}" name="${name}" checked="${x.selected}"/>
+                `}
+            </>
+        </div>
+    `;
 
     return radioGroup;
 }
@@ -130,7 +126,7 @@ function TextAreaInspector(state, setter, label = undefined, placeholder = undef
             return;
         }
 
-        if (await setter(event.target.value, parent)) {
+        if (await setter(event.target.value, container)) {
             state = event.target.value;
             return;
         }
@@ -155,7 +151,7 @@ function TextAreaInspector(state, setter, label = undefined, placeholder = undef
     }
 
     const area = jsml.textarea(props, state);
-    const labelElement = LabelFactory(label, area);
+    const labelElement = Label({ label, target: area });
 
     if (placeholder) {
         area.setAttribute("placeholder", placeholder);
@@ -208,7 +204,7 @@ function TextFieldInspector(state, setter, label = undefined, placeholder = unde
 
     props.type = "text";
     const textField = jsml.input(props);
-    const labelElement = LabelFactory(label, textField);
+    const labelElement = Label({ label, target: textField });
 
     container.append(
         labelElement,

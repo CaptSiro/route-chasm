@@ -98,8 +98,9 @@ What is safe by construction:
 ### Templates
 
 - `html` returns a single node when the template has exactly one root, and an array otherwise. Text pieces and `${…}` values
-  next to each other count as separate roots, so ``html`hello ${name}` `` is an array. Don't assume it returns an `Element`
-  unless the template has a single element root.
+  next to each other count as separate roots, so ``html`hello ${name}` `` is an array. Its type is therefore `JsmlContent`,
+  which DOM methods don't accept. To pass a template to `append`, `replaceWith`, `insertBefore` and similar methods, use
+  `html.node` (always a `Node`). Use `html.element` when you need the element itself.
 - Whitespace follows JSX rules: lines are trimmed, and whitespace that contains a newline between tags is dropped.
   Write `${" "}` to keep a space.
 - Close components with `</>`, `<//>` or `</${Comp}>`. Fragments are `<>…</>`. Plain tags must be closed by name (`</div>`).
@@ -230,8 +231,26 @@ html`<>fragment</>`                                 // several roots → an arra
 html`<svg viewBox="0 0 10 10"><circle r="4" /></svg>`   // SVG namespace is automatic
 ```
 
-Attribute names are used as written (`stroke-width`, `data-id`, `onClick`). Entities (`&amp;`, `&nbsp;`, …) and
+Attribute names are used as written (`stroke-width`, `data-id`, `onClick`). A name may contain expressions (`on:${EVENT_NAME}=${fn}`, `data-${key}=…`), but it can't be only an expression: use `...${props}` for that. Entities (`&amp;`, `&nbsp;`, …) and
 `<!-- comments -->` are supported.
+
+For DOM APIs there are two variants with the same syntax and caching:
+
+```js
+list.append(html.node`<li>${text}</li>`)            // always a Node: one root as is, anything else in a DocumentFragment
+const row = html.element`<tr><td>${name}</td></tr>`  // the root element (typed HTMLElement); throws unless there is exactly one
+row.dataset.id = id;
+```
+
+Live values inside a `html.node` fragment keep updating after the fragment is inserted.
+
+Both also work as plain functions over a `html` result. PhpStorm gives HTML editing support (completion, closing
+tags, indenting on Enter) only to templates tagged with plain `html`, so prefer this form in the editor:
+
+```js
+const row = html.element(html`<tr><td>${name}</td></tr>`)
+list.append(html.node(html`<li>${text}</li>`))
+```
 
 ### Control flow
 

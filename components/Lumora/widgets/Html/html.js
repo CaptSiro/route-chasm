@@ -48,7 +48,7 @@ class WHtml extends Widget {
                     htmlEditor.parentElement.classList.toggle('display-none');
                 }
             },
-            Icon('nf-fa-edit', 'Edit')
+            nf('nf-fa-edit', 'Edit')
         ));
     }
 

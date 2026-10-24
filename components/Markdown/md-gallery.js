@@ -75,11 +75,11 @@ class Gallery {
                     this.#slides,
                     div(
                         { class: 'nav left', onClick: () => this.goPrevious() },
-                        Icon('nf-fa-angle_left', 'Left')
+                        nf('nf-fa-angle_left', 'Left')
                     ),
                     div(
                         { class: 'nav right', onClick: () => this.goNext() },
-                        Icon('nf-fa-angle_right', 'Right')
+                        nf('nf-fa-angle_right', 'Right')
                     ),
                 ]),
                 this.#thumbnails

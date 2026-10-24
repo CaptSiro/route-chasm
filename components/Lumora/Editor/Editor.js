@@ -250,38 +250,41 @@ async function editor_loadWidgets() {
     editor_widgetSelect.textContent = "";
     for (const category of Array.from(categories.keys()).sort()) {
         editor_widgetSelect.appendChild(
-            jsml.div("widget-category", [
-                jsml.div("label",
-                    jsml.h3(_, category)
-                ),
-                jsml.div("content",
-                    categories.get(category).map(x =>
-                        jsml.div(
-                            {
-                                class: "widget-option",
-                                "data-search": x.searchIndex,
-                                "data-class": x.class,
-                                onClick: function () {
-                                    if (editor_currentCmd === undefined) {
-                                        return;
-                                    }
-
-                                    editor_currentCmd.replaceSelf(widgets.get(x.class).default(editor_currentCmd.parentWidget, true));
-                                    editor_widgetSelect.style.visibility = "hidden";
-                                },
-                                onMouseover: function () {
-                                    editor_widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
-                                    editor_selectedWidget = this;
-                                    this.classList.add("selected");
-                                }
-                            },
-                            [
-                                x.icon,
-                                jsml.span(_, x.name)
-                            ]
-                        ))
-                )
-            ])
+            html.node(html`
+                <div class="widget-category">
+                    <div class="label">
+                        <h3>${category}</h3>
+                    </div>
+                    
+                    <div class="content">
+                        <${For} each="${categories.get(category)}">
+                            ${x => html`
+                                <div
+                                    class="widget-option"
+                                    data-search="${x.searchIndex}"
+                                    data-class="${x.class}"
+                                    onClick="${function () {
+                                        if (editor_currentCmd === undefined) {
+                                            return;
+                                        }
+                                        
+                                        editor_currentCmd.replaceSelf(widgets.get(x.class).default(editor_currentCmd.parentWidget, true));
+                                        editor_widgetSelect.style.visibility = "hidden";
+                                    }}"
+                                    onMouseOver="${function () {
+                                        editor_widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
+                                        editor_selectedWidget = this;
+                                        this.classList.add("selected");
+                                    }}"
+                                >
+                                    ${x.icon}
+                                    <span>${x.name}</span>
+                                </div>
+                            `}
+                        </>
+                    </div>
+                </div>
+            `)
         );
     }
 }

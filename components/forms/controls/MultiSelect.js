@@ -13,13 +13,14 @@ function form_multiSelect_skipPredicate(current) {
  * @return {HTMLDivElement}
  */
 function form_multiSelect_Option(value, label) {
-    return jsml.div({ class: "option", "data-value": value }, [
-        jsml.span(_, label),
-        jsml.button(
-            { type: "button", "x-init": form_multiSelect_removeOptionButton.name },
-            Icon('nf-fa-close', 'X')
-        )
-    ]);
+    return html.element`
+        <div class="option" data-value=${value}>
+            <span>${label}</span>
+            <button type="button" x-init="${form_multiSelect_removeOptionButton.name}">
+                ${nf('nf-fa-close', 'X')}
+            </button>
+        </div>
+    `;
 }
 
 /**

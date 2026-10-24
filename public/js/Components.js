@@ -4,29 +4,30 @@
  */
 
 /**
- *
- * @param {string} label
- * @param {boolean} isRemovable
- * @param {(element: HTMLElementTagNameMap["div"], event: Event) => boolean} onRemove Return false to cancel removing
+ * @param {{ label: MaybeReactive<string>, isRemovable?: MaybeReactive<boolean>, onRemove?: (element: HTMLDivElement, event: Event) => boolean | void }} props
+ *  Return false to cancel removing
  * @return {HTMLDivElement}
  */
-function Tag(label, isRemovable = true, onRemove = () => true) {
-    const tag = jsml.div({ class: 'tag' }, jsml.span(_, label));
-    if (!isRemovable) {
-        return tag;
-    }
-
-    const onClick = event => {
+function Tag({ label, isRemovable = true, onRemove = () => true }) {
+    const remove = event => {
         if (onRemove(tag, event) === false) {
             return;
         }
-
+        
         tag.remove();
-    }
-
-    const button = jsml.button({ onClick }, '✕');
-    tag.append(button);
-
+    };
+    
+    const tag = html.element`
+        <div class="tag">
+            <span>${label}</span>
+            <${Show} when=${isRemovable}>
+                <button onClick=${remove}>
+                    ${nf('nf-fa-close', '✕')}
+                </button>
+            </>
+        </div>
+    `;
+    
     return tag;
 }
 
@@ -35,8 +36,21 @@ function Tag(label, isRemovable = true, onRemove = () => true) {
  * @param {string | undefined} fallback
  * @return {HTMLElement}
  */
-function Icon(nf, fallback = undefined) {
+function nf(nf, fallback = undefined) {
     return jsml.i('nf ' + nf, jsml.span(_, fallback));
+}
+
+/**
+ * @param {{ nf: MaybeReactive<string>, fallback?: MaybeReactive<string> }} props
+ */
+function Icon({ nf, fallback}) {
+    return html`
+        <i class=${['nf', nf]}>
+            <${Show} when=${() => is(read(fallback))}>
+                <span>${fallback}</span>
+            </>
+        </i>
+    `;
 }
 
 /**
@@ -53,32 +67,34 @@ function Remote(container, url, placeholder) {
 }
 
 /**
- * @param {Impulse} percentage
+ * @param {{ percentage: MaybeReactive<number> }} props
  */
-function Bar(percentage) {
-    const fill = jsml.div('progress-bar-fill');
-
-    const updateFill = x => fill.style.setProperty('fill', std_percentage(x))
-
-    updateFill(percentage.value());
-    percentage.listen(updateFill);
-
-    return jsml.div('progress-bar-container', fill);
+function Bar({ percentage }) {
+    return html`
+        <div class="progress-bar-container">
+            <div
+                class="progress-bar-fill"
+                style=${() => `--fill: ${std_percentage(read(percentage))}`}
+            ></div>
+        </div>
+    `;
 }
 
 /**
- * @param {boolean} checked
- * @param {string} label
- * @param {Props} props
- * @return {HTMLLabelElement}
+ * @param {JsmlTagProps<"input"> & { checked?: MaybeReactive<boolean>, label?: JsmlContent, id?: string }} props
+ *  attributes of the <input> (checked, onChange, …) and the label
+ * @returns {HTMLLabelElement}
  */
-function CheckBox(checked, label, props = {}) {
-    const id = std_id_html(8);
-
-    return jsml.label({ class: "checkbox-container", for: id }, [
-        jsml.input({ type: "checkbox", id, checked, ...props }),
-        jsml.span(_, label)
-    ]);
+function CheckBox(props = {}) {
+    const { label, ...p } = props;
+    const id = props.id ?? std_id_html(8);
+    
+    return /** @type {HTMLLabelElement} */ (html.element`
+        <label class="checkbox-container" for=${id}>
+            <input type="checkbox" ...${p} id=${id} />
+            <span>${label}</span>
+        </label>
+    `);
 }
 
 /**
@@ -138,15 +154,17 @@ function Async(asyncFunction, placeholder = undefined) {
 }
 
 /**
- * @param {string} href
- * @param {Content} content
- * @param {Props} props
- * @returns {HTMLElement}
+ * @param {JsmlParentProps<{ href: MaybeReactive<string> }>} props
+ * @returns {HTMLAnchorElement}
  */
-function Link(href, content, props = {}) {
-    props.class = "link";
-    props.href = href;
-    return jsml.a(props, content);
+function Link(props) {
+    const { href, class: c, className, ...p } = props;
+    
+    return html.element`
+        <a href="${href}" class=${[c ?? className, "link"]} ...${p}>
+            ${props.children}
+        </a>
+    `;
 }
 
 const GLOBAL_VIEW_BOX = "0 0 500 500";
@@ -195,60 +213,50 @@ function stringToSvgDef(svgStringRepresentation, id) {
 }
 
 /**
- * @param {string} label
- * @param {string} value
- * @param {string} name
- * @param {string} className
- * @param {Props} inputProps
+ * @param {JsmlProps<"input"> & { label: JsmlContent, className: string, checked?: MaybeReactive<boolean> }} props
  */
-function Radio(label, value, name, className = undefined, inputProps = {}) {
+function Radio(props) {
+    const { label, className, ...p } = props;
     let id = std_id_html(8);
 
-    inputProps.type = "radio";
-    inputProps.name = name;
-    inputProps.value = value;
-
-    if ("id" in inputProps) {
-        id = inputProps.id;
+    if ("id" in p) {
+        id = p.id;
     } else {
-        inputProps.id = id;
+        p.id = id;
     }
-
-    return (
-        jsml.label({
-            class: "radio-container" +(className ? (" " + className) : ""),
-            for: id,
-        }, [
-            jsml.input(inputProps),
-            jsml.span(_, label)
-        ])
-    );
+    
+    return html.element`
+        <label class=${['radio-container', className]} for=${id}>
+            <input type="radio" ...${p}>
+            <span>${label}</span>
+        </label>
+    `;
 }
 
 /**
- * @param {string | undefined} label
- * @param {HTMLElement} elementFor
+ * @param {JsmlProps<"label"> & { label: MaybeReactive<string>, target: HTMLElement }} props
  */
-function LabelFactory(label, elementFor) {
+function Label({ label, target, ...p }) {
     if (label === undefined) {
         return;
     }
 
     const id = std_id_html(8);
-
-    elementFor.id = id;
-    return jsml.label({ for: id }, label);
+    
+    target.id = id;
+    return jsml.label({ for: id, ...p }, label);
 }
 
 /**
- * @param {"error", "note"} type
- * @param {Content} content
+ * @param {JsmlParentProps<{ type: MaybeReactive<string> }>} props
  * @returns {HTMLElement}
  */
-function Blockquote(type, content = undefined) {
-    return (
-        jsml.div("blockquote " + type, content)
-    );
+function Blockquote(props) {
+    return html.element`
+        <div class=${["blockquote", props.type]}>
+            ${props.children}
+        </div>
+    `;
 }
 
 

@@ -3,10 +3,11 @@
 namespace components\Search;
 
 use core\view\Component;
+use JsonSerializable;
 use models\Page\Page;
 use models\Page\PageLocalization;
 
-class SearchResult extends Component {
+class SearchResult extends Component implements JsonSerializable {
     public static function fromPage(Page $page, PageLocalization $localization): static {
         return new static(
             $localization->title,

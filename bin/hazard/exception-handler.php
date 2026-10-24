@@ -88,7 +88,7 @@ class __internal_Hazard {
             : match ($this->severity) {
                 E_USER_ERROR => 'Error',
                 E_USER_WARNING => 'Warning',
-                E_USER_NOTICE => 'Notice',
+                E_USER_NOTICE => 'WindowNotice',
                 default => 'Unknown Error',
             };
     }

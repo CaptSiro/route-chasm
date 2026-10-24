@@ -38,7 +38,7 @@ class WFileDownload extends Widget {
                 class: "container",
                 disabled: !is(json.url)
             }, [
-                Icon("nf-oct-download"),
+                nf("nf-oct-download"),
                 buttonLabel
             ])
         );

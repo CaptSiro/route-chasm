@@ -94,7 +94,7 @@ async function form_submit(form, event) {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    const w = window_createNotice("Submitting form...", { isDialog: true });
+    const w = WindowNotice("Submitting form...", { isDialog: true });
     window_open(w);
 
     /** @type {(form: HTMLElement, event: SubmitEvent) => Payload} */
@@ -324,18 +324,22 @@ function form_file(container) {
         loadedFiles.textContent = "";
 
         for (const file of input.files) {
-            loadedFiles.append(Tag(file.name, true, (tag, event) => {
-                const name = tag.querySelector('span').textContent;
-                const transfer = new DataTransfer();
-
-                for (const f of input.files) {
-                    if (f.name !== name) {
-                        transfer.items.add(f);
+            loadedFiles.append(Tag({
+                label: file.name,
+                isRemovable: true,
+                onRemove: (tag, event) => {
+                    const name = tag.querySelector('span').textContent;
+                    const transfer = new DataTransfer();
+                    
+                    for (const f of input.files) {
+                        if (f.name !== name) {
+                            transfer.items.add(f);
+                        }
                     }
+                    
+                    input.files = transfer.files;
+                    event.preventDefault();
                 }
-
-                input.files = transfer.files;
-                event.preventDefault();
             }));
         }
     }

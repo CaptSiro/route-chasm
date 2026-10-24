@@ -6,8 +6,9 @@ use core\locale\LexiconUnit;
 use core\view\Component;
 use core\view\Renderer;
 use core\view\View;
+use JsonSerializable;
 
-class SearchResults extends Component {
+class SearchResults extends Component implements JsonSerializable {
     use LexiconUnit;
 
 

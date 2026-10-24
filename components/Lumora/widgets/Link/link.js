@@ -30,12 +30,17 @@ class WLink extends Widget {
      */
     constructor(json, parent, editable = false) {
         super(
-            Link(json.url, String(json.text ?? json.title ?? json.url), {
-                class: "w-link",
-                target: "_blank",
-                title: json.title ?? "",
-                contenteditable: "false"
-            }),
+            html.element`
+                <${Link}
+                    href=${json.url}
+                    class="w-link"
+                    target="_blank"
+                    title="${json.title ?? ''}"
+                    contenteditable="false"
+                >
+                    ${String(json.text ?? json.title ?? json.url)}
+                </>
+            `,
             parent,
             editable
         );

@@ -3,7 +3,7 @@ const DOCS_EVENT_REMOVE_DOCUMENT_REQUEST = 'docsRemoveDocumentRequest';
 
 
 async function docs_documentPage(element) {
-    const w = window_createNotice('Fetching documentation', { isDialog: true });
+    const w = WindowNotice('Fetching documentation', { isDialog: true });
     window_open(w);
 
     const url = new URL(location.href);
@@ -61,7 +61,7 @@ async function docs_documentPage(element) {
         });
 
         $('.md-editor-tool-bar .md-save', element)?.addEventListener('click', async () => {
-            const w = window_createNotice('Saving documentation...', { isDialog: true });
+            const w = WindowNotice('Saving documentation...', { isDialog: true });
             window_open(w);
 
             const response = await fetch(std_jsonEndpoint(location.href), {
@@ -90,7 +90,7 @@ async function docs_documentPage(element) {
                 return;
             }
 
-            const w = window_createNotice('Re-generating documentation...', { isDialog: true });
+            const w = WindowNotice('Re-generating documentation...', { isDialog: true });
             window_open(w);
 
             const response = await fetch(std_jsonEndpoint(location.href), { method: "PUT" });
@@ -122,22 +122,33 @@ async function docs_documentPage(element) {
 
 
 
-function docs_DocumentRequest(title, value) {
-    const row = jsml.div('row', [
-        jsml.button({
-            onClick: () => {
+/**
+ * @param {MaybeReactive<string>} title
+ * @param {MaybeReactive<string>} value
+ * @return {HTMLElement}
+ */
+function docs_DocumentRequest({ title, value }) {
+    const row = html.element(html`
+        <div class="row">
+            <button onClick="${() => {
                 row.parentElement.dispatchEvent(
                     new CustomEvent(DOCS_EVENT_REMOVE_DOCUMENT_REQUEST, { detail: value, bubbles: true })
                 );
-
+                
                 row.remove();
-            }
-        }, Icon("nf-fa-close", 'X')),
-        jsml.div(_, [
-            jsml.div(_, title),
-            Optional(title !== value, jsml.div({ style: { color: "var(--text-2)" } }, value)),
-        ])
-    ]);
+            }}">${nf("nf-fa-close", 'X')}</button>
+            
+            <div>
+                <div>${title}</div>
+                
+                <${Show} when="${() => title !== value}">
+                    <div style="${{ color: "var(--text-2)" }}">
+                        ${value}
+                    </div>
+                </>
+            </div>
+        </div>
+    `);
 
     return row;
 }
@@ -173,19 +184,19 @@ function docs_documentRequestsList(element) {
             return;
         }
 
-        let label = value;
+        let title = value;
 
         for (const option of target.children) {
             if (option.value !== value) {
                 continue;
             }
 
-            label = option.textContent;
+            title = option.textContent;
             break;
         }
 
         requests.add(value);
-        list.append(docs_DocumentRequest(label, value));
+        list.append(docs_DocumentRequest({ title, value }));
         updateInputValue();
     });
 

@@ -11,9 +11,7 @@ function phraseTranslator_init(element) {
     element.addEventListener("click", async () => {
         const w = window_create(
             "",
-            jsml.div("text-window", [
-                jsml.h3(_, "Translating..."),
-            ]),
+            window_TextWindow({ title: 'Translating...' }),
             {
                 isDialog: true
             }

@@ -15,8 +15,10 @@ let isWindowModuleLoaded = false;
 const queue = [];
 
 window.addEventListener('load', () => {
-    windowOverlay = jsml.div('window-overlay');
-    windowOverlayActive = jsml.div('window-overlay-active');
+    const { div } = jsml;
+    
+    windowOverlay = div('window-overlay');
+    windowOverlayActive = div('window-overlay-active');
 
     document.body.append(windowOverlay, windowOverlayActive);
     isWindowModuleLoaded = true;
@@ -354,37 +356,33 @@ function window_setParent(child, parentIdentifier) {
  * @return {HTMLDivElement}
  */
 function window_create(title, content, settings = {}) {
-    const controls = [
-        jsml.button("close", Icon("nf-fa-close", 'X'))
-    ];
-
-    if (settings.isMinimizable === true) {
-        controls.unshift(
-            jsml.button("minimize", Icon("nf-fa-window_minimize", '_')),
-            jsml.button("maximize", Icon("nf-fa-window_maximize", '█')),
-        );
-    }
-
-    const w = jsml.div({
-        class: "window hide",
-    }, [
-        jsml.div("head", [
-            jsml.span(_, title),
-            jsml.div("controls", controls)
-        ]),
-        jsml.div("content", content)
-    ]);
-
-    w.dataset.width = w.style.width = settings.width ?? "300px";
-    w.dataset.height = w.style.height = settings.height ?? "unset";
-
-    if (settings.isDraggable === true) {
-        w.dataset.windowDraggable = "true";
-    }
-
-    if (settings.isDialog === true) {
-        w.dataset.dialog = "true";
-    }
+    const width = settings.width ?? "300px";
+    const height = settings.height ?? "unset";
+    
+    const w = html.element`
+        <div
+            class="window hide"
+            data-width=${width}
+            data-height=${height}
+            style=${{ width, height }}
+            data-window-draggable=${settings.isDraggable}
+            data-dialog=${settings.isDialog}
+        >
+            <div class="head">
+                <span>${title}</span>
+                <div class="controls">
+                    <${Show} when=${settings.isMinimizable}>
+                        <button class="minimize">${nf("nf-fa-window_minimize", '_')}</button>
+                        <button class="maximize">${nf("nf-fa-window_maximize", '█')}</button>
+                    </>
+                    
+                    <button class="close">${nf("nf-fa-close", 'X')}</button>
+                </div>
+            </div>
+            
+            <div class="content">${content}</div>
+        </div>
+    `;
 
     if (is(settings.parent)) {
         window_setParent(w, settings.parent);
@@ -404,6 +402,24 @@ function window_destroy(element) {
 
 
 /**
+ * @param {JsmlParentProps<{ title?: MaybeReactive<string> }>} props
+ * @return {JsmlContent}
+ */
+function window_TextWindow(props) {
+    return html`
+        <div class="text-window">
+            <${Show} when="${() => is(read(props.title))}">
+                <h3>${props.title}</h3>
+            </>
+            
+            ${props.children}
+        </div>
+    `;
+}
+
+
+
+/**
  * @param {string} message
  * @param {WindowSettings} settings
  * @return {Promise<void>}
@@ -412,18 +428,19 @@ function window_alert(message, settings = {}) {
     return new Promise(resolve => {
         const w = window_create(
             "Alert",
-            jsml.div("text-window", [
-                jsml.h3(_, message),
-                jsml.div("controls",
-                    jsml.button({
-                        onClick: () => window_close(w)
-                    }, 'Ok')
-                )
-            ]),
+            html`
+                <${window_TextWindow} title="${message}">
+                    <div class="controls">
+                        <button onClick=${() => window_close(w)}>
+                            Ok
+                        </button>
+                    </div>
+                </>
+            `,
             settings
         );
-
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(undefined));
+        
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
 }
@@ -435,12 +452,10 @@ function window_alert(message, settings = {}) {
  * @param {WindowSettings} settings
  * @return {HTMLDivElement}
  */
-function window_createNotice(message, settings = {}) {
+function WindowNotice(message, settings = {}) {
     return window_create(
         "",
-        jsml.div("text-window", [
-            jsml.h3(_, message),
-        ]),
+        window_TextWindow({ title: message }),
         settings
     );
 }
@@ -459,29 +474,25 @@ function window_prompt(message, settings = {}) {
 
         const w = window_create(
             "Prompt",
-            jsml.div("text-window", [
-                LabelFactory(message, input),
-                input,
-                jsml.div("controls",
-                    jsml.div("controls", [
-                        jsml.button({
-                            onClick: () => {
-                                result = input.value;
-                                window_close(w);
-                            }
-                        }, 'Ok'),
-
-                        jsml.button({
-                            onClick: () => {
-                                window_close(w);
-                            }
-                        }, 'Cancel'),
-                    ])
-                )
-            ]),
+            html`
+                <${window_TextWindow}>
+                    <${Label} label="${message}" target="${input}" />
+                    ${input}
+                    <div class="controls">
+                        <button onClick="${() => {
+                            result = input.value;
+                            window_close(w);
+                        }}">Ok</button>
+                        
+                        <button onClick="${() => window_close(w)}">
+                            Cancel
+                        </button>
+                    </div>
+                </>
+            `,
             settings
         );
-
+        
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
@@ -500,26 +511,21 @@ async function window_confirm(message, settings = {}) {
 
         const w = window_create(
             "Confirm",
-            jsml.div("text-window", [
-                jsml.h3(_, message),
-                jsml.div("controls", [
-                    jsml.button({
-                        onClick: () => {
+            html`
+                <${window_TextWindow} title="${message}">
+                    <div class="controls">
+                        <button onClick="${() => {
                             result = true;
                             window_close(w);
-                        }
-                    }, 'Ok'),
-
-                    jsml.button({
-                        onClick: () => {
-                            window_close(w);
-                        }
-                    }, 'Cancel'),
-                ])
-            ]),
+                        }}">Ok</button>
+                        
+                        <button onClick="${() => window_close(w)}">Cancel</button>
+                    </div>
+                </>
+            `,
             settings
         );
-
+        
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
@@ -534,10 +540,11 @@ async function window_confirm(message, settings = {}) {
 function window_fileUpload(fileProgress, settings = {}) {
     return window_create(
         'File upload',
-        jsml.div("text-window", [
-            jsml.h3(_, "Uploading files..."),
-            Bar(fileProgress)
-        ]),
+        html`
+            <${window_TextWindow} title="Uploading files...">
+                <${Bar} percentage="${fileProgress}" />
+            </>
+        `,
         settings
     );
 }
@@ -552,35 +559,71 @@ function window_fileUpload(fileProgress, settings = {}) {
 async function window_fileSelect(url, fileType = null) {
     return new Promise(resolve => {
         let result = null;
+        
+        const onClick = event => {
+            const gridRow = event.target.closest(".grid-row");
+            if (!is(gridRow)) {
+                return;
+            }
+            
+            const dataElement = $('.row', gridRow);
+            if (!is(dataElement.dataset.fileHash)) {
+                return;
+            }
+            
+            if (gridRow.classList.contains("selected")) {
+                result = null;
+                gridRow.classList.remove("selected");
+                return;
+            }
+            
+            for (const row of $$('.grid-row', gridRow.parentElement)) {
+                row.classList.remove("selected");
+            }
+            
+            result = dataElement.dataset.fileHash;
+            gridRow.classList.add("selected");
+        };
+        
+        const onReload = event => {
+            const breadCrumbs = Array.from($$('.nexus .bread-crumb', w));
+            if (breadCrumbs.length <= 0) {
+                return;
+            }
+            
+            const last = breadCrumbs.at(-1);
+            const link = $('[x-get]', last);
+            if (!is(link)) {
+                return;
+            }
+            
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            
+            link.click();
+        };
+        
         const w = window_create(
             "File Select",
-            jsml.div("content-window file-select-window", [
-                jsml.div({
-                    "x-get": url,
-                    "x-event": "jsmlLoad"
-                }),
-                jsml.div("controls", [
-                    jsml.button({
-                        onClick: () => {
-                            window_close(w, true);
-                        }
-                    }, 'Ok'),
-
-                    jsml.button({
-                        onClick: () => {
+            html`
+                <div class="content-window file-select-window">
+                    <div x-get="${url}" x-event="jsmlLoad"></div>
+                    
+                    <div class="controls">
+                        <button onClick="${() => window_close(w, true)}">Ok</button>
+                        
+                        <button onClick="${() => {
                             result = '';
                             window_close(w);
-                        }
-                    }, 'Remove selected'),
-
-                    jsml.button({
-                        onClick: () => {
+                        }}">Remove Selected</button>
+                        
+                        <button onClick="${() => {
                             result = null;
                             window_close(w);
-                        }
-                    }, 'Cancel'),
-                ])
-            ]),
+                        }}">Cancel</button>
+                    </div>
+                </div>
+            `,
             {
                 isDialog: true,
                 isResizable: true,
@@ -589,50 +632,9 @@ async function window_fileSelect(url, fileType = null) {
                 width: "500px",
             }
         );
-
-        w.addEventListener("click", event => {
-            const gridRow = event.target.closest(".grid-row");
-            if (!is(gridRow)) {
-                return;
-            }
-
-            const dataElement = $('.row', gridRow);
-            if (!is(dataElement.dataset.fileHash)) {
-                return;
-            }
-
-            if (gridRow.classList.contains("selected")) {
-                result = null;
-                gridRow.classList.remove("selected");
-                return;
-            }
-
-            for (const row of $$('.grid-row', gridRow.parentElement)) {
-                row.classList.remove("selected");
-            }
-
-            result = dataElement.dataset.fileHash;
-            gridRow.classList.add("selected");
-        });
-
-        w.addEventListener('fsReloadCurrentDirectory', event => {
-            const breadCrumbs = Array.from($$('.nexus .bread-crumb', w));
-            if (breadCrumbs.length <= 0) {
-                return;
-            }
-
-            const last = breadCrumbs.at(-1);
-            const link = $('[x-get]', last);
-            if (!is(link)) {
-                return;
-            }
-
-            event.stopImmediatePropagation();
-            event.preventDefault();
-
-            link.click();
-        });
-
+        
+        w.addEventListener('click', onClick);
+        w.addEventListener(FS_RELOAD_CURRENT_DIRECTORY, onReload);
         w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
         window_open(w);
     });
