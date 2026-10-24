@@ -30,12 +30,12 @@
  * Signal writer: takes the next value or an updater `prev => next`. Returns the stored value.
  *
  * @template T
- * @typedef {(value: T | ((prev: T) => T)) => T} Setter
+ * @typedef {(value: T | ((prev: T) => T)) => T} Writter
  */
 
 /**
  * @template T
- * @typedef {[get: Accessor<T>, set: Setter<T>]} Signal
+ * @typedef {[get: Accessor<T>, set: Writter<T>]} Signal
  */
 
 /**
