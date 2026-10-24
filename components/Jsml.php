@@ -14,6 +14,7 @@ class Jsml implements ViewTemplate {
 
         return [
             "$jsml/Jsml.js",
+            "$jsml/JsmlSideLoader.js",
         ];
     }
 }

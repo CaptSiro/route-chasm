@@ -6,6 +6,8 @@ Documentation coming soon.
 
 In the meantime, check out `./bin/bootstrap-project.php` for routing examples, `./models/` for database abstraction, and `./components/` for rendering views.
 
+Front-end views are built with jsml. Read [`components/Jsml.md`](components/Jsml.md) before writing or reviewing front-end code, because its gotchas and security notes come first.
+
 This framework is still in heavy development, and all features are subject to change.
 
 # Project instantiation
