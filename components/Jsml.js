@@ -1226,6 +1226,28 @@ function jsml_classString(value) {
 }
 
 /**
+ * Returns a copy of `props` with `classes` merged into its `class` (`className` is folded in too). The caller's class
+ * is kept as is inside a class list, so accessors in it stay reactive. `props` is not mutated.
+ *
+ * ```js
+ * html`<a ...${withClass(props, "link", { active: isActive })}></a>`
+ * ```
+ *
+ * @template {JsmlProps} P
+ * @param {P} props
+ * @param {...MaybeReactive<JsmlClass>} classes
+ * @returns {Omit<P, "class" | "className"> & { class: MaybeReactive<JsmlClass>[] }}
+ */
+function withClass(props, ...classes) {
+    const { class: c, className, ...rest } = props;
+
+    return {
+        ...rest,
+        class: [c, className, ...classes],
+    };
+}
+
+/**
  * @param {HTMLElement | SVGElement} element
  * @param {string} key
  * @param {any} value

@@ -20,6 +20,7 @@ function Tag({ label, isRemovable = true, onRemove = () => true }) {
     const tag = html.element`
         <div class="tag">
             <span>${label}</span>
+            
             <${Show} when=${isRemovable}>
                 <button onClick=${remove}>
                     ${nf('nf-fa-close', '✕')}
@@ -158,10 +159,10 @@ function Async(asyncFunction, placeholder = undefined) {
  * @returns {HTMLAnchorElement}
  */
 function Link(props) {
-    const { href, class: c, className, ...p } = props;
-    
+    const { href, ...p } = props;
+
     return html.element`
-        <a href="${href}" class=${[c ?? className, "link"]} ...${p}>
+        <a href="${href}" ...${withClass(p, "link")}>
             ${props.children}
         </a>
     `;
@@ -248,12 +249,12 @@ function Label({ label, target, ...p }) {
 }
 
 /**
- * @param {JsmlParentProps<{ type: MaybeReactive<string> }>} props
+ * @param {JsmlParentProps} props
  * @returns {HTMLElement}
  */
 function Blockquote(props) {
     return html.element`
-        <div class=${["blockquote", props.type]}>
+        <div ...${withClass(props, "blockquote")}>
             ${props.children}
         </div>
     `;
