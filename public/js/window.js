@@ -19,14 +19,14 @@ window.addEventListener('load', () => {
     
     windowOverlay = div('window-overlay');
     windowOverlayActive = div('window-overlay-active');
-
+    
     document.body.append(windowOverlay, windowOverlayActive);
     isWindowModuleLoaded = true;
-
+    
     for (const backlog of queue) {
         backlog.fn(backlog.arg);
     }
-
+    
     queue.length = 0;
 });
 
@@ -43,20 +43,20 @@ function window_open(element) {
         });
         return;
     }
-
+    
     if (element.dataset.dialog === "true") {
         $(".root", document.body)?.toggleAttribute("inert", true);
         windowOverlayActive.classList.add("inert");
     }
-
+    
     window_maximize(element);
     element.style.left = "50%";
     element.style.top = "50%";
-
+    
     element.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_OPENED));
     windowOverlayActive?.appendChild(element);
-
+    
     window_spotlight(element);
 }
 
@@ -94,26 +94,26 @@ function window_minimize(element, maximize = undefined, minimize = undefined) {
         });
         return;
     }
-
+    
     const content = $(".content", element);
     if (!is(content)) {
         return;
     }
-
+    
     const rect = element.getBoundingClientRect();
     content.classList.add('hide');
     element.style.height = "unset";
     const after = element.getBoundingClientRect();
-
+    
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
-
+    
     minimize ??= $('.minimize', element);
     maximize ??= $('.maximize', element);
-
+    
     if (!is(minimize) || !is(maximize)) {
         return;
     }
-
+    
     minimize.classList.add('hide');
     maximize.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MINIMIZED));
@@ -132,26 +132,26 @@ function window_maximize(element, maximize = undefined, minimize = undefined) {
         });
         return;
     }
-
+    
     const content = $(".content", element);
     if (!is(content)) {
         return;
     }
-
+    
     const rect = element.getBoundingClientRect();
     content.classList.remove('hide');
     element.style.height = element.dataset.height ?? "unset";
     const after = element.getBoundingClientRect();
-
+    
     window_move(element, rect.x + after.width / 2, rect.y + after.height / 2);
-
+    
     minimize ??= $('.minimize', element);
     maximize ??= $('.maximize', element);
-
+    
     if (!is(minimize) || !is(maximize)) {
         return;
     }
-
+    
     maximize.classList.add('hide');
     minimize.classList.remove('hide');
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_MAXIMIZED));
@@ -171,18 +171,18 @@ function window_close(element, destroy = true) {
         });
         return;
     }
-
+    
     if (element.dataset.dialog === "true") {
         $(".root", document.body)?.toggleAttribute("inert", false);
         windowOverlayActive.classList.remove("inert");
     }
-
+    
     element.classList.add('hide');
     windowOverlay.appendChild(element);
     element.dispatchEvent(new CustomEvent(EVENT_WINDOW_CLOSED));
-
+    
     window.onbeforeunload = null;
-
+    
     if (destroy) {
         window_destroy(element);
     }
@@ -202,44 +202,44 @@ function window_issueClose(child) {
  */
 function window_addDraggable(element) {
     element.classList.add('draggable');
-
+    
     const head = $(".head", element);
     if (!is(head)) {
         return;
     }
-
+    
     let isDragging = false;
     let start;
     let offsetX;
     let offsetY;
-
+    
     head.addEventListener('pointerdown', event => {
         isDragging = true;
-
+        
         start = element.getBoundingClientRect();
         offsetX = event.clientX - start.x;
         offsetY = event.clientY - start.y;
-
+        
         head.setPointerCapture(event.pointerId);
     });
-
+    
     head.addEventListener('pointerup', event => {
         isDragging = false;
-
+        
         head.releasePointerCapture(event.pointerId);
     });
-
+    
     head.addEventListener('pointermove', event => {
         if (!isDragging || !is(offsetX) || !is(offsetY) || !is(start)) {
             return;
         }
-
+        
         const x = event.clientX - offsetX + start.width / 2;
         const y = event.clientY - offsetY + start.height / 2;
-
+        
         window_move(element, x, y);
     });
-
+    
     $(".controls", head)?.addEventListener('pointerdown', event => {
         event.stopImmediatePropagation();
     });
@@ -249,20 +249,20 @@ function window_spotlight(element) {
     if (!is(element.parentElement)) {
         return;
     }
-
+    
     const windows = Array.from(element.parentElement.children);
     if (element.style.zIndex === String(windows.length + 1)) {
         return;
     }
-
+    
     windows.sort((a, b) => {
         return Number(a.style.zIndex) - Number(b.style.zIndex);
     });
-
+    
     for (let i = 0; i < windows.length; i++) {
         windows[i].style.zIndex = String(i + 1);
     }
-
+    
     element.style.zIndex = String(windows.length + 1);
 }
 
@@ -277,46 +277,46 @@ function window_init(element) {
         });
         return;
     }
-
+    
     if (element.id === '') {
         element.id = std_id_html(8);
     }
-
+    
     if (!element.parentElement?.classList.contains("window-overlay-active")) {
         windowOverlay.appendChild(element);
         element.classList.add('hide');
     }
-
+    
     if (Boolean(element.dataset.windowDraggable)) {
         window_addDraggable(element);
     }
-
+    
     const destroyOnClose = Boolean(element.dataset.destroyOnClose ?? true);
     $('.close', element)?.addEventListener('click', () => {
         window_close(element, destroyOnClose);
     });
-
+    
     element.addEventListener("pointerdown", () => window_spotlight(element));
-
+    
     element.addEventListener(EVENT_WINDOW_ISSUE_CLOSE, event => {
         window_close(element);
         event.stopImmediatePropagation();
     });
-
+    
     const minimize = $('.minimize', element);
     const maximize = $('.maximize', element);
-
+    
     if (!is(minimize) || !is(maximize)) {
         return;
     }
-
+    
     minimize.classList.remove('hide');
     maximize.classList.add('hide');
-
+    
     minimize.addEventListener('click', () => {
         window_minimize(element, maximize, minimize);
     });
-
+    
     maximize.addEventListener('click', () => {
         window_maximize(element, maximize, minimize);
     });
@@ -331,7 +331,7 @@ function window_setParent(child, parentIdentifier) {
     if (!is(parent)) {
         return;
     }
-
+    
     parent.addEventListener(EVENT_WINDOW_CLOSED, () => window_close(child));
 }
 
@@ -339,15 +339,36 @@ function window_setParent(child, parentIdentifier) {
 
 /**
  * @typedef {{
-     isDialog?: boolean,
-     isDraggable?: boolean,
-     isMinimizable?: boolean,
-     isResizable?: boolean,
-     width?: string,
-     height?: string,
-     parent?: string,
+ isDialog?: boolean,
+ isDraggable?: boolean,
+ isMinimizable?: boolean,
+ isResizable?: boolean,
+ width?: string,
+ height?: string,
+ parent?: string,
  }} WindowSettings
  */
+
+/** @type {WeakMap<HTMLElement, () => void>} disposes the effects of a window created by window_create */
+const window_disposers = new WeakMap();
+
+/**
+ * The window is built inside its own root, disposed when the window is destroyed. Pass `content` as a builder
+ * `() => content` for its effects to be owned by the window, content built before the call is not owned by it.
+ *
+ * @param {Content} title
+ * @param {Content | (() => Content)} content
+ * @param {WindowSettings} settings
+ * @return {HTMLDivElement}
+ */
+function window_create(title, content, settings = {}) {
+    // detached from the caller's owner, the window outlives e.g. the inspector it was opened from
+    return createRoot(dispose => {
+        const w = window_build(title, typeof content === "function" ? untrack(content) : content, settings);
+        window_disposers.set(w, dispose);
+        return w;
+    });
+}
 
 /**
  * @param {Content} title
@@ -355,7 +376,7 @@ function window_setParent(child, parentIdentifier) {
  * @param {WindowSettings} settings
  * @return {HTMLDivElement}
  */
-function window_create(title, content, settings = {}) {
+function window_build(title, content, settings) {
     const width = settings.width ?? "300px";
     const height = settings.height ?? "unset";
     
@@ -383,11 +404,11 @@ function window_create(title, content, settings = {}) {
             <div class="content">${content}</div>
         </div>
     `;
-
+    
     if (is(settings.parent)) {
         window_setParent(w, settings.parent);
     }
-
+    
     window_init(w);
     return w;
 }
@@ -396,6 +417,8 @@ function window_create(title, content, settings = {}) {
  * @param {HTMLElement} element
  */
 function window_destroy(element) {
+    window_disposers.get(element)?.();
+    window_disposers.delete(element);
     element.remove();
 }
 
@@ -440,7 +463,7 @@ function window_alert(message, settings = {}) {
             settings
         );
         
-        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve(result));
+        w.addEventListener(EVENT_WINDOW_CLOSED, () => resolve());
         window_open(w);
     });
 }
@@ -471,7 +494,7 @@ function window_prompt(message, settings = {}) {
     return new Promise(resolve => {
         const input = jsml.input({ type: 'text' });
         let result = undefined;
-
+        
         const w = window_create(
             "Prompt",
             html`
@@ -508,7 +531,7 @@ function window_prompt(message, settings = {}) {
 async function window_confirm(message, settings = {}) {
     return new Promise(resolve => {
         let result = false;
-
+        
         const w = window_create(
             "Confirm",
             html`

@@ -124,33 +124,42 @@ function Optionals(condition, content) {
 
 /**
  * Asynchronously replace placeholder element with element(s) returned by `asyncFunction`
- * @param {()=>Promise<(Node | HTMLElement)[] | Node | HTMLElement | HTMLCollection>} asyncFunction
+ *
+ * Code after an `await` runs without an owner, so effects created there are never disposed. Return a builder
+ * `() => content` instead of the content, it is called in the owner `Async` was called in. The result is dropped when
+ * that owner has been disposed in the meantime.
+ *
+ * @param {()=>Promise<(Node | HTMLElement)[] | Node | HTMLElement | HTMLCollection | (() => Content)>} asyncFunction
  * @param {HTMLElement} placeholder
  */
 function Async(asyncFunction, placeholder = undefined) {
     const id = std_id_html(8);
-
+    const owner = getOwner();
+    
     if (placeholder === undefined) {
         placeholder = jsml.div();
     }
-
+    
     placeholder.classList.add(id);
-
+    
     std_dom_onMount("." + id)
         .then(asyncFunction)
         .then(component => {
-            if (component instanceof Node) {
-                component = [component];
-            }
-
-            for (const c of component) {
-                placeholder.parentElement.insertBefore(c, placeholder);
-            }
-
-            placeholder.remove();
             std_id_free(id);
+            
+            if (owner?.disposed || !is(placeholder.parentElement)) {
+                return;
+            }
+            
+            runWithOwner(owner, () => jsml_append(
+                placeholder.parentElement,
+                typeof component === "function" ? component() : component,
+                placeholder
+            ));
+            
+            placeholder.remove();
         });
-
+    
     return placeholder;
 }
 
@@ -160,7 +169,7 @@ function Async(asyncFunction, placeholder = undefined) {
  */
 function Link(props) {
     const { href, ...p } = props;
-
+    
     return html.element`
         <a href="${href}" ...${withClass(p, "link")}>
             ${props.children}
@@ -180,12 +189,12 @@ const GLOBAL_VIEW_BOX = "0 0 500 500";
 function Svg(definitionID, viewBox = undefined, props = {}) {
     const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgElement.setAttribute("viewBox", viewBox ?? GLOBAL_VIEW_BOX);
-
+    
     jsml_addProps(svgElement, props);
-
+    
     const useElement = document.createElementNS("http://www.w3.org/2000/svg", "use");
     useElement.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + definitionID);
-
+    
     svgElement.appendChild(useElement);
     return svgElement;
 }
@@ -197,19 +206,19 @@ function Svg(definitionID, viewBox = undefined, props = {}) {
  */
 function stringToSvgDef(svgStringRepresentation, id) {
     let svg = Html(svgStringRepresentation);
-
+    
     do {
         if (svg.nodeName === "svg") break;
         svg = svg.nextSibling;
     } while (svg !== null && svg !== undefined);
-
+    
     const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
     g.id = id;
-
+    
     if (svg?.innerHTML !== undefined) {
         g.innerHTML = svg.innerHTML;
     }
-
+    
     return g;
 }
 
@@ -219,7 +228,7 @@ function stringToSvgDef(svgStringRepresentation, id) {
 function Radio(props) {
     const { label, className, ...p } = props;
     let id = std_id_html(8);
-
+    
     if ("id" in p) {
         id = p.id;
     } else {
@@ -241,7 +250,7 @@ function Label({ label, target, ...p }) {
     if (label === undefined) {
         return;
     }
-
+    
     const id = std_id_html(8);
     
     target.id = id;
@@ -270,7 +279,7 @@ function Blockquote(props) {
 function Html(content, isCollection = false) {
     const template = document.createElement("template");
     template.innerHTML = content.trim();
-
+    
     return isCollection
         ? template.content.childNodes
         : template.content.firstChild;

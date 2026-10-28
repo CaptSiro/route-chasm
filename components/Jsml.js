@@ -526,15 +526,15 @@ const jsml_effectQueue = new Set();
  */
 function jsml_createOwner(parent = jsml_owner) {
     const owner = { parent, owned: null, cleanups: null, context: null, disposed: false };
-
+    
     if (parent !== null) {
         if (parent.owned === null) {
             parent.owned = new Set();
         }
-
+        
         parent.owned.add(owner);
     }
-
+    
     return owner;
 }
 
@@ -546,14 +546,14 @@ function jsml_disposeChildren(owner) {
         for (const child of owner.owned) {
             jsml_dispose(child, false);
         }
-
+        
         owner.owned.clear();
     }
-
+    
     if (owner.cleanups !== null) {
         const cleanups = owner.cleanups;
         owner.cleanups = null;
-
+        
         for (let i = cleanups.length - 1; i >= 0; i--) {
             try {
                 cleanups[i]();
@@ -572,14 +572,14 @@ function jsml_dispose(owner, detach = true) {
     if (owner.disposed) {
         return;
     }
-
+    
     owner.disposed = true;
     jsml_disposeChildren(owner);
-
+    
     if (owner.deps !== undefined) {
         jsml_unsubscribe(owner);
     }
-
+    
     if (detach && owner.parent !== null && owner.parent.owned !== null) {
         owner.parent.owned.delete(owner);
     }
@@ -592,7 +592,7 @@ function jsml_unsubscribe(computation) {
     for (const signal of computation.deps) {
         signal.observers.delete(computation);
     }
-
+    
     computation.deps.clear();
 }
 
@@ -620,7 +620,7 @@ function jsml_read(signal) {
         signal.observers.add(jsml_listener);
         jsml_listener.deps.add(signal);
     }
-
+    
     return signal.value;
 }
 
@@ -633,13 +633,13 @@ function jsml_write(signal, value) {
     if (signal.equals !== false && signal.equals(signal.value, value)) {
         return;
     }
-
+    
     signal.value = value;
-
+    
     for (const observer of signal.observers) {
         (observer.isMemo ? jsml_memoQueue : jsml_effectQueue).add(observer);
     }
-
+    
     if (jsml_batchDepth === 0 && !jsml_flushing) {
         jsml_flush();
     }
@@ -652,15 +652,15 @@ function jsml_run(computation) {
     if (computation.disposed) {
         return;
     }
-
+    
     jsml_unsubscribe(computation);
     jsml_disposeChildren(computation);
-
+    
     const previousOwner = jsml_owner;
     const previousListener = jsml_listener;
     jsml_owner = computation;
     jsml_listener = computation;
-
+    
     try {
         computation.value = computation.fn(computation.value);
     } catch (error) {
@@ -675,10 +675,10 @@ function jsml_flush() {
     if (jsml_flushing) {
         return;
     }
-
+    
     jsml_flushing = true;
     let guard = 0;
-
+    
     try {
         // memos first, so effects never observe a stale derived value
         while (jsml_memoQueue.size !== 0 || jsml_effectQueue.size !== 0) {
@@ -687,7 +687,7 @@ function jsml_flush() {
                 jsml_effectQueue.clear();
                 throw new Error("jsml: possible infinite update loop (a computation keeps writing to its own dependency)");
             }
-
+            
             const queue = jsml_memoQueue.size !== 0 ? jsml_memoQueue : jsml_effectQueue;
             const computation = queue.values().next().value;
             queue.delete(computation);
@@ -725,14 +725,14 @@ function jsml_computation(fn, isMemo) {
  */
 function signal(initial, options) {
     const state = jsml_signalState(initial, options);
-
+    
     return [
         () => jsml_read(state),
         (value) => {
             const next = typeof value === "function"
                 ? value(state.value)
                 : value;
-
+            
             jsml_write(state, next);
             return next;
         }
@@ -777,12 +777,12 @@ function memo(fn, initial, options) {
  */
 function batch(fn) {
     jsml_batchDepth++;
-
+    
     try {
         return fn();
     } finally {
         jsml_batchDepth--;
-
+        
         if (jsml_batchDepth === 0) {
             jsml_flush();
         }
@@ -799,7 +799,7 @@ function batch(fn) {
 function untrack(fn) {
     const previousListener = jsml_listener;
     jsml_listener = null;
-
+    
     try {
         return fn();
     } finally {
@@ -818,7 +818,7 @@ function runWithOwner(owner, fn) {
     const previousListener = jsml_listener;
     jsml_owner = owner;
     jsml_listener = null;
-
+    
     try {
         return fn();
     } finally {
@@ -858,10 +858,10 @@ function onCleanup(fn) {
         if (jsml_owner.cleanups === null) {
             jsml_owner.cleanups = [];
         }
-
+        
         jsml_owner.cleanups.push(fn);
     }
-
+    
     return fn;
 }
 
@@ -871,12 +871,12 @@ let jsml_mountScheduled = false;
 
 function jsml_flushMounts() {
     jsml_mountScheduled = false;
-
+    
     for (const { fn, owner } of jsml_mounts.splice(0)) {
         if (owner !== null && owner.disposed) {
             continue;
         }
-
+        
         try {
             runWithOwner(owner, fn);
         } catch (error) {
@@ -893,7 +893,7 @@ function jsml_flushMounts() {
  */
 function onMount(fn) {
     jsml_mounts.push({ fn, owner: jsml_owner });
-
+    
     if (!jsml_mountScheduled) {
         jsml_mountScheduled = true;
         queueMicrotask(jsml_flushMounts);
@@ -927,10 +927,10 @@ function jsml_isImpulse(value) {
 function fromImpulse(impulse) {
     const state = jsml_signalState(impulse.value(), { equals: false });
     const listener = (value) => jsml_write(state, value);
-
+    
     impulse.listen(listener);
     onCleanup(() => impulse.removeListener?.(listener));
-
+    
     return () => jsml_read(state);
 }
 
@@ -946,13 +946,13 @@ function read(value) {
     if (typeof value === "function") {
         return value();
     }
-
+    
     if (jsml_isImpulse(value)) {
         return jsml_listener !== null
             ? fromImpulse(value)()
             : value.value();
     }
-
+    
     return value;
 }
 
@@ -1002,33 +1002,33 @@ function jsml_resolve(value, out = []) {
     if (value === undefined || value === null || typeof value === "boolean") {
         return out;
     }
-
+    
     if (typeof value === "function") {
         return jsml_resolve(value(), out);
     }
-
+    
     if (jsml_isImpulse(value)) {
         return jsml_resolve(read(value), out);
     }
-
+    
     if (value instanceof DocumentFragment) {
         out.push(...value.childNodes);
         return out;
     }
-
+    
     if (value instanceof Node) {
         out.push(value);
         return out;
     }
-
+    
     if (jsml_isList(value)) {
         for (const item of Array.from(value)) {
             jsml_resolve(item, out);
         }
-
+        
         return out;
     }
-
+    
     out.push(jsml_text(value));
     return out;
 }
@@ -1043,21 +1043,21 @@ function jsml_resolve(value, out = []) {
  */
 function jsml_reconcile(parent, current, next, end) {
     const keep = new Set(next);
-
+    
     for (const node of current) {
         if (!keep.has(node) && node.parentNode === parent) {
             parent.removeChild(node);
         }
     }
-
+    
     let reference = end;
     for (let i = next.length - 1; i >= 0; i--) {
         const node = next[i];
-
+        
         if (node.parentNode !== parent || node.nextSibling !== reference) {
             parent.insertBefore(node, reference);
         }
-
+        
         reference = node;
     }
 }
@@ -1072,18 +1072,18 @@ function jsml_reconcile(parent, current, next, end) {
 function jsml_region(parent, accessor, marker) {
     const end = document.createComment("");
     parent.insertBefore(end, marker);
-
+    
     /** @type {Node[]} */
     let current = [];
-
+    
     effect(() => {
         const value = accessor();
         const host = end.parentNode;
-
+        
         if (host === null) {
             return;
         }
-
+        
         // fast path: primitive replacing a primitive just updates the text
         if (
             (typeof value === "string" || typeof value === "number" || typeof value === "bigint")
@@ -1093,7 +1093,7 @@ function jsml_region(parent, accessor, marker) {
             current[0].data = String(value);
             return;
         }
-
+        
         const next = jsml_resolve(value);
         jsml_reconcile(host, current, next, end);
         current = next;
@@ -1111,30 +1111,30 @@ function jsml_append(parent, value, marker = null) {
     if (value === undefined || value === null || typeof value === "boolean") {
         return;
     }
-
+    
     if (typeof value === "function") {
         jsml_region(parent, value, marker);
         return;
     }
-
+    
     if (jsml_isImpulse(value)) {
         jsml_region(parent, fromImpulse(value), marker);
         return;
     }
-
+    
     if (value instanceof Node) {
         parent.insertBefore(value, marker);
         return;
     }
-
+    
     if (jsml_isList(value)) {
         for (const item of Array.from(value)) {
             jsml_append(parent, item, marker);
         }
-
+        
         return;
     }
-
+    
     parent.insertBefore(jsml_text(value), marker);
 }
 
@@ -1184,17 +1184,17 @@ function jsml_setAttribute(element, name, value) {
             ? (value ?? "")
             : Boolean(value);
     }
-
+    
     if (value === undefined || value === null || value === false) {
         element.removeAttribute(name);
         return;
     }
-
+    
     if (name.startsWith("xlink:")) {
         element.setAttributeNS(JSML_XLINK_NS, name, value === true ? "" : String(value));
         return;
     }
-
+    
     element.setAttribute(name, value === true ? "" : String(value));
 }
 
@@ -1204,24 +1204,24 @@ function jsml_setAttribute(element, name, value) {
  */
 function jsml_classString(value) {
     value = read(value);
-
+    
     if (value === undefined || value === null || value === false) {
         return "";
     }
-
+    
     if (Array.isArray(value)) {
         return value
             .map(jsml_classString)
             .filter(Boolean)
             .join(" ");
     }
-
+    
     if (typeof value === "object") {
         return Object.keys(value)
             .filter(key => read(value[key]))
             .join(" ");
     }
-
+    
     return String(value);
 }
 
@@ -1240,7 +1240,7 @@ function jsml_classString(value) {
  */
 function withClass(props, ...classes) {
     const { class: c, className, ...rest } = props;
-
+    
     return {
         ...rest,
         class: [c, className, ...classes],
@@ -1256,20 +1256,20 @@ function jsml_setStyleProperty(element, key, value) {
     const name = key.startsWith("--")
         ? key
         : jsml_camelToKebab(key);
-
+    
     if (value === undefined || value === null || value === false) {
         element.style.removeProperty(name);
         return;
     }
-
+    
     let string = String(value);
     let priority = "";
-
+    
     if (/!important\s*$/.test(string)) {
         priority = "important";
         string = string.replace(/\s*!important\s*$/, "");
     }
-
+    
     element.style.setProperty(name, string, priority);
 }
 
@@ -1282,44 +1282,44 @@ function jsml_applyStyle(element, style) {
         element.setAttribute("style", style);
         return;
     }
-
+    
     if (jsml_isReactive(style)) {
         /** @type {string[]} */
         let previous = [];
-
+        
         effect(() => {
             const value = read(style);
-
+            
             if (typeof value === "string" || value === undefined || value === null) {
                 previous = [];
                 jsml_setAttribute(element, "style", value);
                 return;
             }
-
+            
             for (const key of previous) {
                 if (!(key in value)) {
                     jsml_setStyleProperty(element, key, undefined);
                 }
             }
-
+            
             for (const key in value) {
                 jsml_setStyleProperty(element, key, read(value[key]));
             }
-
+            
             previous = Object.keys(value);
         });
-
+        
         return;
     }
-
+    
     for (const key in style) {
         const value = style[key];
-
+        
         if (jsml_isReactive(value)) {
             effect(() => jsml_setStyleProperty(element, key, read(value)));
             continue;
         }
-
+        
         jsml_setStyleProperty(element, key, value);
     }
 }
@@ -1342,65 +1342,65 @@ function jsml_applyStyle(element, style) {
 function jsml_spread(element, props, convertNames) {
     const isSvg = element.namespaceURI === JSML_SVG_NS;
     let ref;
-
+    
     for (const key in props) {
         const value = props[key];
-
+        
         if (key === "children") {
             continue;
         }
-
+        
         if (key === "ref") {
             ref = value;
             continue;
         }
-
+        
         if (key === "class" || key === "className") {
             if (typeof value === "string") {
                 element.setAttribute("class", value);
                 continue;
             }
-
+            
             effect(() => jsml_setAttribute(element, "class", jsml_classString(value) || undefined));
             continue;
         }
-
+        
         if (key === "style") {
             jsml_applyStyle(element, value);
             continue;
         }
-
+        
         if (key.startsWith("on:")) {
             element.addEventListener(key.substring(3), value);
             continue;
         }
-
+        
         if (key[0] === "o" && key[1] === "n") {
             if (typeof value === "function") {
                 element.addEventListener(key.substring(2).toLowerCase(), value);
                 continue;
             }
-
+            
             if (value === undefined || value === null) {
                 continue;
             }
-
+            
             // a string here would become an inline handler (code execution), the old jsml threw as well
             throw new TypeError(`jsml: "${key}" must be a function, got ${typeof value}. Use "\\${key}" to set the attribute on purpose`);
         }
-
+        
         if (key.startsWith("prop:")) {
             const name = key.substring(5);
-
+            
             if (jsml_isReactive(value)) {
                 effect(() => element[name] = read(value));
                 continue;
             }
-
+            
             element[name] = value;
             continue;
         }
-
+        
         let name;
         if (key.startsWith("attr:")) {
             name = key.substring(5);
@@ -1408,20 +1408,20 @@ function jsml_spread(element, props, convertNames) {
             name = key[0] === "\\"
                 ? key.substring(1)
                 : key;
-
+            
             if (convertNames && !(isSvg && JSML_SVG_CAMEL_ATTRIBUTES.has(name))) {
                 name = jsml_camelToKebab(name);
             }
         }
-
+        
         if (jsml_isReactive(value)) {
             effect(() => jsml_setAttribute(element, name, read(value)));
             continue;
         }
-
+        
         jsml_setAttribute(element, name, value);
     }
-
+    
     if (typeof ref === "function") {
         ref(element);
     } else if (ref !== undefined && ref !== null && typeof ref === "object") {
@@ -1461,23 +1461,23 @@ function jsml_element(tag, props, content) {
         content.unshift(props);
         props = undefined;
     }
-
+    
     if (typeof props === "string") {
         props = { class: props };
     }
-
+    
     const element = jsml_createElement(tag, JSML_SVG_TAGS.has(tag));
-
+    
     if (content.length === 0 && props !== undefined && props !== null && "children" in props) {
         jsml_append(element, props.children);
     } else {
         jsml_append(element, content.length === 1 ? content[0] : content);
     }
-
+    
     if (props !== undefined && props !== null) {
         jsml_spread(element, props, true);
     }
-
+    
     return element;
 }
 
@@ -1491,9 +1491,10 @@ function jsml_addProps(element, props) {
     if (props === undefined || props === null) {
         return;
     }
-
+    
     jsml_spread(element, typeof props === "string" ? { class: props } : props, true);
 }
+
 
 /**
  * @param {Element} element
@@ -1530,19 +1531,19 @@ function jsml_componentProps(props, children) {
         children.unshift(props);
         props = undefined;
     }
-
+    
     const result = props === undefined || props === null
         ? {}
         : typeof props === "string"
             ? { class: props }
             : { ...props };
-
+    
     if (children.length === 1) {
         result.children = children[0];
     } else if (children.length > 1) {
         result.children = children;
     }
-
+    
     return result;
 }
 
@@ -1558,11 +1559,11 @@ function jsml_h(type, props, ...children) {
     if (typeof type === "string") {
         return jsml_element(type, props, children);
     }
-
+    
     if (typeof type === "function") {
         return jsml_component(type, jsml_componentProps(props, children));
     }
-
+    
     throw new TypeError(`jsml: expected a tag name or a component function, got ${String(type)}`);
 }
 
@@ -1581,20 +1582,20 @@ function jsml_define(nameOrMap, component) {
     const entries = typeof nameOrMap === "string"
         ? [[nameOrMap, component]]
         : Object.entries(nameOrMap);
-
+    
     for (const [name, fn] of entries) {
         if (typeof fn !== "function") {
             throw new TypeError(`jsml.define: "${name}" is not a function`);
         }
-
+        
         jsml_registry.set(name, fn);
     }
-
+    
     const callers = {};
     for (const [name, fn] of entries) {
         callers[name] = (props, ...content) => jsml_component(fn, jsml_componentProps(props, content));
     }
-
+    
     return typeof nameOrMap === "string"
         ? callers[nameOrMap]
         : callers;
@@ -1614,7 +1615,7 @@ function children(fn) {
             ? value()
             : value;
     });
-
+    
     return memo(() => jsml_resolve(raw()), undefined, { equals: false });
 }
 
@@ -1638,7 +1639,7 @@ function Fragment(props) {
  */
 function Show(props) {
     const condition = memo(() => read(props.when), undefined, { equals: (a, b) => !a === !b });
-
+    
     return memo(() => {
         if (condition()) {
             return untrack(() => {
@@ -1648,7 +1649,7 @@ function Show(props) {
                     : content;
             });
         }
-
+        
         return untrack(() => props.fallback);
     });
 }
@@ -1669,40 +1670,40 @@ function For(props) {
     if (Array.isArray(render) && render.length === 1) {
         render = render[0];
     }
-
+    
     if (typeof render !== "function") {
         throw new TypeError("jsml: <For> expects a single function child: (item, index) => content");
     }
-
+    
     const owner = jsml_createOwner();
-
+    
     /**
      * @typedef ForRow
      * @property {() => Node[]} nodes
      * @property {(index: number) => void} setIndex
      * @property {JsmlOwner} owner
      */
-
+    
     /** @type {Map<T, ForRow[]>} */
     let rows = new Map();
-
+    
     return memo(() => {
         const list = read(props.each);
         const items = list === undefined || list === null
             ? []
             : Array.from(list);
-
+        
         /** @type {ForRow[]} */
         const ordered = untrack(() => {
             /** @type {Map<T, ForRow[]>} */
             const next = new Map();
             const result = [];
-
+            
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 const bucket = rows.get(item);
                 let row;
-
+                
                 if (bucket !== undefined && bucket.length !== 0) {
                     row = bucket.shift();
                     row.setIndex(i);
@@ -1714,34 +1715,34 @@ function For(props) {
                         return { nodes: memo(() => jsml_resolve(value), undefined, { equals: false }), setIndex, owner: rowOwner };
                     });
                 }
-
+                
                 if (!next.has(item)) {
                     next.set(item, []);
                 }
-
+                
                 next.get(item).push(row);
                 result.push(row);
             }
-
+            
             for (const bucket of rows.values()) {
                 for (const row of bucket) {
                     jsml_dispose(row.owner);
                 }
             }
-
+            
             rows = next;
             return result;
         });
-
+        
         if (ordered.length === 0) {
             return untrack(() => props.fallback);
         }
-
+        
         const nodes = [];
         for (const row of ordered) {
             nodes.push(...row.nodes());
         }
-
+        
         return nodes;
     }, undefined, { equals: false });
 }
@@ -1761,7 +1762,7 @@ function For(props) {
  */
 function createContext(defaultValue) {
     const id = Symbol("jsml.context");
-
+    
     /**
      * @param {{ value: T, children?: JsmlContent }} props
      * @returns {JsmlContent}
@@ -1771,7 +1772,7 @@ function createContext(defaultValue) {
         owner.context = { [id]: props.value };
         return runWithOwner(owner, () => children(() => props.children));
     }
-
+    
     return { id, defaultValue, Provider };
 }
 
@@ -1785,16 +1786,43 @@ function createContext(defaultValue) {
  */
 function useContext(context) {
     let owner = jsml_owner;
-
+    
     while (owner !== null) {
         if (owner.context !== null && context.id in owner.context) {
             return owner.context[context.id];
         }
-
+        
         owner = owner.parent;
     }
-
+    
     return context.defaultValue;
+}
+
+/**
+ * Signal backed by `object[property]`, writes go through to the object. Changes made to the property elsewhere are
+ * not picked up.
+ *
+ * @template T
+ * @template {keyof T} K
+ * @param {T} object
+ * @param {K | string} property
+ * @returns {Signal<T[K]>}
+ */
+function useProp(object, property) {
+    const [get, set] = signal(object[property]);
+    let isFirst = true;
+    
+    effect(() => {
+        const value = get();
+        if (isFirst) {
+            isFirst = false;
+            return;
+        }
+        
+        object[property] = value;
+    });
+    
+    return [get, set];
 }
 
 /**
@@ -1809,32 +1837,32 @@ function render(code, container) {
     const end = document.createComment("/jsml");
     container.appendChild(start);
     container.appendChild(end);
-
+    
     const dispose = createRoot((dispose) => {
         const value = untrack(() => typeof code === "function" ? code() : code);
         jsml_append(container, value, end);
         return dispose;
     });
-
+    
     jsml_flushMounts();
-
+    
     return () => {
         dispose();
-
+        
         if (start.parentNode === null) {
             return;
         }
-
+        
         const parent = start.parentNode;
         let node = start;
         while (node !== null) {
             const next = node.nextSibling;
             parent.removeChild(node);
-
+            
             if (node === end) {
                 break;
             }
-
+            
             node = next;
         }
     };
@@ -1875,7 +1903,7 @@ function jsml_decodeEntities(string) {
     if (!string.includes("&")) {
         return string;
     }
-
+    
     jsml_decoder ??= document.createElement("textarea");
     jsml_decoder.innerHTML = string;
     return jsml_decoder.value;
@@ -1891,30 +1919,30 @@ function jsml_jsxWhitespace(string) {
     if (!/[\r\n]/.test(string)) {
         return string;
     }
-
+    
     const lines = string.split(/\r\n|\n|\r/);
     let result = "";
-
+    
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
-
+        
         if (i !== 0) {
             line = line.replace(/^\s+/, "");
         }
-
+        
         if (i !== lines.length - 1) {
             line = line.replace(/\s+$/, "");
         }
-
+        
         if (line === "") {
             continue;
         }
-
+        
         result += result === ""
             ? line
             : " " + line;
     }
-
+    
     return result;
 }
 
@@ -1925,18 +1953,18 @@ function jsml_jsxWhitespace(string) {
 function jsml_splitSlots(string) {
     const parts = string.split(JSML_SLOT_SPLIT);
     const result = [];
-
+    
     for (let i = 0; i < parts.length; i++) {
         if (i % 2 === 1) {
             result.push({ type: "slot", index: Number(parts[i]) });
             continue;
         }
-
+        
         if (parts[i] !== "") {
             result.push(parts[i]);
         }
     }
-
+    
     return result;
 }
 
@@ -1950,56 +1978,56 @@ function jsml_parseTemplate(strings) {
         if (strings[i].includes(JSML_SLOT_OPEN) || strings[i].includes(JSML_SLOT_CLOSE)) {
             throw new SyntaxError("html``: template contains reserved characters U+E000 / U+E001");
         }
-
+        
         source += strings[i];
-
+        
         if (i < strings.length - 1) {
             source += JSML_SLOT_OPEN + i + JSML_SLOT_CLOSE;
         }
     }
-
+    
     let position = 0;
-
+    
     const fail = (message) => {
         const context = source
             .substring(Math.max(0, position - 30), position + 30)
             .replace(/(\d+)/g, "${…}");
-
+        
         throw new SyntaxError(`html\`\`: ${message} near: ${JSON.stringify(context)}`);
     };
-
+    
     const skipWhitespace = () => {
         while (position < source.length && /\s/.test(source[position])) {
             position++;
         }
     };
-
+    
     /** @returns {number | undefined} slot index if a slot starts at the current position */
     const readSlot = () => {
         if (source[position] !== JSML_SLOT_OPEN) {
             return undefined;
         }
-
+        
         const end = source.indexOf(JSML_SLOT_CLOSE, position);
         const index = Number(source.substring(position + 1, end));
         position = end + 1;
         return index;
     };
-
+    
     /**
      * @param {RegExp} stop
      * @returns {string}
      */
     const readUntil = (stop) => {
         const start = position;
-
+        
         while (position < source.length && !stop.test(source[position]) && !source.startsWith("/>", position)) {
             position++;
         }
-
+        
         return source.substring(start, position);
     };
-
+    
     /**
      * @param {string} raw
      * @param {JsmlTemplateNode[]} out
@@ -2010,14 +2038,14 @@ function jsml_parseTemplate(strings) {
                 out.push(part);
                 continue;
             }
-
+            
             const text = jsml_jsxWhitespace(part);
             if (text !== "") {
                 out.push({ type: "text", value: jsml_decodeEntities(text) });
             }
         }
     };
-
+    
     /**
      * Is `<` at the current position the start of a tag (otherwise it is literal text, e.g. `a < b`)?
      * @returns {boolean}
@@ -2026,7 +2054,7 @@ function jsml_parseTemplate(strings) {
         const next = source[position + 1];
         return next !== undefined && /[A-Za-z/>!]/.test(next);
     };
-
+    
     /**
      * @param {JsmlTemplateProp[]} props filled in place
      * @returns {boolean} whether the tag was self-closing
@@ -2034,87 +2062,87 @@ function jsml_parseTemplate(strings) {
     const parseProps = (props) => {
         while (true) {
             skipWhitespace();
-
+            
             if (position >= source.length) {
                 fail("unterminated tag");
             }
-
+            
             if (source.startsWith("/>", position)) {
                 position += 2;
                 return true;
             }
-
+            
             if (source[position] === ">") {
                 position++;
                 return false;
             }
-
+            
             if (source.startsWith("...", position)) {
                 position += 3;
                 const index = readSlot();
-
+                
                 if (index === undefined) {
                     fail("expected ${…} after ...");
                 }
-
+                
                 props.push({ kind: "spread", index });
                 continue;
             }
-
+            
             if (source[position] === JSML_SLOT_OPEN) {
                 fail("an expression can not be an attribute name, use ...${object} to spread props");
             }
-
+            
             const name = readUntil(/[\s=>]/);
             if (name === "") {
                 fail("expected attribute name");
             }
-
+            
             skipWhitespace();
-
+            
             if (source[position] !== "=") {
                 props.push({ kind: "attribute", name, value: true });
                 continue;
             }
-
+            
             position++;
             skipWhitespace();
-
+            
             const quote = source[position];
             if (quote === "\"" || quote === "'") {
                 const end = source.indexOf(quote, position + 1);
-
+                
                 if (end === -1) {
                     fail(`unterminated attribute value for "${name}"`);
                 }
-
+                
                 const raw = source.substring(position + 1, end);
                 position = end + 1;
-
+                
                 props.push({
                     kind: "attribute",
                     name,
                     value: jsml_splitSlots(raw).map(part => typeof part === "string" ? jsml_decodeEntities(part) : part),
                 });
-
+                
                 continue;
             }
-
+            
             const index = readSlot();
             if (index !== undefined) {
                 props.push({ kind: "attribute", name, value: [{ type: "slot", index }] });
                 continue;
             }
-
+            
             const raw = readUntil(/[\s>]/);
             if (raw === "") {
                 fail(`expected value for "${name}"`);
             }
-
+            
             props.push({ kind: "attribute", name, value: jsml_splitSlots(raw) });
         }
     };
-
+    
     /**
      * @param {string | JsmlSlotNode | null} parent null for the root
      * @returns {{ children: JsmlTemplateNode[], closing: string | null }}
@@ -2123,131 +2151,131 @@ function jsml_parseTemplate(strings) {
         /** @type {JsmlTemplateNode[]} */
         const out = [];
         let textStart = position;
-
+        
         const flushText = () => {
             if (position > textStart) {
                 pushText(source.substring(textStart, position), out);
             }
         };
-
+        
         while (position < source.length) {
             if (source[position] !== "<" || !isTagStart()) {
                 position++;
                 continue;
             }
-
+            
             flushText();
-
+            
             if (source.startsWith("<!--", position)) {
                 const end = source.indexOf("-->", position + 4);
-
+                
                 if (end === -1) {
                     fail("unterminated comment");
                 }
-
+                
                 position = end + 3;
                 textStart = position;
                 continue;
             }
-
+            
             if (source[position + 1] === "/") {
                 const end = source.indexOf(">", position);
-
+                
                 if (end === -1) {
                     fail("unterminated closing tag");
                 }
-
+                
                 const closing = source.substring(position + 2, end).trim();
                 position = end + 1;
-
+                
                 if (parent === null) {
                     fail(`unexpected closing tag </${closing}>`);
                 }
-
+                
                 return { children: out, closing };
             }
-
+            
             out.push(parseElement());
             textStart = position;
         }
-
+        
         flushText();
-
+        
         if (parent !== null) {
             fail(`missing closing tag for <${typeof parent === "string" ? parent : "${…}"}>`);
         }
-
+        
         return { children: out, closing: null };
     };
-
+    
     /** @returns {JsmlTemplateNode} */
     const parseElement = () => {
         position++; // <
-
+        
         if (source[position] === ">") {
             position++;
             const { children, closing } = parseChildren("");
-
+            
             if (closing !== "") {
                 fail(`fragment <> must be closed with </>, found </${closing}>`);
             }
-
+            
             return { type: "fragment", children };
         }
-
+        
         /** @type {string | JsmlSlotNode} */
         let tag;
         const index = readSlot();
-
+        
         if (index !== undefined) {
             tag = { type: "slot", index };
         } else {
             tag = readUntil(/[\s>]/);
-
+            
             if (tag === "") {
                 fail("expected tag name");
             }
         }
-
+        
         /** @type {JsmlTemplateProp[]} */
         const props = [];
         const selfClosing = parseProps(props);
-
+        
         /** @type {JsmlElementNode} */
         const element = { type: "element", tag, props, children: [] };
-
+        
         if (selfClosing || (typeof tag === "string" && JSML_VOID_TAGS.has(tag.toLowerCase()))) {
             return element;
         }
-
+        
         const { children, closing } = parseChildren(tag);
         element.children = children;
-
+        
         if (closing === "/") {
             return element; // <//> closes anything
         }
-
+        
         if (typeof tag === "string") {
             if (closing !== tag) {
                 fail(`expected </${tag}> but found </${closing}>`);
             }
-
+            
             return element;
         }
-
+        
         if (closing === "") {
             return element; // </> closes a component, like a fragment
         }
-
+        
         const match = closing.match(/^(\d+)$/);
         if (match === null) {
             fail(`expected </\${…}>, </> or <//> to close a component, found </${closing}>`);
         }
-
+        
         element.closeIndex = Number(match[1]);
         return element;
     };
-
+    
     return parseChildren(null).children;
 }
 
@@ -2260,16 +2288,16 @@ function jsml_templateAttribute(value, values) {
     if (value === true) {
         return true;
     }
-
+    
     if (value.length === 1 && typeof value[0] !== "string") {
         return values[value[0].index];
     }
-
+    
     const isReactive = value.some(part => typeof part !== "string" && jsml_isReactive(values[part.index]));
     const join = () => value
         .map(part => typeof part === "string" ? part : String(read(values[part.index]) ?? ""))
         .join("");
-
+    
     return isReactive
         ? join
         : join();
@@ -2282,23 +2310,23 @@ function jsml_templateAttribute(value, values) {
  */
 function jsml_templateProps(templateProps, values) {
     const props = {};
-
+    
     for (const prop of templateProps) {
         if (prop.kind === "spread") {
             Object.assign(props, values[prop.index]);
             continue;
         }
-
+        
         // an expression inside the name, e.g. on:${EVENT_NAME}
         const name = prop.name.includes(JSML_SLOT_OPEN)
             ? jsml_splitSlots(prop.name)
                 .map(part => typeof part === "string" ? part : String(values[part.index]))
                 .join("")
             : prop.name;
-
+        
         props[name] = jsml_templateAttribute(prop.value, values);
     }
-
+    
     return props;
 }
 
@@ -2312,7 +2340,7 @@ function jsml_instantiateList(nodes, values, isSvg) {
     if (nodes.length === 1) {
         return jsml_instantiate(nodes[0], values, isSvg);
     }
-
+    
     return nodes.map(node => jsml_instantiate(node, values, isSvg));
 }
 
@@ -2333,19 +2361,19 @@ function jsml_instantiate(node, values, isSvg) {
         case "fragment":
             return node.children.map(child => jsml_instantiate(child, values, isSvg));
     }
-
+    
     let tag = node.tag;
-
+    
     if (typeof tag !== "string") {
         tag = values[tag.index];
-
+        
         if (node.closeIndex !== undefined && values[node.closeIndex] !== tag) {
             throw new SyntaxError(`html\`\`: closing tag </\${${values[node.closeIndex]?.name ?? "…"}}> does not match <\${${tag?.name ?? "…"}}>`);
         }
-
+        
         if (typeof tag === "function") {
             const props = jsml_templateProps(node.props, values);
-
+            
             if (node.children.length !== 0) {
                 // lazy, like Solid: every access creates the children in the scope of whoever reads them
                 Object.defineProperty(props, "children", {
@@ -2354,28 +2382,28 @@ function jsml_instantiate(node, values, isSvg) {
                     configurable: true,
                 });
             }
-
+            
             return jsml_component(tag, props);
         }
-
+        
         if (typeof tag !== "string") {
             throw new TypeError(`html\`\`: <\${…}> must be a component function or a tag name, got ${String(tag)}`);
         }
     }
-
+    
     const elementIsSvg = isSvg || tag === "svg";
     const element = jsml_createElement(tag, elementIsSvg);
     const props = jsml_templateProps(node.props, values);
     const childrenAreSvg = elementIsSvg && tag !== "foreignObject";
-
+    
     if (node.children.length === 0 && "children" in props) {
         jsml_append(element, props.children);
     }
-
+    
     for (const child of node.children) {
         jsml_append(element, jsml_instantiate(child, values, childrenAreSvg));
     }
-
+    
     jsml_spread(element, props, false);
     return element;
 }
@@ -2399,12 +2427,12 @@ function jsml_instantiate(node, values, isSvg) {
  */
 function html(strings, ...values) {
     let tree = jsml_templateCache.get(strings);
-
+    
     if (tree === undefined) {
         tree = jsml_parseTemplate(strings);
         jsml_templateCache.set(strings, tree);
     }
-
+    
     return jsml_instantiateList(tree, values, false);
 }
 
@@ -2419,7 +2447,7 @@ function jsml_templateOrContent(first, values) {
     if (Array.isArray(first) && "raw" in first) {
         return html(/** @type {TemplateStringsArray} */ (first), ...values);
     }
-
+    
     return /** @type {JsmlContent} */ (first);
 }
 
@@ -2440,11 +2468,11 @@ function jsml_templateOrContent(first, values) {
  */
 function jsml_htmlNode(strings, ...values) {
     const content = jsml_templateOrContent(strings, values);
-
+    
     if (content instanceof Node) {
         return content;
     }
-
+    
     const fragment = document.createDocumentFragment();
     jsml_append(fragment, content);
     return fragment;
@@ -2466,12 +2494,12 @@ function jsml_htmlNode(strings, ...values) {
  */
 function jsml_htmlElement(strings, ...values) {
     const content = jsml_templateOrContent(strings, values);
-
+    
     if (!(content instanceof Element)) {
         const shape = Array.isArray(content) ? `${content.length} roots` : typeof content;
         throw new TypeError(`html.element: the template must have exactly one element root, got ${shape}`);
     }
-
+    
     return /** @type {HTMLElement} */ (content);
 }
 
@@ -2490,7 +2518,7 @@ function jsml_init() {
     const factories = new Map();
     // only names that can not be HTML tags, `jsml.html()` still creates <html>
     const api = { define: jsml_define, Fragment, Show, For };
-
+    
     return new Proxy(function jsml() {}, {
         apply(_target, _this, args) {
             return jsml_h(...args);
@@ -2499,26 +2527,26 @@ function jsml_init() {
             if (typeof tag === "symbol" || tag === "then") {
                 return undefined;
             }
-
+            
             if (tag in api) {
                 return api[tag];
             }
-
+            
             const component = jsml_registry.get(tag);
             if (component !== undefined) {
                 return (props, ...content) => jsml_component(component, jsml_componentProps(props, content));
             }
-
+            
             if (/^[A-Z]/.test(tag)) {
                 throw new ReferenceError(`jsml: component <${tag}> is not defined, register it with jsml.define({ ${tag} })`);
             }
-
+            
             let factory = factories.get(tag);
             if (factory === undefined) {
                 factory = (props, ...content) => jsml_element(tag, props, content);
                 factories.set(tag, factory);
             }
-
+            
             return factory;
         }
     });
